@@ -1,7 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <cstring>
 
 #include <nds/arm9/console.h>
 #include <nds/arm9/exceptions.h>
