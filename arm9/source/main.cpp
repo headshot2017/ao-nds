@@ -16,6 +16,29 @@
 #include "global.h"
 #include "courtroom.h"
 
+void connect_wifi()
+{
+	struct in_addr ip, gateway, mask, dns1, dns2;
+
+	iprintf("Connecting via WFC data ...\n");
+
+	if(!Wifi_InitDefault(WFC_CONNECT)) {
+		iprintf("Failed to connect!");
+		while (1) swiWaitForVBlank();
+	} else {
+
+		iprintf("Connected\n\n");
+
+		ip = Wifi_GetIPInfo(&gateway, &mask, &dns1, &dns2);
+		
+		iprintf("ip     : %s\n", inet_ntoa(ip) );
+		iprintf("gateway: %s\n", inet_ntoa(gateway) );
+		iprintf("mask   : %s\n", inet_ntoa(mask) );
+		iprintf("dns1   : %s\n", inet_ntoa(dns1) );
+		iprintf("dns2   : %s\n", inet_ntoa(dns2) );		
+	}
+}
+
 int main()
 {
 	defaultExceptionHandler();
@@ -43,8 +66,6 @@ int main()
 	PrintConsole subScreen;
 	consoleInit(&subScreen, 0, BgType_Text4bpp, BgSize_T_256x256, 31, 0, false, true);
 	consoleSelect(&subScreen);
-
-	consoleDemoInit();  //setup the sub screen for printing
 
 	//mp3_play("aaa.mp3");
 
@@ -74,27 +95,4 @@ int main()
 	}
 
     return 0;
-}
-
-void connect_wifi()
-{
-	struct in_addr ip, gateway, mask, dns1, dns2;
-
-	iprintf("Connecting via WFC data ...\n");
-
-	if(!Wifi_InitDefault(WFC_CONNECT)) {
-		iprintf("Failed to connect!");
-		while (1) swiWaitForVBlank();
-	} else {
-
-		iprintf("Connected\n\n");
-
-		ip = Wifi_GetIPInfo(&gateway, &mask, &dns1, &dns2);
-		
-		iprintf("ip     : %s\n", inet_ntoa(ip) );
-		iprintf("gateway: %s\n", inet_ntoa(gateway) );
-		iprintf("mask   : %s\n", inet_ntoa(mask) );
-		iprintf("dns1   : %s\n", inet_ntoa(dns1) );
-		iprintf("dns2   : %s\n", inet_ntoa(dns2) );		
-	}
 }
