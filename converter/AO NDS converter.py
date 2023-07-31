@@ -10,7 +10,7 @@ print("AO NDS converter tool")
 print("This tool will convert your AO 'base' folder to formats that will work with the Nintendo DS.\n")
 
 print("Drag the AO base folder to this console window then press ENTER:")
-folder = raw_input("> ")
+folder = input("> ")
 
 try:
     os.makedirs("converted/data/ao-nds")
