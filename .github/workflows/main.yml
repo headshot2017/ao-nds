@@ -1,0 +1,25 @@
+name: NDS
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: DevkitARM build
+    runs-on: ubuntu-latest
+    container: 
+      image: devkitpro/devkitarm:latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Make
+      run: |
+        make clean
+        make
+        
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: NDS ROM
+        path: ./ao-nds.nds
