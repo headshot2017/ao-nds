@@ -7,6 +7,7 @@
 #include <nds/arm9/decompress.h>
 #include <nds/arm9/sprite.h>
 
+#include "mp3_shared.h"
 #include "global.h"
 
 std::unordered_map<std::string, std::string> sideToDesk = {
@@ -35,6 +36,7 @@ Courtroom::Courtroom()
 {
     bgIndex = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
     bgHide(bgIndex);
+	visible = false;
 
     for (int i=0; i<4*6; i++)
     {
@@ -177,14 +179,23 @@ void Courtroom::setVisible(bool on)
     (on) ? bgShow(bgIndex) : bgHide(bgIndex);
 }
 
-void Courtroom::playMusic(const char* filename)
+void Courtroom::playMusic(std::string filename)
 {
 	mp3_stop();
 
-	FILE* f = fopen(filename);
-	if (!f) return;
+	// replace file extension
+	auto pos = filename.find_last_of('.');
+	if (pos != std::string::npos)
+		filename = filename.substr(0, pos) + ".mp3";
+	else
+		filename += ".mp3";
 
-	mp3_play(filename, 1);
+	iprintf("%s\n", filename.c_str());
+	FILE* f = fopen(filename.c_str(), "rb");
+	if (!f)
+		return;
+
+	mp3_play_file(f, 1, 0);
 }
 
 void Courtroom::update()
@@ -196,7 +207,7 @@ void Courtroom::update()
         int x = (i%4) * 64;
         int y = (i/4) * 32;
 
-        oamSet(&oamMain, i, x, y, 0, 0, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, deskGfxVisible[i] && visible, false, false, false);
+        oamSet(&oamMain, i, x, y, 0, 0, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfxVisible[i] || !visible, false, false, false);
     }
     oamUpdate(&oamMain);
 }

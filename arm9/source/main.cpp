@@ -2,6 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <dirent.h>
+#include <vector>
 
 #include <nds/arm9/console.h>
 #include <nds/arm9/exceptions.h>
@@ -11,9 +16,6 @@
 #include <nds/interrupts.h>
 #include <fat.h>
 #include <dswifi9.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
 
 #include "mp3_shared.h"
 #include "global.h"
@@ -23,11 +25,11 @@ void connect_wifi()
 {
 	struct in_addr ip, gateway, mask, dns1, dns2;
 
-	iprintf("Connecting via WFC data ...\n");
+	iprintf("Connecting via WFC data...\n");
 
 	if(!Wifi_InitDefault(WFC_CONNECT)) {
-		iprintf("Failed to connect!");
-		while (1) swiWaitForVBlank();
+		iprintf("Failed to connect! Please check your WiFi settings\n");
+		//while (1) swiWaitForVBlank();
 	} else {
 
 		iprintf("Connected\n\n");
@@ -91,6 +93,37 @@ void getServerlist()
 	closesocket(my_socket); // remove the socket.
 }
 
+void pickRandomMusic(Courtroom& court, std::string name)
+{
+	dirent* dir;
+	DIR* d = opendir(name.c_str());
+	if (!d)
+		return;
+
+	struct file
+	{
+		std::string name;
+		u8 type;
+	};
+	std::vector<file> items;
+
+	while ((dir = readdir(d)) != 0)
+	{
+		if (dir->d_name[0] == '.') continue;
+		items.push_back({dir->d_name, dir->d_type});
+	}
+
+	closedir(d);
+
+	file& item = items[rand() % items.size()];
+	std::string newName = name+"/"+item.name;
+	if (item.type == DT_DIR)
+		pickRandomMusic(court, newName);
+	else
+		court.playMusic(newName.c_str());
+}
+
+
 int main()
 {
 	defaultExceptionHandler();
@@ -125,12 +158,17 @@ int main()
 
 	connect_wifi();
 
-	getServerlist();
+	//getServerlist();
+
+	pickRandomMusic(court, "/data/ao-nds/sounds/music");
 
 	int ticks=0;
 	while (1)
 	{
 		scanKeys();
+		u32 keys = keysDown();
+		if (keys & KEY_A)
+			pickRandomMusic(court, "/data/ao-nds/sounds/music");
 
 		ticks++;
 		if (ticks % 60 == 0)

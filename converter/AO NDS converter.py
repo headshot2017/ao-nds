@@ -105,7 +105,7 @@ for bg in os.listdir(folder+"/background"):
             f.write("%s: %d,%d\n" % (no_ext_file, horizontalTiles, verticalTiles))
 
         # 16-bit, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-        subprocess.Popen("./grit temp.png -gB8 -gt -ftb -fh! -m! -Mh4 -Mw8").wait()
+        subprocess.Popen("grit temp.png -gB8 -gt -ftb -fh! -m! -Mh4 -Mw8").wait()
         
         if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin"):
             os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin")
@@ -115,7 +115,7 @@ for bg in os.listdir(folder+"/background"):
         os.rename("temp.pal.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin")
 
 
-print("Backgrounds done.\n\nConverting characters...")
+print("\nConverting characters...")
 """
 a = images.load_apng(folder+"/characters/kristoph/(a)confident.apng")
 pix = a[0][0].load()
@@ -157,16 +157,30 @@ copy = copy.crop((0, 0, math.ceil(copy.size[0]/32.)*32, math.ceil(copy.size[1]/3
 # TO-DO
 
 
-print("Converting evidence images...")
+print("\nConverting evidence images...")
 # TO-DO
 
 
-print("Converting sounds...")
+print("\nConverting sounds...")
 # TO-DO
 
 
-print("Converting music...")
-# TO-DO (use ffmpeg)
+print("\nConverting music...")
+def recursiveMusic(source, target):
+    if not os.path.exists(target):
+        os.mkdir(target)
+
+    for f in os.listdir(source):
+        if os.path.isdir(source+"/"+f):
+            recursiveMusic(source+"/"+f, target+"/"+f)
+        else:
+            print(source+"/"+f)
+            targetFile = os.path.splitext(target+"/"+f)[0] + ".mp3"
+
+            # need to apply this metadata title so that the mp3 player used in the NDS app doesn't act funky when loading it
+            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -ar 22050 -ac 2 -b:a 96k -metadata title=\"                        \" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
+
+recursiveMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
 
 
 print("Cleaning up temporary files...")

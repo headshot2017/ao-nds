@@ -40,7 +40,7 @@ public:
 	void setVisible(bool on);
 
 	void stopMusic() {playMusic("");}
-	void playMusic(const char* filename);
+	void playMusic(std::string filename);
 
 	void update();
 };
