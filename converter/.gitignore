@@ -1,1 +1,5 @@
+__pycache__/
 converted/
+*.pyc
+*.img.bin
+*.pal.bin

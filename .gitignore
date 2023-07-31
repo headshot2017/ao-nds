@@ -1,8 +1,5 @@
 *.nds
 *.elf
 build
-*.pyc
-*.img.bin
-*.pal.bin
 *.layout
 *.depend
