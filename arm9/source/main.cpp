@@ -78,7 +78,7 @@ void getServerlist()
     int recvd_len;
     char incoming_buffer[256];
 
-    while( ( recvd_len = recv( my_socket, incoming_buffer, 255, 0 ) ) != 0 ) { // if recv returns 0, the socket has been closed.
+    while( ( recvd_len = recv( my_socket, incoming_buffer, 255, 0 ) ) > 1 ) { // if recv returns 0, the socket has been closed.
         if(recvd_len>0) { // data was received!
             incoming_buffer[recvd_len] = 0; // null-terminate
             iprintf(incoming_buffer);
