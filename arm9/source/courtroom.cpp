@@ -41,6 +41,7 @@ Courtroom::Courtroom()
         int y = (i/4) * 32;
 
         deskGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x32, SpriteColorFormat_256Color);
+        deskGfxVisible[i] = false;
         oamSet(&oamMain, i, x, y, 0, 0, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
     }
 }
@@ -139,7 +140,7 @@ void Courtroom::setBgSide(const std::string& side, bool force)
             {
                 int iScreen = yScreen*4+x;
 
-                oamSetHidden(&oamMain, iScreen, true);
+                deskGfxVisible[i] = false;
             }
         }
     }
@@ -161,7 +162,7 @@ void Courtroom::setBgSide(const std::string& side, bool force)
                 u8* offset = currentBg[side].deskBg.data + i * 64*32;
                 dmaCopy(offset, deskGfx[iScreen], 64*32);
                 dmaCopy(currentBg[side].deskPal.data, SPRITE_PALETTE, currentBg[side].deskPal.len); // copy palette
-                oamSetHidden(&oamMain, iScreen, false);
+                deskGfxVisible[i] = true;
             }
         }
     }
@@ -171,6 +172,7 @@ void Courtroom::setBgSide(const std::string& side, bool force)
 
 void Courtroom::setVisible(bool on)
 {
+	visible = on;
     (on) ? bgShow(bgIndex) : bgHide(bgIndex);
 }
 
@@ -183,7 +185,7 @@ void Courtroom::update()
         int x = (i%4) * 64;
         int y = (i/4) * 32;
 
-        oamSet(&oamMain, i, x, y, 0, 0, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, oamMain.oamMemory[i].isHidden, false, false, false);
+        oamSet(&oamMain, i, x, y, 0, 0, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, deskGfxVisible[i] && visible, false, false, false);
     }
     oamUpdate(&oamMain);
 }

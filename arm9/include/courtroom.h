@@ -26,8 +26,10 @@ class Courtroom
     std::string currentSide;
     cfgFile deskTiles;
     int bgIndex;
+    bool visible;
 
     u16* deskGfx[4*6];
+    bool deskGfxVisible[4*6];
 
 public:
     Courtroom();
