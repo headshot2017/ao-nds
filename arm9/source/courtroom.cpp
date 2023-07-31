@@ -1,6 +1,7 @@
 #include "courtroom.h"
 
 #include <dirent.h>
+#include <stdio.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/decompress.h>
@@ -140,7 +141,7 @@ void Courtroom::setBgSide(const std::string& side, bool force)
             {
                 int iScreen = yScreen*4+x;
 
-                deskGfxVisible[i] = false;
+                deskGfxVisible[iScreen] = false;
             }
         }
     }
@@ -162,7 +163,7 @@ void Courtroom::setBgSide(const std::string& side, bool force)
                 u8* offset = currentBg[side].deskBg.data + i * 64*32;
                 dmaCopy(offset, deskGfx[iScreen], 64*32);
                 dmaCopy(currentBg[side].deskPal.data, SPRITE_PALETTE, currentBg[side].deskPal.len); // copy palette
-                deskGfxVisible[i] = true;
+                deskGfxVisible[iScreen] = true;
             }
         }
     }
@@ -174,6 +175,16 @@ void Courtroom::setVisible(bool on)
 {
 	visible = on;
     (on) ? bgShow(bgIndex) : bgHide(bgIndex);
+}
+
+void Courtroom::playMusic(const char* filename)
+{
+	mp3_stop();
+
+	FILE* f = fopen(filename);
+	if (!f) return;
+
+	mp3_play(filename, 1);
 }
 
 void Courtroom::update()

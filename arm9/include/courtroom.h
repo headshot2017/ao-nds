@@ -39,6 +39,9 @@ public:
 	void setBgSide(const std::string& side, bool force=false);
 	void setVisible(bool on);
 
+	void stopMusic() {playMusic("");}
+	void playMusic(const char* filename);
+
 	void update();
 };
 
