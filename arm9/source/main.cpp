@@ -11,7 +11,9 @@
 #include <nds/interrupts.h>
 #include <fat.h>
 #include <dswifi9.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
 
 #include "mp3_shared.h"
 #include "global.h"
