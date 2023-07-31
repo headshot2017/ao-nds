@@ -73,7 +73,7 @@ int main()
     court.setBg("dualdestinies");
     court.setVisible(true);
 	
-	connect_wifi()
+	connect_wifi();
 
     int ticks=0;
 	while (1)
