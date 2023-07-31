@@ -1,0 +1,9 @@
+taken from apollo justice using desmume
+
+OAM notes (sprites)
+0-23: text
+30-127: bench, then character
+
+BG notes
+sub bg 1: chatbox (might replace with 3d engine?)
+sub bg 3: court bg

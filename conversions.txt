@@ -1,0 +1,14 @@
+bg:
+
+sprite:
+
+evidence:
+
+sound:
+ffmpeg -i "input.wav" -ar 32000 -ac 1 -b:a 96k "output.wav"
+ffmpeg -i "input.opus" -ar 32000 -ac 1 -b:a 96k "output.wav"
+
+music:
+ffmpeg -i "input.mp3" -ar 22050 -ac 2 -b:a 96k -metadata title="                           " -y "output.mp3"
+ffmpeg -i "input.ogg" -ar 22050 -ac 2 -b:a 96k -metadata title="                           " -y "output.mp3"
+ffmpeg -i "input.opus" -ar 22050 -ac 2 -b:a 96k -metadata title="                           " -y "output.mp3"
