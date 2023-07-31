@@ -9,37 +9,37 @@
 
 struct BgData
 {
-    u8* data;
-    u32 len;
+	u8* data;
+	u32 len;
 };
 
 struct LoadedBg
 {
-    BgData mainBg;
-    BgData deskBg;
-    BgData deskPal;
+	BgData mainBg;
+	BgData deskBg;
+	BgData deskPal;
 };
 
 class Courtroom
 {
-    std::unordered_map<std::string, LoadedBg> currentBg;
-    std::string currentSide;
-    cfgFile deskTiles;
-    int bgIndex;
-    bool visible;
+	std::unordered_map<std::string, LoadedBg> currentBg;
+	std::string currentSide;
+	cfgFile deskTiles;
+	int bgIndex;
+	bool visible;
 
-    u16* deskGfx[4*6];
-    bool deskGfxVisible[4*6];
+	u16* deskGfx[4*6];
+	bool deskGfxVisible[4*6];
 
 public:
-    Courtroom();
-    ~Courtroom();
+	Courtroom();
+	~Courtroom();
 
-    bool setBg(const std::string& name);
-    void setBgSide(const std::string& side, bool force=false);
-    void setVisible(bool on);
+	bool setBg(const std::string& name);
+	void setBgSide(const std::string& side, bool force=false);
+	void setVisible(bool on);
 
-    void update();
+	void update();
 };
 
 #endif // COURTROOM_H_INCLUDED
