@@ -38,7 +38,7 @@ int main()
 	vramSetBankD(VRAM_D_SUB_SPRITE);
 	vramSetBankE(VRAM_E_MAIN_SPRITE);
 
-	oamInit(&oamMain, SpriteMapping_Bmp_1D_128, false);
+	oamInit(&oamMain, SpriteMapping_1D_128, false);
 
 	PrintConsole subScreen;
 	consoleInit(&subScreen, 0, BgType_Text4bpp, BgSize_T_256x256, 31, 0, false, true);
@@ -47,7 +47,7 @@ int main()
 	//mp3_play("aaa.mp3");
 
     Courtroom court;
-    court.setBg("cruisecourt");
+    court.setBg("dualdestinies");
     court.setVisible(true);
 	iprintf("test\n");
 
