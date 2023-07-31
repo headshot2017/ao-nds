@@ -39,6 +39,56 @@ void connect_wifi()
 	}
 }
 
+void getServerlist()
+{
+
+    // store the HTTP request for later
+    const char * request_text = 
+        "GET /servers HTTP/1.1\r\n"
+        "Host: servers.aceattorneyonline.com\r\n"
+        "User-Agent: Nintendo DS\r\n\r\n";
+
+    // Find the IP address of the server, with gethostbyname
+    struct hostent * myhost = gethostbyname( "servers.aceattorneyonline.com" );
+    iprintf("Found IP Address!\n");
+ 
+    // Create a TCP socket
+    int my_socket;
+    my_socket = socket( AF_INET, SOCK_STREAM, 0 );
+    iprintf("Created Socket!\n");
+
+    // Tell the socket to connect to the IP address we found, on port 80 (HTTP)
+    struct sockaddr_in sain;
+    sain.sin_family = AF_INET;
+    sain.sin_port = htons(80);
+    sain.sin_addr.s_addr= *( (unsigned long *)(myhost->h_addr_list[0]) );
+    connect( my_socket,(struct sockaddr *)&sain, sizeof(sain) );
+    iprintf("Connected to server!\n");
+
+    // send our request
+    send( my_socket, request_text, strlen(request_text), 0 );
+    iprintf("Sent our request!\n");
+
+    // Print incoming data
+    iprintf("Printing incoming data:\n");
+
+    int recvd_len;
+    char incoming_buffer[256];
+
+    while( ( recvd_len = recv( my_socket, incoming_buffer, 255, 0 ) ) != 0 ) { // if recv returns 0, the socket has been closed.
+        if(recvd_len>0) { // data was received!
+            incoming_buffer[recvd_len] = 0; // null-terminate
+            iprintf(incoming_buffer);
+		}
+	}
+
+	iprintf("Other side closed connection!");
+
+	shutdown(my_socket,0); // good practice to shutdown the socket.
+
+	closesocket(my_socket); // remove the socket.
+}
+
 int main()
 {
 	defaultExceptionHandler();
@@ -74,6 +124,8 @@ int main()
     court.setVisible(true);
 	
 	connect_wifi();
+
+	getServerlist();
 
     int ticks=0;
 	while (1)
