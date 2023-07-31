@@ -11,7 +11,7 @@ I still have to finish writing code that handles these:
 - [x] Desk sprites
 - [ ] Character sprites
 - [ ] Chatbox
-- [ } Evidence sprites
+- [ ] Evidence sprites
 - [x] Music
 - [ ] Sound effects
 
