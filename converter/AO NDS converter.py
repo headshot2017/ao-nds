@@ -3,8 +3,31 @@ import subprocess
 import math
 
 from PIL import Image
+import requests
 
 import images
+
+if os.name == "nt" and not os.path.exists("ffmpeg.exe"):
+    print("Downloading 7zr...")
+    a = requests.get("https://www.7-zip.org/a/7zr.exe")
+    open("7zr.exe", "wb").write(a.content)
+    
+    print("Downloading ffmpeg...")
+    with requests.get("https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z", stream=True) as r:
+        r.raise_for_status()
+        downloaded = 0
+        with open("ffmpeg.7z", 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192): 
+                f.write(chunk)
+                downloaded += len(chunk)
+                print("    %.2f MB / %.2f MB" % (downloaded/1024./1024., int(r.headers["Content-length"])/1024./1024.), end="\r")
+
+    print("Extracting ffmpeg...      ")
+    subprocess.Popen("7zr e ffmpeg.7z -o. ffmpeg.exe -r").wait()
+
+    print("Extracted\n\n")
+    os.remove("ffmpeg.7z")
+    os.remove("7zr.exe")
 
 print("AO NDS converter tool")
 print("This tool will convert your AO 'base' folder to formats that will work with the Nintendo DS.\n")
@@ -20,6 +43,7 @@ try:
     os.makedirs("converted/data/ao-nds/sounds/general")
     os.makedirs("converted/data/ao-nds/sounds/music")
     os.makedirs("converted/data/ao-nds/sounds/blips")
+    os.makedirs("converted/data/ao-nds/misc")
 except:
     pass
 
@@ -181,6 +205,42 @@ def recursiveMusic(source, target):
             subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -ar 22050 -ac 2 -b:a 96k -metadata title=\"                        \" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
 
 recursiveMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
+
+
+print("\nConverting objection images and chatbox...")
+def chatbox():
+    print(folder+"/misc/default/chatbox.png")
+    open("temp.png", "wb").write( open(folder+"/misc/default/chatbox.png", "rb").read() ) # copy file
+
+    # 16-bit bitmap, LZ77 compression, export to .img.bin, don't generate .h file
+    subprocess.Popen("./grit temp.png -gB16 -gb -gzl -ftb -fh!").wait()
+
+    if os.path.exists("converted/data/ao-nds/misc/chatbox.img.bin"):
+        os.remove("converted/data/ao-nds/misc/chatbox.img.bin")
+    os.rename("temp.img.bin", "converted/data/ao-nds/misc/chatbox.img.bin")
+
+def shout(filename):
+    print(filename)
+
+    img = Image.open(filename)
+    img.seek(1)
+    img.save("temp.png")
+    img.close()
+
+    baseName = os.path.basename(filename)
+    newFile = "converted/data/ao-nds/misc/" + os.path.splitext(baseName)[0] + ".img.bin"
+
+    # 16-bit bitmap, LZ77 compression, export to .img.bin, don't generate .h file
+    subprocess.Popen("./grit temp.png -gB16 -gb -gzl -ftb -fh!").wait()
+
+    if os.path.exists(newFile):
+        os.remove(newFile)
+    os.rename("temp.img.bin", newFile)
+    
+chatbox()
+shout(folder+"/misc/default/objection_bubble.gif")
+shout(folder+"/misc/default/holdit_bubble.gif")
+shout(folder+"/misc/default/takethat_bubble.gif")
 
 
 print("Cleaning up temporary files...")
