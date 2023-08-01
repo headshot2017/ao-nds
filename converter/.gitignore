@@ -3,3 +3,5 @@ converted/
 *.pyc
 *.img.bin
 *.pal.bin
+*.exe
+*.7z
