@@ -123,6 +123,26 @@ void pickRandomMusic(Courtroom& court, std::string name)
 		court.playMusic(newName.c_str());
 }
 
+void pickRandomBG(Courtroom& court)
+{
+	dirent* dir;
+	DIR* d = opendir("/data/ao-nds/background");
+	if (!d)
+		return;
+
+	std::vector<std::string> items;
+
+	while ((dir = readdir(d)) != 0)
+	{
+		if (dir->d_name[0] == '.') continue;
+		items.push_back(dir->d_name);
+	}
+
+	closedir(d);
+
+	court.setBg(items[rand() % items.size()]);
+}
+
 
 int main()
 {
@@ -153,10 +173,10 @@ int main()
 	consoleSelect(&subScreen);
 
 	Courtroom court;
-	court.setBg("dualdestinies");
+	pickRandomBG(court);
 	court.setVisible(true);
 
-	connect_wifi();
+	//connect_wifi();
 
 	//getServerlist();
 
@@ -169,6 +189,8 @@ int main()
 		u32 keys = keysDown();
 		if (keys & KEY_A)
 			pickRandomMusic(court, "/data/ao-nds/sounds/music");
+		if (keys & KEY_B)
+			pickRandomBG(court);
 
 		ticks++;
 		if (ticks % 60 == 0)
