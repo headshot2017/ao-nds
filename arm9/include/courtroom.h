@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "cfgFile.h"
+#include "chatbox.h"
 
 struct BgData
 {
@@ -16,6 +17,8 @@ struct BgData
 struct LoadedBg
 {
 	BgData mainBg;
+	BgData mainMap;
+	BgData mainPal;
 	BgData deskBg;
 	BgData deskPal;
 };
@@ -30,6 +33,10 @@ class Courtroom
 
 	u16* deskGfx[4*6];
 	bool deskGfxVisible[4*6];
+
+	Chatbox chatbox;
+
+	void destroyBg();
 
 public:
 	Courtroom();

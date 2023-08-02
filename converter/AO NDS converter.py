@@ -66,20 +66,26 @@ for bg in os.listdir(folder+"/background"):
         if not os.path.exists(full_filename):
             continue
 
-        new_file = os.path.splitext(imgfile)[0]+".img.bin"
+        no_ext_file = os.path.splitext(imgfile)[0]
 
-        img = Image.open(full_filename).convert("RGBA")
+        img = Image.open(full_filename).convert("RGB")
         if img.size[0] != 256 or img.size[1] != 192:
             img = img.resize((256, 192), Image.BICUBIC)
         img.save("temp.png")
         img.close()
 
-        # 16-bit bitmap, disable alpha and set opaque bit for all pixels, LZ77 compression, export to .img.bin, don't generate .h file
-        subprocess.Popen("./grit temp.png -gB16 -gb -gT! -gzl -ftb -fh!").wait()
-        
-        if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+new_file):
-            os.remove("converted/data/ao-nds/background/"+bg+"/"+new_file)
-        os.rename("temp.img.bin", "converted/data/ao-nds/background/"+bg+"/"+new_file)
+        # 8-bit tiles, generate map file, enable palette, extended palette slot 1, export to .bin, don't generate .h file
+        subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 1 -p -ftb -fh!").wait()
+
+        if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin"):
+            os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin")
+        if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".map.bin"):
+            os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".map.bin")
+        if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin"):
+            os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin")
+        os.rename("temp.img.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin")
+        os.rename("temp.map.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".map.bin")
+        os.rename("temp.pal.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin")
 
     # then convert desks. we won't bother with helper desks since these are mostly only used for special effects (source: GS4Night background)
     for imgfile, imgindex in [["defensedesk.png", 0], ["prosecutiondesk.png", 1], ["stand.png", 2], ["judgedesk.png", 3]]:
@@ -93,12 +99,7 @@ for bg in os.listdir(folder+"/background"):
         if img.size[0] != 256 or img.size[1] != 192:
             img = img.resize((256, 192), Image.BICUBIC)
 
-        # first, clear all semi-transparent pixels (must be either 0 or 255)
         pix = img.load()
-        for y in range(img.size[1]):
-            for x in range(img.size[0]):
-                if pix[x, y][3] != 0 and pix[x, y][3] != 255:
-                    pix[x, y] = (pix[x, y][0], pix[x, y][1], pix[x, y][2], 0 if pix[x, y][3] < 200 else 255)
 
         # find top image corner from top to bottom til we hit a visible pixel
         found = False
@@ -204,20 +205,36 @@ def recursiveMusic(source, target):
             # need to apply this metadata title so that the mp3 player used in the NDS app doesn't act funky when loading it
             subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -ar 22050 -ac 2 -b:a 96k -metadata title=\"                        \" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
 
-recursiveMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
+#recursiveMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
 
 
 print("\nConverting objection images and chatbox...")
 def chatbox():
     print(folder+"/misc/default/chatbox.png")
-    open("temp.png", "wb").write( open(folder+"/misc/default/chatbox.png", "rb").read() ) # copy file
+    img = Image.open(folder+"/misc/default/chatbox.png")
+    img = img.crop((0, -2, img.size[0], img.size[1]))
 
-    # 16-bit bitmap, LZ77 compression, export to .img.bin, don't generate .h file
-    subprocess.Popen("./grit temp.png -gB16 -gb -gzl -ftb -fh!").wait()
+    pix = img.load()
+    for y in range(img.size[1]):
+        for x in range(img.size[0]):
+            if pix[x, y][3] == 0:
+                pix[x, y] = (255, 0, 255, 255)
+
+    img.save("temp.png")
+    img.close()
+
+    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
+    subprocess.Popen("./grit temp.png -gB8 -gt -gTFF00FF -m -p -mp 0 -ftb -fh!").wait()
 
     if os.path.exists("converted/data/ao-nds/misc/chatbox.img.bin"):
         os.remove("converted/data/ao-nds/misc/chatbox.img.bin")
+    if os.path.exists("converted/data/ao-nds/misc/chatbox.map.bin"):
+        os.remove("converted/data/ao-nds/misc/chatbox.map.bin")
+    if os.path.exists("converted/data/ao-nds/misc/chatbox.pal.bin"):
+        os.remove("converted/data/ao-nds/misc/chatbox.pal.bin")
     os.rename("temp.img.bin", "converted/data/ao-nds/misc/chatbox.img.bin")
+    os.rename("temp.map.bin", "converted/data/ao-nds/misc/chatbox.map.bin")
+    os.rename("temp.pal.bin", "converted/data/ao-nds/misc/chatbox.pal.bin")
 
 def shout(filename):
     print(filename)

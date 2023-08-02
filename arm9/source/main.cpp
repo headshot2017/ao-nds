@@ -157,14 +157,16 @@ int main()
 		while (1) swiWaitForVBlank();
 	}
 
-	videoSetMode(MODE_5_2D);
+	videoSetMode(MODE_3_2D);
 	videoSetModeSub(MODE_0_2D);
 
 	vramSetBankA(VRAM_A_MAIN_BG);
-	vramSetBankB(VRAM_B_MAIN_SPRITE);
+	vramSetBankB(VRAM_B_MAIN_BG);
 	vramSetBankC(VRAM_C_SUB_BG);
 	vramSetBankD(VRAM_D_SUB_SPRITE);
 	vramSetBankE(VRAM_E_MAIN_SPRITE);
+
+	bgExtPaletteEnable();
 
 	oamInit(&oamMain, SpriteMapping_1D_128, false);
 
