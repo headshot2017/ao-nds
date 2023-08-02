@@ -20,6 +20,7 @@
 #include "mp3_shared.h"
 #include "global.h"
 #include "courtroom.h"
+#include "bg_disclaimer.h"
 
 void connect_wifi()
 {
@@ -166,13 +167,43 @@ int main()
 	vramSetBankD(VRAM_D_SUB_SPRITE);
 	vramSetBankE(VRAM_E_MAIN_SPRITE);
 
-	bgExtPaletteEnable();
-
 	oamInit(&oamMain, SpriteMapping_1D_128, false);
 
 	PrintConsole subScreen;
 	consoleInit(&subScreen, 0, BgType_Text4bpp, BgSize_T_256x256, 31, 0, false, true);
 	consoleSelect(&subScreen);
+
+	// show disclaimer screen
+	{
+		bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
+		dmaCopy(bg_disclaimerTiles, bgGetGfxPtr(0), bg_disclaimerTilesLen);
+		dmaCopy(bg_disclaimerMap, bgGetMapPtr(0), bg_disclaimerMapLen);
+		dmaCopy(bg_disclaimerPal, BG_PALETTE, bg_disclaimerPalLen);
+
+		REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG0 | BLEND_DST_BACKDROP;
+		REG_BLDALPHA = 0xf00;
+
+		int ticks = 0;
+		int alphaAdd = 1;
+		while (1)
+		{
+			swiWaitForVBlank();
+
+			REG_BLDALPHA += alphaAdd;
+			if ((REG_BLDALPHA & 0xf) == 0xf && alphaAdd)
+				alphaAdd = 0;
+			else if ((REG_BLDALPHA & 0xf) == 0)
+				break;
+			else if (!alphaAdd && ticks++ >= 60*3)
+				alphaAdd = -1;
+		}
+
+		dmaFillHalfWords(0, bgGetGfxPtr(0), bg_disclaimerTilesLen);
+		dmaFillHalfWords(0, bgGetMapPtr(0), bg_disclaimerMapLen);
+		dmaFillHalfWords(0, BG_PALETTE, 512);
+	}
+
+	bgExtPaletteEnable();
 
 	Courtroom court;
 	pickRandomBG(court);
