@@ -205,7 +205,7 @@ def recursiveMusic(source, target):
             # need to apply this metadata title so that the mp3 player used in the NDS app doesn't act funky when loading it
             subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -ar 22050 -ac 2 -b:a 96k -metadata title=\"                        \" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
 
-#recursiveMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
+recursiveMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
 
 
 print("\nConverting objection images and chatbox...")
