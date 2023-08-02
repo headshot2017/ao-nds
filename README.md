@@ -2,8 +2,8 @@
 
 [Attorney Online](https://aceattorneyonline.com) client for the Nintendo DS.
 
-Made with devkitARM & libnds by Headshotnoby
-Additional code by stonedDiscord
+Made with devkitARM & libnds by Headshotnoby<br/>
+Additional code by stonedDiscord<br/>
 UI design by Samevi
 
 **STILL UNDER DEVELOPMENT!**
