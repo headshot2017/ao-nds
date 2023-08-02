@@ -179,9 +179,9 @@ void Courtroom::setBgSide(const std::string& side, bool force)
 	dmaCopy(currentBg[side].mainBg.data, bgGetGfxPtr(bgIndex), currentBg[side].mainBg.len);
 	dmaCopy(currentBg[side].mainMap.data, bgGetMapPtr(bgIndex), currentBg[side].mainMap.len);
 
-	vramSetBankG(VRAM_G_LCD);
-	dmaCopy(currentBg[side].mainPal.data, &VRAM_G_EXT_PALETTE[bgIndex][1], currentBg[side].mainPal.len);
-	vramSetBankG(VRAM_G_BG_EXT_PALETTE);
+	vramSetBankF(VRAM_F_LCD);
+	dmaCopy(currentBg[side].mainPal.data, &VRAM_F_EXT_PALETTE[bgIndex][1], currentBg[side].mainPal.len);
+	vramSetBankF(VRAM_F_BG_EXT_PALETTE);
 
 	// handle desk sprite
 	int horTiles, verTiles;
