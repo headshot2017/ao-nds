@@ -30,7 +30,9 @@ include $(DEVKITARM)/base_rules
 BUILD		:= build
 SOURCES		:= source source/mp3 ../helix ../helix/real
 INCLUDES	:= include ../common ../helix ../helix/real
-DATA		:=
+DATA		:= 
+IMAGES		:= gfx
+FONTS		:= gfx/Igiari gfx/NDS12 gfx/acename
 EXPORT_DIR	:=
 #---------------------------------------------------------------------------------
 
@@ -45,7 +47,7 @@ CFLAGS		:= -g -Wall -O2 \
 		-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
 		-ffast-math \
 		$(ARCH) \
-		$(INCLUDE) -DARM9 $(MYDEFS)
+		$(INCLUDE) -DARM9
 CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
 ASFLAGS		:=	-g $(ARCH) -march=armv5te -mtune=arm9tdmi
 LDFLAGS		=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
@@ -72,19 +74,34 @@ export ARM9ELF	:=	$(CURDIR)/$(TARGET).elf
 export DEPSDIR := $(CURDIR)/$(BUILD)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
-					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
+					$(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
+					$(foreach dir,$(IMAGES),$(CURDIR)/$(dir)) \
+					$(foreach dir,$(FONTS),$(CURDIR)/$(dir))
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+PNGFILES	:=	$(foreach dir,$(IMAGES),$(notdir $(wildcard $(dir)/*.png)))
+FONTFILES	:=	$(foreach dir,$(FONTS),$(notdir $(wildcard $(dir)/*.ttf)))
 
 #---------------------------------------------------------------------------------
-# Use CXX for linking C++ projects, CC for standard C
+# use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
-export LD	:=	$(CXX)
+ifeq ($(strip $(CPPFILES)),)
+#---------------------------------------------------------------------------------
+	export LD	:=	$(CC)
+#---------------------------------------------------------------------------------
+else
+#---------------------------------------------------------------------------------
+	export LD	:=	$(CXX)
+#---------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
+					$(PNGFILES:.png=.o) \
+					$(addsuffix .o,$(FONTFILES)) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
@@ -109,6 +126,8 @@ clean:
 #---------------------------------------------------------------------------------
 else
 
+DEPENDS	:=	$(OFILES:.o=.d)
+
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
@@ -120,9 +139,16 @@ $(ARM9ELF)	:	$(OFILES)
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------
 %.bin.o	:	%.bin
+%.ttf.o :   %.ttf
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
+
+#---------------------------------------------------------------------------------
+%.s %.h	: %.png %.grit
+#---------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	grit $< -fts -o$*
 
 -include $(DEPSDIR)/*.d
 

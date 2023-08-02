@@ -1,0 +1,9 @@
+# 8-bit bitmap
+-gB8
+
+# tile format
+-gt
+
+# include map and palette
+-m 
+-p

@@ -1,0 +1,12 @@
+# 8-bit bitmap
+-gB8
+
+# tile format
+-gt
+
+# transparency color: #FF00FF
+-gTFF00FF
+
+# metatile width and height
+-Mw8
+-Mh8
