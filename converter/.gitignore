@@ -2,6 +2,7 @@ __pycache__/
 converted/
 *.pyc
 *.img.bin
+*.map.bin
 *.pal.bin
 *.exe
 *.7z
