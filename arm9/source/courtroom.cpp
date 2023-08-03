@@ -51,7 +51,8 @@ Courtroom::Courtroom()
 		oamSet(&oamMain, i, x, y, 3, 0, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
 
-	chatbox.setVisible(false);
+	chatbox = new Chatbox;
+	chatbox->setVisible(false);
 }
 
 Courtroom::~Courtroom()
@@ -190,7 +191,7 @@ void Courtroom::setBgSide(const std::string& side, bool force)
 	dmaCopy(currentBg[side].mainMap.data, bgGetMapPtr(bgIndex), currentBg[side].mainMap.len);
 
 	vramSetBankF(VRAM_F_LCD);
-	dmaCopy(currentBg[side].mainPal.data, &VRAM_F_EXT_PALETTE[bgIndex][1], currentBg[side].mainPal.len);
+	dmaCopy(currentBg[side].mainPal.data, &VRAM_F_EXT_PALETTE[bgIndex][0], currentBg[side].mainPal.len);
 	vramSetBankF(VRAM_F_BG_EXT_PALETTE);
 
 	// handle desk sprite
@@ -243,7 +244,7 @@ void Courtroom::setVisible(bool on)
 {
 	visible = on;
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
-	chatbox.setVisible(on);
+	chatbox->setVisible(on);
 }
 
 void Courtroom::playMusic(std::string filename)

@@ -162,10 +162,9 @@ int main()
 	videoSetModeSub(MODE_0_2D);
 
 	vramSetBankA(VRAM_A_MAIN_BG);
-	vramSetBankB(VRAM_B_MAIN_BG);
+	vramSetBankB(VRAM_B_MAIN_SPRITE);
 	vramSetBankC(VRAM_C_SUB_BG);
 	vramSetBankD(VRAM_D_SUB_SPRITE);
-	vramSetBankE(VRAM_E_MAIN_SPRITE);
 
 	oamInit(&oamMain, SpriteMapping_1D_128, false);
 

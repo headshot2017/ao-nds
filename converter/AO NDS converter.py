@@ -74,8 +74,8 @@ for bg in os.listdir(folder+"/background"):
         img.save("temp.png")
         img.close()
 
-        # 8-bit tiles, generate map file, enable palette, extended palette slot 1, export to .bin, don't generate .h file
-        subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 1 -p -ftb -fh!").wait()
+        # 8-bit tiles, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
+        subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!").wait()
 
         if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin"):
             os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin")
@@ -223,8 +223,8 @@ def chatbox():
     img.save("temp.png")
     img.close()
 
-    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
-    subprocess.Popen("./grit temp.png -gB8 -gt -gTFF00FF -m -p -mp 0 -ftb -fh!").wait()
+    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, extended palette slot 4, export to .bin, don't generate .h file
+    subprocess.Popen("./grit temp.png -gB8 -gt -gTFF00FF -m -p -mp 1 -ftb -fh!").wait()
 
     if os.path.exists("converted/data/ao-nds/misc/chatbox.img.bin"):
         os.remove("converted/data/ao-nds/misc/chatbox.img.bin")

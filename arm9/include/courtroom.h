@@ -34,7 +34,7 @@ class Courtroom
 	u16* deskGfx[4*6];
 	bool deskGfxVisible[4*6];
 
-	Chatbox chatbox;
+	Chatbox* chatbox;
 
 	void destroyBg();
 

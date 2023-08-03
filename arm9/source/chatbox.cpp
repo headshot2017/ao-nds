@@ -25,7 +25,7 @@ Chatbox::Chatbox()
 
 	dmaCopy(bgData, bgGetGfxPtr(bgIndex), dataLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
-	dmaCopy(bgPal, (void *)&VRAM_F_EXT_PALETTE[bgIndex][0], palLen);
+	dmaCopy(bgPal, (void *)&VRAM_F_EXT_PALETTE[bgIndex][1], palLen);
 
 	vramSetBankF(VRAM_F_BG_EXT_PALETTE);
 
