@@ -64,6 +64,8 @@ Courtroom::~Courtroom()
 	}
 	bgHide(bgIndex);
 	destroyBg();
+
+	delete chatbox;
 }
 
 void Courtroom::destroyBg()
