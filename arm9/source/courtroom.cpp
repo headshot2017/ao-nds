@@ -219,6 +219,7 @@ void Courtroom::setBgSide(const std::string& side, bool force)
 	if (currentBg[side].deskBg.data)
 	{
 		readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
+		dmaCopy(currentBg[side].deskPal.data, SPRITE_PALETTE, currentBg[side].deskPal.len); // copy palette
 
 		for (int y=0; y<verTiles; y++)
 		{
@@ -232,7 +233,6 @@ void Courtroom::setBgSide(const std::string& side, bool force)
 				// copy specific 64x32 tile from image data
 				u8* offset = currentBg[side].deskBg.data + i * 64*32;
 				dmaCopy(offset, deskGfx[iScreen], 64*32);
-				dmaCopy(currentBg[side].deskPal.data, SPRITE_PALETTE, currentBg[side].deskPal.len); // copy palette
 				deskGfxVisible[iScreen] = true;
 			}
 		}
