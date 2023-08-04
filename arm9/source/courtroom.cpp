@@ -273,6 +273,8 @@ void Courtroom::playMusic(std::string filename)
 
 void Courtroom::update()
 {
+	chatbox->update();
+
 	bgUpdate();
 
 	for (int i=0; i<4*6; i++)

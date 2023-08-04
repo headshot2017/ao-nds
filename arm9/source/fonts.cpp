@@ -37,14 +37,15 @@ int initFont(const u8* data, int line_height)
 	return loadedCount-1;
 }
 
-// renders font on 256-color sprite gfx
-void renderFont(int fontID, const char* text, int palIndex, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16** spriteGfxTargets, int spriteGfxCount)
+// renders font on 256-color sprite gfx. returns text width with chosen font
+int renderFont(int fontID, const char* text, int palIndex, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16** spriteGfxTargets, int spriteGfxCount)
 {
 	int currGfx = 0;
 	int x = 0;
+	int textWidth = 0;
 
 	if (fontID < 0 || fontID >= loadedCount)
-		return;
+		return 0;
 
 	LoadedFont& font = fonts[fontID];
 
@@ -64,6 +65,8 @@ void renderFont(int fontID, const char* text, int palIndex, int w, int h, u8* bm
 		bool oob = (x + out_x >= w);
 		if (oob)
 			out_x = w-x;
+		else
+			textWidth += out_x;
 
 		// compute y (different characters have different heights)
 		int y = font.ascent + c_y1;
@@ -97,7 +100,7 @@ void renderFont(int fontID, const char* text, int palIndex, int w, int h, u8* bm
 		{
 			currGfx++;
 			if (currGfx >= spriteGfxCount) // reached the limit, stop here
-				return;
+				return textWidth;
 
 			// blank the bitmap and render the character again
 			memset(bmpTarget, 0, w*h);
@@ -114,4 +117,6 @@ void renderFont(int fontID, const char* text, int palIndex, int w, int h, u8* bm
 		kern = stbtt_GetCodepointKernAdvance(&font.info, text[i], text[i + 1]);
 		x += roundf(kern * font.scale);
 	}
+
+	return textWidth;
 }

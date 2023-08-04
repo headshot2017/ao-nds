@@ -24,14 +24,16 @@ class Chatbox
 
 	u8* textCanvas;
 	u16* nameGfx[2];
+	u16* textGfx[8*3]; // 8 rows of sprite text, 3 lines
 
 public:
 	Chatbox();
 	~Chatbox();
 
 	void setVisible(bool on);
-
 	void setName(const char* name);
+
+	void update();
 };
 
 #endif // CHATBOX_H_INCLUDED

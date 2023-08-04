@@ -14,18 +14,24 @@
 Chatbox::Chatbox()
 {
 	textCanvas = new u8[32*16];
-	for (int i=0; i<2; i++)
-		nameGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x16, SpriteColorFormat_256Color);
 
-	memset(textCanvas, 0, 32*16); // black bg
-
-	// bug: if the sprite gfx is filled once with palette index 0, it'll never work afterwards.
-	// as a workaround i fill it with palette 1, then again with palette 0
 	for (int i=0; i<2; i++)
 	{
+		nameGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x16, SpriteColorFormat_256Color);
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
 		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
 	}
+	for (int i=0; i<8*3; i++)
+	{
+		int x = i%8;
+		int y = i/8;
+
+		textGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x16, SpriteColorFormat_256Color);
+		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
+		oamSet(&oamMain, 26+i, 2+(x*32), 133+(y*32), 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, textGfx[i], -1, false, false, false, false, false);
+	}
+
+	memset(textCanvas, 0, 32*16); // black bg
 
 
 	bgIndex = bgInit(1, BgType_Text8bpp, BgSize_T_256x256, 10, 0);
@@ -81,6 +87,13 @@ Chatbox::~Chatbox()
 		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		oamFreeGfx(&oamMain, nameGfx[i]);
 	}
+	for (int i=0; i<8*3; i++)
+	{
+		int x = i%8;
+		int y = i/8;
+		oamSet(&oamMain, 26+i, 2+(x*32), 133+(y*32), 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamFreeGfx(&oamMain, textGfx[i]);
+	}
 }
 
 void Chatbox::setVisible(bool on)
@@ -94,5 +107,14 @@ void Chatbox::setName(const char* name)
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-	renderFont(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+	int width = renderFont(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+
+	for (int i=0; i<2; i++)
+		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(width/2), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
+}
+
+
+void Chatbox::update()
+{
+	// chatbox text will be updated here
 }
