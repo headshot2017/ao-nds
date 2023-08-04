@@ -23,9 +23,6 @@ int                                     mp3_volume;
 u8                                      *mp3_readPtr;
 
 volatile mp3_player_state		mp3_state;
-volatile wav_stuffs			*wav[WAV_MAX];
-int 					stopChannel;
-int					loadedWavs;
 
 DSTIME                          ds_sound_start;
 DSTIME                          soundtime;
@@ -101,7 +98,7 @@ void S_TransferPaintBuffer(int count)
 void mp3_stop()
 {
 	if (mp3 == 0) return;
-	
+
 	//SCHANNEL_CR(mp3_channelLeft) = 0;
     //SCHANNEL_CR(mp3_channelRight) = 0;
 	//mp3_state = MP3_IDLE;
@@ -123,7 +120,7 @@ int mp3_frame() {
 				mp3_stop();
                 return 1;
         }
-		
+
         mp3_readPtr += offset;
         mp3_bytesleft -= offset;
 
@@ -343,130 +340,6 @@ void mp3_stopping() {
         mp3_state = MP3_IDLE;
 }
 
-void wav_starting(int i, int wav_channel)
-{	
-	if (wav[i] == 0)
-	{
-		return;
-	}
-
-	if (wav[i]->state == WAV_PLAYING)
-	{
-		//free((void *)&SCHANNEL_SOURCE(wav_channel));
-		SCHANNEL_SOURCE(wav_channel) = 0;
-	}
-	if (SCHANNEL_CR(wav_channel) & SCHANNEL_ENABLE)
-	{
-		SCHANNEL_CR(wav_channel) = 0;
-		SCHANNEL_LENGTH(wav_channel) = 0;
-		SCHANNEL_TIMER(wav_channel) = 0;
-	}
-
-	if (wav[i]->channels == 2) // stereo (not recommended)
-	{
-		SCHANNEL_SOURCE(wav_channel) = (u32)wav[i]->data;
-		SCHANNEL_REPEAT_POINT(wav_channel) = 0;
-		SCHANNEL_LENGTH(wav_channel) = (wav[i]->length);
-		SCHANNEL_TIMER(wav_channel) = 0x10000 - (0x1000000 / (wav[i]->samplerate*2));
-		SCHANNEL_CR(wav_channel) = SCHANNEL_ENABLE | SOUND_VOL(wav[i]->volume) | SOUND_PAN(64) | (SOUND_FORMAT_16BIT) | ((wav[i]->loop) ? SOUND_REPEAT : SOUND_ONE_SHOT);
-	}
-	else // mono
-	{
-		SCHANNEL_SOURCE(wav_channel) = (u32)wav[i]->data;
-		SCHANNEL_REPEAT_POINT(wav_channel) = 0;
-		SCHANNEL_LENGTH(wav_channel) = (wav[i]->length)>>1;
-		SCHANNEL_TIMER(wav_channel) = 0x10000 - (0x1000000 / (wav[i]->samplerate));
-		SCHANNEL_CR(wav_channel) = SCHANNEL_ENABLE | SOUND_VOL(wav[i]->volume) | SOUND_PAN(64) | (SOUND_FORMAT_16BIT) | ((wav[i]->loop) ? SOUND_REPEAT : SOUND_ONE_SHOT);
-	}
-
-	wav[i]->channel = -1;
-	wav[i]->state = WAV_PLAYING;
-	return;
-}
-
-void wav_stopping(int i, int wav_channel)
-{
-	if (wav_channel != -1)
-	{
-		if (wav[i] == 0)
-		{
-			//wav_state[wav_channel] = WAV_IDLE;
-			//fifoSendValue32(FIFO_USER_01, 1);
-			return;
-		}
-		SCHANNEL_CR(wav_channel) = 0;
-		//if (SCHANNEL_SOURCE(wav_channel))
-			//free((void *)&SCHANNEL_SOURCE(wav_channel));
-		SCHANNEL_SOURCE(wav_channel) = 0;
-		SCHANNEL_LENGTH(wav_channel) = 0;
-		SCHANNEL_TIMER(wav_channel) = 0;
-		wav[i]->channel = -1;
-	}
-
-	wav[i]->state = WAV_IDLE;
-	int j;
-	for (j=0; j<WAV_MAX; j++)
-	{
-		if (wav[j] && wav[j]->lastChannel == wav_channel) wav[j]->state = WAV_IDLE;
-	}
-	//fifoSendValue32(FIFO_USER_01, 0);
-}
-
-void wav_addWav(volatile wav_stuffs* wavplayer)
-{
-	vu8 i, found = 0;
-	for (i=0; i<WAV_MAX; i++)
-	{
-		if (!wav[i])
-		{
-			wavplayer->slot = i;
-			wav[i] = wavplayer;
-			found = 1;
-			loadedWavs++;
-			break;
-		}
-	}
-	fifoSendValue32(FIFO_USER_01, found);
-}
-
-void wav_removeWav(vu8 slot)
-{
-	if (!wav[slot])
-	{
-		fifoSendValue32(FIFO_USER_01, 0);
-		return;
-	}
-	loadedWavs--;
-
-	wav_stopping(slot, wav[slot]->lastChannel);
-
-	vu8 i;
-	wav[slot] = 0;
-	for (i=slot; i<WAV_MAX-1; i++)
-	{
-		if (wav[i+1])
-		{
-			wav[i] = wav[i+1];
-			wav[i]->slot = i;
-		}
-		else
-			wav[i] = 0;
-	}
-	wav[loadedWavs] = 0;
-
-	fifoSendValue32(FIFO_USER_01, 1);
-}
-
-void wav_getFirstFreeSlot()
-{
-	vu8 i;
-	for (i=0; i<WAV_MAX; i++)
-	{
-		if (!wav[i]) break;
-	}
-	fifoSendValue32(FIFO_USER_01, i);
-}
-
 void mp3_process() {
         switch(mp3_state) {
         case MP3_STARTING:
@@ -489,28 +362,6 @@ void mp3_process() {
         case MP3_ERROR:
                 break;
         }
-
-	int i;
-	for(i=0; i<WAV_MAX; i++)
-	{
-		if (!wav[i]) break;
-		if (wav[i]->channel)
-		{
-			switch(wav[i]->state)
-			{
-				case WAV_STARTING:
-					wav[i]->lastChannel = wav[i]->channel;
-					wav[i]->channel = getFreeChannel();
-					wav_starting(i, wav[i]->channel);
-					break;
-				case WAV_PLAYING:
-					break;
-				case WAV_STOPPING:
-					wav_stopping(i, wav[i]->lastChannel);
-					break;
-			}
-		}
-	}
 }
 
 void mp3_set_volume(int volume) {
@@ -561,18 +412,6 @@ void mp3_DataHandler(int bytes, void *user_data) {
 		case MP3_MSG_VOLUME:
 			mp3_set_volume(msg.volume);
 			break;
-
-		case WAV_MSG_ADD:
-			wav_addWav(msg.wavplayer);
-			break;
-
-		case WAV_MSG_REMOVE:
-			wav_removeWav(msg.slot);
-			break;
-
-		case WAV_MSG_GETSLOT:
-			wav_getFirstFreeSlot();
-			break;
 	}
 }
 
@@ -583,15 +422,6 @@ void mp3_init() {
         mp3 = 0;
         mp3_bytesleft = 0;
         mp3_volume = 127;
-
-	stopChannel = -1;
-		
-	int i;
-	for(i=0; i<WAV_MAX; i++)
-	{
-		wav[i] = 0;
-	}
-	loadedWavs = 0;
 
         enableSound();
         fifoSetDatamsgHandler(FIFO_USER_01, mp3_DataHandler, 0);

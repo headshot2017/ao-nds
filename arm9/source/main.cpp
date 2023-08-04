@@ -217,14 +217,13 @@ int main()
 
 	Courtroom court;
 	pickRandomBG(court);
+	pickRandomMusic(court, "/data/ao-nds/sounds/music");
 	court.setVisible(true);
 	court.getChatbox()->setName("Phoenix");
 
 	//connect_wifi();
 
 	//getServerlist();
-
-	pickRandomMusic(court, "/data/ao-nds/sounds/music");
 
 	int ticks=0;
 	while (1)

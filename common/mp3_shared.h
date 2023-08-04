@@ -5,7 +5,6 @@ extern "C" {
 #ifndef __mp3_shared_h__
 #define __mp3_shared_h__
 
-//#include <stdio.h>
 #include "mp3dec.h"
 
 typedef vu32 DSTIME;
@@ -21,14 +20,6 @@ typedef enum {
         MP3_ERROR=0xffffffff
 } mp3_player_state;
 
-typedef enum
-{
-	WAV_IDLE,
-	WAV_STARTING,
-	WAV_PLAYING,
-	WAV_STOPPING
-} wav_player_state;
-
 typedef struct {
 		HMP3Decoder hMP3Decoder;
         vu32    flag;
@@ -43,18 +34,6 @@ typedef struct {
 
 } mp3_player;
 
-typedef struct
-{
-	vu16	channels;
-	vu32	samplerate;
-	vu64 length;
-	vu16 volume;
-	u32	*data;
-	vu8 channel, lastChannel;
-	vu8 loop, state, slot;
-
-} wav_stuffs;
-
 enum {
         MP3_MSG_START=0,
         MP3_MSG_STOP=1,
@@ -62,10 +41,6 @@ enum {
         MP3_MSG_RESUME=3,
         MP3_MSG_VOLUME,
         MP3_MSG_ERROR=0xffffffff,
-
-	WAV_MSG_ADD=7,
-	WAV_MSG_REMOVE,
-	WAV_MSG_GETSLOT,
 };
 
 typedef struct {
@@ -73,7 +48,6 @@ typedef struct {
 		union
 		{
 			volatile mp3_player	*player;
-			volatile wav_stuffs	*wavplayer;
 			int	slot;
 			u32	volume;
         };
@@ -88,6 +62,8 @@ typedef struct {
 
 #ifdef ARM9
 
+#include <stdio.h>
+
 int mp3_init();
 int mp3_play_file(FILE *file,int loop,float loopsec);
 int mp3_play(const char *filename,int loop=0,float loopsec=0);
@@ -98,13 +74,7 @@ int mp3_stop();
 int mp3_set_volume(int volume);
 bool mp3_is_playing();
 
-volatile wav_stuffs* wav_load_handle(const char *filename, int* error_output=NULL);
-void wav_free_handle(volatile wav_stuffs* wav, int* error_output=NULL);
-int wav_play_handle(volatile wav_stuffs* wav, int channel, bool loop=false);
-int wav_unload(volatile wav_stuffs* wav);
-void wav_set_volume(volatile wav_stuffs* handle, u16 volume);
-float wav_get_length(volatile wav_stuffs* handle);
-u8 wav_get_free_slot();
+u32* wav_load_handle(const char *filename, u32* sizeOut);
 
 #endif // ARM9
 

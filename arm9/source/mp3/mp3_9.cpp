@@ -44,14 +44,14 @@ void mp3_fill_buffer() {
 										float bytes;
 										if (!mp3_length) mp3_length = (float)mp3->soundtime/(float)mp3->rate;
 										bytes = (1.f / mp3_length) * mp3->filesize;
-										
+
 										fseek (mp3_file, (int)(mp3_loopsec * bytes) / MP3_FILE_BUFFER_SIZE * MP3_FILE_BUFFER_SIZE, SEEK_SET);
 										n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE + n), 1, MP3_FILE_BUFFER_SIZE-n, mp3_file);
 										filled += n;
 								}
 						}
 						break;
-					
+
 					case 2: // non-looping mp3 reached the end
 						mp3_stop();
 						break;
@@ -220,32 +220,28 @@ int mp3_init() {
 }
 
 // WAV
-volatile wav_stuffs* wav_load_handle(const char *filename, int* error_output)
+u32* wav_load_handle(const char *filename, u32* sizeOut)
 {
 	drwav wavfp;
-	volatile wav_stuffs *wav2;
 
-	if (!drwav_init_file(&wavfp, filename, NULL)) {
-		*error_output = 1;
+	if (!drwav_init_file(&wavfp, filename, NULL))
+	{
+		if (sizeOut) *sizeOut = 0;
 		return 0;
 	}
-
-	wav2 = (volatile wav_stuffs *)malloc(sizeof(wav_stuffs));
 
 	u32* pSampleData = (u32*)malloc((u32)wavfp.totalPCMFrameCount * wavfp.channels * sizeof(u32));
 	if (pSampleData == 0)
 	{
 		drwav_uninit(&wavfp);
-		free((void*)wav2);
-		*error_output = 2;
+		if (sizeOut) *sizeOut = 0;
 		return 0;
 	}
 	if (drwav_read_pcm_frames(&wavfp, wavfp.totalPCMFrameCount, pSampleData) == 0)
 	{
 		drwav_uninit(&wavfp);
-		free((void*)wav2);
 		free(pSampleData);
-		*error_output = 3;
+		if (sizeOut) *sizeOut = 0;
 		return 0;
 	}
 
@@ -257,96 +253,12 @@ volatile wav_stuffs* wav_load_handle(const char *filename, int* error_output)
 		pSampleData = _8bitdata;
 	}
 
-	wav2->channels = wavfp.channels;
-	wav2->samplerate = wavfp.sampleRate;
-	wav2->length = wavfp.totalPCMFrameCount;
-	wav2->data = pSampleData;
-	wav2->volume = 127;
-	wav2->state = WAV_IDLE;
+	FILE* f = fopen(filename, "rb");
+	if (sizeOut) *sizeOut = (u32)ds_filelength(f);
+	fclose(f);
 	drwav_uninit(&wavfp);
 
-	mp3_msg msg;
-	msg.type = WAV_MSG_ADD;
-	msg.wavplayer = wav2;
-
-	fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
-	while(!fifoCheckValue32(FIFO_USER_01));
-	u32 result = fifoGetValue32(FIFO_USER_01);
-
-	if (result == 0) // no slots
-	{
-		drwav_uninit(&wavfp);
-		free((void*)wav2);
-		free(pSampleData);
-		*error_output = 4;
-		return 0;
-	}
-
-	*error_output = 0;
-	return wav2;
-}
-
-void wav_free_handle(volatile wav_stuffs* wav, int* error_output)
-{
-	mp3_msg msg;
-	msg.type = WAV_MSG_REMOVE;
-	msg.slot = wav->slot;
-
-	fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
-	while(!fifoCheckValue32(FIFO_USER_01));
-	u32 result = fifoGetValue32(FIFO_USER_01);
-
-	if (result == 0)
-	{
-		*error_output = 1;
-		return;
-	}
-
-	*error_output = 0;
-	if (wav->data) drwav_free(wav->data, NULL);
-	if (wav) free((void*)wav);
-	wav = NULL;
-}
-
-int wav_play_handle(volatile wav_stuffs* wav, int channel, bool loop)
-{
-	wav->channel = channel;
-	wav->loop = loop;
-	wav->state = WAV_STARTING;
-
-	return 0;
-}
-
-int wav_unload(volatile wav_stuffs* wav)
-{
-	if (wav->state == WAV_PLAYING)
-	{
-		wav->state = WAV_STOPPING;
-		wav->channel = wav->lastChannel;
-	}
-	return 0;
-}
-
-void wav_set_volume(volatile wav_stuffs* handle, u16 new_volume)
-{
-	handle->volume = (new_volume > 127) ? 127 : new_volume;
-}
-
-float wav_get_length(volatile wav_stuffs* handle)
-{
-	if (!handle) return 0;
-	return (float)(handle->length) / handle->samplerate;
-}
-
-u8 wav_get_free_slot()
-{
-	mp3_msg msg;
-	msg.type = WAV_MSG_GETSLOT;
-
-	fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
-	while(!fifoCheckValue32(FIFO_USER_01));
-	u8 result = fifoGetValue32(FIFO_USER_01);
-	return result;
+	return pSampleData;
 }
 
 } // extern "C"
