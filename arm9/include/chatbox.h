@@ -3,6 +3,8 @@
 
 #include <nds/ndstypes.h>
 
+#include "mp3_shared.h"
+
 enum
 {
 	COLOR_WHITE=1,
@@ -25,6 +27,9 @@ class Chatbox
 	u8* textCanvas;
 	u16* nameGfx[2];
 	u16* textGfx[8*3]; // 8 rows of sprite text, 3 lines
+
+	u32* blipSnd;
+	u32 blipSize;
 
 public:
 	Chatbox();

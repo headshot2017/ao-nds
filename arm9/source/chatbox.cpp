@@ -1,18 +1,21 @@
 #include "chatbox.h"
 
-#include <stdio.h>
 #include <string.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/decompress.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
+#include <nds/arm9/sound.h>
 
 #include "global.h"
 #include "fonts.h"
+#include "mp3_shared.h"
 
 Chatbox::Chatbox()
 {
+	blipSnd = wav_load_handle("/data/ao-nds/sounds/blips/male.wav", &blipSize);
+
 	textCanvas = new u8[32*16];
 
 	for (int i=0; i<2; i++)
@@ -99,6 +102,8 @@ Chatbox::~Chatbox()
 void Chatbox::setVisible(bool on)
 {
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
+
+	soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
 }
 
 void Chatbox::setName(const char* name)
