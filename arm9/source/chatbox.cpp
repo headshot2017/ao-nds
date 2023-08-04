@@ -17,6 +17,7 @@ Chatbox::Chatbox()
 	bgHide(bgIndex);
 
 	vramSetBankF(VRAM_F_LCD);
+	vramSetBankG(VRAM_G_LCD);
 
 	u32 dataLen, mapLen, palLen;
 	bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);
@@ -27,7 +28,17 @@ Chatbox::Chatbox()
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
 	dmaCopy(bgPal, (void *)&VRAM_F_EXT_PALETTE[bgIndex][1], palLen);
 
+	// set text colors
+	VRAM_G_EXT_SPR_PALETTE[0][0] = RGB15(0,0,0); // transparency
+	VRAM_G_EXT_SPR_PALETTE[0][1] = RGB15(31,31,31); // white
+	VRAM_G_EXT_SPR_PALETTE[0][2] = RGB15(0,31,0); // green
+	VRAM_G_EXT_SPR_PALETTE[0][3] = RGB15(31,0,0); // red
+	VRAM_G_EXT_SPR_PALETTE[0][4] = RGB15(31,20,0); // orange
+	VRAM_G_EXT_SPR_PALETTE[0][5] = RGB15(5,18,31); // blue
+	VRAM_G_EXT_SPR_PALETTE[0][6] = RGB15(31,31,0); // yellow
+
 	vramSetBankF(VRAM_F_BG_EXT_PALETTE);
+	vramSetBankG(VRAM_G_SPRITE_EXT_PALETTE);
 
 	// makes the chatbox transparent.
 	// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
