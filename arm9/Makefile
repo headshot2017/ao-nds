@@ -32,7 +32,7 @@ SOURCES		:= source source/mp3 ../helix ../helix/real
 INCLUDES	:= include ../common ../helix ../helix/real
 DATA		:= 
 IMAGES		:= gfx
-FONTS		:= gfx/Igiari gfx/NDS12 gfx/acename
+FONTS		:= gfx/Igiari gfx/NDS12 gfx/AceName
 EXPORT_DIR	:=
 #---------------------------------------------------------------------------------
 
