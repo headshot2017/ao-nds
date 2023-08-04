@@ -1,6 +1,7 @@
 #include "chatbox.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/decompress.h>
@@ -8,13 +9,30 @@
 #include <nds/arm9/video.h>
 
 #include "global.h"
+#include "fonts.h"
 
 Chatbox::Chatbox()
 {
+	textCanvas = new u8[32*16];
+	for (int i=0; i<2; i++)
+		nameGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x16, SpriteColorFormat_256Color);
+
+	memset(textCanvas, 0, 32*16); // black bg
+
+	// bug: if the sprite gfx is filled once with palette index 0, it'll never work afterwards.
+	// as a workaround i fill it with palette 1, then again with palette 0
+	for (int i=0; i<2; i++)
+	{
+		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
+		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
+	}
+
+
 	bgIndex = bgInit(1, BgType_Text8bpp, BgSize_T_256x256, 10, 0);
 	bgSetPriority(bgIndex, 1);
 	bgSetScroll(bgIndex, 0, -192+80);
 	bgHide(bgIndex);
+	bgUpdate();
 
 	vramSetBankF(VRAM_F_LCD);
 	vramSetBankG(VRAM_G_LCD);
@@ -28,14 +46,13 @@ Chatbox::Chatbox()
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
 	dmaCopy(bgPal, (void *)&VRAM_F_EXT_PALETTE[bgIndex][1], palLen);
 
-	// set text colors
-	VRAM_G_EXT_SPR_PALETTE[0][0] = RGB15(0,0,0); // transparency
-	VRAM_G_EXT_SPR_PALETTE[0][1] = RGB15(31,31,31); // white
-	VRAM_G_EXT_SPR_PALETTE[0][2] = RGB15(0,31,0); // green
-	VRAM_G_EXT_SPR_PALETTE[0][3] = RGB15(31,0,0); // red
-	VRAM_G_EXT_SPR_PALETTE[0][4] = RGB15(31,20,0); // orange
-	VRAM_G_EXT_SPR_PALETTE[0][5] = RGB15(5,18,31); // blue
-	VRAM_G_EXT_SPR_PALETTE[0][6] = RGB15(31,31,0); // yellow
+	VRAM_G_EXT_SPR_PALETTE[1][COLOR_WHITE] = 	RGB15(31,31,31);
+	VRAM_G_EXT_SPR_PALETTE[1][COLOR_GREEN] = 	RGB15(0,31,0);
+	VRAM_G_EXT_SPR_PALETTE[1][COLOR_RED] = 		RGB15(31,0,0);
+	VRAM_G_EXT_SPR_PALETTE[1][COLOR_ORANGE] = 	RGB15(31,20,0);
+	VRAM_G_EXT_SPR_PALETTE[1][COLOR_BLUE] = 	RGB15(5,18,31);
+	VRAM_G_EXT_SPR_PALETTE[1][COLOR_YELLOW] = 	RGB15(31,31,0);
+	VRAM_G_EXT_SPR_PALETTE[1][COLOR_BLACK] = 	RGB15(0,0,0);
 
 	vramSetBankF(VRAM_F_BG_EXT_PALETTE);
 	vramSetBankG(VRAM_G_SPRITE_EXT_PALETTE);
@@ -49,7 +66,6 @@ Chatbox::Chatbox()
 Chatbox::~Chatbox()
 {
 	bgHide(bgIndex);
-	vramSetBankF(VRAM_F_LCD);
 
 	REG_BLDCNT = BLEND_NONE;
 
@@ -58,9 +74,25 @@ Chatbox::~Chatbox()
 	delete[] bgData;
 	delete[] bgMap;
 	delete[] bgPal;
+
+	delete[] textCanvas;
+	for (int i=0; i<2; i++)
+	{
+		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamFreeGfx(&oamMain, nameGfx[i]);
+	}
 }
 
 void Chatbox::setVisible(bool on)
 {
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
+}
+
+void Chatbox::setName(const char* name)
+{
+	// clear old text
+	memset(textCanvas, 0, 32*16);
+	for (int i=0; i<2; i++)
+		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
+	renderFont(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 }

@@ -48,7 +48,7 @@ Courtroom::Courtroom()
 
 		deskGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x32, SpriteColorFormat_256Color);
 		deskGfxVisible[i] = false;
-		oamSet(&oamMain, i, x, y, 3, 0, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, i, x, y, 2, 2, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
 
 	chatbox = new Chatbox;
@@ -221,7 +221,7 @@ void Courtroom::setBgSide(const std::string& side, bool force)
 		readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
 
 		vramSetBankG(VRAM_G_LCD);
-		dmaCopy(currentBg[side].deskPal.data, &VRAM_G_EXT_SPR_PALETTE[1], currentBg[side].deskPal.len); // copy palette
+		dmaCopy(currentBg[side].deskPal.data, &VRAM_G_EXT_SPR_PALETTE[2], currentBg[side].deskPal.len); // copy palette
 		vramSetBankG(VRAM_G_SPRITE_EXT_PALETTE);
 
 		for (int y=0; y<verTiles; y++)
@@ -280,7 +280,7 @@ void Courtroom::update()
 		int x = (i%4) * 64;
 		int y = (i/4) * 32;
 
-		oamSet(&oamMain, i, x, y, 3, 1, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfxVisible[i] || !visible, false, false, false);
+		oamSet(&oamMain, i, x, y, 2, 2, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfxVisible[i] || !visible, false, false, false);
 	}
 	oamUpdate(&oamMain);
 }

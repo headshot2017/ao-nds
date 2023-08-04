@@ -42,6 +42,8 @@ public:
 	Courtroom();
 	~Courtroom();
 
+	Chatbox* getChatbox() {return chatbox;}
+
 	bool setBg(const std::string& name);
 	void setBgSide(const std::string& side, bool force=false);
 	void setVisible(bool on);

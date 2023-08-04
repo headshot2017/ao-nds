@@ -23,7 +23,7 @@ u8* readFile(const std::string& filename, u32* outLen)
 	return data;
 }
 
-u32 bmpIndexTo256SpriteIndex(u32 x, u32 y, u32 w, u32 h, SpriteSize size, bool* oobFlag)
+u32 bmpIndexTo256SpriteIndex(int x, int y, int w, int h, SpriteSize size, bool* oobFlag)
 {
 	// converts an array index from a bitmap (i.e. one created with malloc(x * y);
 	// to an array index that can be used with 256-color sprites GFX created with oamAllocateGfx().
@@ -34,10 +34,10 @@ u32 bmpIndexTo256SpriteIndex(u32 x, u32 y, u32 w, u32 h, SpriteSize size, bool* 
 		return 0;
 	}
 
-	u32 tilePixelX = x%8;
-	u32 tilePixelY = y%8;
-	u32 metaTileX = x/8;
-	u32 metaTileY = y/8;
+	int tilePixelX = x%8;
+	int tilePixelY = y%8;
+	int metaTileX = x/8;
+	int metaTileY = y/8;
 
 	if (oobFlag) *oobFlag = false;
 

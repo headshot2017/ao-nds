@@ -31,11 +31,13 @@
 		<Unit filename="arm9/include/cfgFile.h" />
 		<Unit filename="arm9/include/chatbox.h" />
 		<Unit filename="arm9/include/courtroom.h" />
+		<Unit filename="arm9/include/fonts.h" />
 		<Unit filename="arm9/include/global.h" />
 		<Unit filename="arm9/include/stb_truetype.h" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
 		<Unit filename="arm9/source/chatbox.cpp" />
 		<Unit filename="arm9/source/courtroom.cpp" />
+		<Unit filename="arm9/source/fonts.cpp" />
 		<Unit filename="arm9/source/global.cpp" />
 		<Unit filename="arm9/source/main.cpp" />
 		<Unit filename="arm9/source/mp3/mp3_9.cpp" />
