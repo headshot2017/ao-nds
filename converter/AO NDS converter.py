@@ -187,7 +187,21 @@ print("\nConverting evidence images...")
 
 
 print("\nConverting sounds...")
-# TO-DO
+def recursiveSounds(source, target):
+    if not os.path.exists(target):
+        os.mkdir(target)
+
+    for f in os.listdir(source):
+        if os.path.isdir(source+"/"+f):
+            recursiveSounds(source+"/"+f, target+"/"+f)
+        else:
+            print(source+"/"+f)
+            targetFile = os.path.splitext(target+"/"+f)[0] + ".wav"
+
+            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 32000 -ac 1 -b:a 96k -y \"%s\"" % (source+"/"+f, targetFile)).wait()
+
+recursiveSounds(folder+"/sounds/blips", "converted/data/ao-nds/sounds/blips")
+recursiveSounds(folder+"/sounds/general", "converted/data/ao-nds/sounds/general")
 
 
 print("\nConverting music...")
