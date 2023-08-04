@@ -84,6 +84,9 @@ Chatbox::~Chatbox()
 	delete[] bgMap;
 	delete[] bgPal;
 
+	if (blipSnd)
+		delete[] blipSnd;
+
 	delete[] textCanvas;
 	for (int i=0; i<2; i++)
 	{
