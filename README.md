@@ -15,7 +15,11 @@ I still have to finish writing code that handles these:
 - [ ] Chatbox
 - [ ] Evidence sprites
 - [x] Music
-- [ ] Sound effects
+- [x] Sound effects
+- [ ] Main menu UI
+- [ ] Server browser UI
+- [ ] Courtroom UI (bottom screen)
+
 
 Before you can use this, you need to use the AO NDS converter tool
 to convert the contents of the base folder from the PC version to formats that are compatible with the NDS.
