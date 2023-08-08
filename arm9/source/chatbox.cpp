@@ -115,7 +115,7 @@ void Chatbox::setName(const char* name)
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-	int width = renderFont(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+	int width = renderText(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
 		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(width/2), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
