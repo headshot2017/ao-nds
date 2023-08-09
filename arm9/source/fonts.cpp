@@ -49,9 +49,9 @@ int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmp
 
 	for (u32 i=0; i<strlen(text); i++)
 	{
-		bool oobFlag;
+		int oobFlag;
 		int outWidth;
-		int new_x = renderChar(fontID, text+i, palIndex, x, w, h, bmpTarget, spritesize, spriteGfxTargets[currGfx], &oobFlag, &outWidth);
+		int new_x = renderChar(fontID, text+i, palIndex, x, w, w, h, bmpTarget, spritesize, spriteGfxTargets[currGfx], false, &oobFlag, &outWidth);
 
 		if (!oobFlag)
 		{
@@ -75,7 +75,7 @@ int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmp
 	return textWidth;
 }
 
-int renderChar(int fontID, const char* text, int palIndex, int x, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16* spriteGfxTarget, bool* oobFlag, int* outWidth)
+int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16* spriteGfxTarget, bool skipOnOob, int* oobFlag, int* outWidth)
 {
 	if (fontID < 0 || fontID >= loadedCount)
 		return 0;
@@ -96,7 +96,14 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int w, int h, 
 	int out_x = c_x2 - c_x1;
 	bool oob = (x + out_x >= w);
 	if (oob)
+	{
+		if (skipOnOob)
+		{
+			if (oobFlag) *oobFlag = 2;
+			return x;
+		}
 		out_x = w-x;
+	}
 	else if (outWidth)
 		*outWidth = out_x;
 
@@ -104,21 +111,21 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int w, int h, 
 	int y = font.ascent + c_y1;
 
 	// render character (stride and offset is important here)
-	int byteOffset = x + roundf(lsb * font.scale) + (y * w);
-	stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, w, font.scale, font.scale, text[0]);
+	int byteOffset = x + roundf(lsb * font.scale) + (y * spriteW);
+	stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, font.scale, font.scale, text[0]);
 
 	// focus around the bounding box of the rendered character...
 	for (int yy = y; yy<y+font.line_height; yy++)
 	{
 		for (int xx = x; xx<x + out_x; xx++)
 		{
-			int ind = yy*w+xx;
+			int ind = yy*spriteW+xx;
 			if (bmpTarget[ind] == 0xff)
 			{
 				// render this to the sprite gfx!
 				int leftOrRight = ind&1;
 				bool oobFlag2;
-				u32 targetInd = bmpIndexTo256SpriteIndex(xx, yy, w, h, spritesize, &oobFlag2);
+				u32 targetInd = bmpIndexTo256SpriteIndex(xx, yy, spriteW, h, spritesize, &oobFlag2);
 				if (!oobFlag2)
 				{
 					spriteGfxTarget[targetInd] = (leftOrRight) ?
@@ -131,7 +138,7 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int w, int h, 
 
 	if (oob)
 	{
-		if (oobFlag) *oobFlag = true;
+		if (oobFlag) *oobFlag = 1;
 		return x;
 	}
 
@@ -143,6 +150,6 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int w, int h, 
 	kern = stbtt_GetCodepointKernAdvance(&font.info, text[0], text[1]);
 	x += roundf(kern * font.scale);
 
-	if (oobFlag) *oobFlag = false;
+	if (oobFlag) *oobFlag = 0;
 	return x;
 }

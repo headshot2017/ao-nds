@@ -31,7 +31,7 @@ Chatbox::Chatbox()
 
 		textGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x16, SpriteColorFormat_256Color);
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
-		oamSet(&oamMain, 26+i, 2+(x*32), 133+(y*32), 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, textGfx[i], -1, false, false, false, false, false);
+		oamSet(&oamMain, 26+i, 8+(x*32), 132+(y*16), 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, textGfx[i], -1, false, false, false, false, false);
 	}
 
 	memset(textCanvas, 0, 32*16); // black bg
@@ -97,7 +97,7 @@ Chatbox::~Chatbox()
 	{
 		int x = i%8;
 		int y = i/8;
-		oamSet(&oamMain, 26+i, 2+(x*32), 133+(y*32), 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, 26+i, 8+(x*32), 132+(y*16), 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		oamFreeGfx(&oamMain, textGfx[i]);
 	}
 }
@@ -105,8 +105,6 @@ Chatbox::~Chatbox()
 void Chatbox::setVisible(bool on)
 {
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
-
-	soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
 }
 
 void Chatbox::setName(const char* name)
@@ -121,8 +119,72 @@ void Chatbox::setName(const char* name)
 		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(width/2), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
 }
 
+void Chatbox::setText(const char* text, int color)
+{
+	currText = text;
+	currTextInd = 0;
+	currTextGfxInd = 0;
+	textX = 0;
+	textTicks = 0;
+	textSpeed = 2;
+	textColor = color;
+
+	memset(textCanvas, 0, 32*16);
+	for (int i=0; i<8*3; i++)
+		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
+}
 
 void Chatbox::update()
 {
-	// chatbox text will be updated here
+	if (currTextInd >= currText.size() || currTextGfxInd >= 8*3)
+		return;
+
+	textTicks++;
+	if (textTicks > textSpeed)
+	{
+		textTicks = 0;
+
+		bool lastBox = (currTextGfxInd % 8 == 7);
+		int boxWidth = lastBox ? 20 : 32;
+		char currChar = currText.c_str()[currTextInd];
+		int oobFlag;
+		int outWidth;
+		int new_x = renderChar(2, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+
+		if (currChar != ' ')
+			soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
+
+		if (oobFlag)
+		{
+			currTextGfxInd++;
+			memset(textCanvas, 0, 32*16);
+
+			if (currTextGfxInd % 8 == 0)
+			{
+				// entered a new line
+				textX = 0;
+				if (oobFlag == 2)
+					currTextInd--;
+			}
+			else
+			{
+				textX -= boxWidth;
+				textX = renderChar(2, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+			}
+		}
+		else
+		{
+			textX = new_x;
+			if (textX > boxWidth)
+			{
+				currTextGfxInd++;
+				if (currTextGfxInd % 8 == 0)
+					textX = 0;
+				else
+					textX -= boxWidth;
+			}
+		}
+
+		currTextInd++;
+	}
 }
