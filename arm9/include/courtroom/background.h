@@ -2,6 +2,8 @@
 #define BACKGROUND_H_INCLUDED
 
 // courtroom background
+// main BG uses slot 0, 256x256
+// desk BG uses OAM slots 0-23
 
 #include <nds/ndstypes.h>
 #include <string>

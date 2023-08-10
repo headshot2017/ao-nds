@@ -34,6 +34,7 @@ void readDeskTiles(const std::string& value, int* horizontal, int* vertical)
 
 Background::Background()
 {
+	//bgIndex = bgInit(3, BgType_ExRotation, BgSize_ER_256x256, 1, 2);
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 11, 2);
 	bgSetPriority(bgIndex, 3);
 	bgHide(bgIndex);
@@ -45,7 +46,7 @@ Background::Background()
 
 		deskGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x32, SpriteColorFormat_256Color);
 		deskGfxVisible[i] = false;
-		oamSet(&oamMain, i, x, y, 2, 2, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, i, x, y, 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
 
 	shake(0, 0);
@@ -186,9 +187,9 @@ void Background::setBgSide(const std::string& side, bool force)
 	dmaCopy(currentBg[side].mainBg.data, bgGetGfxPtr(bgIndex), currentBg[side].mainBg.len);
 	dmaCopy(currentBg[side].mainMap.data, bgGetMapPtr(bgIndex), currentBg[side].mainMap.len);
 
-	vramSetBankF(VRAM_F_LCD);
-	dmaCopy(currentBg[side].mainPal.data, &VRAM_F_EXT_PALETTE[bgIndex][0], currentBg[side].mainPal.len);
-	vramSetBankF(VRAM_F_BG_EXT_PALETTE);
+	vramSetBankE(VRAM_E_LCD);
+	dmaCopy(currentBg[side].mainPal.data, &VRAM_E_EXT_PALETTE[bgIndex][0], currentBg[side].mainPal.len);
+	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 
 	// handle desk sprite
 	int horTiles, verTiles;
@@ -214,9 +215,9 @@ void Background::setBgSide(const std::string& side, bool force)
 	{
 		readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
 
-		vramSetBankG(VRAM_G_LCD);
-		dmaCopy(currentBg[side].deskPal.data, &VRAM_G_EXT_SPR_PALETTE[2], currentBg[side].deskPal.len); // copy palette
-		vramSetBankG(VRAM_G_SPRITE_EXT_PALETTE);
+		vramSetBankF(VRAM_F_LCD);
+		dmaCopy(currentBg[side].deskPal.data, &VRAM_F_EXT_SPR_PALETTE[1], currentBg[side].deskPal.len); // copy palette
+		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
 		for (int y=0; y<verTiles; y++)
 		{
@@ -270,6 +271,6 @@ void Background::update()
 		int x = (i%4) * 64;
 		int y = (i/4) * 32;
 
-		oamSet(&oamMain, i, x+xShake, y+yShake, 2, 2, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfxVisible[i] || !visible, false, false, false);
+		oamSet(&oamMain, i, x+xShake, y+yShake, 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfxVisible[i] || !visible, false, false, false);
 	}
 }

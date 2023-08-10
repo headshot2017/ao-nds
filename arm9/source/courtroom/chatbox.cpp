@@ -20,7 +20,7 @@ Chatbox::Chatbox()
 	{
 		nameGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x16, SpriteColorFormat_256Color);
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
+		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
 	}
 	for (int i=0; i<8*3; i++)
 	{
@@ -29,20 +29,21 @@ Chatbox::Chatbox()
 
 		textGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x16, SpriteColorFormat_256Color);
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
-		oamSet(&oamMain, 26+i, 8+(x*32), 132+(y*16), 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, textGfx[i], -1, false, false, false, false, false);
+		oamSet(&oamMain, 26+i, 8+(x*32), 132+(y*16), 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, textGfx[i], -1, false, false, false, false, false);
 	}
 
 	memset(textCanvas, 0, 32*16); // black bg
 
 
+	//bgIndex = bgInit(2, BgType_ExRotation, BgSize_ER_256x256, 2, 1);
 	bgIndex = bgInit(1, BgType_Text8bpp, BgSize_T_256x256, 10, 0);
 	bgSetPriority(bgIndex, 1);
 	bgSetScroll(bgIndex, 0, -192+80);
 	bgHide(bgIndex);
 	bgUpdate();
 
+	vramSetBankE(VRAM_E_LCD);
 	vramSetBankF(VRAM_F_LCD);
-	vramSetBankG(VRAM_G_LCD);
 
 	u32 dataLen, mapLen, palLen;
 	bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);
@@ -51,18 +52,18 @@ Chatbox::Chatbox()
 
 	dmaCopy(bgData, bgGetGfxPtr(bgIndex), dataLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
-	dmaCopy(bgPal, (void *)&VRAM_F_EXT_PALETTE[bgIndex][1], palLen);
+	dmaCopy(bgPal, (void *)&VRAM_E_EXT_PALETTE[bgIndex][1], palLen);
 
-	VRAM_G_EXT_SPR_PALETTE[1][COLOR_WHITE] = 	RGB15(31,31,31);
-	VRAM_G_EXT_SPR_PALETTE[1][COLOR_GREEN] = 	RGB15(0,31,0);
-	VRAM_G_EXT_SPR_PALETTE[1][COLOR_RED] = 		RGB15(31,0,0);
-	VRAM_G_EXT_SPR_PALETTE[1][COLOR_ORANGE] = 	RGB15(31,20,0);
-	VRAM_G_EXT_SPR_PALETTE[1][COLOR_BLUE] = 	RGB15(5,18,31);
-	VRAM_G_EXT_SPR_PALETTE[1][COLOR_YELLOW] = 	RGB15(31,31,0);
-	VRAM_G_EXT_SPR_PALETTE[1][COLOR_BLACK] = 	RGB15(0,0,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = 	RGB15(31,31,31);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GREEN] = 	RGB15(0,31,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_RED] = 		RGB15(31,0,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_ORANGE] = 	RGB15(31,20,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLUE] = 	RGB15(5,18,31);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_YELLOW] = 	RGB15(31,31,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	RGB15(0,0,0);
 
-	vramSetBankF(VRAM_F_BG_EXT_PALETTE);
-	vramSetBankG(VRAM_G_SPRITE_EXT_PALETTE);
+	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
+	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
 	// makes the chatbox transparent.
 	// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
@@ -88,14 +89,14 @@ Chatbox::~Chatbox()
 	delete[] textCanvas;
 	for (int i=0; i<2; i++)
 	{
-		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		oamFreeGfx(&oamMain, nameGfx[i]);
 	}
 	for (int i=0; i<8*3; i++)
 	{
 		int x = i%8;
 		int y = i/8;
-		oamSet(&oamMain, 26+i, 8+(x*32), 132+(y*16), 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, 26+i, 8+(x*32), 132+(y*16), 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		oamFreeGfx(&oamMain, textGfx[i]);
 	}
 }
@@ -114,7 +115,7 @@ void Chatbox::setName(const char* name)
 	nameWidth = renderText(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
-		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
+		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
 }
 
 void Chatbox::setText(std::string text, int color, std::string blip)
