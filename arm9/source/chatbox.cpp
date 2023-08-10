@@ -122,12 +122,14 @@ void Chatbox::setName(const char* name)
 void Chatbox::setText(const char* text, int color)
 {
 	currText = text;
+	textColor = color;
+
 	currTextInd = 0;
 	currTextGfxInd = 0;
 	textX = 0;
 	textTicks = 0;
 	textSpeed = 2;
-	textColor = color;
+	blipTicks = 0;
 
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<8*3; i++)
@@ -136,23 +138,34 @@ void Chatbox::setText(const char* text, int color)
 
 void Chatbox::update()
 {
-	if (currTextInd >= currText.size() || currTextGfxInd >= 8*3)
+	if (currTextInd >= currText.size())
 		return;
 
 	textTicks++;
+	if (blipTicks > 0) blipTicks--;
+
 	if (textTicks > textSpeed)
 	{
 		textTicks = 0;
 
+		char currChar = currText.c_str()[currTextInd];
+		if (currChar != ' ' && blipTicks <= 0)
+		{
+			soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
+			blipTicks = 6-textSpeed;
+		}
+
+		if (currTextGfxInd >= 8*3)
+		{
+			currTextInd++;
+			return;
+		}
+
 		bool lastBox = (currTextGfxInd % 8 == 7);
 		int boxWidth = lastBox ? 20 : 32;
-		char currChar = currText.c_str()[currTextInd];
 		int oobFlag;
 		int outWidth;
 		int new_x = renderChar(2, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
-
-		if (currChar != ' ')
-			soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
 
 		if (oobFlag)
 		{

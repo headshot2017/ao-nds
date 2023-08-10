@@ -220,7 +220,7 @@ int main()
 	pickRandomMusic(court, "/data/ao-nds/sounds/music");
 	court.setVisible(true);
 	court.getChatbox()->setName("Phoenix");
-	court.getChatbox()->setText("noby is the biggest troll. lorem ipsum dolor sit amet blah blah foobar whatever test message", COLOR_BLUE);
+	court.getChatbox()->setText("noby is the biggest troll. lorem ipsum dolor sit amet blah blah foobar whatever test message. take up all the chatbox space as a test", COLOR_BLUE);
 
 	//connect_wifi();
 

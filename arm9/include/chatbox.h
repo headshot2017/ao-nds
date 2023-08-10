@@ -40,6 +40,7 @@ class Chatbox
 	int textTicks;
 	int textSpeed;
 	int textColor;
+	int blipTicks;
 
 public:
 	Chatbox();
