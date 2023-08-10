@@ -14,8 +14,6 @@
 
 Chatbox::Chatbox()
 {
-	blipSnd = wav_load_handle("/data/ao-nds/sounds/blips/male.wav", &blipSize);
-
 	textCanvas = new u8[32*16];
 
 	for (int i=0; i<2; i++)
@@ -119,7 +117,7 @@ void Chatbox::setName(const char* name)
 		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(width/2), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
 }
 
-void Chatbox::setText(const char* text, int color)
+void Chatbox::setText(std::string text, int color, std::string blip)
 {
 	currText = text;
 	textColor = color;
@@ -130,6 +128,11 @@ void Chatbox::setText(const char* text, int color)
 	textTicks = 0;
 	textSpeed = 2;
 	blipTicks = 0;
+
+	if (blipSnd)
+		delete[] blipSnd;
+	std::string blipFile = "/data/ao-nds/sounds/blips/" + blip + ".wav";
+	blipSnd = wav_load_handle(blipFile.c_str(), &blipSize);
 
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<8*3; i++)
@@ -149,7 +152,7 @@ void Chatbox::update()
 		textTicks = 0;
 
 		char currChar = currText.c_str()[currTextInd];
-		if (currChar != ' ' && blipTicks <= 0)
+		if (blipSnd && currChar != ' ' && blipTicks <= 0)
 		{
 			soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
 			blipTicks = 6-textSpeed;

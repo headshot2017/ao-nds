@@ -48,7 +48,7 @@ public:
 
 	void setVisible(bool on);
 	void setName(const char* name);
-	void setText(const char* text, int color);
+	void setText(std::string text, int color, std::string blip="male");
 
 	void update();
 };
