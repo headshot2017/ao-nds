@@ -111,10 +111,10 @@ void Chatbox::setName(const char* name)
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-	int width = renderText(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+	nameWidth = renderText(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
-		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(width/2), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
+		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2), 115, 0, 1, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);
 }
 
 void Chatbox::setText(std::string text, int color, std::string blip)
@@ -139,8 +139,32 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 }
 
+void Chatbox::shake(int force, int ticks)
+{
+	shakeForce = force;
+	shakeTicks = ticks;
+}
+
 void Chatbox::update()
 {
+	// handle bg shake
+	int xShake = 0;
+	int yShake = 0;
+
+	if (shakeTicks > 0)
+	{
+		shakeTicks--;
+		xShake = -shakeForce + rand()%(shakeForce*2);
+		yShake = -shakeForce + rand()%(shakeForce*2);
+	}
+
+	bgSetScroll(bgIndex, -xShake, -192+80-yShake);
+
+	for (int i=0; i<2; i++)
+		oamSetXY(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2) + xShake, 115+yShake);
+
+
+	// handle chatbox text typewriter
 	if (currTextInd >= currText.size())
 		return;
 

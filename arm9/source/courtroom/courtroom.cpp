@@ -53,6 +53,12 @@ void Courtroom::playMusic(std::string filename)
 	mp3_play_file(f, 1, 0);
 }
 
+void Courtroom::shake(int force, int ticks)
+{
+	chatbox->shake(force, ticks);
+	background->shake(force, ticks);
+}
+
 void Courtroom::update()
 {
 	chatbox->update();

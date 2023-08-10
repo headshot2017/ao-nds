@@ -38,6 +38,7 @@ class Chatbox
 	u32* blipSnd;
 	u32 blipSize;
 
+	int nameWidth;
 	u32 currTextInd;
 	int currTextGfxInd;
 	std::string currText;
@@ -47,6 +48,9 @@ class Chatbox
 	int textColor;
 	int blipTicks;
 
+	int shakeForce;
+	int shakeTicks;
+
 public:
 	Chatbox();
 	~Chatbox();
@@ -54,6 +58,8 @@ public:
 	void setVisible(bool on);
 	void setName(const char* name);
 	void setText(std::string text, int color, std::string blip="male");
+
+	void shake(int force, int ticks);
 
 	void update();
 };

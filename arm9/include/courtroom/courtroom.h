@@ -26,6 +26,8 @@ public:
 	void stopMusic() {playMusic("");}
 	void playMusic(std::string filename);
 
+	void shake(int force, int ticks);
+
 	void update();
 };
 

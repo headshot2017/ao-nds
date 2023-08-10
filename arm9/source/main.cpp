@@ -235,6 +235,8 @@ int main()
 			pickRandomMusic(court, "/data/ao-nds/sounds/music");
 		if (keys & KEY_B)
 			pickRandomBG(court);
+		if (keys & KEY_Y)
+			court.shake(5, 60);
 
 		ticks++;
 		if (ticks % 60 == 0)

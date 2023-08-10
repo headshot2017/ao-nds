@@ -47,6 +47,8 @@ Background::Background()
 		deskGfxVisible[i] = false;
 		oamSet(&oamMain, i, x, y, 2, 2, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
+
+	shake(0, 0);
 }
 
 Background::~Background()
@@ -243,13 +245,31 @@ void Background::setVisible(bool on)
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
 }
 
+void Background::shake(int force, int ticks)
+{
+	shakeForce = force;
+	shakeTicks = ticks;
+}
+
 void Background::update()
 {
+	int xShake = 0;
+	int yShake = 0;
+
+	if (shakeTicks > 0)
+	{
+		shakeTicks--;
+		xShake = -shakeForce + rand()%(shakeForce*2);
+		yShake = -shakeForce + rand()%(shakeForce*2);
+	}
+
+	bgSetScroll(bgIndex, -xShake, -yShake);
+
 	for (int i=0; i<4*6; i++)
 	{
 		int x = (i%4) * 64;
 		int y = (i/4) * 32;
 
-		oamSet(&oamMain, i, x, y, 2, 2, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfxVisible[i] || !visible, false, false, false);
+		oamSet(&oamMain, i, x+xShake, y+yShake, 2, 2, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfxVisible[i] || !visible, false, false, false);
 	}
 }
