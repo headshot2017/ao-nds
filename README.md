@@ -12,7 +12,7 @@ I still have to finish writing code that handles these:
 - [x] Backgrounds
 - [x] Desk sprites
 - [ ] Character sprites
-- [ ] Chatbox
+- [x] Chatbox
 - [ ] Evidence sprites
 - [x] Music
 - [x] Sound effects
