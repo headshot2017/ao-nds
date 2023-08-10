@@ -147,7 +147,7 @@ void pickRandomBG(Courtroom& court)
 
 	closedir(d);
 
-	court.setBg(items[rand() % items.size()]);
+	court.getBackground()->setBg(items[rand() % items.size()]);
 }
 
 
@@ -242,7 +242,7 @@ int main()
 			std::string sides[] = {"def", "pro", "wit", "hld", "hlp", "jud"};
 			std::string names[] = {"Phoenix", "Payne", "Sahwit", "Mia", "noby", "Judge"};
 			int ind = (ticks/60) % 6;
-			court.setBgSide(sides[ind]);
+			court.getBackground()->setBgSide(sides[ind]);
 			court.getChatbox()->setName(names[ind].c_str());
 		}
 

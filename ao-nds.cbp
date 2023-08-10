@@ -29,6 +29,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="arm9/include/cfgFile.h" />
+		<Unit filename="arm9/include/courtroom/background.h" />
 		<Unit filename="arm9/include/courtroom/character.h" />
 		<Unit filename="arm9/include/courtroom/chatbox.h" />
 		<Unit filename="arm9/include/courtroom/courtroom.h" />
@@ -36,6 +37,7 @@
 		<Unit filename="arm9/include/global.h" />
 		<Unit filename="arm9/include/stb_truetype.h" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
+		<Unit filename="arm9/source/courtroom/background.cpp" />
 		<Unit filename="arm9/source/courtroom/character.cpp" />
 		<Unit filename="arm9/source/courtroom/chatbox.cpp" />
 		<Unit filename="arm9/source/courtroom/courtroom.cpp" />
