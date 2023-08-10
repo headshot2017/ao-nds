@@ -1,4 +1,4 @@
-#include "courtroom.h"
+#include "courtroom/courtroom.h"
 
 #include <dirent.h>
 #include <stdio.h>

@@ -19,8 +19,8 @@
 
 #include "mp3_shared.h"
 #include "global.h"
-#include "chatbox.h"
-#include "courtroom.h"
+#include "courtroom/chatbox.h"
+#include "courtroom/courtroom.h"
 #include "fonts.h"
 #include "bg_disclaimer.h"
 

@@ -1,4 +1,4 @@
-#include "chatbox.h"
+#include "courtroom/chatbox.h"
 
 #include <string.h>
 
