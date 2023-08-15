@@ -51,6 +51,8 @@ class Chatbox
 	int shakeForce;
 	int shakeTicks;
 
+	bool visible;
+
 public:
 	Chatbox();
 	~Chatbox();

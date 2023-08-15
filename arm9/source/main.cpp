@@ -220,7 +220,8 @@ int main()
 	pickRandomMusic(court, "/data/ao-nds/sounds/music");
 	court.setVisible(true);
 	court.getChatbox()->setName("Phoenix");
-	court.getChatbox()->setText("noby is the biggest troll. lorem ipsum dolor sit amet blah blah foobar whatever test message. take up all the chatbox space as a test", COLOR_BLUE);
+	court.getChatbox()->setText("is this is the face of a huge troll?", COLOR_BLUE);
+	court.getCharacter()->setCharImage("Adrian", "(a)thinking");
 
 	//connect_wifi();
 
@@ -249,8 +250,11 @@ int main()
 		}
 
 		court.update();
-		mp3_fill_buffer();
 
+		bgUpdate();
+		oamUpdate(&oamMain);
+
+		mp3_fill_buffer();
 		swiWaitForVBlank();
 	}
 

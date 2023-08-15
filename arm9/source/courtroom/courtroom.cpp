@@ -15,16 +15,15 @@ Courtroom::Courtroom()
 	visible = false;
 
 	background = new Background;
-	background->setVisible(false);
-
 	chatbox = new Chatbox;
-	chatbox->setVisible(false);
+	character = new Character;
 }
 
 Courtroom::~Courtroom()
 {
 	delete background;
 	delete chatbox;
+	delete character;
 }
 
 void Courtroom::setVisible(bool on)
@@ -61,9 +60,7 @@ void Courtroom::shake(int force, int ticks)
 
 void Courtroom::update()
 {
+	character->update();
 	chatbox->update();
 	background->update();
-
-	bgUpdate();
-	oamUpdate(&oamMain);
 }

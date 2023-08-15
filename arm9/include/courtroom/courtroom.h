@@ -6,6 +6,7 @@
 
 #include "courtroom/background.h"
 #include "courtroom/chatbox.h"
+#include "courtroom/character.h"
 
 class Courtroom
 {
@@ -13,13 +14,15 @@ class Courtroom
 
 	Background* background;
 	Chatbox* chatbox;
+	Character* character;
 
 public:
 	Courtroom();
 	~Courtroom();
 
-	Chatbox* getChatbox() {return chatbox;}
 	Background* getBackground() {return background;}
+	Chatbox* getChatbox() {return chatbox;}
+	Character* getCharacter() {return character;}
 
 	void setVisible(bool on);
 

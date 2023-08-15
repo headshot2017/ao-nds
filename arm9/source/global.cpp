@@ -2,6 +2,16 @@
 
 #include <stdio.h>
 
+#include "mp3_shared.h"
+
+bool fileExists(const std::string& filename)
+{
+	FILE* f = fopen(filename.c_str(), "rb");
+	if (!f) return false;
+	fclose(f);
+	return true;
+}
+
 u8* readFile(const std::string& filename, u32* outLen)
 {
 	FILE* f = fopen(filename.c_str(), "rb");
@@ -19,6 +29,8 @@ u8* readFile(const std::string& filename, u32* outLen)
 	u8* data = new u8[len];
 	fread(data, len, 1, f);
 	fclose(f);
+
+	mp3_fill_buffer();
 
 	return data;
 }

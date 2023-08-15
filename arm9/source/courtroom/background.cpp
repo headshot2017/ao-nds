@@ -38,6 +38,7 @@ Background::Background()
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 11, 2);
 	bgSetPriority(bgIndex, 3);
 	bgHide(bgIndex);
+	visible = false;
 
 	for (int i=0; i<4*6; i++)
 	{
@@ -137,7 +138,6 @@ bool Background::setBg(const std::string& name)
 	currentBg["hld"].mainBg.data = readFile(bgPath + "/helperstand.img.bin",       &currentBg["hld"].mainBg.len);
 	currentBg["hlp"].mainBg.data = readFile(bgPath + "/prohelperstand.img.bin",    &currentBg["hlp"].mainBg.len);
 	currentBg["jud"].mainBg.data = readFile(bgPath + "/judgestand.img.bin",        &currentBg["jud"].mainBg.len);
-	mp3_fill_buffer();
 
 	currentBg["def"].mainMap.data = readFile(bgPath + "/defenseempty.map.bin",      &currentBg["def"].mainMap.len);
 	currentBg["pro"].mainMap.data = readFile(bgPath + "/prosecutorempty.map.bin",   &currentBg["pro"].mainMap.len);
@@ -145,7 +145,6 @@ bool Background::setBg(const std::string& name)
 	currentBg["hld"].mainMap.data = readFile(bgPath + "/helperstand.map.bin",       &currentBg["hld"].mainMap.len);
 	currentBg["hlp"].mainMap.data = readFile(bgPath + "/prohelperstand.map.bin",    &currentBg["hlp"].mainMap.len);
 	currentBg["jud"].mainMap.data = readFile(bgPath + "/judgestand.map.bin",        &currentBg["jud"].mainMap.len);
-	mp3_fill_buffer();
 
 	currentBg["def"].mainPal.data = readFile(bgPath + "/defenseempty.pal.bin",      &currentBg["def"].mainPal.len);
 	currentBg["pro"].mainPal.data = readFile(bgPath + "/prosecutorempty.pal.bin",   &currentBg["pro"].mainPal.len);
@@ -153,7 +152,6 @@ bool Background::setBg(const std::string& name)
 	currentBg["hld"].mainPal.data = readFile(bgPath + "/helperstand.pal.bin",       &currentBg["hld"].mainPal.len);
 	currentBg["hlp"].mainPal.data = readFile(bgPath + "/prohelperstand.pal.bin",    &currentBg["hlp"].mainPal.len);
 	currentBg["jud"].mainPal.data = readFile(bgPath + "/judgestand.pal.bin",        &currentBg["jud"].mainPal.len);
-	mp3_fill_buffer();
 
 	// desk bg data
 	currentBg["def"].deskBg.data = readFile(bgPath + "/defensedesk.img.bin",       &currentBg["def"].deskBg.len);
@@ -162,7 +160,6 @@ bool Background::setBg(const std::string& name)
 	currentBg["jud"].deskBg.data = readFile(bgPath + "/judgedesk.img.bin",         &currentBg["jud"].deskBg.len);
 	currentBg["hld"].deskBg.data = 0;
 	currentBg["hlp"].deskBg.data = 0;
-	mp3_fill_buffer();
 
 	currentBg["def"].deskPal.data = readFile(bgPath + "/defensedesk.pal.bin",      &currentBg["def"].deskPal.len);
 	currentBg["pro"].deskPal.data = readFile(bgPath + "/prosecutiondesk.pal.bin",  &currentBg["pro"].deskPal.len);
@@ -170,7 +167,6 @@ bool Background::setBg(const std::string& name)
 	currentBg["jud"].deskPal.data = readFile(bgPath + "/judgedesk.pal.bin",        &currentBg["jud"].deskPal.len);
 	currentBg["hld"].deskPal.data = 0;
 	currentBg["hlp"].deskPal.data = 0;
-	mp3_fill_buffer();
 
 	currentSide.clear();
 	setBgSide("def", true);

@@ -69,6 +69,8 @@ Chatbox::Chatbox()
 	// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
 	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG1 | BLEND_DST_BG0 | BLEND_DST_SPRITE;
 	REG_BLDALPHA = 0x70f;
+
+	visible = false;
 }
 
 Chatbox::~Chatbox()
@@ -103,7 +105,14 @@ Chatbox::~Chatbox()
 
 void Chatbox::setVisible(bool on)
 {
+	visible = on;
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
+
+	for (int i=0; i<2; i++)
+		oamSetHidden(&oamMain, 24+i, !on);
+
+	for (int i=0; i<8*3; i++)
+		oamSetHidden(&oamMain, 26+i, !on);
 }
 
 void Chatbox::setName(const char* name)
