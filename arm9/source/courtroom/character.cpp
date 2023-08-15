@@ -4,8 +4,10 @@
 
 #include <nds/dma.h>
 #include <nds/timers.h>
+#include <nds/arm9/decompress.h>
 
 #include "global.h"
+#include "mp3_shared.h"
 
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED (BUS_CLOCK/1024)
@@ -83,22 +85,31 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 	if (!fileExists(NDScfg) || !fileExists(IMGbin) || !fileExists(PALbin))
 		return;
 
+	// load gfx and palette
 	u32 palSize;
-	charData = readFile(IMGbin.c_str(), &charSize);
+	u8* charDataLZ77 = readFile(IMGbin.c_str());
 	u8* charPalette = readFile(PALbin.c_str(), &palSize);
+
+	// decompress gfx and copy palette to slot 2
+	decompress(charDataLZ77, charData, LZ77Vram);
+	vramSetBankF(VRAM_F_LCD);
+	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
+	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+
+	// free data from memory
+	delete[] charPalette;
+	delete[] charDataLZ77;
+
+	currAnim = relativeFile;
 	if (currCharacter != charname)
 	{
 		currCharacter = charname;
 		animInfos.load(NDScfg);
 	}
 
-	vramSetBankF(VRAM_F_LCD);
-	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
-	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
-	delete[] charPalette;
-
 	readFrameSize(animInfos.get(relativeFile + "_size"), &frameW, &frameH);
 	readFrameDurations(animInfos.get(relativeFile + "_durations"), frameDurations);
+	mp3_fill_buffer();
 
 	for (int i=0; i<gfxInUse; i++)
 	{
@@ -112,11 +123,10 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 
 	for (int i=0; i<gfxInUse; i++)
 	{
-		int x = (i%(realW)) * 32;
-		int y = (i/(realW)) * 32;
+		int x = (i%realW) * 32;
+		int y = (i/realW) * 32;
 
-		int animFrame = 0*realW*realH;
-		u8* offset = charData + animFrame*32*32 + i * 32*32;
+		u8* offset = charData + i*32*32;
 		dmaCopy(offset, charGfx[i], 32*32);
 
 		oamSet(&oamMain, 50+i, x+128-(frameW/2), y+192-frameH, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, charGfx[i], -1, false, false, false, false, false);
@@ -144,10 +154,11 @@ void Character::update()
 		timerTicks = 0;
 		timerPause(0);
 
+		// copy new frame to sprite gfx
 		for (int i=0; i<gfxInUse; i++)
 		{
 			int frameOffset = currFrame*gfxInUse;
-			u8* offset = charData + frameOffset*32*32 + i * 32*32;
+			u8* offset = charData + frameOffset*32*32 + i*32*32;
 			dmaCopy(offset, charGfx[i], 32*32);
 		}
 

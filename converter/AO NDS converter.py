@@ -224,8 +224,8 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
         result.paste(frame, (0, i*frame.size[1]), frame)
     result.save("temp.png")
 
-    # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-    subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh4 -Mw4").wait()
+    # 8-bit tiles, #FF00FF transparency color, LZ77 compression, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
+    subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -gzl -ftb -fh! -m! -Mh4 -Mw4").wait()
     if not os.path.exists("temp.img.bin"):
         print("Failed to convert: %s" % (no_dir_ext_file))
         return

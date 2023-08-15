@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include <nds/arm9/background.h>
-#include <nds/arm9/decompress.h>
 #include <nds/arm9/sprite.h>
 
 #include "mp3_shared.h"

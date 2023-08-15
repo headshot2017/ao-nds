@@ -23,6 +23,8 @@ class Character
 	u32 charSize;
 
 	std::string currCharacter;
+	std::string currAnim;
+
 	cfgFile animInfos;
 	std::vector<u32> frameDurations;
 	int frameW;
@@ -36,6 +38,9 @@ class Character
 public:
 	Character();
 	~Character();
+
+	const std::string& getCurrCharacter() {return currCharacter;}
+	const std::string& getCurrAnim() {return currAnim;}
 
 	void setCharImage(std::string charname, std::string relativeFile);
 	void setVisible(bool on);

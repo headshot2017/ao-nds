@@ -220,7 +220,7 @@ int main()
 	pickRandomMusic(court, "/data/ao-nds/sounds/music");
 	court.setVisible(true);
 	court.getChatbox()->setName("Phoenix");
-	court.getChatbox()->setText("is this is the face of a huge troll?", COLOR_BLUE);
+	court.getChatbox()->setText("THROWING FLASHBANG \\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f", COLOR_BLUE);
 	court.getCharacter()->setCharImage("Adrian", "(a)thinking");
 
 	//connect_wifi();
