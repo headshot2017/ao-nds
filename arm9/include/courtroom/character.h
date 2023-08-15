@@ -20,7 +20,6 @@ class Character
 	int gfxInUse;
 
 	u8* charData;
-	u32 charSize;
 
 	std::string currCharacter;
 	std::string currAnim;
