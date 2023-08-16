@@ -36,7 +36,7 @@ Chatbox::Chatbox()
 
 
 	//bgIndex = bgInit(2, BgType_ExRotation, BgSize_ER_256x256, 2, 1);
-	bgIndex = bgInit(1, BgType_Text8bpp, BgSize_T_256x256, 10, 0);
+	bgIndex = bgInit(1, BgType_Text8bpp, BgSize_T_512x256, 10, 0);
 	bgSetPriority(bgIndex, 1);
 	bgSetScroll(bgIndex, 0, -192+80);
 	bgHide(bgIndex);
@@ -149,29 +149,12 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 }
 
-void Chatbox::shake(int force, int ticks)
-{
-	shakeForce = force;
-	shakeTicks = ticks;
-}
-
 void Chatbox::update()
 {
-	// handle bg shake
-	int xShake = 0;
-	int yShake = 0;
-
-	if (shakeTicks > 0)
-	{
-		shakeTicks--;
-		xShake = -shakeForce + rand()%(shakeForce*2);
-		yShake = -shakeForce + rand()%(shakeForce*2);
-	}
-
-	bgSetScroll(bgIndex, -xShake, -192+80-yShake);
+	bgSetScroll(bgIndex, -xOffset, -192+80-yOffset);
 
 	for (int i=0; i<2; i++)
-		oamSetXY(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2) + xShake, 115+yShake);
+		oamSetXY(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2) + xOffset, 115+yOffset);
 
 
 	// handle chatbox text typewriter

@@ -14,6 +14,9 @@ Courtroom::Courtroom()
 {
 	visible = false;
 
+	shakeForce = 0;
+	shakeTicks = 0;
+
 	background = new Background;
 	chatbox = new Chatbox;
 	character = new Character;
@@ -52,12 +55,24 @@ void Courtroom::playMusic(std::string filename)
 
 void Courtroom::shake(int force, int ticks)
 {
-	chatbox->shake(force, ticks);
-	background->shake(force, ticks);
+	shakeForce = force;
+	shakeTicks = ticks;
 }
 
 void Courtroom::update()
 {
+	int xOffset = (shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0;
+	int yOffset = (shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0;
+	if (shakeTicks > 0) shakeTicks--;
+
+	// chatbox gets its' own offsets
+	character->setOffsets(xOffset, yOffset);
+	background->setOffsets(xOffset, yOffset);
+	chatbox->setOffsets(
+		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0,
+		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0
+	);
+
 	character->update();
 	chatbox->update();
 	background->update();

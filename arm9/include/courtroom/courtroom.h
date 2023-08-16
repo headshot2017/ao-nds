@@ -12,6 +12,9 @@ class Courtroom
 {
 	bool visible;
 
+	int shakeForce;
+	int shakeTicks;
+
 	Background* background;
 	Chatbox* chatbox;
 	Character* character;

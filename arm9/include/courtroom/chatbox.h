@@ -48,8 +48,8 @@ class Chatbox
 	int textColor;
 	int blipTicks;
 
-	int shakeForce;
-	int shakeTicks;
+	int xOffset;
+	int yOffset;
 
 	bool visible;
 
@@ -57,11 +57,10 @@ public:
 	Chatbox();
 	~Chatbox();
 
+	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
 	void setVisible(bool on);
 	void setName(std::string name);
 	void setText(std::string text, int color, std::string blip="male");
-
-	void shake(int force, int ticks);
 
 	void update();
 };

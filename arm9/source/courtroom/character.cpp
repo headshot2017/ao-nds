@@ -47,6 +47,7 @@ Character::Character()
 {
 	timerTicks = 0;
 	currFrame = 0;
+	realW = 0;
 	frameW = 0;
 	frameH = 0;
 	gfxInUse = 0;
@@ -124,7 +125,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 		charGfxVisible[i] = false;
 	}
 
-	int realW = ceil(frameW/32.f);
+	realW = ceil(frameW/32.f);
 	int realH = ceil(frameH/32.f);
 	gfxInUse = realW*realH;
 
@@ -155,7 +156,14 @@ void Character::update()
 	timerTicks += timerElapsed(0);
 	u32 ms = (float)timerTicks/TIMER_SPEED*1000;
 
-	if (ms >= frameDurations[currFrame])
+	for (int i=0; i<gfxInUse; i++)
+	{
+		int x = (i%realW) * 32;
+		int y = (i/realW) * 32;
+		oamSetXY(&oamMain, 50+i, x+128-(frameW/2) + xOffset, y+192-frameH + yOffset);
+	}
+
+	if (!frameDurations.empty() && ms >= frameDurations[currFrame])
 	{
 		currFrame = (currFrame+1) % (frameDurations.size());
 		timerTicks = 0;

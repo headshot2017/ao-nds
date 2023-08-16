@@ -26,11 +26,15 @@ class Character
 
 	cfgFile animInfos;
 	std::vector<u32> frameDurations;
+	int realW;
 	int frameW;
 	int frameH;
 
 	u32 timerTicks;
 	int currFrame;
+
+	int xOffset;
+	int yOffset;
 
 	bool visible;
 
@@ -41,6 +45,7 @@ public:
 	const std::string& getCurrCharacter() {return currCharacter;}
 	const std::string& getCurrAnim() {return currAnim;}
 
+	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
 	void setCharImage(std::string charname, std::string relativeFile);
 	void setVisible(bool on);
 
