@@ -46,10 +46,8 @@ void Courtroom::playMusic(std::string filename)
 
 	iprintf("%s\n", filename.c_str());
 	FILE* f = fopen(filename.c_str(), "rb");
-	if (!f)
-		return;
-
-	mp3_play_file(f, 1, 0);
+	if (f!=NULL)
+		mp3_play_file(f, 1, 0);
 }
 
 void Courtroom::shake(int force, int ticks)

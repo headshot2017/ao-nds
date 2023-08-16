@@ -24,10 +24,13 @@
 #include "courtroom/courtroom.h"
 #include "fonts.h"
 #include "bg_disclaimer.h"
+#include "packets.h"
 
 #include "NDS12_ttf.h"
 #include "acename_ttf.h"
 #include "Igiari_ttf.h"
+
+Courtroom court;
 
 void connect_wifi()
 {
@@ -113,7 +116,8 @@ static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_d
   } else if (ev == MG_EV_WS_MSG) {
     // When we get echo response, print it
     struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
-    iprintf("GOT ECHO REPLY: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
+    iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
+	handleNetworkPacket(court,wm->data.ptr);
   }
 
   if (ev == MG_EV_ERROR || ev == MG_EV_CLOSE || ev == MG_EV_WS_MSG) {
@@ -235,19 +239,18 @@ int main()
 	showDisclaimer();
 
 	bgExtPaletteEnable();
-	Courtroom court;
 	pickRandomBG(court);
-	pickRandomMusic(court, "/data/ao-nds/sounds/music");
+
 	court.setVisible(true);
-	court.getChatbox()->setName("Phoenix");
-	court.getChatbox()->setText("THROWING FLASHBANG \\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f", COLOR_BLUE);
+	court.getChatbox()->setName("Adrian");
+	court.getChatbox()->setText("Test", COLOR_BLUE);
 	court.getCharacter()->setCharImage("Adrian", "(a)thinking");
 	connect_wifi();
 	struct mg_mgr mgr;        // Event manager
 	bool done = false;        // Event handler flips it to true
 	struct mg_connection *c;  // Client connection
 	mg_mgr_init(&mgr);        // Initialise event manager
-	mg_log_set(MG_LL_DEBUG);  // Set log level
+	mg_log_set(MG_LL_ERROR);  // Set log level
 //	getServerlist(&mgr);
 	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
 	iprintf("connect server");
@@ -281,7 +284,7 @@ int main()
 		oamUpdate(&oamMain);
 
 		mp3_fill_buffer();
-		mg_mgr_poll(&mgr, 1000);
+		mg_mgr_poll(&mgr, 100);
 		swiWaitForVBlank();
 	}
 	mg_mgr_free(&mgr);
