@@ -30,6 +30,8 @@
 #include "acename_ttf.h"
 #include "Igiari_ttf.h"
 
+Courtroom* courtpointer;
+
 void connect_wifi()
 {
 	struct in_addr ip, gateway, mask, dns1, dns2;
@@ -115,7 +117,7 @@ static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_d
     // When we get echo response, print it
     struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
     iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
-	//handleNetworkPacket(court,wm->data.ptr);
+	handleNetworkPacket(*courtpointer,wm->data.ptr);
   }
 
   if (ev == MG_EV_ERROR || ev == MG_EV_CLOSE || ev == MG_EV_WS_MSG) {
@@ -239,6 +241,7 @@ int main()
 	bgExtPaletteEnable();
 
 	Courtroom court;
+	courtpointer = &court;
 
 	pickRandomBG(court);
 

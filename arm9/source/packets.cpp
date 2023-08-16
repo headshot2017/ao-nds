@@ -28,12 +28,12 @@ std::string argumentAt(std::string s, int id) {
 
 void handleMS(Courtroom& court, std::string s) {
 
-    iprintf(argumentAt(s,2).c_str()); // Matt
+    iprintf(argumentAt(s,4).c_str()); // the text
 
     court.getBackground()->setBgSide(argumentAt(s,5));
     court.getChatbox()->setName(argumentAt(s,15));
 	court.getChatbox()->setText(argumentAt(s,4), std::stoi(argumentAt(s,14)));
-	court.getCharacter()->setCharImage(argumentAt(s,2), argumentAt(s,3));
+	court.getCharacter()->setCharImage(argumentAt(s,2), "(a)"+argumentAt(s,3));
     
 }
 
