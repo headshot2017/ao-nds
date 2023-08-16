@@ -377,7 +377,7 @@ recursiveMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
 print("\nConverting objection images and chatbox...")
 def chatbox():
     print(folder+"/misc/default/chatbox.png")
-    img = Image.open(folder+"/misc/default/chatbox.png")
+    img = Image.open(folder+"/misc/default/chatbox.png").convert("RGBA")
     img = img.crop((0, -2, img.size[0], img.size[1]))
 
     pix = img.load()
