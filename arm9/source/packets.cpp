@@ -24,6 +24,8 @@ std::string argumentAt(std::string s, int id) {
         else
             argi++;
     }
+
+	return "";
 }
 
 void handleMS(Courtroom& court, std::string s) {
@@ -34,7 +36,7 @@ void handleMS(Courtroom& court, std::string s) {
     court.getChatbox()->setName(argumentAt(s,15));
 	court.getChatbox()->setText(argumentAt(s,4), std::stoi(argumentAt(s,14)));
 	court.getCharacter()->setCharImage(argumentAt(s,2), "(a)"+argumentAt(s,3));
-    
+
 }
 
 void handleNetworkPacket(Courtroom& court, std::string cargs) {

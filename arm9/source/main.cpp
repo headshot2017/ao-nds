@@ -252,13 +252,12 @@ int main()
 	connect_wifi();
 	struct mg_mgr mgr;        // Event manager
 	bool done = false;        // Event handler flips it to true
-	struct mg_connection *c;  // Client connection
 	mg_mgr_init(&mgr);        // Initialise event manager
 	mg_log_set(MG_LL_ERROR);  // Set log level
 //	getServerlist(&mgr);
 	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
 	iprintf("connect server");
-	c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
+	struct mg_connection *c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
 
 	int ticks=0;
 	while (1)
