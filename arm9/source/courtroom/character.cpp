@@ -85,13 +85,20 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 	if (!fileExists(NDScfg) || !fileExists(IMGbin) || !fileExists(PALbin))
 		return;
 
+	if (charData)
+	{
+		delete[] charData;
+		charData = 0;
+	}
+
 	// load gfx and palette
-	u32 palSize;
-	u8* charDataLZ77 = readFile(IMGbin.c_str());
+	u32 palSize, charSize;
+	u8* charDataLZ77 = readFile(IMGbin.c_str(), &charSize);
 	u8* charPalette = readFile(PALbin.c_str(), &palSize);
 
 	// decompress gfx and copy palette to slot 2
-	decompress(charDataLZ77, charData, LZ77Vram);
+	charData = new u8[charSize];
+	decompress(charDataLZ77, charData, LZ77);
 	vramSetBankF(VRAM_F_LCD);
 	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
