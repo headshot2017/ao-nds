@@ -268,16 +268,6 @@ int main()
 		if (keys & KEY_Y)
 			court.shake(5, 60);
 
-		ticks++;
-		if (ticks % 60 == 0)
-		{
-			std::string sides[] = {"def", "pro", "wit", "hld", "hlp", "jud"};
-			std::string names[] = {"Phoenix", "Payne", "Sahwit", "Mia", "noby", "Judge"};
-			int ind = (ticks/60) % 6;
-			court.getBackground()->setBgSide(sides[ind]);
-			court.getChatbox()->setName(names[ind].c_str());
-		}
-
 		court.update();
 
 		bgUpdate();
