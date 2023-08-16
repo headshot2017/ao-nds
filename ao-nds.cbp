@@ -35,6 +35,7 @@
 		<Unit filename="arm9/include/courtroom/courtroom.h" />
 		<Unit filename="arm9/include/fonts.h" />
 		<Unit filename="arm9/include/global.h" />
+		<Unit filename="arm9/include/packets.h" />
 		<Unit filename="arm9/include/stb_truetype.h" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
 		<Unit filename="arm9/source/courtroom/background.cpp" />
@@ -45,6 +46,12 @@
 		<Unit filename="arm9/source/global.cpp" />
 		<Unit filename="arm9/source/main.cpp" />
 		<Unit filename="arm9/source/mp3/mp3_9.cpp" />
+		<Unit filename="arm9/source/packets.cpp" />
+		<Unit filename="arm9/source/websocket/mongoose.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="arm9/source/websocket/mongoose.h" />
+		<Unit filename="arm9/source/websocket/mongoose_custom.h" />
 		<Unit filename="common/dr_wav.h" />
 		<Unit filename="common/mp3_shared.h" />
 		<Unit filename="helix/mp3common.h" />
