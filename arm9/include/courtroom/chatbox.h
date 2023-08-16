@@ -27,9 +27,6 @@ enum
 class Chatbox
 {
 	int bgIndex;
-	u8* bgData;
-	u8* bgMap;
-	u8* bgPal;
 
 	u8* textCanvas;
 	u16* nameGfx[2];

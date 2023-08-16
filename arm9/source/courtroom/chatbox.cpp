@@ -46,13 +46,17 @@ Chatbox::Chatbox()
 	vramSetBankF(VRAM_F_LCD);
 
 	u32 dataLen, mapLen, palLen;
-	bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);
-	bgMap = readFile("/data/ao-nds/misc/chatbox.map.bin", &mapLen);
-	bgPal = readFile("/data/ao-nds/misc/chatbox.pal.bin", &palLen);
+	u8* bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);
+	u8* bgMap = readFile("/data/ao-nds/misc/chatbox.map.bin", &mapLen);
+	u8* bgPal = readFile("/data/ao-nds/misc/chatbox.pal.bin", &palLen);
 
 	dmaCopy(bgData, bgGetGfxPtr(bgIndex), dataLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
 	dmaCopy(bgPal, (void *)&VRAM_E_EXT_PALETTE[bgIndex][1], palLen);
+
+	delete[] bgData;
+	delete[] bgMap;
+	delete[] bgPal;
 
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = 	RGB15(31,31,31);
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GREEN] = 	RGB15(0,31,0);
@@ -80,10 +84,6 @@ Chatbox::~Chatbox()
 	REG_BLDCNT = BLEND_NONE;
 
 	dmaFillHalfWords(0, (void *)&VRAM_F_EXT_PALETTE[bgIndex][0], 512);
-
-	delete[] bgData;
-	delete[] bgMap;
-	delete[] bgPal;
 
 	if (blipSnd)
 		delete[] blipSnd;
