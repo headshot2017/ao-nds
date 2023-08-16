@@ -2782,6 +2782,7 @@ void mg_log(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   mg_vxprintf(s_log_func, s_log_func_param, fmt, &ap);
+  iprintf(fmt);
   va_end(ap);
   logs("\r\n", 2);
 }

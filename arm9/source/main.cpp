@@ -242,7 +242,7 @@ int main()
 	court.getChatbox()->setName("Phoenix");
 	court.getChatbox()->setText("THROWING FLASHBANG \\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f", COLOR_BLUE);
 	court.getCharacter()->setCharImage("Adrian", "(a)thinking");
-	//connect_wifi();
+	connect_wifi();
 	struct mg_mgr mgr;        // Event manager
 	bool done = false;        // Event handler flips it to true
 	struct mg_connection *c;  // Client connection
@@ -251,7 +251,7 @@ int main()
 	//getServerlist(&mgr);
 	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
 	iprintf("connect server");
-	//c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
+	c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
 
 	int ticks=0;
 	while (1)
