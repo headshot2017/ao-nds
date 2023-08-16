@@ -30,7 +30,7 @@
 #include "acename_ttf.h"
 #include "Igiari_ttf.h"
 
-Courtroom* courtpointer;
+Courtroom* court;
 
 void connect_wifi()
 {
@@ -117,7 +117,7 @@ static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_d
     // When we get echo response, print it
     struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
     iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
-	handleNetworkPacket(*courtpointer,wm->data.ptr);
+	handleNetworkPacket(*court,wm->data.ptr);
   }
 
   if (ev == MG_EV_ERROR || ev == MG_EV_CLOSE || ev == MG_EV_WS_MSG) {
@@ -240,15 +240,14 @@ int main()
 
 	bgExtPaletteEnable();
 
-	Courtroom court;
-	courtpointer = &court;
+	court = new Courtroom;
 
-	pickRandomBG(court);
+	pickRandomBG(*court);
 
-	court.setVisible(true);
-	court.getChatbox()->setName("Adrian");
-	court.getChatbox()->setText("Test", COLOR_BLUE);
-	court.getCharacter()->setCharImage("Adrian", "(a)thinking");
+	court->setVisible(true);
+	//court->getChatbox()->setName("Adrian");
+	//court->getChatbox()->setText("Test", COLOR_BLUE);
+	//court->getCharacter()->setCharImage("Adrian", "(a)thinking");
 	connect_wifi();
 	struct mg_mgr mgr;        // Event manager
 	bool done = false;        // Event handler flips it to true
@@ -265,13 +264,13 @@ int main()
 		scanKeys();
 		u32 keys = keysDown();
 		if (keys & KEY_A)
-			pickRandomMusic(court, "/data/ao-nds/sounds/music");
+			pickRandomMusic(*court, "/data/ao-nds/sounds/music");
 		if (keys & KEY_B)
-			pickRandomBG(court);
+			pickRandomBG(*court);
 		if (keys & KEY_Y)
-			court.shake(5, 60);
+			court->shake(5, 60);
 
-		court.update();
+		court->update();
 
 		bgUpdate();
 		oamUpdate(&oamMain);
