@@ -255,7 +255,7 @@ int main()
 	mg_log_set(MG_LL_ERROR);  // Set log level
 //	getServerlist(&mgr);
 	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
-	iprintf("connect server");
+	iprintf("connect server\n");
 	struct mg_connection *c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
 
 	int ticks=0;

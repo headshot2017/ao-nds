@@ -46,7 +46,9 @@ void handleMS(Courtroom& court, std::string s) {
 
 	std::string name = argumentAt(s,15);
 	if (name.empty())
-		name = argumentAt(s, 2);
+		std::string name = argumentAt(s, 2);
+	if (name.size() > 10)
+		name.resize(10);
 
 	court.getBackground()->setBgSide(argumentAt(s,5));
 	court.getChatbox()->setName(name);
