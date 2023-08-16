@@ -181,7 +181,9 @@ void showDisclaimer()
 	dmaCopy(bg_disclaimerTiles, bgGetGfxPtr(0), bg_disclaimerTilesLen);
 	dmaCopy(bg_disclaimerMap, bgGetMapPtr(0), bg_disclaimerMapLen);
 	dmaCopy(bg_disclaimerPal, BG_PALETTE, bg_disclaimerPalLen);
+}
 
+void fadeDisclaimer() {
 	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG0 | BLEND_DST_BACKDROP;
 	REG_BLDALPHA = 0xf00;
 
@@ -238,6 +240,14 @@ int main()
 
 	showDisclaimer();
 
+	connect_wifi();
+	struct mg_mgr mgr;        // Event manager
+	bool done = false;        // Event handler flips it to true
+	mg_mgr_init(&mgr);        // Initialise event manager
+	mg_log_set(MG_LL_ERROR);  // Set log level
+
+	fadeDisclaimer();
+
 	bgExtPaletteEnable();
 
 	court = new Courtroom;
@@ -248,11 +258,7 @@ int main()
 	//court->getChatbox()->setName("Adrian");
 	//court->getChatbox()->setText("Test", COLOR_BLUE);
 	//court->getCharacter()->setCharImage("Adrian", "(a)thinking");
-	connect_wifi();
-	struct mg_mgr mgr;        // Event manager
-	bool done = false;        // Event handler flips it to true
-	mg_mgr_init(&mgr);        // Initialise event manager
-	mg_log_set(MG_LL_ERROR);  // Set log level
+	
 //	getServerlist(&mgr);
 	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
 	iprintf("connect server\n");
