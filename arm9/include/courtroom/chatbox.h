@@ -58,7 +58,7 @@ public:
 	~Chatbox();
 
 	void setVisible(bool on);
-	void setName(const char* name);
+	void setName(std::string name);
 	void setText(std::string text, int color, std::string blip="male");
 
 	void shake(int force, int ticks);

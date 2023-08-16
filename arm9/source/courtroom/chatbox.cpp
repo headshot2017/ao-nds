@@ -115,13 +115,13 @@ void Chatbox::setVisible(bool on)
 		oamSetHidden(&oamMain, 26+i, !on);
 }
 
-void Chatbox::setName(const char* name)
+void Chatbox::setName(std::string name)
 {
 	// clear old text
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-	nameWidth = renderText(1, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+	nameWidth = renderText(1, name.c_str(), COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
 		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, false, false, false, false);

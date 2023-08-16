@@ -120,7 +120,7 @@ bool Background::setBg(const std::string& name)
 {
 	std::string bgPath = "/data/ao-nds/background/";
 	bgPath += name;
-
+	iprintf(bgPath.c_str());
 	DIR* dir = opendir(bgPath.c_str());
 	if (!dir) return false;
 	closedir(dir);

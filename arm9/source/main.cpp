@@ -18,15 +18,19 @@
 #include <dswifi9.h>
 
 #include "mp3_shared.h"
+#include "websocket/mongoose.h"
 #include "global.h"
 #include "courtroom/chatbox.h"
 #include "courtroom/courtroom.h"
 #include "fonts.h"
 #include "bg_disclaimer.h"
+#include "packets.h"
 
 #include "NDS12_ttf.h"
 #include "acename_ttf.h"
 #include "Igiari_ttf.h"
+
+Courtroom* courtpointer;
 
 void connect_wifi()
 {
@@ -51,53 +55,74 @@ void connect_wifi()
 	}
 }
 
-void getServerlist()
+// Print HTTP response and signal that we're done
+static void handleServerlist(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
+  static const char *s_url = "http://servers.aceattorneyonline.com/servers";
+  static const char *s_post_data = NULL;
+  if (ev == MG_EV_OPEN) {
+    // Connection created. Store connect expiration time in c->data
+    *(uint64_t *) c->data = mg_millis() + 1000;
+  } else if (ev == MG_EV_POLL) {
+    if (mg_millis() > *(uint64_t *) c->data &&
+        (c->is_connecting || c->is_resolving)) {
+      mg_error(c, "Connect timeout");
+    }
+  } else if (ev == MG_EV_CONNECT) {
+    // Connected to server. Extract host name from URL
+    struct mg_str host = mg_url_host(s_url);
+
+    // Send request
+    int content_length = s_post_data ? strlen(s_post_data) : 0;
+    mg_printf(c,
+              "%s %s HTTP/1.0\r\n"
+              "Host: %.*s\r\n"
+              "Content-Type: octet-stream\r\n"
+              "Content-Length: %d\r\n"
+              "\r\n",
+              s_post_data ? "POST" : "GET", mg_url_uri(s_url), (int) host.len,
+              host.ptr, content_length);
+    mg_send(c, s_post_data, content_length);
+  } else if (ev == MG_EV_HTTP_MSG) {
+    // Response is received. Print it
+    struct mg_http_message *hm = (struct mg_http_message *) ev_data;
+    printf("%.*s", (int) hm->message.len, hm->message.ptr);
+    c->is_closing = 1;         // Tell mongoose to close this connection
+    *(bool *) fn_data = true;  // Tell event loop to stop
+  } else if (ev == MG_EV_ERROR) {
+    *(bool *) fn_data = true;  // Error, tell event loop to stop
+  }
+}
+
+void getServerlist(mg_mgr *mgr)
 {
-	// store the HTTP request for later
-	const char * request_text =
-		"GET /servers HTTP/1.1\r\n"
-		"Host: servers.aceattorneyonline.com\r\n"
-		"User-Agent: Nintendo DS\r\n\r\n";
+  static const char *s_url = "http://servers.aceattorneyonline.com/servers";
+  static const uint64_t s_timeout_ms = 1500;  // Connect timeout in milliseconds
+  bool done = false;              // Event handler flips it to true
+  mg_http_connect(mgr, s_url, handleServerlist, &done);  // Create client connection
+  while (!done) mg_mgr_poll(mgr, 50);      // Event manager loops until 'done'
+  mg_mgr_free(mgr);                        // Free resources
+}
 
-	// Find the IP address of the server, with gethostbyname
-	struct hostent * myhost = gethostbyname( "servers.aceattorneyonline.com" );
-	iprintf("Found IP Address!\n");
+// Print websocket response and signal that we're done
+static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
+  if (ev == MG_EV_OPEN) {
+    c->is_hexdumping = 1;
+  } else if (ev == MG_EV_ERROR) {
+    // On error, log error message
+    MG_ERROR(("%p %s", c->fd, (char *) ev_data));
+  } else if (ev == MG_EV_WS_OPEN) {
+    // When websocket handshake is successful, send message
+    mg_ws_send(c, "HI#NDS#%", 8, WEBSOCKET_OP_TEXT);
+  } else if (ev == MG_EV_WS_MSG) {
+    // When we get echo response, print it
+    struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
+    iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
+	handleNetworkPacket(*courtpointer,wm->data.ptr);
+  }
 
-	// Create a TCP socket
-	int my_socket;
-	my_socket = socket( AF_INET, SOCK_STREAM, 0 );
-	iprintf("Created Socket!\n");
-
-	// Tell the socket to connect to the IP address we found, on port 80 (HTTP)
-	struct sockaddr_in sain;
-	sain.sin_family = AF_INET;
-	sain.sin_port = htons(80);
-	sain.sin_addr.s_addr= *( (unsigned long *)(myhost->h_addr_list[0]) );
-	connect( my_socket,(struct sockaddr *)&sain, sizeof(sain) );
-	iprintf("Connected to server!\n");
-
-	// send our request
-	send( my_socket, request_text, strlen(request_text), 0 );
-	iprintf("Sent our request!\n");
-
-	// Print incoming data
-	iprintf("Printing incoming data:\n");
-
-	int recvd_len;
-	char incoming_buffer[256];
-
-	while( ( recvd_len = recv( my_socket, incoming_buffer, 255, 0 ) ) > 1 ) { // if recv returns 0, the socket has been closed.
-		if(recvd_len>0) { // data was received!
-			incoming_buffer[recvd_len] = 0; // null-terminate
-			iprintf(incoming_buffer);
-		}
-	}
-
-	iprintf("Other side closed connection!");
-
-	shutdown(my_socket,0); // good practice to shutdown the socket.
-
-	closesocket(my_socket); // remove the socket.
+  if (ev == MG_EV_ERROR || ev == MG_EV_CLOSE || ev == MG_EV_WS_MSG) {
+    *(bool *) fn_data = true;  // Signal that we're done
+  }
 }
 
 void pickRandomMusic(Courtroom& court, std::string name)
@@ -150,6 +175,35 @@ void pickRandomBG(Courtroom& court)
 	court.getBackground()->setBg(items[rand() % items.size()]);
 }
 
+void showDisclaimer()
+{
+	bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
+	dmaCopy(bg_disclaimerTiles, bgGetGfxPtr(0), bg_disclaimerTilesLen);
+	dmaCopy(bg_disclaimerMap, bgGetMapPtr(0), bg_disclaimerMapLen);
+	dmaCopy(bg_disclaimerPal, BG_PALETTE, bg_disclaimerPalLen);
+
+	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG0 | BLEND_DST_BACKDROP;
+	REG_BLDALPHA = 0xf00;
+
+	int ticks = 0;
+	int alphaAdd = 1;
+	while (1)
+	{
+		swiWaitForVBlank();
+
+		REG_BLDALPHA += alphaAdd;
+		if ((REG_BLDALPHA & 0xf) == 0xf && alphaAdd)
+			alphaAdd = 0;
+		else if ((REG_BLDALPHA & 0xf) == 0)
+			break;
+		else if (!alphaAdd && ticks++ >= 60*3)
+			alphaAdd = -1;
+	}
+
+	dmaFillHalfWords(0, bgGetGfxPtr(0), bg_disclaimerTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(0), bg_disclaimerMapLen);
+	dmaFillHalfWords(0, BG_PALETTE, 512);
+}
 
 int main()
 {
@@ -178,54 +232,33 @@ int main()
 	initFont(NDS12_ttf, 12);	// index 0
 	initFont(acename_ttf, 13);	// index 1
 	initFont(Igiari_ttf, 16);	// index 2
-
 	PrintConsole subScreen;
 	consoleInit(&subScreen, 0, BgType_Text4bpp, BgSize_T_256x256, 31, 0, false, true);
 	consoleSelect(&subScreen);
 
-	// show disclaimer screen
-	{
-		bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-		dmaCopy(bg_disclaimerTiles, bgGetGfxPtr(0), bg_disclaimerTilesLen);
-		dmaCopy(bg_disclaimerMap, bgGetMapPtr(0), bg_disclaimerMapLen);
-		dmaCopy(bg_disclaimerPal, BG_PALETTE, bg_disclaimerPalLen);
-
-		REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG0 | BLEND_DST_BACKDROP;
-		REG_BLDALPHA = 0xf00;
-
-		int ticks = 0;
-		int alphaAdd = 1;
-		while (1)
-		{
-			swiWaitForVBlank();
-
-			REG_BLDALPHA += alphaAdd;
-			if ((REG_BLDALPHA & 0xf) == 0xf && alphaAdd)
-				alphaAdd = 0;
-			else if ((REG_BLDALPHA & 0xf) == 0)
-				break;
-			else if (!alphaAdd && ticks++ >= 60*3)
-				alphaAdd = -1;
-		}
-
-		dmaFillHalfWords(0, bgGetGfxPtr(0), bg_disclaimerTilesLen);
-		dmaFillHalfWords(0, bgGetMapPtr(0), bg_disclaimerMapLen);
-		dmaFillHalfWords(0, BG_PALETTE, 512);
-	}
+	showDisclaimer();
 
 	bgExtPaletteEnable();
 
 	Courtroom court;
+	courtpointer = &court;
+
 	pickRandomBG(court);
-	pickRandomMusic(court, "/data/ao-nds/sounds/music");
+
 	court.setVisible(true);
-	court.getChatbox()->setName("Phoenix");
-	court.getChatbox()->setText("THROWING FLASHBANG \\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f\\s\\f", COLOR_BLUE);
+	court.getChatbox()->setName("Adrian");
+	court.getChatbox()->setText("Test", COLOR_BLUE);
 	court.getCharacter()->setCharImage("Adrian", "(a)thinking");
-
-	//connect_wifi();
-
-	//getServerlist();
+	connect_wifi();
+	struct mg_mgr mgr;        // Event manager
+	bool done = false;        // Event handler flips it to true
+	struct mg_connection *c;  // Client connection
+	mg_mgr_init(&mgr);        // Initialise event manager
+	mg_log_set(MG_LL_ERROR);  // Set log level
+//	getServerlist(&mgr);
+	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
+	iprintf("connect server");
+	c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
 
 	int ticks=0;
 	while (1)
@@ -239,24 +272,15 @@ int main()
 		if (keys & KEY_Y)
 			court.shake(5, 60);
 
-		ticks++;
-		if (ticks % 60 == 0)
-		{
-			std::string sides[] = {"def", "pro", "wit", "hld", "hlp", "jud"};
-			std::string names[] = {"Phoenix", "Payne", "Sahwit", "Mia", "noby", "Judge"};
-			int ind = (ticks/60) % 6;
-			court.getBackground()->setBgSide(sides[ind]);
-			court.getChatbox()->setName(names[ind].c_str());
-		}
-
 		court.update();
 
 		bgUpdate();
 		oamUpdate(&oamMain);
 
 		mp3_fill_buffer();
+		mg_mgr_poll(&mgr, 0);
 		swiWaitForVBlank();
 	}
-
+	mg_mgr_free(&mgr);
 	return 0;
 }
