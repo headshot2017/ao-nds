@@ -245,10 +245,18 @@ int main()
 	bool done = false;        // Event handler flips it to true
 	mg_mgr_init(&mgr);        // Initialise event manager
 	mg_log_set(MG_LL_ERROR);  // Set log level
+	//getServerlist(&mgr);
 
 	fadeDisclaimer();
 
 	bgExtPaletteEnable();
+
+	std::string serverURL = "ws://vanilla.aceattorneyonline.com:2095/";
+	while(1)
+	{
+		// the charselect should be here
+		break;
+	}
 
 	court = new Courtroom;
 
@@ -259,10 +267,8 @@ int main()
 	//court->getChatbox()->setText("Test", COLOR_BLUE);
 	//court->getCharacter()->setCharImage("Adrian", "(a)thinking");
 	
-//	getServerlist(&mgr);
-	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
 	iprintf("connect server\n");
-	struct mg_connection *c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
+	struct mg_connection *c = mg_ws_connect(&mgr, serverURL.c_str(), wsHandler, &done, NULL);     // Create client
 
 	int ticks=0;
 	while (1)
