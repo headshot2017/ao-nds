@@ -275,7 +275,7 @@ int main()
 		oamUpdate(&oamMain);
 
 		mp3_fill_buffer();
-		mg_mgr_poll(&mgr, 100);
+		mg_mgr_poll(&mgr, 0);
 		swiWaitForVBlank();
 	}
 	mg_mgr_free(&mgr);
