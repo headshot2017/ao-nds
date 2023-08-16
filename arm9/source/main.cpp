@@ -248,7 +248,7 @@ int main()
 	struct mg_connection *c;  // Client connection
 	mg_mgr_init(&mgr);        // Initialise event manager
 	mg_log_set(MG_LL_DEBUG);  // Set log level
-	//getServerlist(&mgr);
+//	getServerlist(&mgr);
 	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
 	iprintf("connect server");
 	c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
