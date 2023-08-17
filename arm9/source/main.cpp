@@ -260,13 +260,13 @@ int main()
 
 	court = new Courtroom;
 
-	pickRandomBG(*court);
+	//pickRandomBG(*court);
 
 	court->setVisible(true);
 	//court->getChatbox()->setName("Adrian");
 	//court->getChatbox()->setText("Test", COLOR_BLUE);
 	//court->getCharacter()->setCharImage("Adrian", "(a)thinking");
-	
+
 	iprintf("connect server\n");
 	struct mg_connection *c = mg_ws_connect(&mgr, serverURL.c_str(), wsHandler, &done, NULL);     // Create client
 

@@ -86,27 +86,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 	if (!fileExists(NDScfg) || !fileExists(IMGbin) || !fileExists(PALbin))
 		return;
 
-	if (charData)
-	{
-		delete[] charData;
-		charData = 0;
-	}
-
-	// load gfx and palette
-	u32 palSize, charSize;
-	u8* charDataLZ77 = readFile(IMGbin.c_str(), &charSize);
-	u8* charPalette = readFile(PALbin.c_str(), &palSize);
-
-	// decompress gfx and copy palette to slot 2
-	charData = new u8[charSize];
-	decompress(charDataLZ77, charData, LZ77);
-	vramSetBankF(VRAM_F_LCD);
-	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
-	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
-
-	// free data from memory
-	delete[] charPalette;
-	delete[] charDataLZ77;
+	timerStop(0);
 
 	currAnim = relativeFile;
 	if (currCharacter != charname)
@@ -119,14 +99,37 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 	readFrameDurations(animInfos.get(relativeFile + "_durations"), frameDurations);
 	mp3_fill_buffer();
 
+	realW = ceil(frameW/32.f);
+	int realH = ceil(frameH/32.f);
+
+	if (charData)
+	{
+		delete[] charData;
+		charData = 0;
+	}
+
+	// load gfx and palette
+	u32 palSize, charSize;
+	u8* charDataLZ77 = readFile(IMGbin.c_str(), &charSize);
+	u8* charPalette = readFile(PALbin.c_str(), &palSize);
+
+	// decompress gfx and copy palette to slot 2
+	charData = new u8[realW*32 * realH*32 * frameDurations.size()];
+	decompress(charDataLZ77, charData, LZ77);
+	vramSetBankF(VRAM_F_LCD);
+	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
+	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+
+	// free data from memory
+	delete[] charPalette;
+	delete[] charDataLZ77;
+
 	for (int i=0; i<gfxInUse; i++)
 	{
 		oamSet(&oamMain, 50+i, 0, 0, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		charGfxVisible[i] = false;
 	}
 
-	realW = ceil(frameW/32.f);
-	int realH = ceil(frameH/32.f);
 	gfxInUse = realW*realH;
 
 	for (int i=0; i<gfxInUse; i++)
@@ -142,7 +145,6 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 	}
 
 	timerTicks = 0;
-	timerStop(0);
 	timerStart(0, ClockDivider_1024, 0, NULL);
 }
 
