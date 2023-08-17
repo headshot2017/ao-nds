@@ -240,8 +240,8 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
 
     # save frame durations (in ms) and sizes into a cfg file.
     with open(ogTarget+"/nds.cfg", "a") as f:
-        f.write(extra+no_dir_ext_file+"_size: %d,%d\n" % (croppedWidth, croppedHeight))
-        f.write(extra+no_dir_ext_file+"_durations: ")
+        f.write(extra+no_dir_ext_file.lower()+"_size: %d,%d\n" % (croppedWidth, croppedHeight))
+        f.write(extra+no_dir_ext_file.lower()+"_durations: ")
         for i in range(len(frames)):
             duration = frames[i][1]
             if i == len(frames)-1:

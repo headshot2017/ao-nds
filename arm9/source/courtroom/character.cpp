@@ -88,6 +88,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 
 	timerStop(0);
 
+	cfgFile animInfos;
 	currAnim = relativeFile;
 	if (currCharacter != charname)
 	{
@@ -95,7 +96,17 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 		animInfos.load(NDScfg);
 	}
 
+	for(auto& c : relativeFile) c = tolower(c);
+	int oldW = frameW;
+	int oldH = frameH;
+
 	readFrameSize(animInfos.get(relativeFile + "_size"), &frameW, &frameH);
+	if (frameW == 0 && frameH == 0)
+	{
+		frameW = oldW;
+		frameH = oldH;
+		return;
+	}
 	readFrameDurations(animInfos.get(relativeFile + "_durations"), frameDurations);
 	mp3_fill_buffer();
 
@@ -116,6 +127,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 	// decompress gfx and copy palette to slot 2
 	charData = new u8[realW*32 * realH*32 * frameDurations.size()];
 	decompress(charDataLZ77, charData, LZ77);
+	mp3_fill_buffer();
+
 	vramSetBankF(VRAM_F_LCD);
 	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
