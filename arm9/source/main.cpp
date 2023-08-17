@@ -181,12 +181,12 @@ void showDisclaimer()
 	dmaCopy(bg_disclaimerTiles, bgGetGfxPtr(0), bg_disclaimerTilesLen);
 	dmaCopy(bg_disclaimerMap, bgGetMapPtr(0), bg_disclaimerMapLen);
 	dmaCopy(bg_disclaimerPal, BG_PALETTE, bg_disclaimerPalLen);
+
+	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG0 | BLEND_DST_BACKDROP;
+	REG_BLDALPHA = 0xf00;
 }
 
 void fadeDisclaimer() {
-	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG0 | BLEND_DST_BACKDROP;
-	REG_BLDALPHA = 0xf00;
-
 	int ticks = 0;
 	int alphaAdd = 1;
 	while (1)
