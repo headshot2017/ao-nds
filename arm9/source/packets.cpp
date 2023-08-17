@@ -60,8 +60,20 @@ void handleMS(Courtroom& court, std::string s) {
 	court.getCharacter()->setCharImage(argumentAt(s,2), "(a)"+argumentAt(s,3));
 }
 
+void handlePN(struct mg_connection *c) {
+    mg_ws_send(c, "askchaa#%", 9, WEBSOCKET_OP_TEXT);
+}
+
+void handleSC(struct mg_connection *c) {
+    mg_ws_send(c, "RM#%", 4, WEBSOCKET_OP_TEXT);
+}
+
 void handleSI(struct mg_connection *c) {
     mg_ws_send(c, "RC#%", 4, WEBSOCKET_OP_TEXT);
+}
+
+void handleSM(struct mg_connection *c) {
+    mg_ws_send(c, "RD#%", 4, WEBSOCKET_OP_TEXT);
 }
 
 void handleNetworkPacket(struct mg_connection *c, Courtroom& court, std::string cargs) {
@@ -75,8 +87,15 @@ void handleNetworkPacket(struct mg_connection *c, Courtroom& court, std::string 
 			handleMC(court,cargs.substr(3));
 		else if(cargs.at(1)=='S')
 			handleMS(court,cargs.substr(3));
+    } else if(cargs.at(0)=='P') {
+        if(cargs.at(1)=='N')
+            handlePN(c);
 	} else if(cargs.at(0)=='S') {
-        if(cargs.at(1)=='I')
+        if(cargs.at(1)=='C')
+			handleSC(c);
+        else if(cargs.at(1)=='I')
 			handleSI(c);
+        else if(cargs.at(1)=='M')
+			handleSM(c);
     }
 }

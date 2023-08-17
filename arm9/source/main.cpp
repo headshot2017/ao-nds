@@ -85,7 +85,7 @@ static void handleServerlist(struct mg_connection *c, int ev, void *ev_data, voi
   } else if (ev == MG_EV_HTTP_MSG) {
     // Response is received. Print it
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-    printf("%.*s", (int) hm->message.len, hm->message.ptr);
+    iprintf("%.*s", (int) hm->message.len, hm->message.ptr);
     c->is_closing = 1;         // Tell mongoose to close this connection
     *(bool *) fn_data = true;  // Tell event loop to stop
   } else if (ev == MG_EV_ERROR) {
@@ -106,7 +106,7 @@ void getServerlist(mg_mgr *mgr)
 // Print websocket response and signal that we're done
 static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   if (ev == MG_EV_OPEN) {
-    c->is_hexdumping = 1;
+    c->is_hexdumping = 0;
   } else if (ev == MG_EV_ERROR) {
     // On error, log error message
     MG_ERROR(("%p %s", c->fd, (char *) ev_data));
