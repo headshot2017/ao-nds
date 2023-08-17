@@ -85,7 +85,7 @@ static void handleServerlist(struct mg_connection *c, int ev, void *ev_data, voi
   } else if (ev == MG_EV_HTTP_MSG) {
     // Response is received. Print it
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-    printf("%.*s", (int) hm->message.len, hm->message.ptr);
+    iprintf("%.*s", (int) hm->message.len, hm->message.ptr);
     c->is_closing = 1;         // Tell mongoose to close this connection
     *(bool *) fn_data = true;  // Tell event loop to stop
   } else if (ev == MG_EV_ERROR) {
@@ -106,7 +106,7 @@ void getServerlist(mg_mgr *mgr)
 // Print websocket response and signal that we're done
 static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   if (ev == MG_EV_OPEN) {
-    c->is_hexdumping = 1;
+    c->is_hexdumping = 0;
   } else if (ev == MG_EV_ERROR) {
     // On error, log error message
     MG_ERROR(("%p %s", c->fd, (char *) ev_data));
@@ -117,7 +117,7 @@ static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_d
     // When we get echo response, print it
     struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
     iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
-	handleNetworkPacket(*court,wm->data.ptr);
+	handleNetworkPacket(c, *court, wm->data.ptr);
   }
 
   if (ev == MG_EV_ERROR || ev == MG_EV_CLOSE || ev == MG_EV_WS_MSG) {
@@ -181,7 +181,9 @@ void showDisclaimer()
 	dmaCopy(bg_disclaimerTiles, bgGetGfxPtr(0), bg_disclaimerTilesLen);
 	dmaCopy(bg_disclaimerMap, bgGetMapPtr(0), bg_disclaimerMapLen);
 	dmaCopy(bg_disclaimerPal, BG_PALETTE, bg_disclaimerPalLen);
+}
 
+void fadeDisclaimer() {
 	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG0 | BLEND_DST_BACKDROP;
 	REG_BLDALPHA = 0xf00;
 
@@ -238,7 +240,23 @@ int main()
 
 	showDisclaimer();
 
+	connect_wifi();
+	struct mg_mgr mgr;        // Event manager
+	bool done = false;        // Event handler flips it to true
+	mg_mgr_init(&mgr);        // Initialise event manager
+	mg_log_set(MG_LL_ERROR);  // Set log level
+	//getServerlist(&mgr);
+
+	fadeDisclaimer();
+
 	bgExtPaletteEnable();
+
+	std::string serverURL = "ws://vanilla.aceattorneyonline.com:2095/";
+	while(1)
+	{
+		// the charselect should be here
+		break;
+	}
 
 	court = new Courtroom;
 
@@ -248,15 +266,9 @@ int main()
 	//court->getChatbox()->setName("Adrian");
 	//court->getChatbox()->setText("Test", COLOR_BLUE);
 	//court->getCharacter()->setCharImage("Adrian", "(a)thinking");
-	connect_wifi();
-	struct mg_mgr mgr;        // Event manager
-	bool done = false;        // Event handler flips it to true
-	mg_mgr_init(&mgr);        // Initialise event manager
-	mg_log_set(MG_LL_ERROR);  // Set log level
-//	getServerlist(&mgr);
-	static const char *s_url = "ws://vanilla.aceattorneyonline.com:2095/";
+	
 	iprintf("connect server\n");
-	struct mg_connection *c = mg_ws_connect(&mgr, s_url, wsHandler, &done, NULL);     // Create client
+	struct mg_connection *c = mg_ws_connect(&mgr, serverURL.c_str(), wsHandler, &done, NULL);     // Create client
 
 	int ticks=0;
 	while (1)
