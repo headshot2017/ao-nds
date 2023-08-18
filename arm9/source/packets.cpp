@@ -50,14 +50,12 @@ void handleMS(Courtroom& court, std::string s) {
 
 	std::string name = argumentAt(s,15);
 	if (name.empty())
-		std::string name = argumentAt(s, 2);
+		name = argumentAt(s, 2);
 	if (name.size() > 10)
 		name.resize(10);
 
 	court.getBackground()->setBgSide(argumentAt(s,5));
-	court.getChatbox()->setName(name);
-	court.getChatbox()->setText(argumentAt(s,4), AOcolorToPalette[colorID]);
-	court.getCharacter()->setCharImage(argumentAt(s,2), "(a)"+argumentAt(s,3));
+	court.MSchat(argumentAt(s,2), argumentAt(s,3), argumentAt(s,1), std::stoi(argumentAt(s,7)), name, argumentAt(s,4), AOcolorToPalette[colorID], "male");
 }
 
 void handlePN(struct mg_connection *c) {

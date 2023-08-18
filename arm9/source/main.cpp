@@ -263,9 +263,6 @@ int main()
 	//pickRandomBG(*court);
 
 	court->setVisible(true);
-	//court->getChatbox()->setName("Adrian");
-	//court->getChatbox()->setText("Test", COLOR_BLUE);
-	//court->getCharacter()->setCharImage("Adrian", "(a)thinking");
 
 	iprintf("connect server\n");
 	struct mg_connection *c = mg_ws_connect(&mgr, serverURL.c_str(), wsHandler, &done, NULL);     // Create client
@@ -273,6 +270,10 @@ int main()
 	int ticks=0;
 	while (1)
 	{
+		ticks++;
+		if (ticks % 600 == 0)
+			mg_ws_send(c, "CH#%", 4, WEBSOCKET_OP_TEXT);
+
 		scanKeys();
 		u32 keys = keysDown();
 		if (keys & KEY_A)

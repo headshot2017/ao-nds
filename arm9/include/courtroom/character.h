@@ -12,6 +12,7 @@
 #include <nds/ndstypes.h>
 
 #include "cfgFile.h"
+#include "global.h"
 
 class Character
 {
@@ -24,16 +25,21 @@ class Character
 	std::string currCharacter;
 	std::string currAnim;
 
+	cfgFile animInfos;
 	std::vector<u32> frameDurations;
 	int realW;
 	int frameW;
 	int frameH;
+	bool loop;
 
 	u32 timerTicks;
-	int currFrame;
+	u32 currFrame;
 
 	int xOffset;
 	int yOffset;
+
+	void* pUserData;
+	voidCallback onAnimFinished;
 
 	bool visible;
 
@@ -45,8 +51,10 @@ public:
 	const std::string& getCurrAnim() {return currAnim;}
 
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
-	void setCharImage(std::string charname, std::string relativeFile);
+	void setCharImage(std::string charname, std::string relativeFile, bool doLoop=true);
 	void setVisible(bool on);
+
+	void setOnAnimFinishedCallback(voidCallback newCB, void* userdata) {onAnimFinished = newCB; pUserData = userdata;}
 
 	void update();
 };

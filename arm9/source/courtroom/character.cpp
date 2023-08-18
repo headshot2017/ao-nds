@@ -50,6 +50,7 @@ Character::Character()
 	realW = 0;
 	frameW = 0;
 	frameH = 0;
+	loop = false;
 	gfxInUse = 0;
 
 	charData = 0;
@@ -65,6 +66,7 @@ Character::Character()
 	}
 
 	setVisible(false);
+	setOnAnimFinishedCallback(0, 0);
 }
 
 Character::~Character()
@@ -78,7 +80,7 @@ Character::~Character()
 	timerStop(0);
 }
 
-void Character::setCharImage(std::string charname, std::string relativeFile)
+void Character::setCharImage(std::string charname, std::string relativeFile, bool doLoop)
 {
 	std::string NDScfg = "/data/ao-nds/characters/" + charname + "/nds.cfg";
 	std::string IMGbin = "/data/ao-nds/characters/" + charname + "/" + relativeFile + ".img.bin";
@@ -88,7 +90,6 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 
 	timerStop(0);
 
-	cfgFile animInfos;
 	currAnim = relativeFile;
 	if (currCharacter != charname)
 	{
@@ -157,6 +158,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile)
 		charGfxVisible[i] = true;
 	}
 
+	loop = doLoop;
 	timerTicks = 0;
 	timerStart(0, ClockDivider_1024, 0, NULL);
 }
@@ -168,6 +170,9 @@ void Character::setVisible(bool on)
 
 void Character::update()
 {
+	if (!loop && currFrame >= frameDurations.size())
+		return;
+
 	timerTicks += timerElapsed(0);
 	u32 ms = (float)timerTicks/TIMER_SPEED*1000;
 
@@ -180,9 +185,20 @@ void Character::update()
 
 	if (!frameDurations.empty() && ms >= frameDurations[currFrame])
 	{
-		currFrame = (currFrame+1) % (frameDurations.size());
 		timerTicks = 0;
 		timerPause(0);
+
+		if (loop)
+			currFrame = (currFrame+1) % (frameDurations.size());
+		else
+		{
+			currFrame++;
+			if (currFrame >= frameDurations.size())
+			{
+				timerStop(0);
+				if (onAnimFinished) onAnimFinished(pUserData);
+			}
+		}
 
 		// copy new frame to sprite gfx
 		for (int i=0; i<gfxInUse; i++)

@@ -10,7 +10,7 @@
 
 #include <nds/ndstypes.h>
 
-#include "mp3_shared.h"
+#include "global.h"
 
 enum
 {
@@ -48,6 +48,9 @@ class Chatbox
 	int xOffset;
 	int yOffset;
 
+	void* pUserData;
+	voidCallback onChatboxFinished;
+
 	bool visible;
 
 public:
@@ -58,6 +61,8 @@ public:
 	void setVisible(bool on);
 	void setName(std::string name);
 	void setText(std::string text, int color, std::string blip="male");
+
+	void setOnChatboxFinishedCallback(voidCallback newCB, void* userdata) {onChatboxFinished = newCB; pUserData = userdata;}
 
 	void update();
 };

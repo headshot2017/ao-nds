@@ -14,12 +14,16 @@ Courtroom::Courtroom()
 {
 	visible = false;
 
+	tempColor = COLOR_WHITE;
 	shakeForce = 0;
 	shakeTicks = 0;
 
 	background = new Background;
 	chatbox = new Chatbox;
 	character = new Character;
+
+	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
+	character->setOnAnimFinishedCallback(onAnimFinished, this);
 }
 
 Courtroom::~Courtroom()
@@ -34,6 +38,31 @@ void Courtroom::setVisible(bool on)
 	visible = on;
 	background->setVisible(on);
 	chatbox->setVisible(on);
+	character->setVisible(on);
+}
+
+void Courtroom::MSchat(std::string charname, std::string anim, std::string preAnim, int emoteMod, std::string name, std::string msg, int color, std::string blip)
+{
+	tempChar = charname;
+	tempAnim = anim;
+	tempPreAnim = preAnim;
+	tempName = name;
+	tempMsg = msg;
+	tempColor = color;
+	tempBlip = blip;
+
+	if (emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
+	{
+		chatbox->setVisible(true);
+		chatbox->setName(tempName);
+		chatbox->setText(tempMsg, tempColor, tempBlip);
+		character->setCharImage(tempChar, "(b)"+tempAnim);
+	}
+	else
+	{
+		chatbox->setVisible(false);
+		character->setCharImage(tempChar, tempPreAnim, false);
+	}
 }
 
 void Courtroom::playMusic(std::string filename)
@@ -76,4 +105,19 @@ void Courtroom::update()
 	character->update();
 	chatbox->update();
 	background->update();
+}
+
+void Courtroom::onChatboxFinished(void* pUserData)
+{
+	Courtroom* pSelf = (Courtroom*)pUserData;
+	pSelf->character->setCharImage(pSelf->tempChar, "(a)"+pSelf->tempAnim);
+}
+
+void Courtroom::onAnimFinished(void* pUserData)
+{
+	Courtroom* pSelf = (Courtroom*)pUserData;
+	pSelf->chatbox->setVisible(true);
+	pSelf->chatbox->setName(pSelf->tempName);
+	pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
+	pSelf->character->setCharImage(pSelf->tempChar, "(b)"+pSelf->tempAnim);
 }
