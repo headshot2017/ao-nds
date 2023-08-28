@@ -4,6 +4,25 @@
 
 #include "mp3_shared.h"
 
+std::string argumentAt(std::string s, int id)
+{
+	const std::string del = "#";
+	// Use find function to find 1st position of delimiter.
+	int end = s.find(del);
+	int argi = 0;
+	while (end != -1) { // Loop until no delimiter is left in the string.
+		std::string currentArg = s.substr(0, end);
+		s.erase(s.begin(), s.begin() + end + 1);
+		end = s.find(del);
+		if(argi==id)
+			return currentArg;
+		else
+			argi++;
+	}
+
+	return "";
+}
+
 bool fileExists(const std::string& filename)
 {
 	FILE* f = fopen(filename.c_str(), "rb");

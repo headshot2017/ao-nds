@@ -7,7 +7,9 @@
 #include <nds/arm9/sprite.h>
 
 typedef void (*voidCallback)(void *pUserData);
+typedef void (*stringCallback)(void *pUserData, std::string str);
 
+std::string argumentAt(std::string s, int id);
 bool fileExists(const std::string& filename);
 u8* readFile(const std::string& filename, u32* outLen=0);
 u32 bmpIndexTo256SpriteIndex(int x, int y, int w, int h, SpriteSize size, bool* oobFlag=0);

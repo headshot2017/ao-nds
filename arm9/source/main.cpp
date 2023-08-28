@@ -18,13 +18,14 @@
 #include <dswifi9.h>
 
 #include "mp3_shared.h"
-#include "websocket/mongoose.h"
 #include "global.h"
 #include "courtroom/chatbox.h"
 #include "courtroom/courtroom.h"
 #include "fonts.h"
 #include "bg_disclaimer.h"
-#include "packets.h"
+#include "engine.h"
+#include "sockets/aowebsocket.h"
+#include "ui/uicourt.h"
 
 #include "NDS12_ttf.h"
 #include "acename_ttf.h"
@@ -37,8 +38,26 @@ void connect_wifi()
 	struct in_addr ip, gateway, mask, dns1, dns2;
 
 	iprintf("Connecting via WFC data...\n");
+	Wifi_InitDefault(INIT_ONLY);
+	unsigned char mac[6] = {0};
+	Wifi_GetData(WIFIGETDATA_MACADDRESS, 6, mac);
+	char macStr[32] = {0};
+	for (int i=0; i<6; i++)
+	{
+		char buf[4];
+		sprintf(buf, "%x", mac[i]);
+		strcat(macStr, buf);
+	}
 
-	if(!Wifi_InitDefault(WFC_CONNECT)) {
+	Wifi_AutoConnect();
+	int wifiStatus = ASSOCSTATUS_DISCONNECTED;
+	while (wifiStatus != ASSOCSTATUS_ASSOCIATED && wifiStatus != ASSOCSTATUS_CANNOTCONNECT)
+	{
+		wifiStatus = Wifi_AssocStatus();
+		swiWaitForVBlank();
+	}
+
+	if(wifiStatus == ASSOCSTATUS_CANNOTCONNECT) {
 		iprintf("Failed to connect! Please check your WiFi settings\n");
 		//while (1) swiWaitForVBlank();
 	} else {
@@ -47,15 +66,18 @@ void connect_wifi()
 
 		ip = Wifi_GetIPInfo(&gateway, &mask, &dns1, &dns2);
 
+
 		iprintf("ip     : %s\n", inet_ntoa(ip) );
 		iprintf("gateway: %s\n", inet_ntoa(gateway) );
 		iprintf("mask   : %s\n", inet_ntoa(mask) );
 		iprintf("dns1   : %s\n", inet_ntoa(dns1) );
 		iprintf("dns2   : %s\n", inet_ntoa(dns2) );
+		iprintf("mac: '%s'\n", macStr);
 	}
 }
 
 // Print HTTP response and signal that we're done
+/*
 static void handleServerlist(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   static const char *s_url = "http://servers.aceattorneyonline.com/servers";
   static const char *s_post_data = NULL;
@@ -102,28 +124,7 @@ void getServerlist(mg_mgr *mgr)
   while (!done) mg_mgr_poll(mgr, 50);      // Event manager loops until 'done'
   mg_mgr_free(mgr);                        // Free resources
 }
-
-// Print websocket response and signal that we're done
-static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
-  if (ev == MG_EV_OPEN) {
-    c->is_hexdumping = 0;
-  } else if (ev == MG_EV_ERROR) {
-    // On error, log error message
-    MG_ERROR(("%p %s", c->fd, (char *) ev_data));
-  } else if (ev == MG_EV_WS_OPEN) {
-    // When websocket handshake is successful, send message
-    mg_ws_send(c, "HI#NDS#%", 8, WEBSOCKET_OP_TEXT);
-  } else if (ev == MG_EV_WS_MSG) {
-    // When we get echo response, print it
-    struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
-    iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
-	handleNetworkPacket(c, *court, wm->data.ptr);
-  }
-
-  if (ev == MG_EV_ERROR || ev == MG_EV_CLOSE || ev == MG_EV_WS_MSG) {
-    *(bool *) fn_data = true;  // Signal that we're done
-  }
-}
+*/
 
 void pickRandomMusic(Courtroom& court, std::string name)
 {
@@ -234,6 +235,8 @@ int main()
 	initFont(NDS12_ttf, 12);	// index 0
 	initFont(acename_ttf, 13);	// index 1
 	initFont(Igiari_ttf, 16);	// index 2
+
+	// printconsole will be removed once UI work actually begins
 	PrintConsole subScreen;
 	consoleInit(&subScreen, 0, BgType_Text4bpp, BgSize_T_256x256, 31, 0, false, true);
 	consoleSelect(&subScreen);
@@ -241,57 +244,38 @@ int main()
 	showDisclaimer();
 
 	connect_wifi();
-	struct mg_mgr mgr;        // Event manager
-	bool done = false;        // Event handler flips it to true
-	mg_mgr_init(&mgr);        // Initialise event manager
-	mg_log_set(MG_LL_ERROR);  // Set log level
-	//getServerlist(&mgr);
 
 	fadeDisclaimer();
 
 	bgExtPaletteEnable();
 
 	std::string serverURL = "ws://vanilla.aceattorneyonline.com:2095/";
-	while(1)
-	{
-		// the charselect should be here
-		break;
-	}
-
-	court = new Courtroom;
+	gEngine = new Engine;
 
 	//pickRandomBG(*court);
 
-	court->setVisible(true);
+	AOwebSocket* sock = new AOwebSocket;
+	sock->connect(serverURL);
+	gEngine->setSocket(sock);
 
-	iprintf("connect server\n");
-	struct mg_connection *c = mg_ws_connect(&mgr, serverURL.c_str(), wsHandler, &done, NULL);     // Create client
+	UIScreenCourt* courtUI = new UIScreenCourt;
+	gEngine->changeScreen(courtUI);
 
-	int ticks=0;
 	while (1)
 	{
-		ticks++;
-		if (ticks % 600 == 0)
-			mg_ws_send(c, "CH#%", 4, WEBSOCKET_OP_TEXT);
-
 		scanKeys();
-		u32 keys = keysDown();
-		if (keys & KEY_A)
-			pickRandomMusic(*court, "/data/ao-nds/sounds/music");
-		if (keys & KEY_B)
-			pickRandomBG(*court);
-		if (keys & KEY_Y)
-			court->shake(5, 60);
 
-		court->update();
+		gEngine->updateInput();
+		gEngine->update();
 
 		bgUpdate();
 		oamUpdate(&oamMain);
 
 		mp3_fill_buffer();
-		mg_mgr_poll(&mgr, 0);
 		swiWaitForVBlank();
 	}
-	mg_mgr_free(&mgr);
+
+	delete gEngine;
+
 	return 0;
 }

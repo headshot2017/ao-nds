@@ -10,6 +10,15 @@
 
 #include "mp3_shared.h"
 
+int AOcolorToPalette[] = {
+	COLOR_WHITE,
+	COLOR_GREEN,
+	COLOR_RED,
+	COLOR_ORANGE,
+	COLOR_BLUE,
+	COLOR_YELLOW
+};
+
 Courtroom::Courtroom()
 {
 	visible = false;
@@ -43,12 +52,15 @@ void Courtroom::setVisible(bool on)
 
 void Courtroom::MSchat(std::string charname, std::string anim, std::string preAnim, int emoteMod, std::string name, std::string msg, int color, std::string blip)
 {
+	if (color < 0 || color >= 6)
+		color = 0;
+
 	tempChar = charname;
 	tempAnim = anim;
 	tempPreAnim = preAnim;
 	tempName = name;
 	tempMsg = msg;
-	tempColor = color;
+	tempColor = AOcolorToPalette[color];
 	tempBlip = blip;
 
 	if (emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))

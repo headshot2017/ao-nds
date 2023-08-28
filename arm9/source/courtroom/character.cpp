@@ -124,9 +124,12 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	u32 palSize, charSize;
 	u8* charDataLZ77 = readFile(IMGbin.c_str(), &charSize);
 	u8* charPalette = readFile(PALbin.c_str(), &palSize);
+	if (!charDataLZ77 || !charPalette) return;
 
 	// decompress gfx and copy palette to slot 2
 	charData = new u8[realW*32 * realH*32 * frameDurations.size()];
+	if (!charData) return;
+
 	decompress(charDataLZ77, charData, LZ77);
 	mp3_fill_buffer();
 
@@ -183,7 +186,7 @@ void Character::update()
 		oamSetXY(&oamMain, 50+i, x+128-(frameW/2) + xOffset, y+192-frameH + yOffset);
 	}
 
-	if (!frameDurations.empty() && ms >= frameDurations[currFrame])
+	if (charData && !frameDurations.empty() && ms >= frameDurations[currFrame])
 	{
 		timerTicks = 0;
 		timerPause(0);
