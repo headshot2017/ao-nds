@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include <nds/interrupts.h>
+
 #include "mp3_shared.h"
 
 std::string argumentAt(std::string s, int id)
@@ -46,6 +48,13 @@ u8* readFile(const std::string& filename, u32* outLen)
 	fseek(f, 0, SEEK_SET);
 
 	u8* data = new u8[len];
+	if (!data)
+	{
+		fclose(f);
+		if (outLen) *outLen = 0;
+		return 0;
+	}
+
 	fread(data, len, 1, f);
 	fclose(f);
 

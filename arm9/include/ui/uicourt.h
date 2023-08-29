@@ -8,7 +8,7 @@
 
 class UIScreenCourt : public UIScreen
 {
-	Courtroom court;
+	Courtroom* court;
 
 public:
 	UIScreenCourt();

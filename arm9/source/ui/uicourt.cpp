@@ -7,17 +7,22 @@
 
 UIScreenCourt::UIScreenCourt() : UIScreen()
 {
-
+	court = 0;
 }
 
 UIScreenCourt::~UIScreenCourt()
 {
-	court.setVisible(false);
+	if (court)
+	{
+		court->setVisible(false);
+		delete court;
+	}
 }
 
 void UIScreenCourt::init()
 {
-	court.setVisible(true);
+	court = new Courtroom;
+	court->setVisible(true);
 
 	AOsocket* sock = gEngine->getSocket();
 	sock->setMessageCallback("ID", onMessageID, this);
@@ -37,7 +42,7 @@ void UIScreenCourt::updateInput()
 
 void UIScreenCourt::update()
 {
-	court.update();
+	court->update();
 }
 
 void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
@@ -70,7 +75,7 @@ void UIScreenCourt::onMessageBN(void* pUserData, std::string msg)
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
 	std::string bgname = argumentAt(msg, 1);
-	pSelf->court.getBackground()->setBg(bgname);
+	pSelf->court->getBackground()->setBg(bgname);
 }
 
 void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
@@ -78,7 +83,7 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
 	std::string trackname = argumentAt(msg, 1);
-	pSelf->court.playMusic("/data/ao-nds/sounds/music/"+trackname);
+	pSelf->court->playMusic("/data/ao-nds/sounds/music/"+trackname);
 }
 
 void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
@@ -91,6 +96,6 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	if (name.size() > 10)
 		name.resize(10);
 
-	pSelf->court.getBackground()->setBgSide(argumentAt(msg,6));
-	pSelf->court.MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, argumentAt(msg,5), std::stoi(argumentAt(msg,15)), "male");
+	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
+	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, argumentAt(msg,5), std::stoi(argumentAt(msg,15)), "male");
 }

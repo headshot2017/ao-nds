@@ -26,7 +26,8 @@ class Character
 	std::string currAnim;
 
 	cfgFile animInfos;
-	std::vector<u32> frameDurations;
+	u32* frameDurations;
+	u32 frameCount;
 	int realW;
 	int frameW;
 	int frameH;

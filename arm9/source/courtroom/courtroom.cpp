@@ -65,10 +65,10 @@ void Courtroom::MSchat(std::string charname, std::string anim, std::string preAn
 
 	if (emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
 	{
+		character->setCharImage(tempChar, "(b)"+tempAnim);
 		chatbox->setVisible(true);
 		chatbox->setName(tempName);
 		chatbox->setText(tempMsg, tempColor, tempBlip);
-		character->setCharImage(tempChar, "(b)"+tempAnim);
 	}
 	else
 	{
@@ -128,8 +128,8 @@ void Courtroom::onChatboxFinished(void* pUserData)
 void Courtroom::onAnimFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
+	pSelf->character->setCharImage(pSelf->tempChar, "(b)"+pSelf->tempAnim);
 	pSelf->chatbox->setVisible(true);
 	pSelf->chatbox->setName(pSelf->tempName);
 	pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
-	pSelf->character->setCharImage(pSelf->tempChar, "(b)"+pSelf->tempAnim);
 }

@@ -4,6 +4,8 @@
 
 #include <nds/dma.h>
 #include <nds/timers.h>
+#include <nds/interrupts.h>
+#include <nds/arm9/input.h>
 #include <nds/arm9/decompress.h>
 
 #include "global.h"
@@ -26,20 +28,25 @@ void readFrameSize(const std::string& value, int* w, int* h)
     *h = std::stoi(value.substr(delimiterPos + 1));
 }
 
-void readFrameDurations(const std::string& value, std::vector<u32>& output)
+u32 readFrameDurations(const std::string& value, u32** output)
 {
-	output.clear();
+	if (*output) free(*output);
 	std::size_t lastPos = 0;
 	std::size_t delimiterPos = value.find(",");
 
+	u32 frameCount = 0;
 	while (lastPos != std::string::npos)
 	{
+		frameCount++;
+		*output = (u32*)realloc(*output, sizeof(u32) * frameCount);
 		u32 dur = std::stoi(value.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1));
-		output.push_back(dur);
+		*output[frameCount-1] = dur;
 
 		lastPos = delimiterPos;
 		delimiterPos = value.find(",", delimiterPos+1);
 	}
+
+	return frameCount;
 }
 
 
@@ -54,6 +61,8 @@ Character::Character()
 	gfxInUse = 0;
 
 	charData = 0;
+	frameDurations = 0;
+	frameCount = 0;
 
 	for (int i=0; i<8*6; i++)
 	{
@@ -90,6 +99,18 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 	timerStop(0);
 
+	// load gfx and palette
+	u32 palSize, charSize;
+
+	u8* charDataLZ77 = readFile(IMGbin.c_str(), &charSize);
+	u8* charPalette = readFile(PALbin.c_str(), &palSize);
+	if (!charDataLZ77 || !charPalette)
+	{
+		if (charDataLZ77) delete[] charDataLZ77;
+		if (charPalette) delete[] charPalette;
+		return;
+	}
+
 	currAnim = relativeFile;
 	if (currCharacter != charname)
 	{
@@ -106,9 +127,11 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	{
 		frameW = oldW;
 		frameH = oldH;
+		delete[] charDataLZ77;
+		delete[] charPalette;
 		return;
 	}
-	readFrameDurations(animInfos.get(relativeFile + "_durations"), frameDurations);
+	frameCount = readFrameDurations(animInfos.get(relativeFile + "_durations"), &frameDurations);
 	mp3_fill_buffer();
 
 	realW = ceil(frameW/32.f);
@@ -120,15 +143,14 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		charData = 0;
 	}
 
-	// load gfx and palette
-	u32 palSize, charSize;
-	u8* charDataLZ77 = readFile(IMGbin.c_str(), &charSize);
-	u8* charPalette = readFile(PALbin.c_str(), &palSize);
-	if (!charDataLZ77 || !charPalette) return;
-
 	// decompress gfx and copy palette to slot 2
-	charData = new u8[realW*32 * realH*32 * frameDurations.size()];
-	if (!charData) return;
+	charData = new u8[realW*32 * realH*32 * frameCount];
+	if (!charData)
+	{
+		delete[] charDataLZ77;
+		delete[] charPalette;
+		return;
+	}
 
 	decompress(charDataLZ77, charData, LZ77);
 	mp3_fill_buffer();
@@ -173,7 +195,7 @@ void Character::setVisible(bool on)
 
 void Character::update()
 {
-	if (!loop && currFrame >= frameDurations.size())
+	if (!loop && currFrame >= frameCount)
 		return;
 
 	timerTicks += timerElapsed(0);
@@ -186,17 +208,17 @@ void Character::update()
 		oamSetXY(&oamMain, 50+i, x+128-(frameW/2) + xOffset, y+192-frameH + yOffset);
 	}
 
-	if (charData && !frameDurations.empty() && ms >= frameDurations[currFrame])
+	if (charData && frameCount && ms >= frameDurations[currFrame])
 	{
 		timerTicks = 0;
 		timerPause(0);
 
 		if (loop)
-			currFrame = (currFrame+1) % (frameDurations.size());
+			currFrame = (currFrame+1) % (frameCount);
 		else
 		{
 			currFrame++;
-			if (currFrame >= frameDurations.size())
+			if (currFrame >= frameCount)
 			{
 				timerStop(0);
 				if (onAnimFinished) onAnimFinished(pUserData);

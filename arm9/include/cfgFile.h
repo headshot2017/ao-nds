@@ -27,6 +27,8 @@ public:
 
     void save(const std::string& filename);
     bool load(const std::string& filename);
+
+    void clear() {keys.clear();}
 };
 
 #endif // CFGFILE_H_INCLUDED
