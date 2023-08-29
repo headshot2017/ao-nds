@@ -27,10 +27,6 @@ void AOwebSocket::wsHandler(struct mg_connection *c, int ev, void *ev_data, void
 			pSelf->disconnect();
 			break;
 
-		case MG_EV_WS_OPEN:
-			mg_ws_send(c, "HI#NDS#%", 8, WEBSOCKET_OP_TEXT);
-			break;
-
 		case MG_EV_WS_MSG:
 			struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
 			header = argumentAt(wm->data.ptr, 0);
@@ -42,7 +38,7 @@ void AOwebSocket::wsHandler(struct mg_connection *c, int ev, void *ev_data, void
 	}
 }
 
-void AOwebSocket::connect(std::string ip)
+void AOwebSocket::connectIP(std::string ip)
 {
 	if (connected) return;
 
@@ -60,7 +56,7 @@ void AOwebSocket::disconnect()
 	connected = false;
 }
 
-void AOwebSocket::send(std::string data)
+void AOwebSocket::sendData(std::string data)
 {
 	if (!connected) return;
 
@@ -73,7 +69,7 @@ void AOwebSocket::update()
 
 	ticks++;
 	if (ticks % 600 == 0)
-		send("CH#%");
+		sendData("CH#%");
 
 	mg_mgr_poll(&mgr, 0);
 }

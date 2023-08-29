@@ -122,7 +122,7 @@ void Chatbox::setName(std::string name)
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-	nameWidth = renderText(1, name.c_str(), COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+	nameWidth = renderText(0, name.c_str(), COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
 		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
@@ -189,7 +189,7 @@ void Chatbox::update()
 		int boxWidth = lastBox ? 20 : 32;
 		int oobFlag;
 		int outWidth;
-		int new_x = renderChar(2, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+		int new_x = renderChar(1, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
 
 		if (oobFlag)
 		{
@@ -206,7 +206,7 @@ void Chatbox::update()
 			else
 			{
 				textX -= boxWidth;
-				textX = renderChar(2, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+				textX = renderChar(1, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
 			}
 		}
 		else

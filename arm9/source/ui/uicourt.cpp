@@ -25,6 +25,7 @@ void UIScreenCourt::init()
 	court->setVisible(true);
 
 	AOsocket* sock = gEngine->getSocket();
+	sock->setMessageCallback("decryptor", onMessageDecryptor, this);
 	sock->setMessageCallback("ID", onMessageID, this);
 	sock->setMessageCallback("PN", onMessagePN, this);
 	sock->setMessageCallback("SI", onMessageSI, this);
@@ -45,29 +46,34 @@ void UIScreenCourt::update()
 	court->update();
 }
 
+void UIScreenCourt::onMessageDecryptor(void* pUserData, std::string msg)
+{
+	gEngine->getSocket()->sendData("HI#NDS#%");
+}
+
 void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
 {
-	gEngine->getSocket()->send("ID#ndsAO#0.0.1#%");
+	gEngine->getSocket()->sendData("ID#ndsAO#0.0.1#%");
 }
 
 void UIScreenCourt::onMessagePN(void* pUserData, std::string msg)
 {
-	gEngine->getSocket()->send("askchaa#%");
+	gEngine->getSocket()->sendData("askchaa#%");
 }
 
 void UIScreenCourt::onMessageSI(void* pUserData, std::string msg)
 {
-	gEngine->getSocket()->send("RC#%");
+	gEngine->getSocket()->sendData("RC#%");
 }
 
 void UIScreenCourt::onMessageSC(void* pUserData, std::string msg)
 {
-	gEngine->getSocket()->send("RM#%");
+	gEngine->getSocket()->sendData("RM#%");
 }
 
 void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 {
-	gEngine->getSocket()->send("RD#%");
+	gEngine->getSocket()->sendData("RD#%");
 }
 
 void UIScreenCourt::onMessageBN(void* pUserData, std::string msg)

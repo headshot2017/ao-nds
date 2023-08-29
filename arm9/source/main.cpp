@@ -25,6 +25,7 @@
 #include "bg_disclaimer.h"
 #include "engine.h"
 #include "sockets/aowebsocket.h"
+#include "sockets/aotcpsocket.h"
 #include "ui/uicourt.h"
 
 #include "NDS12_ttf.h"
@@ -232,9 +233,9 @@ int main()
 	oamInit(&oamMain, SpriteMapping_1D_128, true);
 	oamInit(&oamSub, SpriteMapping_1D_128, true);
 
-	initFont(NDS12_ttf, 12);	// index 0
-	initFont(acename_ttf, 13);	// index 1
-	initFont(Igiari_ttf, 16);	// index 2
+	initFont(acename_ttf, 13);	// index 0
+	initFont(Igiari_ttf, 16);	// index 1
+	//initFont(NDS12_ttf, 12);	// index 2
 
 	// printconsole will be removed once UI work actually begins
 	PrintConsole subScreen;
@@ -249,21 +250,27 @@ int main()
 
 	bgExtPaletteEnable();
 
-	std::string serverURL = "ws://vanilla.aceattorneyonline.com:2095/";
+	std::string ip = "ws://vanilla.aceattorneyonline.com:2095/";
 	gEngine = new Engine;
 
 	//pickRandomBG(*court);
 
 	AOwebSocket* sock = new AOwebSocket;
-	sock->connect(serverURL);
+	//AOtcpSocket* sock = new AOtcpSocket;
+	//sock->connectIP(ip, 2086);
+	sock->connectIP(ip);
 	gEngine->setSocket(sock);
 
-	UIScreenCourt* courtUI = new UIScreenCourt;
-	gEngine->changeScreen(courtUI);
+	gEngine->changeScreen(new UIScreenCourt);
 
 	while (1)
 	{
 		scanKeys();
+		if (keysDown() & KEY_SELECT)
+		{
+			iprintf("disconnecting\n");
+			sock->disconnect();
+		}
 
 		gEngine->updateInput();
 		gEngine->update();

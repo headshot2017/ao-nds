@@ -19,9 +19,9 @@ public:
 	virtual ~AOsocket() {}
 
 	virtual void update() {}
-	virtual void connect(std::string ip) {}
+	virtual void connectIP(std::string ip) {}
 	virtual void disconnect() {}
-	virtual void send(std::string data) {}
+	virtual void sendData(std::string data) {}
 
 	void setMessageCallback(std::string headerName, stringCallback cb, void* pUserData) {callbacks[headerName] = {cb, pUserData};}
 

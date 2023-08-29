@@ -16,9 +16,9 @@ public:
 	~AOwebSocket();
 
 	void update();
-	void connect(std::string ip);
+	void connectIP(std::string ip);
 	void disconnect();
-	void send(std::string data);
+	void sendData(std::string data);
 };
 
 #endif // AOWEBSOCKET_H_INCLUDED

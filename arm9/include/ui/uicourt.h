@@ -18,6 +18,7 @@ public:
 	void updateInput();
 	void update();
 
+	static void onMessageDecryptor(void* pUserData, std::string msg);
 	static void onMessageID(void* pUserData, std::string msg);
 	static void onMessagePN(void* pUserData, std::string msg);
 	static void onMessageSI(void* pUserData, std::string msg);

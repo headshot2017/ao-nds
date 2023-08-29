@@ -39,6 +39,7 @@
 		<Unit filename="arm9/include/mongoose.h" />
 		<Unit filename="arm9/include/mongoose_custom.h" />
 		<Unit filename="arm9/include/sockets/aosocket.h" />
+		<Unit filename="arm9/include/sockets/aotcpsocket.h" />
 		<Unit filename="arm9/include/sockets/aowebsocket.h" />
 		<Unit filename="arm9/include/stb_truetype.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
@@ -54,6 +55,7 @@
 		<Unit filename="arm9/source/main.cpp" />
 		<Unit filename="arm9/source/mp3/mp3_9.cpp" />
 		<Unit filename="arm9/source/sockets/aosocket.cpp" />
+		<Unit filename="arm9/source/sockets/aotcpsocket.cpp" />
 		<Unit filename="arm9/source/sockets/aowebsocket.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
 		<Unit filename="arm9/source/websocket/mongoose.c">

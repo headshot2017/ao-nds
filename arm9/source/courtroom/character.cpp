@@ -28,25 +28,26 @@ void readFrameSize(const std::string& value, int* w, int* h)
     *h = std::stoi(value.substr(delimiterPos + 1));
 }
 
-u32 readFrameDurations(const std::string& value, u32** output)
+u32* readFrameDurations(const std::string& value, u32* sizeOutput)
 {
-	if (*output) free(*output);
 	std::size_t lastPos = 0;
 	std::size_t delimiterPos = value.find(",");
 
 	u32 frameCount = 0;
+	u32* output = 0;
 	while (lastPos != std::string::npos)
 	{
 		frameCount++;
-		*output = (u32*)realloc(*output, sizeof(u32) * frameCount);
+		output = (u32*)realloc(output, sizeof(u32) * frameCount);
 		u32 dur = std::stoi(value.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1));
-		*output[frameCount-1] = dur;
+		output[frameCount-1] = dur;
 
 		lastPos = delimiterPos;
 		delimiterPos = value.find(",", delimiterPos+1);
 	}
 
-	return frameCount;
+	*sizeOutput = frameCount;
+	return output;
 }
 
 
@@ -69,7 +70,8 @@ Character::Character()
 		int x = (i%8) * 32;
 		int y = (i/8) * 32;
 
-		charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
+		//charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
+		charGfx[i] = 0;
 		charGfxVisible[i] = false;
 		oamSet(&oamMain, 50+i, x, y, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
@@ -83,7 +85,7 @@ Character::~Character()
 	for (int i=0; i<8*6; i++)
 	{
 		oamSet(&oamMain, 50+i, 0, 0, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
-		oamFreeGfx(&oamMain, charGfx[i]);
+		if (charGfx[i]) oamFreeGfx(&oamMain, charGfx[i]);
 	}
 
 	timerStop(0);
@@ -131,7 +133,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		delete[] charPalette;
 		return;
 	}
-	frameCount = readFrameDurations(animInfos.get(relativeFile + "_durations"), &frameDurations);
+	free(frameDurations);
+	frameDurations = readFrameDurations(animInfos.get(relativeFile + "_durations"), &frameCount);
 	mp3_fill_buffer();
 
 	realW = ceil(frameW/32.f);
@@ -167,6 +170,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	{
 		oamSet(&oamMain, 50+i, 0, 0, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		charGfxVisible[i] = false;
+		oamFreeGfx(&oamMain, charGfx[i]);
+		charGfx[i] = 0;
 	}
 
 	gfxInUse = realW*realH;
@@ -175,6 +180,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	{
 		int x = (i%realW) * 32;
 		int y = (i/realW) * 32;
+
+		charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
 
 		u8* offset = charData + i*32*32;
 		dmaCopy(offset, charGfx[i], 32*32);
