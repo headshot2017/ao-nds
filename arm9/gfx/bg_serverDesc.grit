@@ -4,6 +4,9 @@
 # tile format
 -gt
 
+# transparency color: #FF00FF
+-gTFF00FF
+
 # include map and palette
 -m 
 -p
