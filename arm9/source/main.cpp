@@ -265,10 +265,9 @@ int main()
 	while (1)
 	{
 		scanKeys();
-		if (keysHeld() & KEY_START && keysHeld() & KEY_SELECT)
-			*(u32*)8192 = 100;
-		if (keysDown() & KEY_SELECT && sock)
+		if (keysDown() & KEY_SELECT)
 		{
+			iprintf("disconnecting\n");
 			sock->disconnect();
 		}
 
