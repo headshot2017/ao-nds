@@ -30,9 +30,9 @@ include $(DEVKITARM)/base_rules
 BUILD		:= build
 SOURCES		:= source source/mp3 source/courtroom source/ui source/websocket source/sockets ../helix ../helix/real
 INCLUDES	:= include ../common ../helix ../helix/real
-DATA		:= 
+DATA		:=
 IMAGES		:= gfx
-FONTS		:= gfx/Igiari gfx/NDS12 gfx/AceName
+FONTS		:= gfx/Igiari gfx/AceName
 EXPORT_DIR	:=
 #---------------------------------------------------------------------------------
 

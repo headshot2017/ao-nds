@@ -28,7 +28,6 @@
 #include "sockets/aotcpsocket.h"
 #include "ui/uicourt.h"
 
-#include "NDS12_ttf.h"
 #include "acename_ttf.h"
 #include "Igiari_ttf.h"
 
