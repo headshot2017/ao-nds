@@ -302,15 +302,15 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
         filename = source+"/"+emote
         if os.path.isdir(filename) and emote.lower() != "emotions":
             recursiveCharacter(source+"/"+emote, target+"/"+emote, ogTarget, extra+emote+"/")
-        elif filename.lower().endswith("char_icon.png"):
+        elif emote.lower() == "char_icon.png":
             convertCharIcon(filename, target+"/"+emote)
-        elif filename.lower().endswith(".apng"):
+        elif emote.lower() == ".apng":
             convertEmoteAPNG(filename, target+"/"+emote, ogTarget, extra)
-        elif filename.lower().endswith(".webp"):
+        elif emote.lower() == ".webp":
             convertEmoteWEBP(filename, target+"/"+emote, ogTarget, extra)
-        elif filename.lower().endswith(".png"):
+        elif emote.lower() == ".png":
             convertEmotePNG(filename, target+"/"+emote, ogTarget, extra)
-        elif filename.lower().endswith(".gif"):
+        elif emote.lower() == ".gif":
             convertEmoteGIF(filename, target+"/"+emote, ogTarget, extra)
 
 def convertCharacters(source, target):
@@ -438,6 +438,9 @@ chatbox()
 shout(folder+"/misc/default/objection_bubble.gif")
 shout(folder+"/misc/default/holdit_bubble.gif")
 shout(folder+"/misc/default/takethat_bubble.gif")
+
+print("Converting placeholder.gif...")
+convertEmoteGIF(folder+"/themes/default/placeholder.gif", "converted/data/ao-nds/misc/placeholder.gif", "converted/data/ao-nds/misc", "")
 
 
 print("Cleaning up temporary files...")

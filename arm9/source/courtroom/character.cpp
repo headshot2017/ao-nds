@@ -96,7 +96,14 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	std::string IMGbin = "/data/ao-nds/characters/" + charname + "/" + relativeFile + ".img.bin";
 	std::string PALbin = "/data/ao-nds/characters/" + charname + "/" + relativeFile + ".pal.bin";
 	if (!fileExists(NDScfg) || !fileExists(IMGbin) || !fileExists(PALbin))
-		return;
+	{
+		// show missingno/placeholder
+		charname = "placeholder";
+		relativeFile = "placeholder";
+		NDScfg = "/data/ao-nds/misc/nds.cfg";
+		IMGbin = "/data/ao-nds/misc/placeholder.img.bin";
+		PALbin = "/data/ao-nds/misc/placeholder.pal.bin";
+	}
 
 	timerStop(0);
 
