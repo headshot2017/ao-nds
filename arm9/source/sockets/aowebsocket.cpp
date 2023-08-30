@@ -4,11 +4,12 @@
 AOwebSocket::AOwebSocket() : AOsocket()
 {
 	mg_log_set(MG_LL_ERROR);  // Set log level
+	c = 0;
 }
 
 AOwebSocket::~AOwebSocket()
 {
-	disconnect();
+	mg_mgr_free(&mgr);
 }
 
 void AOwebSocket::wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
@@ -52,7 +53,8 @@ void AOwebSocket::disconnect()
 {
 	if (!connected) return;
 
-	mg_mgr_free(&mgr);
+	c->is_draining = 1;
+
 	connected = false;
 }
 

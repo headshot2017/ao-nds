@@ -227,9 +227,7 @@ int main()
 	//initFont(NDS12_ttf, 12);	// index 2
 
 	// printconsole will be removed once UI work actually begins
-	PrintConsole subScreen;
-	consoleInit(&subScreen, 0, BgType_Text4bpp, BgSize_T_256x256, 31, 0, false, true);
-	consoleSelect(&subScreen);
+	consoleInit(0, consoleGetDefault()->bgLayer, BgType_Text4bpp, BgSize_T_256x256, consoleGetDefault()->mapBase, consoleGetDefault()->gfxBase, false, true);
 
 	showDisclaimer();
 
@@ -267,9 +265,10 @@ int main()
 	while (1)
 	{
 		scanKeys();
-		if (keysDown() & KEY_SELECT)
+		if (keysHeld() & KEY_START && keysHeld() & KEY_SELECT)
+			*(u32*)8192 = 100;
+		if (keysDown() & KEY_SELECT && sock)
 		{
-			iprintf("disconnecting\n");
 			sock->disconnect();
 		}
 
