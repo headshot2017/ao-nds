@@ -70,8 +70,7 @@ Character::Character()
 		int x = (i%8) * 32;
 		int y = (i/8) * 32;
 
-		//charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
-		charGfx[i] = 0;
+		charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
 		charGfxVisible[i] = false;
 		oamSet(&oamMain, 50+i, x, y, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
@@ -85,7 +84,7 @@ Character::~Character()
 	for (int i=0; i<8*6; i++)
 	{
 		oamSet(&oamMain, 50+i, 0, 0, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
-		if (charGfx[i]) oamFreeGfx(&oamMain, charGfx[i]);
+		oamFreeGfx(&oamMain, charGfx[i]);
 	}
 
 	timerStop(0);
@@ -170,8 +169,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	{
 		oamSet(&oamMain, 50+i, 0, 0, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		charGfxVisible[i] = false;
-		oamFreeGfx(&oamMain, charGfx[i]);
-		charGfx[i] = 0;
+		//oamFreeGfx(&oamMain, charGfx[i]);
+		//charGfx[i] = 0;
 	}
 
 	gfxInUse = realW*realH;
@@ -181,7 +180,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		int x = (i%realW) * 32;
 		int y = (i/realW) * 32;
 
-		charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
+		//charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
 
 		u8* offset = charData + i*32*32;
 		dmaCopy(offset, charGfx[i], 32*32);
