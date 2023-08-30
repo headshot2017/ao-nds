@@ -31,8 +31,6 @@
 #include "acename_ttf.h"
 #include "Igiari_ttf.h"
 
-Courtroom* court;
-
 void connect_wifi()
 {
 	struct in_addr ip, gateway, mask, dns1, dns2;
@@ -116,56 +114,6 @@ void getServerlist(mg_mgr *mgr)
 }
 */
 
-void pickRandomMusic(Courtroom& court, std::string name)
-{
-	dirent* dir;
-	DIR* d = opendir(name.c_str());
-	if (!d)
-		return;
-
-	struct file
-	{
-		std::string name;
-		u8 type;
-	};
-	std::vector<file> items;
-
-	while ((dir = readdir(d)) != 0)
-	{
-		if (dir->d_name[0] == '.') continue;
-		items.push_back({dir->d_name, dir->d_type});
-	}
-
-	closedir(d);
-
-	file& item = items[rand() % items.size()];
-	std::string newName = name+"/"+item.name;
-	if (item.type == DT_DIR)
-		pickRandomMusic(court, newName);
-	else
-		court.playMusic(newName.c_str());
-}
-
-void pickRandomBG(Courtroom& court)
-{
-	dirent* dir;
-	DIR* d = opendir("/data/ao-nds/background");
-	if (!d)
-		return;
-
-	std::vector<std::string> items;
-
-	while ((dir = readdir(d)) != 0)
-	{
-		if (dir->d_name[0] == '.') continue;
-		items.push_back(dir->d_name);
-	}
-
-	closedir(d);
-
-	court.getBackground()->setBg(items[rand() % items.size()]);
-}
-
 void showDisclaimer()
 {
 	bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
@@ -224,7 +172,6 @@ int main()
 
 	initFont(acename_ttf, 13);	// index 0
 	initFont(Igiari_ttf, 16);	// index 1
-	//initFont(NDS12_ttf, 12);	// index 2
 
 	// printconsole will be removed once UI work actually begins
 	consoleInit(0, consoleGetDefault()->bgLayer, BgType_Text4bpp, BgSize_T_256x256, consoleGetDefault()->mapBase, consoleGetDefault()->gfxBase, false, true);
@@ -248,10 +195,7 @@ int main()
 		sprintf(buf, "%x", mac[i]);
 		strcat(macStr, buf);
 	}
-	iprintf("mac: '%s'\n", macStr);
 	gEngine->setMacAddr(macStr);
-
-	//pickRandomBG(*court);
 
 	std::string ip = "ws://vanilla.aceattorneyonline.com:2095/";
 	AOwebSocket* sock = new AOwebSocket;
