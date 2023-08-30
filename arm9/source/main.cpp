@@ -39,15 +39,6 @@ void connect_wifi()
 
 	iprintf("Connecting via WFC data...\n");
 	Wifi_InitDefault(INIT_ONLY);
-	unsigned char mac[6] = {0};
-	Wifi_GetData(WIFIGETDATA_MACADDRESS, 6, mac);
-	char macStr[32] = {0};
-	for (int i=0; i<6; i++)
-	{
-		char buf[4];
-		sprintf(buf, "%x", mac[i]);
-		strcat(macStr, buf);
-	}
 
 	Wifi_AutoConnect();
 	int wifiStatus = ASSOCSTATUS_DISCONNECTED;
@@ -72,7 +63,6 @@ void connect_wifi()
 		iprintf("mask   : %s\n", inet_ntoa(mask) );
 		iprintf("dns1   : %s\n", inet_ntoa(dns1) );
 		iprintf("dns2   : %s\n", inet_ntoa(dns2) );
-		iprintf("mac: '%s'\n", macStr);
 	}
 }
 
@@ -249,11 +239,23 @@ int main()
 
 	bgExtPaletteEnable();
 
-	std::string ip = "ws://vanilla.aceattorneyonline.com:2095/";
 	gEngine = new Engine;
+
+	unsigned char mac[6] = {0};
+	Wifi_GetData(WIFIGETDATA_MACADDRESS, 6, mac);
+	char macStr[32] = {0};
+	for (int i=0; i<6; i++)
+	{
+		char buf[4];
+		sprintf(buf, "%x", mac[i]);
+		strcat(macStr, buf);
+	}
+	iprintf("mac: '%s'\n", macStr);
+	gEngine->setMacAddr(macStr);
 
 	//pickRandomBG(*court);
 
+	std::string ip = "ws://vanilla.aceattorneyonline.com:2095/";
 	AOwebSocket* sock = new AOwebSocket;
 	//AOtcpSocket* sock = new AOtcpSocket;
 	//sock->connectIP(ip, 2086);

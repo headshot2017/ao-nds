@@ -48,12 +48,13 @@ void UIScreenCourt::update()
 
 void UIScreenCourt::onMessageDecryptor(void* pUserData, std::string msg)
 {
-	gEngine->getSocket()->sendData("HI#NDS#%");
+	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%\n";
+	gEngine->getSocket()->sendData(hdid);
 }
 
 void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
 {
-	gEngine->getSocket()->sendData("ID#ndsAO#0.0.1#%");
+	gEngine->getSocket()->sendData("ID#AO-NDS#0.0.1#%");
 }
 
 void UIScreenCourt::onMessagePN(void* pUserData, std::string msg)
