@@ -100,8 +100,8 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	std::string name = argumentAt(msg,16);
 	if (name.empty())
 		name = argumentAt(msg, 3);
-	if (name.size() > 10)
-		name.resize(10);
+	if (name.size() > 12)
+		name.resize(12);
 
 	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
 	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, argumentAt(msg,5), std::stoi(argumentAt(msg,15)), "male");
