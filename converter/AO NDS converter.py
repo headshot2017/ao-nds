@@ -421,8 +421,8 @@ def shout(filename):
     baseName = os.path.basename(filename)
     newFile = "converted/data/ao-nds/misc/" + os.path.splitext(baseName)[0]
 
-    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, extended palette slot 1, export to .bin, don't generate .h file
-    subprocess.Popen("./grit temp.png -gB8 -gt -gTFF00FF -m -p -mp 1 -ftb -fh!").wait()
+    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, extended palette slot 2, export to .bin, don't generate .h file
+    subprocess.Popen("./grit temp.png -gB8 -gt -gTFF00FF -m -p -mp 2 -ftb -fh!").wait()
 
     if os.path.exists(newFile+".img.bin"):
         os.remove(newFile+".img.bin")
