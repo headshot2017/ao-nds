@@ -8,64 +8,30 @@
 #include <dirent.h>
 #include <vector>
 
+#include <nds/arm9/background.h>
 #include <nds/arm9/console.h>
 #include <nds/arm9/exceptions.h>
 #include <nds/arm9/video.h>
 #include <nds/arm9/input.h>
 #include <nds/arm9/sprite.h>
 #include <nds/interrupts.h>
+#include <nds/ndstypes.h>
 #include <fat.h>
-#include <dswifi9.h>
 
 #include "mp3_shared.h"
 #include "global.h"
-#include "courtroom/chatbox.h"
-#include "courtroom/courtroom.h"
 #include "fonts.h"
 #include "bg_disclaimer.h"
 #include "engine.h"
 #include "sockets/aowebsocket.h"
 #include "sockets/aotcpsocket.h"
-#include "ui/uicourt.h"
+#include "ui/uiwificonnect.h"
 
 #include "acename_ttf.h"
 #include "Igiari_ttf.h"
 
-void connect_wifi()
-{
-	struct in_addr ip, gateway, mask, dns1, dns2;
-
-	iprintf("Connecting via WFC data...\n");
-	Wifi_InitDefault(INIT_ONLY);
-
-	Wifi_AutoConnect();
-	int wifiStatus = ASSOCSTATUS_DISCONNECTED;
-	while (wifiStatus != ASSOCSTATUS_ASSOCIATED && wifiStatus != ASSOCSTATUS_CANNOTCONNECT)
-	{
-		wifiStatus = Wifi_AssocStatus();
-		swiWaitForVBlank();
-	}
-
-	if(wifiStatus == ASSOCSTATUS_CANNOTCONNECT) {
-		iprintf("Failed to connect! Please check your WiFi settings\n");
-		//while (1) swiWaitForVBlank();
-	} else {
-
-		iprintf("Connected\n\n");
-
-		ip = Wifi_GetIPInfo(&gateway, &mask, &dns1, &dns2);
-
-
-		iprintf("ip     : %s\n", inet_ntoa(ip) );
-		iprintf("gateway: %s\n", inet_ntoa(gateway) );
-		iprintf("mask   : %s\n", inet_ntoa(mask) );
-		iprintf("dns1   : %s\n", inet_ntoa(dns1) );
-		iprintf("dns2   : %s\n", inet_ntoa(dns2) );
-	}
-}
-
-// Print HTTP response and signal that we're done
 /*
+// Print HTTP response and signal that we're done
 static void handleServerlist(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   static const char *s_url = "http://servers.aceattorneyonline.com/servers";
   static const char *s_post_data = NULL;
@@ -144,6 +110,8 @@ void fadeDisclaimer() {
 	dmaFillHalfWords(0, bgGetGfxPtr(0), bg_disclaimerTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(0), bg_disclaimerMapLen);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
+	REG_BLDCNT = BLEND_NONE;
+	REG_BLDALPHA = 0xf0f;
 }
 
 int main()
@@ -173,38 +141,12 @@ int main()
 	initFont(acename_ttf, 13);	// index 0
 	initFont(Igiari_ttf, 16);	// index 1
 
-	// printconsole will be removed once UI work actually begins
-	consoleInit(0, consoleGetDefault()->bgLayer, BgType_Text4bpp, BgSize_T_256x256, consoleGetDefault()->mapBase, consoleGetDefault()->gfxBase, false, true);
-
 	showDisclaimer();
-
-	connect_wifi();
 
 	fadeDisclaimer();
 
-	bgExtPaletteEnable();
-
 	gEngine = new Engine;
-
-	unsigned char mac[6] = {0};
-	Wifi_GetData(WIFIGETDATA_MACADDRESS, 6, mac);
-	char macStr[32] = {0};
-	for (int i=0; i<6; i++)
-	{
-		char buf[4];
-		sprintf(buf, "%x", mac[i]);
-		strcat(macStr, buf);
-	}
-	gEngine->setMacAddr(macStr);
-
-	std::string ip = "ws://vanilla.aceattorneyonline.com:2095/";
-	AOwebSocket* sock = new AOwebSocket;
-	//AOtcpSocket* sock = new AOtcpSocket;
-	//sock->connectIP(ip, 2086);
-	sock->connectIP(ip);
-	gEngine->setSocket(sock);
-
-	gEngine->changeScreen(new UIScreenCourt);
+	gEngine->changeScreen(new UIScreenWifi);
 
 	while (1)
 	{
@@ -212,7 +154,7 @@ int main()
 		if (keysDown() & KEY_SELECT)
 		{
 			iprintf("disconnecting\n");
-			sock->disconnect();
+			//sock->disconnect();
 		}
 
 		gEngine->updateInput();
@@ -220,6 +162,7 @@ int main()
 
 		bgUpdate();
 		oamUpdate(&oamMain);
+		oamUpdate(&oamSub);
 
 		mp3_fill_buffer();
 		swiWaitForVBlank();

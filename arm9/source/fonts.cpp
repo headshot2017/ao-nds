@@ -153,3 +153,31 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	if (oobFlag) *oobFlag = 0;
 	return x;
 }
+
+int getTextWidth(int fontID, const char* text)
+{
+	int textWidth = 0;
+
+	if (fontID < 0 || fontID >= loadedCount)
+		return 0;
+
+	LoadedFont& font = fonts[fontID];
+
+	for (u32 i=0; i<strlen(text); i++)
+	{
+		// how wide is this character
+		int ax;
+		int lsb;
+		stbtt_GetCodepointHMetrics(&font.info, text[i], &ax, &lsb);
+		// (Note that each Codepoint call has an alternative Glyph version which caches the work required to lookup the character word[i].)
+
+		// get bounding box for character (may be offset to account for chars that dip above or below the line)
+		int c_x1, c_y1, c_x2, c_y2;
+		stbtt_GetCodepointBitmapBox(&font.info, text[i], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
+
+		// advance x
+		textWidth += roundf(ax * font.scale);
+	}
+
+	return textWidth;
+}

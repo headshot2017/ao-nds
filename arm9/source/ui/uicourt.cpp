@@ -1,5 +1,7 @@
 #include "ui/uicourt.h"
 
+#include <nds/arm9/background.h>
+#include <nds/arm9/console.h>
 #include <nds/interrupts.h>
 
 #include "engine.h"
@@ -17,10 +19,16 @@ UIScreenCourt::~UIScreenCourt()
 		court->setVisible(false);
 		delete court;
 	}
+	bgExtPaletteDisable();
 }
 
 void UIScreenCourt::init()
 {
+	bgExtPaletteEnable();
+
+	// printconsole will be removed once UI work actually begins
+	consoleInit(0, consoleGetDefault()->bgLayer, BgType_Text4bpp, BgSize_T_256x256, consoleGetDefault()->mapBase, consoleGetDefault()->gfxBase, false, true);
+
 	court = new Courtroom;
 	court->setVisible(true);
 

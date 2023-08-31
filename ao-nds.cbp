@@ -44,6 +44,7 @@
 		<Unit filename="arm9/include/stb_truetype.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
 		<Unit filename="arm9/include/ui/uiscreen.h" />
+		<Unit filename="arm9/include/ui/uiwificonnect.h" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
 		<Unit filename="arm9/source/courtroom/background.cpp" />
 		<Unit filename="arm9/source/courtroom/character.cpp" />
@@ -58,6 +59,7 @@
 		<Unit filename="arm9/source/sockets/aotcpsocket.cpp" />
 		<Unit filename="arm9/source/sockets/aowebsocket.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
+		<Unit filename="arm9/source/ui/uiwificonnect.cpp" />
 		<Unit filename="arm9/source/websocket/mongoose.c">
 			<Option compilerVar="CC" />
 		</Unit>
