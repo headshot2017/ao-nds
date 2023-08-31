@@ -4,6 +4,7 @@
 #include "uiscreen.h"
 
 #include <nds/ndstypes.h>
+#include <nds/arm9/input.h>
 
 class UIScreenWifi : public UIScreen
 {
@@ -16,7 +17,7 @@ class UIScreenWifi : public UIScreen
 
 	int ticks;
 	int frame;
-	int oldAssocStatus;
+	int currAssocStatus;
 
 public:
 	UIScreenWifi() : UIScreen() {}

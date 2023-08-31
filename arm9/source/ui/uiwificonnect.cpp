@@ -49,7 +49,7 @@ UIScreenWifi::~UIScreenWifi()
 
 void UIScreenWifi::init()
 {
-	oldAssocStatus = -1;
+	currAssocStatus = -1;
 	ticks = 0;
 	frame = 0;
 	textCanvas = new u8[32*16];
@@ -113,7 +113,8 @@ void UIScreenWifi::setText(const char* text)
 
 void UIScreenWifi::updateInput()
 {
-
+	if (currAssocStatus == ASSOCSTATUS_CANNOTCONNECT && keysDown() % KEY_A)
+		Wifi_AutoConnect();
 }
 
 void UIScreenWifi::update()
@@ -127,11 +128,13 @@ void UIScreenWifi::update()
 	}
 
 	int assocStatus = Wifi_AssocStatus();
-	if (oldAssocStatus != assocStatus)
+	if (currAssocStatus != assocStatus)
 	{
-		oldAssocStatus = assocStatus;
+		currAssocStatus = assocStatus;
 		setText(assocStatusDetails[assocStatus]);
 	}
+
+	oamSetHidden(&oamSub, 0, (assocStatus == ASSOCSTATUS_CANNOTCONNECT));
 
 	if (Wifi_AssocStatus() == ASSOCSTATUS_ASSOCIATED)
 	{
