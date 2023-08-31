@@ -11,6 +11,9 @@ class Engine
 	AOsocket* aosocket;
 	std::string macAddr;
 
+	int alpha;
+	bool fading;
+
 public:
 	Engine();
 	~Engine();
@@ -18,8 +21,9 @@ public:
 	UIScreen* getScreen() {return screen;}
 	AOsocket* getSocket() {return aosocket;}
 	const std::string& getMacAddr() {return macAddr;}
+	bool isFading() {return fading;}
 
-	void changeScreen(UIScreen* next) {nextScreen = next;}
+	void changeScreen(UIScreen* next);
 	void setSocket(AOsocket* sock) {aosocket = sock;}
 	void setMacAddr(std::string addr) {macAddr = addr;}
 

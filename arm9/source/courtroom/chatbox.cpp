@@ -69,11 +69,6 @@ Chatbox::Chatbox()
 	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
-	// makes the chatbox transparent.
-	// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
-	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG1 | BLEND_DST_BG0 | BLEND_DST_SPRITE;
-	REG_BLDALPHA = 0x70f;
-
 	visible = false;
 	setOnChatboxFinishedCallback(0, 0);
 }
@@ -152,6 +147,14 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 
 void Chatbox::update()
 {
+	if (visible)
+	{
+		// makes the chatbox transparent.
+		// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
+		REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG1 | BLEND_DST_BG0 | BLEND_DST_SPRITE;
+		REG_BLDALPHA = 0x70f;
+	}
+
 	bgSetScroll(bgIndex, -xOffset, -192+80-yOffset);
 
 	for (int i=0; i<2; i++)

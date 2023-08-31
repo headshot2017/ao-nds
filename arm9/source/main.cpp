@@ -87,31 +87,32 @@ void showDisclaimer()
 	dmaCopy(bg_disclaimerMap, bgGetMapPtr(0), bg_disclaimerMapLen);
 	dmaCopy(bg_disclaimerPal, BG_PALETTE, bg_disclaimerPalLen);
 
-	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG0 | BLEND_DST_BACKDROP;
-	REG_BLDALPHA = 0xf00;
+	REG_BLDCNT = BLEND_FADE_BLACK | BLEND_SRC_BG0;
+	REG_BLDY = 16;
 }
 
 void fadeDisclaimer() {
 	int ticks = 0;
-	int alphaAdd = 1;
+	int alpha = 16;
+	int alphaAdd = -1;
 	while (1)
 	{
 		swiWaitForVBlank();
 
-		REG_BLDALPHA += alphaAdd;
-		if ((REG_BLDALPHA & 0xf) == 0xf && alphaAdd)
+		alpha += alphaAdd;
+		REG_BLDY = alpha;
+		if (alpha == 0 && alphaAdd)
 			alphaAdd = 0;
-		else if ((REG_BLDALPHA & 0xf) == 0)
+		else if (alpha == 16)
 			break;
 		else if (!alphaAdd && ticks++ >= 60*3)
-			alphaAdd = -1;
+			alphaAdd = 1;
 	}
 
 	dmaFillHalfWords(0, bgGetGfxPtr(0), bg_disclaimerTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(0), bg_disclaimerMapLen);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
 	REG_BLDCNT = BLEND_NONE;
-	REG_BLDALPHA = 0xf0f;
 }
 
 int main()

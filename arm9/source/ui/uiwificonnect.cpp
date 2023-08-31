@@ -136,7 +136,7 @@ void UIScreenWifi::update()
 
 	oamSetHidden(&oamSub, 0, (assocStatus == ASSOCSTATUS_CANNOTCONNECT));
 
-	if (Wifi_AssocStatus() == ASSOCSTATUS_ASSOCIATED)
+	if (Wifi_AssocStatus() == ASSOCSTATUS_ASSOCIATED && !gEngine->isFading())
 	{
 		std::string ip = "ws://vanilla.aceattorneyonline.com:2095/";
 		AOwebSocket* sock = new AOwebSocket;
