@@ -33,6 +33,8 @@ void Engine::update()
 {
 	if (screen)
 	{
+		screen->update();
+
 		if (fading && !nextScreen)
 		{
 			if (!alpha)
@@ -51,8 +53,6 @@ void Engine::update()
 				REG_BLDY_SUB = alpha;
 			}
 		}
-		else
-			screen->update();
 	}
 
 	if (nextScreen)
