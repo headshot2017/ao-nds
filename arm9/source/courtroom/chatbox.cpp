@@ -117,10 +117,11 @@ void Chatbox::setName(std::string name)
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-	nameWidth = renderText(0, name.c_str(), COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+	nameWidth = getTextWidth(0, name.c_str());
+	renderText(0, name.c_str(), COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
-		oamSet(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
+		oamSet(&oamMain, 24+i, 1+(i*32) + 36-(nameWidth/2), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
 }
 
 void Chatbox::setText(std::string text, int color, std::string blip)
@@ -158,7 +159,7 @@ void Chatbox::update()
 	bgSetScroll(bgIndex, -xOffset, -192+80-yOffset);
 
 	for (int i=0; i<2; i++)
-		oamSetXY(&oamMain, 24+i, 1+(i*32) + 32-(nameWidth/2) + xOffset, 115+yOffset);
+		oamSetXY(&oamMain, 24+i, 1+(i*32) + 36-(nameWidth/2) + xOffset, 115+yOffset);
 
 
 	// handle chatbox text typewriter
