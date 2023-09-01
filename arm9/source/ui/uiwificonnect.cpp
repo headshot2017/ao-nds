@@ -23,7 +23,7 @@ const char* assocStatusDetails[] = {
 	"Connecting to access point...",
 	"Getting DHCP...",
 	"Connected successfully!",
-	"Connection failure. Press A to try again"
+	"Failed to connect to Wi-Fi. Press A to try again"
 };
 
 UIScreenWifi::~UIScreenWifi()
@@ -105,16 +105,20 @@ void UIScreenWifi::setText(const char* text)
 	memset(textCanvas, 0, 32*16);
 
 	int textWidth = getTextWidth(0, text);
-	renderText(0, text, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, 8);
-
 	for (int i=0; i<8; i++)
 		oamSet(&oamSub, i+1, 128-(textWidth/2)+(i*32), 96-6, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, textGfx[i], -1, false, false, false, false, false);
+
+	oamUpdate(&oamSub);
+	renderText(0, text, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, 8);
 }
 
 void UIScreenWifi::updateInput()
 {
-	if (currAssocStatus == ASSOCSTATUS_CANNOTCONNECT && keysDown() % KEY_A)
+	if (currAssocStatus == ASSOCSTATUS_CANNOTCONNECT && keysDown() & KEY_A)
+	{
+		Wifi_DisconnectAP();
 		Wifi_AutoConnect();
+	}
 }
 
 void UIScreenWifi::update()
