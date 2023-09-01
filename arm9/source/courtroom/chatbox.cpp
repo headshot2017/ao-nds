@@ -182,11 +182,9 @@ void Chatbox::update()
 
 		if (currTextGfxInd >= 8*3)
 		{
-			currTextInd++;
-			if (currTextInd >= currText.size() && onChatboxFinished)
-				onChatboxFinished(pUserData);
-
-			return;
+			currTextGfxInd = 0;
+			for (int i=0; i<8*3; i++)
+				dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 		}
 
 		bool lastBox = (currTextGfxInd % 8 == 7);
