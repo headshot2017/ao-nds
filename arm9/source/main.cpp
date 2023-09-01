@@ -152,11 +152,6 @@ int main()
 	while (1)
 	{
 		scanKeys();
-		if (keysDown() & KEY_SELECT)
-		{
-			iprintf("disconnecting\n");
-			//sock->disconnect();
-		}
 
 		gEngine->updateInput();
 		gEngine->update();

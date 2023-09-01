@@ -2,6 +2,7 @@
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/console.h>
+#include <nds/arm9/input.h>
 #include <nds/interrupts.h>
 
 #include "engine.h"
@@ -46,7 +47,11 @@ void UIScreenCourt::init()
 
 void UIScreenCourt::updateInput()
 {
-
+	if (keysDown() & KEY_SELECT)
+	{
+		iprintf("disconnecting\n");
+		gEngine->getSocket()->disconnect();
+	}
 }
 
 void UIScreenCourt::update()
