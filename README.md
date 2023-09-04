@@ -7,7 +7,6 @@ Additional code by stonedDiscord<br/>
 UI design by Samevi
 
 **STILL UNDER DEVELOPMENT!**
-This homebrew does not connect online yet.
 I still have to finish writing code that handles these:
 - [x] Backgrounds
 - [x] Desk sprites
