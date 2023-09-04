@@ -6,3 +6,7 @@
 
 # transparency color: #FF00FF
 -gTFF00FF
+
+# metatile width and height (8 tiles * 4 = 32)
+-Mw4
+-Mh2
