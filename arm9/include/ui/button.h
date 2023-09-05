@@ -25,7 +25,7 @@ class UIButton
 	void* pUserData;
 
 public:
-	UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int gfxCount, SpriteSize sprSize, int xPos, int yPos, int width, int height, int palSlot);
+	UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int gfxCount, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot);
 	~UIButton();
 
 	void setPos(int xPos, int yPos);

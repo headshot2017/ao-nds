@@ -2,7 +2,7 @@
 
 #include <nds/dma.h>
 
-UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int gfxCount, SpriteSize sprSize, int xPos, int yPos, int width, int height, int palSlot)
+UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int gfxCount, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot)
 {
 	oam = chosenOam;
 	oamStart = oamStartInd;
@@ -23,9 +23,9 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 	{
 		spriteGfx[i] = oamAllocateGfx(oam, spriteSize, SpriteColorFormat_256Color);
 
-		u8* offset = data + (i*w*h);
-		dmaCopy(offset, spriteGfx[i], w*h);
-		oamSet(oam, oamStart+i, x+(i*w), y, 0, palSlot, spriteSize, SpriteColorFormat_256Color, spriteGfx[i], -1, false, false, false, false, false);
+		u8* offset = data + (i*sprWidth*sprHeight);
+		dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
+		oamSet(oam, oamStart+i, x+(i*sprWidth), y, 0, palSlot, spriteSize, SpriteColorFormat_256Color, spriteGfx[i], -1, false, false, false, false, false);
 	}
 
 	// copy palette to ext palette vram slot
@@ -65,7 +65,7 @@ void UIButton::updateInput()
 	if (keysDown() & KEY_TOUCH)
 	{
 		touchRead(&touchPos);
-		if (callback && touchPos.px >= (u16)x && touchPos.py >= (u16)y && touchPos.px < (u16)(x+(spriteGfxCount*w)) && touchPos.py < (u16)(y+h))
+		if (callback && touchPos.px >= (u16)x && touchPos.py >= (u16)y && touchPos.px < (u16)(x+w) && touchPos.py < (u16)(y+h))
 			callback(pUserData);
 	}
 }
