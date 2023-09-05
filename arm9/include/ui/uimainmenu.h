@@ -13,7 +13,6 @@ class UIScreenMainMenu : public UIScreen
 
 	UIButton* btn_viewServerList;
 	UIButton* btn_directConnect;
-	UIButton* btn_quit;
 
 	u32* sndGavel;
 	u32 sndGavelSize;
@@ -28,7 +27,6 @@ public:
 
 	static void onViewServerList(void* pUserData);
 	static void onDirectConnect(void* pUserData);
-	static void onQuit(void* pUserData);
 };
 
 #endif // UIMAINMENU_H_INCLUDED

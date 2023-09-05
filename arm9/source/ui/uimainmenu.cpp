@@ -14,7 +14,6 @@
 #include "bg_logo.h"
 #include "spr_viewServerList.h"
 #include "spr_directConnect.h"
-#include "spr_quitAO.h"
 
 UIScreenMainMenu::~UIScreenMainMenu()
 {
@@ -29,7 +28,6 @@ UIScreenMainMenu::~UIScreenMainMenu()
 	delete[] sndGavel;
 	delete btn_viewServerList;
 	delete btn_directConnect;
-	delete btn_quit;
 }
 
 void UIScreenMainMenu::init()
@@ -51,18 +49,15 @@ void UIScreenMainMenu::init()
 
 	btn_viewServerList = new UIButton(&oamSub, (u8*)spr_viewServerListTiles, (u8*)spr_viewServerListPal, 0, 3, SpriteSize_64x64, 128-88, 32, 176, 58, 64, 64, 0);
 	btn_directConnect = new UIButton(&oamSub, (u8*)spr_directConnectTiles, (u8*)spr_directConnectPal, btn_viewServerList->nextOamInd(), 7, SpriteSize_32x32, 128-111, 104, 223, 26, 32, 32, 1);
-	btn_quit = new UIButton(&oamSub, (u8*)spr_quitAOTiles, (u8*)spr_quitAOPal, btn_directConnect->nextOamInd(), 3, SpriteSize_32x32, 128-38, 192-26, 76, 26, 32, 32, 2);
 
 	btn_viewServerList->connect(onViewServerList, this);
 	btn_directConnect->connect(onDirectConnect, this);
-	btn_quit->connect(onQuit, this);
 }
 
 void UIScreenMainMenu::updateInput()
 {
 	btn_viewServerList->updateInput();
 	btn_directConnect->updateInput();
-	btn_quit->updateInput();
 }
 
 void UIScreenMainMenu::onViewServerList(void* pUserData)
@@ -82,12 +77,4 @@ void UIScreenMainMenu::onDirectConnect(void* pUserData)
 {
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
 	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
-}
-
-void UIScreenMainMenu::onQuit(void* pUserData)
-{
-	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
-
-	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
-	gEngine->quit();
 }
