@@ -3,6 +3,7 @@
 #include <string.h>
 #include <string>
 
+#include <nds/arm9/input.h>
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
@@ -10,8 +11,7 @@
 
 #include "engine.h"
 #include "fonts.h"
-#include "ui/uicourt.h"
-#include "sockets/aowebsocket.h"
+#include "ui/uimainmenu.h"
 #include "bg_logo.h"
 #include "bg_title.h"
 #include "spr_loading.h"
@@ -141,12 +141,5 @@ void UIScreenWifi::update()
 	oamSetHidden(&oamSub, 0, (assocStatus == ASSOCSTATUS_CANNOTCONNECT));
 
 	if (Wifi_AssocStatus() == ASSOCSTATUS_ASSOCIATED && !gEngine->isFading())
-	{
-		std::string ip = "ws://vanilla.aceattorneyonline.com:2095/";
-		AOwebSocket* sock = new AOwebSocket;
-		sock->connectIP(ip);
-
-		gEngine->setSocket(sock);
-		gEngine->changeScreen(new UIScreenCourt);
-	}
+		gEngine->changeScreen(new UIScreenMainMenu);
 }

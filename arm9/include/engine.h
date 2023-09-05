@@ -13,6 +13,7 @@ class Engine
 
 	int alpha;
 	bool fading;
+	bool running;
 
 public:
 	Engine();
@@ -22,6 +23,7 @@ public:
 	AOsocket* getSocket() {return aosocket;}
 	const std::string& getMacAddr() {return macAddr;}
 	bool isFading() {return fading;}
+	bool isRunning() {return running;}
 
 	void changeScreen(UIScreen* next);
 	void setSocket(AOsocket* sock) {aosocket = sock;}
@@ -29,6 +31,8 @@ public:
 
 	void updateInput();
 	void update();
+
+	void quit();
 };
 
 extern Engine* gEngine;

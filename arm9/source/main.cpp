@@ -149,7 +149,7 @@ int main()
 	gEngine = new Engine;
 	gEngine->changeScreen(new UIScreenWifi);
 
-	while (1)
+	while (gEngine->isRunning())
 	{
 		scanKeys();
 

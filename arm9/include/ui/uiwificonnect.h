@@ -4,7 +4,6 @@
 #include "uiscreen.h"
 
 #include <nds/ndstypes.h>
-#include <nds/arm9/input.h>
 
 class UIScreenWifi : public UIScreen
 {

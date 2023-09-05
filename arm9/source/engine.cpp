@@ -1,6 +1,7 @@
 #include "engine.h"
 
 #include <nds/ndstypes.h>
+#include <nds/interrupts.h>
 
 Engine* gEngine = nullptr;
 
@@ -8,6 +9,7 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 {
 	alpha = 16;
 	fading = false;
+	running = true;
 }
 
 Engine::~Engine()
@@ -80,4 +82,20 @@ void Engine::update()
 	{
 		aosocket->update();
 	}
+}
+
+void Engine::quit()
+{
+	alpha = 0;
+	REG_BLDCNT = BLEND_FADE_BLACK | BLEND_SRC_BG0 | BLEND_SRC_BG1 | BLEND_SRC_BG2 | BLEND_SRC_BG3 | BLEND_SRC_SPRITE;
+	REG_BLDCNT_SUB = BLEND_FADE_BLACK | BLEND_SRC_BG0 | BLEND_SRC_BG1 | BLEND_SRC_BG2 | BLEND_SRC_BG3 | BLEND_SRC_SPRITE;
+
+	while (alpha++ != 16)
+	{
+		REG_BLDY = alpha;
+		REG_BLDY_SUB = alpha;
+		swiWaitForVBlank();
+	}
+
+	running = false;
 }
