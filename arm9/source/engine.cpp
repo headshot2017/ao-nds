@@ -27,7 +27,7 @@ void Engine::changeScreen(UIScreen* next)
 
 void Engine::updateInput()
 {
-	if (screen)
+	if (screen && !nextScreen)
 		screen->updateInput();
 }
 
