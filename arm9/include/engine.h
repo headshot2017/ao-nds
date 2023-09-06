@@ -26,7 +26,7 @@ public:
 	bool isRunning() {return running;}
 
 	void changeScreen(UIScreen* next);
-	void setSocket(AOsocket* sock) {aosocket = sock;}
+	void setSocket(AOsocket* sock);
 	void setMacAddr(std::string addr) {macAddr = addr;}
 
 	void updateInput();

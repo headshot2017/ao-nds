@@ -20,6 +20,9 @@ class UIButton
 	int y;
 	int w;
 	int h;
+	int sprW;
+	int sprH;
+	bool visible;
 
 	voidCallback callback;
 	void* pUserData;
@@ -28,7 +31,10 @@ public:
 	UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int gfxCount, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot);
 	~UIButton();
 
+	void setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int palSlot);
+	void setVisible(bool on);
 	void setPos(int xPos, int yPos);
+	void setPriority(int pr);
 	void connect(voidCallback cb, void* p) {callback = cb; pUserData = p;}
 	int nextOamInd() {return oamStart+spriteGfxCount;}
 

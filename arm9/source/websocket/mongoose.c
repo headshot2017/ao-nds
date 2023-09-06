@@ -3775,8 +3775,8 @@ void mg_mgr_free(struct mg_mgr *mgr) {
   struct mg_timer *tmp, *t = mgr->timers;
   while (t != NULL) tmp = t->next, free(t), t = tmp;
   mgr->timers = NULL;  // Important. Next call to poll won't touch timers
-  for (c = mgr->conns; c != NULL; c = c->next) c->is_closing = 1;
-  mg_mgr_poll(mgr, 0);
+  //for (c = mgr->conns; c != NULL; c = c->next) c->is_closing = 1;
+  //mg_mgr_poll(mgr, 0);
 #if MG_ENABLE_FREERTOS_TCP
   FreeRTOS_DeleteSocketSet(mgr->ss);
 #endif

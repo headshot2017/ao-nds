@@ -8,8 +8,7 @@
 
 #include "mp3_shared.h"
 #include "engine.h"
-#include "ui/uicourt.h"
-#include "sockets/aowebsocket.h"
+#include "ui/uiserverlist.h"
 #include "bg_title.h"
 #include "bg_logo.h"
 #include "spr_viewServerList.h"
@@ -65,12 +64,7 @@ void UIScreenMainMenu::onViewServerList(void* pUserData)
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
 	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
 
-	std::string ip = "ws://vanilla.aceattorneyonline.com:2095/";
-	AOwebSocket* sock = new AOwebSocket;
-	sock->connectIP(ip);
-
-	gEngine->setSocket(sock);
-	gEngine->changeScreen(new UIScreenCourt);
+	gEngine->changeScreen(new UIScreenServerList);
 }
 
 void UIScreenMainMenu::onDirectConnect(void* pUserData)

@@ -40,6 +40,7 @@ Courtroom::~Courtroom()
 	delete background;
 	delete chatbox;
 	delete character;
+	mp3_stop();
 }
 
 void Courtroom::setVisible(bool on)

@@ -156,6 +156,65 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	return x;
 }
 
+void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16** spriteGfxTargets, int gfxPerLine, int maxLines)
+{
+	int textX = 0;
+	int currTextGfxInd = 0;
+
+	for (u32 i=0; i<strlen(text); i++)
+	{
+		while (text[i] == '\n')
+		{
+			int line = currTextGfxInd/gfxPerLine;
+			currTextGfxInd = (line+1) * gfxPerLine;
+
+			i++;
+			if (i >= strlen(text))
+				return;
+
+			textX = 0;
+		}
+
+		if (currTextGfxInd >= gfxPerLine*maxLines)
+			return;
+
+		bool lastBox = (currTextGfxInd % gfxPerLine == gfxPerLine-1);
+		int oobFlag = 0;
+		int outWidth;
+		int new_x = renderChar(fontID, text+i, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+
+		if (oobFlag)
+		{
+			currTextGfxInd++;
+
+			if (currTextGfxInd % gfxPerLine == 0)
+			{
+				// entered a new line
+				textX = 0;
+				if (oobFlag == 2)
+					i--;
+			}
+			else
+			{
+				textX -= 32;
+				textX = renderChar(fontID, text+i, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+			}
+		}
+		else
+		{
+			textX = new_x;
+			if (textX > 32)
+			{
+				currTextGfxInd++;
+				if (currTextGfxInd % gfxPerLine == 0)
+					textX = 0;
+				else
+					textX -= 32;
+			}
+		}
+	}
+}
+
 int getTextWidth(int fontID, const char* text)
 {
 	int textWidth = 0;

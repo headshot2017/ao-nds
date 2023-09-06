@@ -116,11 +116,11 @@ void Background::destroyBg()
 
 bool Background::setBg(const std::string& name)
 {
-	std::string bgPath = "/data/ao-nds/background/";
+	std::string bgPath = "/data/ao-nds/background/" + name;
 	bgPath += name;
 	DIR* dir = opendir(bgPath.c_str());
-	if (!dir) return false;
-	closedir(dir);
+	if (!dir) bgPath = "/data/ao-nds/background/gs4";
+	else closedir(dir);
 
 	if (!deskTiles.load(bgPath + "/desk_tiles.cfg"))
 		return false;

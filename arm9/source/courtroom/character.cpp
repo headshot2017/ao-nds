@@ -87,6 +87,11 @@ Character::~Character()
 		oamFreeGfx(&oamMain, charGfx[i]);
 	}
 
+	if (charData)
+		delete[] charData;
+	if (frameDurations)
+		free(frameDurations);
+
 	timerStop(0);
 }
 

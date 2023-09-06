@@ -9,6 +9,8 @@ AOwebSocket::AOwebSocket() : AOsocket()
 
 AOwebSocket::~AOwebSocket()
 {
+	if (c) c->is_closing = 1;
+	mg_mgr_poll(&mgr, 0);
 	mg_mgr_free(&mgr);
 }
 

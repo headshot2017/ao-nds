@@ -77,10 +77,6 @@ Chatbox::~Chatbox()
 {
 	bgHide(bgIndex);
 
-	REG_BLDCNT = BLEND_NONE;
-
-	dmaFillHalfWords(0, (void *)&VRAM_F_EXT_PALETTE[bgIndex][0], 512);
-
 	if (blipSnd)
 		delete[] blipSnd;
 

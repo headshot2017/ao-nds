@@ -23,6 +23,7 @@ public:
 	virtual void disconnect() {}
 	virtual void sendData(std::string data) {}
 
+	void clearCallbacks() {callbacks.clear();}
 	void setMessageCallback(std::string headerName, stringCallback cb, void* pUserData) {callbacks[headerName] = {cb, pUserData};}
 
 protected:

@@ -1,5 +1,7 @@
 #include "ui/uicourt.h"
 
+#include <string.h>
+
 #include <nds/arm9/background.h>
 #include <nds/arm9/console.h>
 #include <nds/arm9/input.h>
@@ -7,6 +9,7 @@
 
 #include "engine.h"
 #include "global.h"
+#include "ui/uiserverlist.h"
 
 UIScreenCourt::UIScreenCourt() : UIScreen()
 {
@@ -20,6 +23,11 @@ UIScreenCourt::~UIScreenCourt()
 		court->setVisible(false);
 		delete court;
 	}
+
+	AOsocket* sock = gEngine->getSocket();
+	sock->clearCallbacks();
+	gEngine->setSocket(nullptr);
+
 	bgExtPaletteDisable();
 }
 
@@ -28,7 +36,7 @@ void UIScreenCourt::init()
 	bgExtPaletteEnable();
 
 	// printconsole will be removed once UI work actually begins
-	consoleInit(0, consoleGetDefault()->bgLayer, BgType_Text4bpp, BgSize_T_256x256, consoleGetDefault()->mapBase, consoleGetDefault()->gfxBase, false, true);
+	consoleInit(0, 0, BgType_Text4bpp, BgSize_T_256x256, 0, 1, false, true);
 
 	court = new Courtroom;
 	court->setVisible(true);
@@ -50,7 +58,7 @@ void UIScreenCourt::updateInput()
 	if (keysDown() & KEY_SELECT)
 	{
 		iprintf("disconnecting\n");
-		gEngine->getSocket()->disconnect();
+		gEngine->changeScreen(new UIScreenServerList);
 	}
 }
 

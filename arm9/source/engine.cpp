@@ -25,6 +25,12 @@ void Engine::changeScreen(UIScreen* next)
 	fading = true;
 }
 
+void Engine::setSocket(AOsocket* sock)
+{
+	if (aosocket) delete aosocket;
+	aosocket = sock;
+}
+
 void Engine::updateInput()
 {
 	if (screen && !nextScreen)

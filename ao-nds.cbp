@@ -81,9 +81,11 @@
 		<Unit filename="arm9/include/sockets/aowebsocket.h" />
 		<Unit filename="arm9/include/stb_truetype.h" />
 		<Unit filename="arm9/include/ui/button.h" />
+		<Unit filename="arm9/include/ui/label.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
 		<Unit filename="arm9/include/ui/uimainmenu.h" />
 		<Unit filename="arm9/include/ui/uiscreen.h" />
+		<Unit filename="arm9/include/ui/uiserverlist.h" />
 		<Unit filename="arm9/include/ui/uiwificonnect.h" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
 		<Unit filename="arm9/source/courtroom/background.cpp" />
@@ -99,8 +101,10 @@
 		<Unit filename="arm9/source/sockets/aotcpsocket.cpp" />
 		<Unit filename="arm9/source/sockets/aowebsocket.cpp" />
 		<Unit filename="arm9/source/ui/button.cpp" />
+		<Unit filename="arm9/source/ui/label.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
 		<Unit filename="arm9/source/ui/uimainmenu.cpp" />
+		<Unit filename="arm9/source/ui/uiserverlist.cpp" />
 		<Unit filename="arm9/source/ui/uiwificonnect.cpp" />
 		<Unit filename="arm9/source/websocket/mongoose.c">
 			<Option compilerVar="CC" />

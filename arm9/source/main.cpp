@@ -30,56 +30,6 @@
 #include "acename_ttf.h"
 #include "Igiari_ttf.h"
 
-/*
-// Print HTTP response and signal that we're done
-static void handleServerlist(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
-  static const char *s_url = "http://servers.aceattorneyonline.com/servers";
-  static const char *s_post_data = NULL;
-  if (ev == MG_EV_OPEN) {
-    // Connection created. Store connect expiration time in c->data
-    *(uint64_t *) c->data = mg_millis() + 1000;
-  } else if (ev == MG_EV_POLL) {
-    if (mg_millis() > *(uint64_t *) c->data &&
-        (c->is_connecting || c->is_resolving)) {
-      mg_error(c, "Connect timeout");
-    }
-  } else if (ev == MG_EV_CONNECT) {
-    // Connected to server. Extract host name from URL
-    struct mg_str host = mg_url_host(s_url);
-
-    // Send request
-    int content_length = s_post_data ? strlen(s_post_data) : 0;
-    mg_printf(c,
-              "%s %s HTTP/1.0\r\n"
-              "Host: %.*s\r\n"
-              "Content-Type: octet-stream\r\n"
-              "Content-Length: %d\r\n"
-              "\r\n",
-              s_post_data ? "POST" : "GET", mg_url_uri(s_url), (int) host.len,
-              host.ptr, content_length);
-    mg_send(c, s_post_data, content_length);
-  } else if (ev == MG_EV_HTTP_MSG) {
-    // Response is received. Print it
-    struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-    iprintf("%.*s", (int) hm->message.len, hm->message.ptr);
-    c->is_closing = 1;         // Tell mongoose to close this connection
-    *(bool *) fn_data = true;  // Tell event loop to stop
-  } else if (ev == MG_EV_ERROR) {
-    *(bool *) fn_data = true;  // Error, tell event loop to stop
-  }
-}
-
-void getServerlist(mg_mgr *mgr)
-{
-  static const char *s_url = "http://servers.aceattorneyonline.com/servers";
-  static const uint64_t s_timeout_ms = 1500;  // Connect timeout in milliseconds
-  bool done = false;              // Event handler flips it to true
-  mg_http_connect(mgr, s_url, handleServerlist, &done);  // Create client connection
-  while (!done) mg_mgr_poll(mgr, 50);      // Event manager loops until 'done'
-  mg_mgr_free(mgr);                        // Free resources
-}
-*/
-
 void showDisclaimer()
 {
 	bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);

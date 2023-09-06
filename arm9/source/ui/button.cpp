@@ -15,6 +15,9 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 	y = yPos;
 	w = width;
 	h = height;
+	sprW = sprWidth;
+	sprH = sprHeight;
+	visible = true;
 
 	callback = 0;
 	pUserData = 0;
@@ -47,22 +50,59 @@ UIButton::~UIButton()
 {
 	for (int i=0; i<spriteGfxCount; i++)
 	{
-		oamSet(oam, oamStart+i, 0, 0, 0, 0, spriteSize, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamClearSprite(oam, oamStart+i);
 		oamFreeGfx(oam, spriteGfx[i]);
 	}
 	delete[] spriteGfx;
+}
+
+void UIButton::setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int palSlot)
+{
+	for (int i=0; i<spriteGfxCount; i++)
+	{
+		u8* offset = data + (i*sprWidth*sprHeight);
+		dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
+	}
+
+	// copy palette to ext palette vram slot
+	if (oam == &oamMain)
+	{
+		vramSetBankF(VRAM_F_LCD);
+		dmaCopy(palData, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
+		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+	}
+	else
+	{
+		vramSetBankI(VRAM_I_LCD);
+		dmaCopy(palData, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
+		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	}
+}
+
+void UIButton::setVisible(bool on)
+{
+	visible = on;
+	for (int i=0; i<spriteGfxCount; i++)
+		oamSetHidden(oam, oamStart+i, !on);
 }
 
 void UIButton::setPos(int xPos, int yPos)
 {
 	x = xPos;
 	y = yPos;
-	oamSetXY(oam, oamStart, x, y);
+	for (int i=0; i<spriteGfxCount; i++)
+		oamSetXY(oam, oamStart+i, x+(i*sprW), y);
+}
+
+void UIButton::setPriority(int pr)
+{
+	for (int i=0; i<spriteGfxCount; i++)
+		oamSetPriority(oam, oamStart+i, pr);
 }
 
 void UIButton::updateInput()
 {
-	if (keysDown() & KEY_TOUCH)
+	if (visible && keysDown() & KEY_TOUCH)
 	{
 		touchRead(&touchPos);
 		if (callback && touchPos.px >= (u16)x && touchPos.py >= (u16)y && touchPos.px < (u16)(x+w) && touchPos.py < (u16)(y+h))
