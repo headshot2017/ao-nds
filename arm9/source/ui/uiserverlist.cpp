@@ -71,6 +71,8 @@ UIScreenServerList::~UIScreenServerList()
 	delete[] sndSelect;
 	delete[] sndCancel;
 
+	if (m_servers) delete[] m_servers;
+
 	shutdown(sockfd, 0); // good practice to shutdown the socket.
 	closesocket(sockfd); // remove the socket.
 }
@@ -145,14 +147,11 @@ void UIScreenServerList::init()
 	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav", &sndSelectSize);
 	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav", &sndCancelSize);
 
-	//mg_mgr_init(&mgr);
-	//c = mg_http_connect(&mgr, "http://servers.aceattorneyonline.com/servers", httpHandler, this);
-
 	arrowY = 0;
 	arrowYadd = 1;
 	currPage = 0;
 	currServer = -1;
-	showingFavorites = false;
+	isFavorites = 0;
 	loaded = false;
 
 	m_servers = 0;

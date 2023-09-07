@@ -47,13 +47,14 @@ class UIScreenServerList : public UIScreen
 	int sockfd;
 	std::string tempData;
 	serverInfo* m_servers;
+	serverInfo* m_favServers;
 	u32 m_serverCount;
 
 	int arrowY;
 	int arrowYadd;
 	int currServer;
 	u32 currPage;
-	bool showingFavorites;
+	int isFavorites;
 	bool loaded;
 
 public:
