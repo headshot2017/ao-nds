@@ -36,6 +36,7 @@
 		<Unit filename="arm9/include/engine.h" />
 		<Unit filename="arm9/include/fonts.h" />
 		<Unit filename="arm9/include/global.h" />
+		<Unit filename="arm9/include/ini.h" />
 		<Unit filename="arm9/include/mongoose.h" />
 		<Unit filename="arm9/include/mongoose_custom.h" />
 		<Unit filename="arm9/include/rapidjson/allocators.h" />

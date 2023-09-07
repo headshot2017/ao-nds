@@ -25,7 +25,7 @@ class UIScreenServerList : public UIScreen
 	int subBgIndex;
 
 	u16* spr_arrowDownGfx;
-	UIButton* btn_addFav;
+	UIButton* btn_manageFav;
 	UIButton* btn_listToggle;
 	UIButton* btn_back;
 	UIButton* btn_connect;
@@ -46,9 +46,9 @@ class UIScreenServerList : public UIScreen
 
 	int sockfd;
 	std::string tempData;
-	serverInfo* m_servers;
-	serverInfo* m_favServers;
-	u32 m_serverCount;
+	serverInfo* m_servers[2];
+	u32 m_serverCount[2];
+	std::string publicListMsg;
 
 	int arrowY;
 	int arrowYadd;
@@ -65,8 +65,9 @@ public:
 	void updateInput();
 	void update();
 	void reloadPage();
+	void saveFavorites();
 
-	static void onAddFavorite(void* pUserData);
+	static void onManageFavorite(void* pUserData);
 	static void onToggleList(void* pUserData);
 	static void onBack(void* pUserData);
 	static void onConnect(void* pUserData);
@@ -74,7 +75,8 @@ public:
 	static void onNextPage(void* pUserData);
 	static void onServerClicked(void* pUserData);
 
-	void parseServerList(const std::string& data);
+	void parsePublicList(const std::string& data);
+	void parseFavoritesList();
 };
 
 #endif // UISERVERLIST_H_INCLUDED
