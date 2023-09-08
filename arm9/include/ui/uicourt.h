@@ -6,9 +6,26 @@
 #include "uiscreen.h"
 #include "courtroom/courtroom.h"
 
+class UIScreenCourt;
+class UISubScreen
+{
+public:
+	UISubScreen(UIScreenCourt* courtUI) : pCourtUI(courtUI) {}
+	virtual ~UISubScreen() {}
+
+	virtual void init() {}
+	virtual void updateInput() {}
+	virtual void update() {}
+
+protected:
+	UIScreenCourt* pCourtUI;
+};
+
 class UIScreenCourt : public UIScreen
 {
 	Courtroom* court;
+	UISubScreen* subScreen;
+	UISubScreen* nextScreen;
 
 public:
 	UIScreenCourt();
@@ -17,6 +34,7 @@ public:
 	void init();
 	void updateInput();
 	void update();
+	void changeScreen(UISubScreen* newScreen);
 
 	static void onMessageDecryptor(void* pUserData, std::string msg);
 	static void onMessageID(void* pUserData, std::string msg);

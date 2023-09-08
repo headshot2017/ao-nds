@@ -36,7 +36,10 @@ void AOwebSocket::wsHandler(struct mg_connection *c, int ev, void *ev_data, void
 			iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
 
 			if (pSelf->callbacks.count(header))
-				pSelf->callbacks[header].cb(pSelf->callbacks[header].pUserData, wm->data.ptr);
+			{
+				for (const NetCBInfo& cbInfo : pSelf->callbacks[header])
+					cbInfo.cb(cbInfo.pUserData, wm->data.ptr);
+			}
 			break;
 	}
 }

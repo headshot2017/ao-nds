@@ -10,10 +10,13 @@
 #include "engine.h"
 #include "global.h"
 #include "ui/uiserverlist.h"
+#include "ui/court/loading.h"
 
 UIScreenCourt::UIScreenCourt() : UIScreen()
 {
 	court = 0;
+	subScreen = 0;
+	nextScreen = 0;
 }
 
 UIScreenCourt::~UIScreenCourt()
@@ -23,6 +26,9 @@ UIScreenCourt::~UIScreenCourt()
 		court->setVisible(false);
 		delete court;
 	}
+
+	if (subScreen)
+		delete subScreen;
 
 	AOsocket* sock = gEngine->getSocket();
 	sock->clearCallbacks();
@@ -35,36 +41,46 @@ void UIScreenCourt::init()
 {
 	bgExtPaletteEnable();
 
-	// printconsole will be removed once UI work actually begins
-	consoleInit(0, 0, BgType_Text4bpp, BgSize_T_256x256, 0, 1, false, true);
+	subScreen = new UICourtLoading(this);
+	subScreen->init();
 
 	court = new Courtroom;
 	court->setVisible(true);
 
 	AOsocket* sock = gEngine->getSocket();
-	sock->setMessageCallback("decryptor", onMessageDecryptor, this);
-	sock->setMessageCallback("ID", onMessageID, this);
-	sock->setMessageCallback("PN", onMessagePN, this);
-	sock->setMessageCallback("SI", onMessageSI, this);
-	sock->setMessageCallback("SC", onMessageSC, this);
-	sock->setMessageCallback("SM", onMessageSM, this);
-	sock->setMessageCallback("BN", onMessageBN, this);
-	sock->setMessageCallback("MC", onMessageMC, this);
-	sock->setMessageCallback("MS", onMessageMS, this);
+	sock->addMessageCallback("decryptor", onMessageDecryptor, this);
+	sock->addMessageCallback("ID", onMessageID, this);
+	sock->addMessageCallback("PN", onMessagePN, this);
+	sock->addMessageCallback("SI", onMessageSI, this);
+	sock->addMessageCallback("SC", onMessageSC, this);
+	sock->addMessageCallback("SM", onMessageSM, this);
+	sock->addMessageCallback("BN", onMessageBN, this);
+	sock->addMessageCallback("MC", onMessageMC, this);
+	sock->addMessageCallback("MS", onMessageMS, this);
 }
 
 void UIScreenCourt::updateInput()
 {
-	if (keysDown() & KEY_SELECT)
-	{
-		iprintf("disconnecting\n");
-		gEngine->changeScreen(new UIScreenServerList);
-	}
+	subScreen->updateInput();
 }
 
 void UIScreenCourt::update()
 {
+	if (nextScreen)
+	{
+		if (subScreen) delete subScreen;
+		subScreen = nextScreen;
+		subScreen->init();
+		nextScreen = nullptr;
+	}
+
 	court->update();
+	subScreen->update();
+}
+
+void UIScreenCourt::changeScreen(UISubScreen* newScreen)
+{
+	nextScreen = newScreen;
 }
 
 void UIScreenCourt::onMessageDecryptor(void* pUserData, std::string msg)

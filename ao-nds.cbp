@@ -82,6 +82,8 @@
 		<Unit filename="arm9/include/sockets/aowebsocket.h" />
 		<Unit filename="arm9/include/stb_truetype.h" />
 		<Unit filename="arm9/include/ui/button.h" />
+		<Unit filename="arm9/include/ui/court/console.h" />
+		<Unit filename="arm9/include/ui/court/loading.h" />
 		<Unit filename="arm9/include/ui/label.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
 		<Unit filename="arm9/include/ui/uimainmenu.h" />
@@ -102,6 +104,8 @@
 		<Unit filename="arm9/source/sockets/aotcpsocket.cpp" />
 		<Unit filename="arm9/source/sockets/aowebsocket.cpp" />
 		<Unit filename="arm9/source/ui/button.cpp" />
+		<Unit filename="arm9/source/ui/court/console.cpp" />
+		<Unit filename="arm9/source/ui/court/loading.cpp" />
 		<Unit filename="arm9/source/ui/label.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
 		<Unit filename="arm9/source/ui/uimainmenu.cpp" />

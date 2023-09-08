@@ -92,7 +92,10 @@ void AOtcpSocket::update()
 			const std::string& data = tempData.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
 			std::string header = argumentAt(data, 0);
 			if (callbacks.count(header))
-				callbacks[header].cb(callbacks[header].pUserData, data);
+			{
+				for (const NetCBInfo& cbInfo : callbacks[header])
+					cbInfo.cb(cbInfo.pUserData, data);
+			}
 
 			lastPos = delimiterPos;
 			delimiterPos = tempData.find("%", delimiterPos+1);
