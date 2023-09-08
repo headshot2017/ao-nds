@@ -33,6 +33,7 @@ class Background
 	cfgFile deskTiles;
 	int bgIndex;
 	bool visible;
+	bool loadedOnce;
 
 	u16* deskGfx[4*6];
 	bool deskGfxVisible[4*6];

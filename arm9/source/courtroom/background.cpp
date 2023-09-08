@@ -38,6 +38,7 @@ Background::Background()
 	bgSetPriority(bgIndex, 3);
 	bgHide(bgIndex);
 	visible = false;
+	loadedOnce = false;
 
 	for (int i=0; i<4*6; i++)
 	{
@@ -63,7 +64,7 @@ Background::~Background()
 
 void Background::destroyBg()
 {
-	if (!currentBg.empty())
+	if (loadedOnce)
 	{
 		delete[] currentBg["def"].mainBg.data;
 		delete[] currentBg["pro"].mainBg.data;
@@ -163,6 +164,8 @@ bool Background::setBg(const std::string& name)
 	currentBg["jud"].deskPal.data = readFile(bgPath + "/judgedesk.pal.bin",        &currentBg["jud"].deskPal.len);
 	currentBg["hld"].deskPal.data = 0;
 	currentBg["hlp"].deskPal.data = 0;
+
+	loadedOnce = true;
 
 	currentSide.clear();
 	setBgSide("def", true);
