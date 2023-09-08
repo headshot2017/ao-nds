@@ -7,6 +7,7 @@ class UICourtConsole : public UISubScreen
 {
 public:
 	UICourtConsole(UIScreenCourt* courtUI) : UISubScreen(courtUI) {}
+	~UICourtConsole();
 
 	void init();
 	void updateInput();
