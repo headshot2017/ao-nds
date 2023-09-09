@@ -11,11 +11,12 @@
 UICourtConsole::~UICourtConsole()
 {
 	consoleSelect(0);
+	bgHide(7);
 }
 
 void UICourtConsole::init()
 {
-	consoleInit(0, 0, BgType_Text4bpp, BgSize_T_256x256, 0, 1, false, true);
+	consoleInit(0, 3, BgType_Text4bpp, BgSize_T_256x256, 2, 2, false, true);
 }
 
 void UICourtConsole::updateInput()
