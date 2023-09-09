@@ -15,6 +15,7 @@
 Chatbox::Chatbox()
 {
 	textCanvas = new u8[32*16];
+	blipSnd = 0;
 
 	for (int i=0; i<2; i++)
 	{
