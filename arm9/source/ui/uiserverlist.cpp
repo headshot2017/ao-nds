@@ -78,7 +78,8 @@ UIScreenServerList::~UIScreenServerList()
 	for (int i=0; i<2; i++)
 		if (m_servers[i]) delete[] m_servers[i];
 
-	close(sockfd);
+	shutdown(sockfd, 0);
+	closesocket(sockfd);
 }
 
 void UIScreenServerList::init()
@@ -276,7 +277,7 @@ void UIScreenServerList::reloadPage()
 		lbl_pages->setVisible(false);
 		lbl_plswait->setVisible(true);
 		lbl_plswait->setText(isFavorites ? "Favorites list is empty" : publicListMsg.c_str());
-		lbl_plswait->setPos(128, 96-6, true);
+		lbl_plswait->setPos(128, 96-6, publicListMsg.find("JSON parse error") == std::string::npos);
 	}
 }
 
