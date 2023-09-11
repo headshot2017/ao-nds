@@ -12,6 +12,7 @@
 #include <nds/arm9/video.h>
 #include <nds/arm9/sound.h>
 #include "rapidjson/document.h"
+#include "rapidjson/error/en.h"
 #include "mini/ini.h"
 
 #include "mp3_shared.h"
@@ -77,8 +78,7 @@ UIScreenServerList::~UIScreenServerList()
 	for (int i=0; i<2; i++)
 		if (m_servers[i]) delete[] m_servers[i];
 
-	shutdown(sockfd, 0); // good practice to shutdown the socket.
-	closesocket(sockfd); // remove the socket.
+	close(sockfd);
 }
 
 void UIScreenServerList::init()
@@ -128,7 +128,7 @@ void UIScreenServerList::init()
 		btn_server[i]->setVisible(false);
 	}
 	lbl_pages = new UILabel(&oamSub, lbl_server[3]->nextOamInd(), 1, 1, RGB15(13, 2, 0), 12, 0);
-	lbl_plswait = new UILabel(&oamSub, lbl_pages->nextOamInd(), 8, 1, RGB15(31,31,31), 13, 0);
+	lbl_plswait = new UILabel(&oamSub, lbl_pages->nextOamInd(), 8, 2, RGB15(31,31,31), 13, 0);
 	publicListMsg = "Getting server list...";
 	lbl_plswait->setText(publicListMsg.c_str());
 	lbl_plswait->setPos(128, 96-6, true);
@@ -207,13 +207,11 @@ void UIScreenServerList::updateInput()
 
 void UIScreenServerList::update()
 {
-	char incoming_buffer[256];
+	char incoming_buffer[256] = {0};
 	int recvd_len = recv(sockfd, incoming_buffer, 255, 0);
 	if (recvd_len)
 	{
-		incoming_buffer[recvd_len] = 0; // null-terminate
 		tempData += incoming_buffer;
-
 		if (incoming_buffer[recvd_len-2] == '}' && incoming_buffer[recvd_len-1] == ']') // got json dats
 		{
 			parsePublicList(tempData.substr(tempData.find("\r\n\r\n")));
@@ -474,13 +472,14 @@ void UIScreenServerList::onServerClicked(void* pUserData)
 void UIScreenServerList::parsePublicList(const std::string& data)
 {
 	rapidjson::Document doc;
-	if (doc.Parse(data.c_str()).HasParseError())
+	rapidjson::ParseResult ok = doc.Parse(data.c_str());
+	if (!ok)
 	{
-		publicListMsg = "JSON parse error";
+		publicListMsg = "JSON parse error at offset " + std::to_string(ok.Offset()) + ":\n" + rapidjson::GetParseError_En(ok.Code());
 		if (!isFavorites)
 		{
 			lbl_plswait->setText(publicListMsg.c_str());
-			lbl_plswait->setPos(128, 96-6, true);
+			lbl_plswait->setPos(0, 96-6, false);
 		}
 		return;
 	}
