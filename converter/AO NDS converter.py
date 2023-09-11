@@ -251,7 +251,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
         f.write("\n")
 
 def convertCharIcon(sourceFile, targetFile):
-    img = Image.open(sourceFile).convert("RGBA").crop((0, 0, 64, 64))
+    img = Image.open(sourceFile).convert("RGBA").resize((38, 38)).crop((0, 0, 64, 64))
     pix = img.load()
     for x in range(img.size[0]):
         for y in range(img.size[1]):
