@@ -134,9 +134,8 @@ void UICourtCharSelect::updateInput()
 	{
 		int c = keyboardUpdate();
 
-		if (c == 10)
+		if (c == DVK_ENTER || c == DVK_FOLD)
 		{
-			// Rtrn key
 			keyboardHide();
 
 			dmaCopy(bg_charSelectPal, BG_PALETTE_SUB, bg_charSelectPalLen);
@@ -146,12 +145,15 @@ void UICourtCharSelect::updateInput()
 			lbl_plswrite->setVisible(false);
 			lbl_written->setVisible(false);
 
-			updateFilter();
+			if (c == DVK_FOLD)
+				filter = filterOld;
+			else
+				updateFilter();
+
 			reloadPage();
 		}
-		else if (c == 8)
+		else if (c == DVK_BACKSPACE)
 		{
-			// Bksp key
 			if (!filter.empty())
 			{
 				filter = filter.substr(0, filter.size()-1);
@@ -179,6 +181,7 @@ void UICourtCharSelect::updateInput()
 		{
 			// search button
 			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+			filterOld = filter;
 
 			bgHide(bgIndex);
 

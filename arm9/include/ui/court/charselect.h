@@ -18,6 +18,7 @@ class UICourtCharSelect : public UISubScreen
 	int currCharSelected;
 
 	std::string filter;
+	std::string filterOld;
 	std::vector<int> filteredChars;
 
 	UIButton* btn_pageLeft;
