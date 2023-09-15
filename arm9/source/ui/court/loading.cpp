@@ -4,7 +4,7 @@
 #include <nds/arm9/sprite.h>
 
 #include "engine.h"
-#include "ui/court/console.h"
+#include "ui/court/charselect.h"
 #include "bg_talkEmpty.h"
 #include "spr_loading.h"
 
@@ -98,5 +98,5 @@ void UICourtLoading::onMessageSM(void* pUserData, std::string msg)
 void UICourtLoading::onMessageDone(void* pUserData, std::string msg)
 {
 	UICourtLoading* pSelf = (UICourtLoading*)pUserData;
-	pSelf->pCourtUI->changeScreen(new UICourtConsole(pSelf->pCourtUI));
+	pSelf->pCourtUI->changeScreen(new UICourtCharSelect(pSelf->pCourtUI));
 }

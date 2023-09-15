@@ -65,11 +65,18 @@ void fadeDisclaimer() {
 	REG_BLDCNT = BLEND_NONE;
 }
 
+void Vblank()
+{
+	mp3_fill_buffer();
+}
+
 int main()
 {
 	defaultExceptionHandler();
 	mp3_init();
 	srand(time(0));
+
+	irqSet(IRQ_VBLANK, Vblank);
 
 	if (!fatInitDefault())
 	{
@@ -110,7 +117,6 @@ int main()
 		oamUpdate(&oamMain);
 		oamUpdate(&oamSub);
 
-		mp3_fill_buffer();
 		swiWaitForVBlank();
 	}
 

@@ -7,6 +7,7 @@
 #include <nds/arm9/input.h>
 #include <nds/interrupts.h>
 
+#include "mp3_shared.h"
 #include "engine.h"
 #include "global.h"
 #include "ui/uiserverlist.h"
@@ -30,6 +31,11 @@ UIScreenCourt::~UIScreenCourt()
 	if (subScreen)
 		delete subScreen;
 
+	delete[] sndSelect;
+	delete[] sndCancel;
+	delete[] sndEvTap;
+	delete[] sndEvPage;
+
 	AOsocket* sock = gEngine->getSocket();
 	sock->clearCallbacks();
 	gEngine->setSocket(nullptr);
@@ -47,6 +53,11 @@ void UIScreenCourt::init()
 	court = new Courtroom;
 	court->setVisible(true);
 
+	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav", &sndSelectSize);
+	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav", &sndCancelSize);
+	sndEvTap = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip.wav", &sndEvTapSize);
+	sndEvPage = wav_load_handle("/data/ao-nds/sounds/general/sfx-blink.wav", &sndEvPageSize);
+
 	AOsocket* sock = gEngine->getSocket();
 	sock->addMessageCallback("decryptor", onMessageDecryptor, this);
 	sock->addMessageCallback("ID", onMessageID, this);
@@ -57,6 +68,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("BN", onMessageBN, this);
 	sock->addMessageCallback("MC", onMessageMC, this);
 	sock->addMessageCallback("MS", onMessageMS, this);
+	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 }
 
 void UIScreenCourt::updateInput()
@@ -85,7 +97,7 @@ void UIScreenCourt::changeScreen(UISubScreen* newScreen)
 
 void UIScreenCourt::onMessageDecryptor(void* pUserData, std::string msg)
 {
-	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%\n";
+	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%";
 	gEngine->getSocket()->sendData(hdid);
 }
 
@@ -101,16 +113,42 @@ void UIScreenCourt::onMessagePN(void* pUserData, std::string msg)
 
 void UIScreenCourt::onMessageSI(void* pUserData, std::string msg)
 {
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	pSelf->charList.clear();
+	pSelf->musicList.clear();
+
 	gEngine->getSocket()->sendData("RC#%");
 }
 
 void UIScreenCourt::onMessageSC(void* pUserData, std::string msg)
 {
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	std::size_t delimiterPos = msg.find("#");
+	std::size_t lastPos = delimiterPos;
+	delimiterPos = msg.find("#", delimiterPos+1);
+
+	while (lastPos != std::string::npos)
+	{
+		pSelf->charList.push_back({msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1), false});
+
+		lastPos = delimiterPos;
+		delimiterPos = msg.find("#", delimiterPos+1);
+	}
+
+	pSelf->charList.pop_back(); // remove "%"
+
 	gEngine->getSocket()->sendData("RM#%");
 }
 
 void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 {
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	fillArguments(pSelf->musicList, msg, 1);
+	pSelf->musicList.pop_back(); // remove "%"
+
 	gEngine->getSocket()->sendData("RD#%");
 }
 
@@ -142,4 +180,22 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 
 	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
 	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, argumentAt(msg,5), std::stoi(argumentAt(msg,15)), "male");
+}
+
+void UIScreenCourt::onMessageCharsCheck(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	std::size_t delimiterPos = msg.find("#");
+	std::size_t lastPos = delimiterPos;
+	delimiterPos = msg.find("#", delimiterPos+1);
+
+	for (u32 i=0; i<pSelf->charList.size(); i++)
+	{
+		int taken = std::stoi(msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1));
+		pSelf->charList[i].taken = (taken == -1);
+
+		lastPos = delimiterPos;
+		delimiterPos = msg.find("#", delimiterPos+1);
+	}
 }

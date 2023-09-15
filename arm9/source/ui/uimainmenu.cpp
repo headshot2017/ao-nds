@@ -46,8 +46,8 @@ void UIScreenMainMenu::init()
 	dmaCopy(bg_titleMap, bgGetMapPtr(subBgIndex), bg_titleMapLen);
 	dmaCopy(bg_titlePal, BG_PALETTE_SUB, bg_titlePalLen);
 
-	btn_viewServerList = new UIButton(&oamSub, (u8*)spr_viewServerListTiles, (u8*)spr_viewServerListPal, 0, 3, SpriteSize_64x64, 128-88, 32, 176, 58, 64, 64, 0);
-	btn_directConnect = new UIButton(&oamSub, (u8*)spr_directConnectTiles, (u8*)spr_directConnectPal, btn_viewServerList->nextOamInd(), 7, SpriteSize_32x32, 128-111, 104, 223, 26, 32, 32, 1);
+	btn_viewServerList = new UIButton(&oamSub, (u8*)spr_viewServerListTiles, (u8*)spr_viewServerListPal, 0, 3, 1, SpriteSize_64x64, 128-88, 32, 176, 58, 64, 64, 0);
+	btn_directConnect = new UIButton(&oamSub, (u8*)spr_directConnectTiles, (u8*)spr_directConnectPal, btn_viewServerList->nextOamInd(), 7, 1, SpriteSize_32x32, 128-111, 104, 223, 26, 32, 32, 1);
 
 	btn_viewServerList->connect(onViewServerList, this);
 	btn_directConnect->connect(onDirectConnect, this);

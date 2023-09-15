@@ -1,28 +1,65 @@
 #include "global.h"
 
 #include <stdio.h>
+#include <dirent.h>
 
 #include <nds/interrupts.h>
 
 #include "mp3_shared.h"
 
-std::string argumentAt(std::string s, int id)
+std::string argumentAt(const std::string& s, int id)
 {
-	const std::string del = "#";
-	// Use find function to find 1st position of delimiter.
-	int end = s.find(del);
-	int argi = 0;
-	while (end != -1) { // Loop until no delimiter is left in the string.
-		std::string currentArg = s.substr(0, end);
-		s.erase(s.begin(), s.begin() + end + 1);
-		end = s.find(del);
-		if(argi==id)
-			return currentArg;
-		else
-			argi++;
+	std::size_t lastPos = 0;
+	std::size_t delimiterPos = s.find("#");
+	int i=0;
+
+	while (lastPos != std::string::npos && i < id)
+	{
+		i++;
+		lastPos = delimiterPos;
+		delimiterPos = s.find("#", delimiterPos+1);
 	}
 
-	return "";
+	return s.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos - (id==0 ? 0 : 1));
+}
+
+void fillArguments(std::vector<std::string>& out, std::string& s, int id)
+{
+	std::size_t lastPos = 0;
+	std::size_t delimiterPos = s.find("#");
+	int i=0;
+
+	while (i < id)
+	{
+		i++;
+		lastPos = delimiterPos;
+		delimiterPos = s.find("#", delimiterPos+1);
+	}
+
+	i = 0;
+	while (lastPos != std::string::npos)
+	{
+		out.push_back(s.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1));
+
+		lastPos = delimiterPos;
+		delimiterPos = s.find("#", delimiterPos+1);
+	}
+}
+
+u32 totalArguments(const std::string& s)
+{
+	std::size_t lastPos = 0;
+	std::size_t delimiterPos = s.find("#");
+	u32 i=0;
+
+	while (lastPos != std::string::npos)
+	{
+		i++;
+		lastPos = delimiterPos;
+		delimiterPos = s.find("#", delimiterPos+1);
+	}
+
+	return i;
 }
 
 bool fileExists(const std::string& filename)

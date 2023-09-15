@@ -10,7 +10,8 @@
 class UIButton
 {
 	u16** spriteGfx;
-	int spriteGfxCount;
+	int spriteHorTiles;
+	int spriteVertTiles;
 	SpriteSize spriteSize;
 	OamState* oam;
 	int oamStart;
@@ -23,20 +24,37 @@ class UIButton
 	int sprW;
 	int sprH;
 	bool visible;
+	bool pressing;
 
-	voidCallback callback;
-	void* pUserData;
+	struct cbInfo
+	{
+		voidCallback cb;
+		void* pUserData;
+	} callbacks[2];
 
 public:
-	UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int gfxCount, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot);
+	enum
+	{
+		PRESSED,
+		RELEASED
+	};
+
+	UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot);
 	~UIButton();
 
 	void setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int palSlot);
 	void setVisible(bool on);
 	void setPos(int xPos, int yPos);
 	void setPriority(int pr);
-	void connect(voidCallback cb, void* p) {callback = cb; pUserData = p;}
-	int nextOamInd() {return oamStart+spriteGfxCount;}
+	void forceRelease();
+	void connect(voidCallback cb, void* p, int cbType=PRESSED) {callbacks[cbType].cb = cb; callbacks[cbType].pUserData = p;}
+
+	int getX() {return x;}
+	int getY() {return y;}
+	int getW() {return w;}
+	int getH() {return h;}
+	bool isHeld() {return pressing;}
+	int nextOamInd() {return oamStart + (spriteHorTiles*spriteVertTiles);}
 
 	void updateInput();
 };

@@ -2,13 +2,14 @@
 
 #include <nds/dma.h>
 
-UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int gfxCount, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot)
+UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot)
 {
 	oam = chosenOam;
 	oamStart = oamStartInd;
 
-	spriteGfxCount = gfxCount;
-	spriteGfx = new u16*[gfxCount];
+	spriteHorTiles = horTiles;
+	spriteVertTiles = vertTiles;
+	spriteGfx = new u16*[horTiles*vertTiles];
 	spriteSize = sprSize;
 
 	x = xPos;
@@ -18,17 +19,25 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 	sprW = sprWidth;
 	sprH = sprHeight;
 	visible = true;
+	pressing = false;
 
-	callback = 0;
-	pUserData = 0;
-
-	for (int i=0; i<gfxCount; i++)
+	for (int i=0; i<2; i++)
 	{
-		spriteGfx[i] = oamAllocateGfx(oam, spriteSize, SpriteColorFormat_256Color);
+		callbacks[i].cb = 0;
+		callbacks[i].pUserData = 0;
+	}
 
-		u8* offset = data + (i*sprWidth*sprHeight);
-		dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
-		oamSet(oam, oamStart+i, x+(i*sprWidth), y, 0, palSlot, spriteSize, SpriteColorFormat_256Color, spriteGfx[i], -1, false, false, false, false, false);
+	for (int vert=0; vert<spriteVertTiles; vert++)
+	{
+		for (int hor=0; hor<spriteHorTiles; hor++)
+		{
+			int i = vert * spriteHorTiles + hor;
+			spriteGfx[i] = oamAllocateGfx(oam, spriteSize, SpriteColorFormat_256Color);
+
+			u8* offset = data + (i*sprWidth*sprHeight);
+			dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
+			oamSet(oam, oamStart+i, x+(hor*sprWidth), y+(vert*sprHeight), 0, palSlot, spriteSize, SpriteColorFormat_256Color, spriteGfx[i], -1, false, false, false, false, false);
+		}
 	}
 
 	// copy palette to ext palette vram slot
@@ -48,7 +57,7 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 
 UIButton::~UIButton()
 {
-	for (int i=0; i<spriteGfxCount; i++)
+	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 	{
 		oamClearSprite(oam, oamStart+i);
 		oamFreeGfx(oam, spriteGfx[i]);
@@ -58,10 +67,14 @@ UIButton::~UIButton()
 
 void UIButton::setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int palSlot)
 {
-	for (int i=0; i<spriteGfxCount; i++)
+	for (int vert=0; vert<spriteVertTiles; vert++)
 	{
-		u8* offset = data + (i*sprWidth*sprHeight);
-		dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
+		for (int hor=0; hor<spriteHorTiles; hor++)
+		{
+			int i = vert * spriteHorTiles + hor;
+			u8* offset = data + (i*sprWidth*sprHeight);
+			dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
+		}
 	}
 
 	// copy palette to ext palette vram slot
@@ -82,30 +95,56 @@ void UIButton::setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int 
 void UIButton::setVisible(bool on)
 {
 	visible = on;
-	for (int i=0; i<spriteGfxCount; i++)
+	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 		oamSetHidden(oam, oamStart+i, !on);
+
+	if (!visible) forceRelease();
 }
 
 void UIButton::setPos(int xPos, int yPos)
 {
 	x = xPos;
 	y = yPos;
-	for (int i=0; i<spriteGfxCount; i++)
-		oamSetXY(oam, oamStart+i, x+(i*sprW), y);
+	for (int vert=0; vert<spriteVertTiles; vert++)
+	{
+		for (int hor=0; hor<spriteHorTiles; hor++)
+		{
+			int i = vert * spriteHorTiles + hor;
+			oamSetXY(oam, oamStart+i, x+(hor*sprW), y+(vert*sprH));
+		}
+	}
 }
 
 void UIButton::setPriority(int pr)
 {
-	for (int i=0; i<spriteGfxCount; i++)
+	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 		oamSetPriority(oam, oamStart+i, pr);
+}
+
+void UIButton::forceRelease()
+{
+	if (!pressing) return;
+
+	pressing = false;
+	if (callbacks[1].cb) callbacks[1].cb(callbacks[1].pUserData);
 }
 
 void UIButton::updateInput()
 {
-	if (visible && keysDown() & KEY_TOUCH)
+	if (!visible) return;
+
+	if (keysDown() & KEY_TOUCH)
 	{
 		touchRead(&touchPos);
-		if (callback && touchPos.px >= (u16)x && touchPos.py >= (u16)y && touchPos.px < (u16)(x+w) && touchPos.py < (u16)(y+h))
-			callback(pUserData);
+		if (callbacks[0].cb && touchPos.px >= (u16)x && touchPos.py >= (u16)y && touchPos.px < (u16)(x+w) && touchPos.py < (u16)(y+h))
+		{
+			pressing = true;
+			callbacks[0].cb(callbacks[0].pUserData);
+		}
+	}
+
+	if (pressing && keysUp() & KEY_TOUCH)
+	{
+		forceRelease();
 	}
 }

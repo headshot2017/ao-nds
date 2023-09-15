@@ -114,16 +114,16 @@ void UIScreenServerList::init()
 	lbl_players->setVisible(false);
 	lbl_playercount->setVisible(false);
 
-	btn_manageFav = new UIButton(&oamSub, (u8*)spr_addFavTiles, (u8*)spr_addFavPal, 2, 3, SpriteSize_32x64, 0, 0, 80, 33, 32, 64, 1);
-	btn_listToggle = new UIButton(&oamSub, (u8*)spr_favoritesTiles, (u8*)spr_favoritesPal, btn_manageFav->nextOamInd(), 3, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 2);
-	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, btn_listToggle->nextOamInd(), 3, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
-	btn_connect = new UIButton(&oamSub, (u8*)spr_connectTiles, (u8*)spr_connectPal, btn_back->nextOamInd(), 3, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 4);
-	btn_prevPage = new UIButton(&oamSub, (u8*)spr_pageLeftTiles, (u8*)spr_pageLeftPal, btn_connect->nextOamInd(), 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 5);
-	btn_nextPage = new UIButton(&oamSub, (u8*)spr_pageRightTiles, (u8*)spr_pageRightPal, btn_prevPage->nextOamInd(), 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 6);
+	btn_manageFav = new UIButton(&oamSub, (u8*)spr_addFavTiles, (u8*)spr_addFavPal, 2, 3, 1, SpriteSize_32x64, 0, 0, 80, 33, 32, 64, 1);
+	btn_listToggle = new UIButton(&oamSub, (u8*)spr_favoritesTiles, (u8*)spr_favoritesPal, btn_manageFav->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 2);
+	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
+	btn_connect = new UIButton(&oamSub, (u8*)spr_connectTiles, (u8*)spr_connectPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 4);
+	btn_prevPage = new UIButton(&oamSub, (u8*)spr_pageLeftTiles, (u8*)spr_pageLeftPal, btn_connect->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 5);
+	btn_nextPage = new UIButton(&oamSub, (u8*)spr_pageRightTiles, (u8*)spr_pageRightPal, btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 6);
 	for (int i=0; i<4; i++)
 	{
 		int nextOam = (i == 0) ? btn_nextPage->nextOamInd() : lbl_server[i-1]->nextOamInd();
-		btn_server[i] = new UIButton(&oamSub, (u8*)spr_serverUnselectedTiles, (u8*)spr_serverUnselectedPal, nextOam, 7, SpriteSize_32x32, 128-112, 36+(i*32), 224, 26, 32, 32, 7+i);
+		btn_server[i] = new UIButton(&oamSub, (u8*)spr_serverUnselectedTiles, (u8*)spr_serverUnselectedPal, nextOam, 7, 1, SpriteSize_32x32, 128-112, 36+(i*32), 224, 26, 32, 32, 7+i);
 		lbl_server[i] = new UILabel(&oamSub, btn_server[i]->nextOamInd(), 8, 1, RGB15(13, 2, 0), 11, 0);
 		btn_server[i]->setPriority(1);
 		btn_server[i]->setVisible(false);
