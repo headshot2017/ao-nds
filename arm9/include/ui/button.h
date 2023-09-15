@@ -26,11 +26,7 @@ class UIButton
 	bool visible;
 	bool pressing;
 
-	struct cbInfo
-	{
-		voidCallback cb;
-		void* pUserData;
-	} callbacks[2];
+	cbInfo callbacks[2];
 
 public:
 	enum

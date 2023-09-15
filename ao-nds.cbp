@@ -85,6 +85,7 @@
 		<Unit filename="arm9/include/ui/court/charselect.h" />
 		<Unit filename="arm9/include/ui/court/console.h" />
 		<Unit filename="arm9/include/ui/court/loading.h" />
+		<Unit filename="arm9/include/ui/keyboard.h" />
 		<Unit filename="arm9/include/ui/label.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
 		<Unit filename="arm9/include/ui/uimainmenu.h" />
@@ -108,6 +109,7 @@
 		<Unit filename="arm9/source/ui/court/charselect.cpp" />
 		<Unit filename="arm9/source/ui/court/console.cpp" />
 		<Unit filename="arm9/source/ui/court/loading.cpp" />
+		<Unit filename="arm9/source/ui/keyboard.cpp" />
 		<Unit filename="arm9/source/ui/label.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
 		<Unit filename="arm9/source/ui/uimainmenu.cpp" />

@@ -28,8 +28,6 @@ UICourtCharSelect::~UICourtCharSelect()
 {
 	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_charSelectTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_charSelectMapLen);
-	dmaFillHalfWords(0, bgGetGfxPtr(m_kb.background), m_kb.tileLen);
-	dmaFillHalfWords(0, bgGetMapPtr(m_kb.background), bg_charSelectMapLen);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 
 	delete btn_pageLeft;
@@ -41,8 +39,7 @@ UICourtCharSelect::~UICourtCharSelect()
 	for (int i=0; i<8; i++)
 		delete btn_chars[i];
 
-	delete lbl_plswrite;
-	delete lbl_written;
+	delete kb_search;
 
 	gEngine->getSocket()->removeMessageCallback("PV", cbPV);
 }
@@ -54,12 +51,9 @@ void UICourtCharSelect::init()
 	holdWait = -1;
 	pageAdd = 0;
 
-	keyboardInit(&m_kb, 1, BgType_Text4bpp, BgSize_T_256x512, 1, 4, false, true);
-
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	dmaCopy(bg_charSelectTiles, bgGetGfxPtr(bgIndex), bg_charSelectTilesLen);
 	dmaCopy(bg_charSelectMap, bgGetMapPtr(bgIndex), bg_charSelectMapLen);
-	dmaCopy(bg_charSelectPal, BG_PALETTE_SUB, bg_charSelectPalLen);
 
 	btn_pageLeft = new UIButton(&oamSub, (u8*)spr_pageLeft_tallTiles, (u8*)spr_pageLeft_tallPal, 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
 	btn_pageRight = new UIButton(&oamSub, (u8*)spr_pageRight_tallTiles, (u8*)spr_pageRight_tallPal, btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
@@ -68,14 +62,6 @@ void UICourtCharSelect::init()
 
 	lbl_charname = new UILabel(&oamSub, btn_confirm->nextOamInd(), 6, 1, RGB15(31, 16, 0), 4, 0);
 	lbl_pages = new UILabel(&oamSub, lbl_charname->nextOamInd(), 1, 1, RGB15(13, 2, 0), 5, 0);
-
-	lbl_plswrite = new UILabel(&oamSub, lbl_pages->nextOamInd(), 6, 1, RGB15(31,31,31), 6, 1);
-	lbl_plswrite->setVisible(false);
-	lbl_plswrite->setText("Enter search terms");
-	lbl_plswrite->setPos(8, 8);
-	lbl_written = new UILabel(&oamSub, lbl_plswrite->nextOamInd(), 8, 1, RGB15(31,31,31), 6, 0);
-	lbl_written->setVisible(false);
-	lbl_written->setPos(8, 32);
 
 	static charBtnData btnData[8];
 	for (int y=0; y<2; y++)
@@ -86,10 +72,13 @@ void UICourtCharSelect::init()
 			btnData[i].btnInd = i;
 			btnData[i].pObj = this;
 
-			btn_chars[i] = new UIButton(&oamSub, (u8*)spr_unknownMugshotTiles, (u8*)spr_unknownMugshotPal, (i>0) ? btn_chars[i-1]->nextOamInd() : lbl_written->nextOamInd(), 1, 1, SpriteSize_64x64, 37+(x*48), 63+(y*48), 38, 38, 64, 64, 7+i);
+			btn_chars[i] = new UIButton(&oamSub, (u8*)spr_unknownMugshotTiles, (u8*)spr_unknownMugshotPal, (i>0) ? btn_chars[i-1]->nextOamInd() : lbl_pages->nextOamInd(), 1, 1, SpriteSize_64x64, 37+(x*48), 63+(y*48), 38, 38, 64, 64, 7+i);
 			btn_chars[i]->connect(onCharClicked, &btnData[i]);
 		}
 	}
+
+	kb_search = new AOkeyboard(filter, 1, btn_chars[7]->nextOamInd(), 15);
+	dmaCopy(bg_charSelectPal, BG_PALETTE_SUB, bg_charSelectPalLen);
 
 	btn_pageLeft->setVisible(false);
 	btn_pageLeft->connect(onPrevPage, this, UIButton::PRESSED);
@@ -130,43 +119,22 @@ void UICourtCharSelect::update()
 
 void UICourtCharSelect::updateInput()
 {
-	if (m_kb.visible)
+	if (kb_search->isVisible())
 	{
-		int c = keyboardUpdate();
-
-		if (c == DVK_ENTER || c == DVK_FOLD)
+		int result = kb_search->updateInput();
+		if (result != 0)
 		{
-			keyboardHide();
-
 			dmaCopy(bg_charSelectPal, BG_PALETTE_SUB, bg_charSelectPalLen);
 			bgShow(bgIndex);
 
 			btn_disconnect->setVisible(true);
-			lbl_plswrite->setVisible(false);
-			lbl_written->setVisible(false);
 
-			if (c == DVK_FOLD)
-				filter = filterOld;
-			else
-				updateFilter();
-
+			if (result > 0) updateFilter();
 			reloadPage();
-		}
-		else if (c == DVK_BACKSPACE)
-		{
-			if (!filter.empty())
-			{
-				filter = filter.substr(0, filter.size()-1);
-				lbl_written->setText(filter.c_str());
-			}
-		}
-		else if (c > 0)
-		{
-			filter += c;
-			lbl_written->setText(filter.c_str());
 		}
 		return;
 	}
+
 	btn_pageLeft->updateInput();
 	btn_pageRight->updateInput();
 	btn_disconnect->updateInput();
@@ -181,7 +149,6 @@ void UICourtCharSelect::updateInput()
 		{
 			// search button
 			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
-			filterOld = filter;
 
 			bgHide(bgIndex);
 
@@ -194,13 +161,7 @@ void UICourtCharSelect::updateInput()
 			for (int i=0; i<8; i++)
 				btn_chars[i]->setVisible(false);
 
-			lbl_plswrite->setVisible(true);
-			lbl_written->setVisible(true);
-			lbl_written->setText(filter.c_str());
-			oamUpdate(&oamSub);
-
-			dmaCopy(m_kb.palette, BG_PALETTE_SUB, m_kb.paletteLen);
-			keyboardShow();
+			kb_search->show("Enter search terms");
 		}
 	}
 }

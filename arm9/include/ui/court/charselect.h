@@ -10,6 +10,7 @@
 #include "ui/uicourt.h"
 #include "ui/button.h"
 #include "ui/label.h"
+#include "ui/keyboard.h"
 
 class UICourtCharSelect : public UISubScreen
 {
@@ -18,7 +19,6 @@ class UICourtCharSelect : public UISubScreen
 	int currCharSelected;
 
 	std::string filter;
-	std::string filterOld;
 	std::vector<int> filteredChars;
 
 	UIButton* btn_pageLeft;
@@ -30,9 +30,7 @@ class UICourtCharSelect : public UISubScreen
 
 	UIButton* btn_chars[8];
 
-	Keyboard m_kb;
-	UILabel* lbl_plswrite;
-	UILabel* lbl_written;
+	AOkeyboard* kb_search;
 
 	int holdWait;
 	int pageAdd;

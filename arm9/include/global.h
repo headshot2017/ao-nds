@@ -14,6 +14,11 @@
 
 typedef void (*voidCallback)(void *pUserData);
 typedef void (*stringCallback)(void *pUserData, std::string str);
+struct cbInfo
+{
+	voidCallback cb;
+	void* pUserData;
+};
 
 std::string argumentAt(const std::string& s, int id);
 void fillArguments(std::vector<std::string>& out, std::string& s, int id);
