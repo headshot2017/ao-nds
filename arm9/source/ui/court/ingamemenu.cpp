@@ -90,6 +90,7 @@ void UICourtIngameMenu::onChangeCharClicked(void* pUserData)
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	pSelf->pCourtUI->changeScreen(new UICourtCharSelect(pSelf->pCourtUI));
 }
 
 void UICourtIngameMenu::onCourtRecordClicked(void* pUserData)
