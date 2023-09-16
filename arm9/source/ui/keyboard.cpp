@@ -76,3 +76,9 @@ int AOkeyboard::updateInput()
 
 	return 0;
 }
+
+void AOkeyboard::setValue(std::string newValue)
+{
+	value = newValue;
+	lbl_written->setText(newValue.c_str());
+}

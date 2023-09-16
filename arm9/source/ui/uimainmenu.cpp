@@ -9,6 +9,7 @@
 #include "mp3_shared.h"
 #include "engine.h"
 #include "ui/uiserverlist.h"
+#include "ui/uidirectconn.h"
 #include "bg_title.h"
 #include "bg_logo.h"
 #include "spr_viewServerList.h"
@@ -71,4 +72,6 @@ void UIScreenMainMenu::onDirectConnect(void* pUserData)
 {
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
 	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
+
+	gEngine->changeScreen(new UIScreenDirectConn);
 }

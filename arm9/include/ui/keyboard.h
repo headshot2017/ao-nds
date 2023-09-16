@@ -25,7 +25,9 @@ public:
 	~AOkeyboard();
 
 	void show(const char* plsWrite, const char* startValue=0);
+	void setInputYOffset(int offset) {lbl_written->setPos(8, 32+offset);}
 	int updateInput();
+	void setValue(std::string newValue);
 
 	int nextOamInd() {return lbl_written->nextOamInd();}
 	bool isVisible() {return m_kb.visible;}
