@@ -36,6 +36,8 @@ class UIScreenCourt : public UIScreen
 	std::vector<charInfo> charList;
 	std::vector<std::string> musicList;
 
+	int currChar;
+
 public:
 	UIScreenCourt();
 	~UIScreenCourt();
@@ -47,6 +49,8 @@ public:
 
 	const std::vector<charInfo>& getCharList() {return charList;}
 	const std::vector<std::string>& getMusicList() {return musicList;}
+	int getCurrCharID() {return currChar;}
+	const charInfo& getCurrChar() {return charList[currChar];}
 
 	static void onMessageDecryptor(void* pUserData, std::string msg);
 	static void onMessageID(void* pUserData, std::string msg);
@@ -58,6 +62,7 @@ public:
 	static void onMessageMC(void* pUserData, std::string msg);
 	static void onMessageMS(void* pUserData, std::string msg);
 	static void onMessageCharsCheck(void* pUserData, std::string msg);
+	static void onMessagePV(void* pUserData, std::string msg);
 
 	u32* sndSelect;
 	u32* sndCancel;

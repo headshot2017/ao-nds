@@ -46,6 +46,7 @@ UIScreenCourt::~UIScreenCourt()
 void UIScreenCourt::init()
 {
 	bgExtPaletteEnable();
+	currChar = -1;
 
 	subScreen = new UICourtLoading(this);
 	subScreen->init();
@@ -69,6 +70,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("MC", onMessageMC, this);
 	sock->addMessageCallback("MS", onMessageMS, this);
 	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
+	sock->addMessageCallback("PV", onMessagePV, this);
 }
 
 void UIScreenCourt::updateInput()
@@ -198,4 +200,11 @@ void UIScreenCourt::onMessageCharsCheck(void* pUserData, std::string msg)
 		lastPos = delimiterPos;
 		delimiterPos = msg.find("#", delimiterPos+1);
 	}
+}
+
+void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	pSelf->currChar = std::stoi(argumentAt(msg, 3));
 }

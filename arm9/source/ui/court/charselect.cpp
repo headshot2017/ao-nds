@@ -10,7 +10,7 @@
 
 #include "engine.h"
 #include "ui/uiserverlist.h"
-#include "ui/court/console.h"
+#include "ui/court/ingamemenu.h"
 #include "bg_charSelect.h"
 #include "spr_disconnect.h"
 #include "spr_confirm.h"
@@ -331,5 +331,5 @@ void UICourtCharSelect::onMessagePV(void* pUserData, std::string msg)
 {
 	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
 
-	pSelf->pCourtUI->changeScreen(new UICourtConsole(pSelf->pCourtUI));
+	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
 }
