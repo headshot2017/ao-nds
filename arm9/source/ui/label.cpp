@@ -5,6 +5,7 @@
 #include <nds/dma.h>
 
 #include "fonts.h"
+#include "mp3_shared.h"
 
 UILabel::UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u32 textColor, int palSlot, int font)
 {
@@ -77,4 +78,6 @@ void UILabel::setText(const char* text)
 
 	currText = text;
 	renderMultiLine(fontID, text, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, gfxPerLine, maxLines);
+
+	mp3_fill_buffer();
 }

@@ -2,6 +2,8 @@
 
 #include <nds/dma.h>
 
+#include "mp3_shared.h"
+
 UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot)
 {
 	oam = chosenOam;
@@ -90,6 +92,8 @@ void UIButton::setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int 
 		dmaCopy(palData, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
+
+	mp3_fill_buffer();
 }
 
 void UIButton::setVisible(bool on)

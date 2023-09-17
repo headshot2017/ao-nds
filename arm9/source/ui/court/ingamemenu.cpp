@@ -5,6 +5,7 @@
 #include <nds/arm9/sound.h>
 
 #include "ui/court/charselect.h"
+#include "ui/court/musiclist.h"
 #include "bg_ingameMain.h"
 #include "spr_talkIC.h"
 #include "spr_talkOOC.h"
@@ -46,7 +47,7 @@ void UICourtIngameMenu::init()
 	btn_changeChar->connect(onChangeCharClicked, this);
 	btn_courtRecord->connect(onCourtRecordClicked, this);
 
-	lbl_currChar->setPos(4, 2, false);
+	lbl_currChar->setPos(4, 2);
 	lbl_currChar->setText((pCourtUI->getCurrCharID() >= 0) ? pCourtUI->getCurrChar().name.c_str() : "Spectator");
 }
 
@@ -83,6 +84,7 @@ void UICourtIngameMenu::onMusicClicked(void* pUserData)
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	pSelf->pCourtUI->changeScreen(new UICourtMusicList(pSelf->pCourtUI));
 }
 
 void UICourtIngameMenu::onChangeCharClicked(void* pUserData)

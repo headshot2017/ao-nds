@@ -5,6 +5,7 @@
 
 #include "ui/button.h"
 #include "ui/label.h"
+#include "ui/keyboard.h"
 
 class UICourtMusicList : public UISubScreen
 {
@@ -19,6 +20,10 @@ class UICourtMusicList : public UISubScreen
 	UILabel* lbl_musicBtn[7];
 	UIButton* btn_sliderHandle;
 
+	AOkeyboard* kb_search;
+	std::string filter;
+	std::vector<int> filteredMusic;
+
 	int holdWait;
 	int pageAdd;
 	bool draggingHandle;
@@ -30,6 +35,8 @@ public:
 	void init();
 	void updateInput();
 	void update();
+
+	void updateFilter();
 	void reloadScroll();
 
 	static void onBackClicked(void* pUserData);
