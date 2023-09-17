@@ -304,13 +304,13 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
             recursiveCharacter(source+"/"+emote, target+"/"+emote, ogTarget, extra+emote+"/")
         elif emote.lower() == "char_icon.png":
             convertCharIcon(filename, target+"/"+emote)
-        elif emote.lower() == ".apng":
+        elif emote.lower().endswith(".apng"):
             convertEmoteAPNG(filename, target+"/"+emote, ogTarget, extra)
-        elif emote.lower() == ".webp":
+        elif emote.lower().endswith(".webp"):
             convertEmoteWEBP(filename, target+"/"+emote, ogTarget, extra)
-        elif emote.lower() == ".png":
+        elif emote.lower().endswith(".png"):
             convertEmotePNG(filename, target+"/"+emote, ogTarget, extra)
-        elif emote.lower() == ".gif":
+        elif emote.lower().endswith(".gif"):
             convertEmoteGIF(filename, target+"/"+emote, ogTarget, extra)
 
 def convertCharacters(source, target):
