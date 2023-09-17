@@ -167,6 +167,8 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
 	std::string trackname = argumentAt(msg, 1);
+	AOdecode(trackname);
+
 	pSelf->court->playMusic("/data/ao-nds/sounds/music/"+trackname);
 }
 
@@ -175,13 +177,17 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
 	std::string name = argumentAt(msg,16);
+	AOdecode(name);
 	if (name.empty())
 		name = argumentAt(msg, 3);
 	if (name.size() > 12)
 		name.resize(12);
 
+	std::string chatmsg = argumentAt(msg,5);
+	AOdecode(chatmsg);
+
 	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
-	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, argumentAt(msg,5), std::stoi(argumentAt(msg,15)), "male");
+	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, chatmsg, std::stoi(argumentAt(msg,15)), "male");
 }
 
 void UIScreenCourt::onMessageCharsCheck(void* pUserData, std::string msg)

@@ -20,6 +20,7 @@ struct cbInfo
 	void* pUserData;
 };
 
+void AOdecode(std::string& s);
 std::string argumentAt(const std::string& s, int id);
 void fillArguments(std::vector<std::string>& out, std::string& s, int id);
 u32 totalArguments(const std::string& s);

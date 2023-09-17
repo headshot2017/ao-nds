@@ -7,6 +7,21 @@
 
 #include "mp3_shared.h"
 
+void AOdecode(std::string& s)
+{
+	std::string escapes[] = {"<and>", "<percent>", "<num>", "<dollar>"};
+	std::string unescapes[] = {"&", "%", "#", "$"};
+	for (int i=0; i<4; i++)
+	{
+		size_t pos = 0;
+		while((pos = s.find(escapes[i], pos)) != std::string::npos)
+		{
+			s.replace(pos, escapes[i].length(), unescapes[i]);
+			pos += unescapes[i].length();
+		}
+	}
+}
+
 std::string argumentAt(const std::string& s, int id)
 {
 	std::size_t lastPos = 0;
