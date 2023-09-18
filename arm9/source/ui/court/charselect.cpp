@@ -8,6 +8,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
 
+#include "mp3_shared.h"
 #include "engine.h"
 #include "ui/uiserverlist.h"
 #include "ui/court/ingamemenu.h"
@@ -79,6 +80,7 @@ void UICourtCharSelect::init()
 
 	kb_search = new AOkeyboard(filter, 1, btn_chars[7]->nextOamInd(), 15);
 	dmaCopy(bg_charSelectPal, BG_PALETTE_SUB, bg_charSelectPalLen);
+	mp3_fill_buffer();
 
 	btn_pageLeft->setVisible(false);
 	btn_pageLeft->connect(onPrevPage, this, UIButton::PRESSED);
@@ -177,6 +179,8 @@ void UICourtCharSelect::reloadPage()
 
 	for (u32 i=0; i<8; i++)
 	{
+		mp3_fill_buffer();
+
 		u32 ind = currPage*8 + i;
 		if (ind >= filteredChars.size())
 		{
@@ -188,6 +192,7 @@ void UICourtCharSelect::reloadPage()
 		bool exists = fileExists("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon.img.bin");
 		u8* gfxPtr = (exists) ? readFile("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon.img.bin") : (u8*)spr_unknownMugshotTiles;
 		u8* palPtr = (exists) ? readFile("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon.pal.bin") : (u8*)spr_unknownMugshotPal;
+		mp3_fill_buffer();
 
 		btn_chars[i]->setImage(gfxPtr, palPtr, 64, 64, 7+i);
 		btn_chars[i]->setVisible(true);
@@ -201,6 +206,7 @@ void UICourtCharSelect::reloadPage()
 				u8 r=0, g=0, b=0;
 				fromRGB15(VRAM_I_EXT_SPR_PALETTE[7+i][j], r, g, b);
 				VRAM_I_EXT_SPR_PALETTE[7+i][j] = RGB15(r>>1, g>>1, b>>1);
+				mp3_fill_buffer();
 			}
 			vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 		}
@@ -209,6 +215,7 @@ void UICourtCharSelect::reloadPage()
 		{
 			delete[] gfxPtr;
 			delete[] palPtr;
+			mp3_fill_buffer();
 		}
 	}
 
@@ -232,6 +239,7 @@ void UICourtCharSelect::updatePageText()
 	lbl_pages->setVisible(true);
 	lbl_pages->setText(buf);
 	lbl_pages->setPos(128, 192-15, true);
+	mp3_fill_buffer();
 }
 
 void UICourtCharSelect::updateFilter()
@@ -240,9 +248,12 @@ void UICourtCharSelect::updateFilter()
 	currPage = 0;
 	for (u32 i=0; i<pCourtUI->getCharList().size(); i++)
 	{
+		mp3_fill_buffer();
+
 		if (filter.empty())
 		{
 			filteredChars.push_back(i);
+			mp3_fill_buffer();
 			continue;
 		}
 
@@ -250,9 +261,13 @@ void UICourtCharSelect::updateFilter()
 		std::string filterLower(filter);
 		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), [](char c){return std::tolower(c);});
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), [](char c){return std::tolower(c);});
+		mp3_fill_buffer();
 
 		if (nameLower.find(filterLower) != std::string::npos)
+		{
 			filteredChars.push_back(i);
+			mp3_fill_buffer();
+		}
 	}
 }
 
