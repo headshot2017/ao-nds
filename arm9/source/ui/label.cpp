@@ -38,6 +38,8 @@ UILabel::UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u
 		VRAM_I_EXT_SPR_PALETTE[palSlot][2] = textColor;
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
+
+	mp3_fill_buffer();
 }
 
 UILabel::~UILabel()

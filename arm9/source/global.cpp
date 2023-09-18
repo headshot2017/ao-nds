@@ -1,5 +1,6 @@
 #include "global.h"
 
+#include <sys/stat.h>
 #include <stdio.h>
 #include <dirent.h>
 
@@ -19,6 +20,7 @@ void AOdecode(std::string& s)
 			s.replace(pos, escapes[i].length(), unescapes[i]);
 			pos += unescapes[i].length();
 		}
+		mp3_fill_buffer();
 	}
 }
 
@@ -79,10 +81,10 @@ u32 totalArguments(const std::string& s)
 
 bool fileExists(const std::string& filename)
 {
-	FILE* f = fopen(filename.c_str(), "rb");
-	if (!f) return false;
-	fclose(f);
-	return true;
+	struct stat buffer;
+	bool exist = stat(filename.c_str(), &buffer) == 0;
+	mp3_fill_buffer();
+	return exist;
 }
 
 u8* readFile(const std::string& filename, u32* outLen)

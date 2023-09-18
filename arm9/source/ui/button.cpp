@@ -55,6 +55,8 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 		dmaCopy(palData, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
+
+	mp3_fill_buffer();
 }
 
 UIButton::~UIButton()

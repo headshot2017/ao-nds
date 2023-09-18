@@ -2,9 +2,12 @@
 
 #include <nds/dma.h>
 
+#include "mp3_shared.h"
+
 AOkeyboard::AOkeyboard(std::string& valueRef, int lines, int oamStart, int palSlot) : value(valueRef)
 {
 	keyboardInit(&m_kb, 1, BgType_Text4bpp, BgSize_T_256x512, 1, 4, false, true);
+	mp3_fill_buffer();
 
 	lbl_plswrite = new UILabel(&oamSub, oamStart, 6, 1, RGB15(31,31,31), palSlot, 1);
 	lbl_plswrite->setVisible(false);

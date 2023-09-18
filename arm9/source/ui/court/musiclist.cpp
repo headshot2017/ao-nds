@@ -7,6 +7,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
 
+#include "mp3_shared.h"
 #include "global.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
@@ -217,6 +218,7 @@ void UICourtMusicList::reloadScroll()
 		{
 			pos = newPos;
 			newPos = mp3Music.find(".", pos+1);
+			mp3_fill_buffer();
 		}
 		if (pos)
 			mp3Music = mp3Music.substr(0, pos);
@@ -230,6 +232,7 @@ void UICourtMusicList::reloadScroll()
 		{
 			pos = newPos;
 			newPos = mp3Music.find("/", pos+1);
+			mp3_fill_buffer();
 		}
 		if (pos)
 			mp3Music = mp3Music.substr(pos+1);

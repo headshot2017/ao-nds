@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 
+#include "mp3_shared.h"
 #include "global.h"
 
 struct LoadedFont
@@ -52,6 +53,7 @@ int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmp
 		int oobFlag;
 		int outWidth;
 		int new_x = renderChar(fontID, text+i, palIndex, x, w, w, h, bmpTarget, spritesize, spriteGfxTargets[currGfx], false, &oobFlag, &outWidth);
+		mp3_fill_buffer();
 
 		if (!oobFlag)
 		{
@@ -113,6 +115,7 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	// render character (stride and offset is important here)
 	int byteOffset = 0 + roundf(lsb * font.scale) + (y * spriteW);
 	stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, font.scale, font.scale, text[0]);
+	mp3_fill_buffer();
 
 	// focus around the bounding box of the rendered character...
 	for (int yy = y; yy<y+font.line_height; yy++)
@@ -152,6 +155,8 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	kern = stbtt_GetCodepointKernAdvance(&font.info, text[0], text[1]);
 	x += roundf(kern * font.scale);
 
+	mp3_fill_buffer();
+
 	if (oobFlag) *oobFlag = 0;
 	return x;
 }
@@ -167,6 +172,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 		{
 			int line = currTextGfxInd/gfxPerLine;
 			currTextGfxInd = (line+1) * gfxPerLine;
+			mp3_fill_buffer();
 
 			i++;
 			if (i >= strlen(text))
@@ -182,6 +188,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 		int oobFlag = 0;
 		int outWidth;
 		int new_x = renderChar(fontID, text+i, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+		mp3_fill_buffer();
 
 		if (oobFlag)
 		{
@@ -198,6 +205,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 			{
 				textX -= 32;
 				textX = renderChar(fontID, text+i, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+				mp3_fill_buffer();
 			}
 		}
 		else
