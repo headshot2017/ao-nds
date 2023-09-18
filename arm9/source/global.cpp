@@ -17,6 +17,7 @@ void AOdecode(std::string& s)
 		size_t pos = 0;
 		while((pos = s.find(escapes[i], pos)) != std::string::npos)
 		{
+			mp3_fill_buffer();
 			s.replace(pos, escapes[i].length(), unescapes[i]);
 			pos += unescapes[i].length();
 		}

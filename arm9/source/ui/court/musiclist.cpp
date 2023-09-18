@@ -240,23 +240,27 @@ void UICourtMusicList::reloadScroll()
 		pos = 0;
 		while (newPos != std::string::npos)
 		{
+			mp3_fill_buffer();
 			pos = newPos;
 			newPos = mp3Music.find("/", pos+1);
 			mp3_fill_buffer();
 		}
 		if (pos)
 		{
+			mp3_fill_buffer();
 			mp3Music = mp3Music.substr(pos+1);
 			mp3_fill_buffer();
 		}
 
 		u8* btnGfx = (exists) ? (u8*)spr_musicGreenTiles : (u8*)spr_musicRedTiles;
 		u8* btnPal = (exists) ? (u8*)spr_musicGreenPal : (u8*)spr_musicRedPal;
+		mp3_fill_buffer();
 
 		btn_musicBtn[i]->setVisible(true);
 		btn_musicBtn[i]->setImage(btnGfx, btnPal, 32, 16, 5+i);
 		lbl_musicBtn[i]->setVisible(true);
 		lbl_musicBtn[i]->setText(mp3Music.c_str());
+		mp3_fill_buffer();
 	}
 
 	int handleEdges[2] = {btn_scrollUp->getY()+btn_scrollUp->getH(), btn_scrollDown->getY()-btn_scrollDown->getH()};

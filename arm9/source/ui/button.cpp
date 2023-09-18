@@ -33,6 +33,8 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 	{
 		for (int hor=0; hor<spriteHorTiles; hor++)
 		{
+			mp3_fill_buffer();
+
 			int i = vert * spriteHorTiles + hor;
 			spriteGfx[i] = oamAllocateGfx(oam, spriteSize, SpriteColorFormat_256Color);
 
@@ -63,6 +65,7 @@ UIButton::~UIButton()
 {
 	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 	{
+		mp3_fill_buffer();
 		oamClearSprite(oam, oamStart+i);
 		oamFreeGfx(oam, spriteGfx[i]);
 	}
@@ -75,6 +78,8 @@ void UIButton::setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int 
 	{
 		for (int hor=0; hor<spriteHorTiles; hor++)
 		{
+			mp3_fill_buffer();
+
 			int i = vert * spriteHorTiles + hor;
 			u8* offset = data + (i*sprWidth*sprHeight);
 			dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
@@ -102,7 +107,10 @@ void UIButton::setVisible(bool on)
 {
 	visible = on;
 	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
+	{
+		mp3_fill_buffer();
 		oamSetHidden(oam, oamStart+i, !on);
+	}
 
 	if (!visible) forceRelease();
 }
@@ -115,6 +123,8 @@ void UIButton::setPos(int xPos, int yPos)
 	{
 		for (int hor=0; hor<spriteHorTiles; hor++)
 		{
+			mp3_fill_buffer();
+
 			int i = vert * spriteHorTiles + hor;
 			oamSetXY(oam, oamStart+i, x+(hor*sprW), y+(vert*sprH));
 		}
@@ -124,7 +134,10 @@ void UIButton::setPos(int xPos, int yPos)
 void UIButton::setPriority(int pr)
 {
 	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
+	{
+		mp3_fill_buffer();
 		oamSetPriority(oam, oamStart+i, pr);
+	}
 }
 
 void UIButton::forceRelease()
