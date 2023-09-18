@@ -181,6 +181,7 @@ void UICourtMusicList::updateFilter()
 	scrollPos = 0;
 	for (u32 i=0; i<pCourtUI->getMusicList().size(); i++)
 	{
+		mp3_fill_buffer();
 		if (filter.empty())
 		{
 			filteredMusic.push_back(i);
@@ -191,9 +192,13 @@ void UICourtMusicList::updateFilter()
 		std::string filterLower(filter);
 		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), [](char c){return std::tolower(c);});
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), [](char c){return std::tolower(c);});
+		mp3_fill_buffer();
 
 		if (nameLower.find(filterLower) != std::string::npos)
+		{
 			filteredMusic.push_back(i);
+			mp3_fill_buffer();
+		}
 	}
 }
 
@@ -201,6 +206,8 @@ void UICourtMusicList::reloadScroll()
 {
 	for (u32 i=0; i<7; i++)
 	{
+		mp3_fill_buffer();
+
 		u32 ind = i+scrollPos;
 		if (ind >= filteredMusic.size())
 		{
@@ -221,7 +228,10 @@ void UICourtMusicList::reloadScroll()
 			mp3_fill_buffer();
 		}
 		if (pos)
+		{
 			mp3Music = mp3Music.substr(0, pos);
+			mp3_fill_buffer();
+		}
 
 		bool exists = fileExists("/data/ao-nds/sounds/music/" + mp3Music + ".mp3");
 
@@ -235,7 +245,10 @@ void UICourtMusicList::reloadScroll()
 			mp3_fill_buffer();
 		}
 		if (pos)
+		{
 			mp3Music = mp3Music.substr(pos+1);
+			mp3_fill_buffer();
+		}
 
 		u8* btnGfx = (exists) ? (u8*)spr_musicGreenTiles : (u8*)spr_musicRedTiles;
 		u8* btnPal = (exists) ? (u8*)spr_musicGreenPal : (u8*)spr_musicRedPal;
