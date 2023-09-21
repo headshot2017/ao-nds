@@ -12,6 +12,7 @@
 #include "global.h"
 #include "ui/uiserverlist.h"
 #include "ui/court/loading.h"
+#include "ui/court/console.h"
 
 UIScreenCourt::UIScreenCourt() : UIScreen()
 {
@@ -48,7 +49,10 @@ void UIScreenCourt::init()
 	bgExtPaletteEnable();
 	currChar = -1;
 
-	subScreen = new UICourtLoading(this);
+	if (keysHeld() & KEY_SELECT)
+		subScreen = new UICourtConsole(this);
+	else
+		subScreen = new UICourtLoading(this);
 	subScreen->init();
 
 	court = new Courtroom;
