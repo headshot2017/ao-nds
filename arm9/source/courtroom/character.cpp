@@ -1,6 +1,7 @@
 #include "courtroom/character.h"
 
 #include <math.h>
+#include <stdio.h>
 
 #include <nds/dma.h>
 #include <nds/timers.h>
@@ -14,7 +15,7 @@
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED (BUS_CLOCK/1024)
 
-void readFrameSize(const std::string& value, int* w, int* h)
+void readTwoValues(const std::string& value, int* w, int* h)
 {
     std::size_t delimiterPos = value.find(",");
     if (delimiterPos == std::string::npos)
@@ -26,28 +27,46 @@ void readFrameSize(const std::string& value, int* w, int* h)
 
     *w = std::stoi(value.substr(0, delimiterPos));
     *h = std::stoi(value.substr(delimiterPos + 1));
+    mp3_fill_buffer();
 }
 
-u32* readFrameDurations(const std::string& value, u32* sizeOutput)
+void readFrameDurations(const std::string& value, std::vector<u32>& output)
 {
 	std::size_t lastPos = 0;
 	std::size_t delimiterPos = value.find(",");
 
-	u32 frameCount = 0;
-	u32* output = 0;
+	output.clear();
 	while (lastPos != std::string::npos)
 	{
-		frameCount++;
-		output = (u32*)realloc(output, sizeof(u32) * frameCount);
+		mp3_fill_buffer();
+
 		u32 dur = std::stoi(value.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1));
-		output[frameCount-1] = dur;
+		output.push_back(dur);
 
 		lastPos = delimiterPos;
 		delimiterPos = value.find(",", delimiterPos+1);
 	}
+}
 
-	*sizeOutput = frameCount;
-	return output;
+void readFrameIndexes(const std::string& value, std::vector<u16>& output)
+{
+	std::size_t lastPos = 0;
+	std::size_t delimiterPos = value.find(",");
+
+	output.clear();
+	u32 frameCount = 0;
+	while (lastPos != std::string::npos)
+	{
+		mp3_fill_buffer();
+
+		frameCount++;
+		std::string val = value.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos - (frameCount==1 ? 0 : 1));
+		u16 ind = std::stoi(val);
+		output.push_back(ind);
+
+		lastPos = delimiterPos;
+		delimiterPos = value.find(",", delimiterPos+1);
+	}
 }
 
 
@@ -55,15 +74,11 @@ Character::Character()
 {
 	timerTicks = 0;
 	currFrame = 0;
-	realW = 0;
-	frameW = 0;
-	frameH = 0;
 	loop = false;
 	gfxInUse = 0;
 
 	charData = 0;
-	frameDurations = 0;
-	frameCount = 0;
+	frameInfo.frameCount = 0;
 
 	for (int i=0; i<8*6; i++)
 	{
@@ -89,8 +104,6 @@ Character::~Character()
 
 	if (charData)
 		delete[] charData;
-	if (frameDurations)
-		free(frameDurations);
 
 	timerStop(0);
 }
@@ -108,9 +121,17 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		NDScfg = "/data/ao-nds/misc/nds.cfg";
 		IMGbin = "/data/ao-nds/misc/placeholder.img.bin";
 		PALbin = "/data/ao-nds/misc/placeholder.pal.bin";
+		if (!fileExists(NDScfg) || !fileExists(IMGbin) || !fileExists(PALbin))
+			return;
 	}
 
 	timerStop(0);
+
+	if (charData)
+	{
+		delete[] charData;
+		charData = 0;
+	}
 
 	// load gfx and palette
 	u32 palSize, charSize;
@@ -132,33 +153,33 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	}
 
 	for(auto& c : relativeFile) c = tolower(c);
-	int oldW = frameW;
-	int oldH = frameH;
+	int oldW = frameInfo.frameW;
+	int oldH = frameInfo.frameH;
+	int oldOffsetX = frameInfo.offsetX;
+	int oldOffsetY = frameInfo.offsetY;
 
-	readFrameSize(animInfos.get(relativeFile + "_size"), &frameW, &frameH);
-	if (frameW == 0 && frameH == 0)
+	readTwoValues(animInfos.get(relativeFile + "_size"), &frameInfo.frameW, &frameInfo.frameH);
+	readTwoValues(animInfos.get(relativeFile + "_offset"), &frameInfo.offsetX, &frameInfo.offsetY);
+	if (frameInfo.frameW == 0 && frameInfo.frameH == 0)
 	{
-		frameW = oldW;
-		frameH = oldH;
+		frameInfo.frameW = oldW;
+		frameInfo.frameH = oldH;
+		frameInfo.offsetX = oldOffsetX;
+		frameInfo.offsetY = oldOffsetY;
 		delete[] charDataLZ77;
 		delete[] charPalette;
 		return;
 	}
-	free(frameDurations);
-	frameDurations = readFrameDurations(animInfos.get(relativeFile + "_durations"), &frameCount);
+	readFrameDurations(animInfos.get(relativeFile + "_durations"), frameInfo.frameDurations);
+	readFrameIndexes(animInfos.get(relativeFile + "_indexes"), frameInfo.frameIndexes);
+	frameInfo.frameCount = frameInfo.frameIndexes.size();
 	mp3_fill_buffer();
 
-	realW = ceil(frameW/32.f);
-	int realH = ceil(frameH/32.f);
-
-	if (charData)
-	{
-		delete[] charData;
-		charData = 0;
-	}
+	frameInfo.realW = ceil(frameInfo.frameW/32.f);
+	int realH = ceil(frameInfo.frameH/32.f);
 
 	// decompress gfx and copy palette to slot 2
-	charData = new u8[realW*32 * realH*32 * frameCount];
+	charData = new u8[frameInfo.realW*32 * realH*32 * frameInfo.frameCount];
 	if (!charData)
 	{
 		delete[] charDataLZ77;
@@ -181,29 +202,26 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	{
 		oamSet(&oamMain, 50+i, 0, 0, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		charGfxVisible[i] = false;
-		//oamFreeGfx(&oamMain, charGfx[i]);
-		//charGfx[i] = 0;
 	}
 
-	gfxInUse = realW*realH;
+	gfxInUse = frameInfo.realW*realH;
 
 	for (int i=0; i<gfxInUse; i++)
 	{
-		int x = (i%realW) * 32;
-		int y = (i/realW) * 32;
-
-		//charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
+		int x = (i%frameInfo.realW) * 32;
+		int y = (i/frameInfo.realW) * 32;
 
 		u8* offset = charData + i*32*32;
 		dmaCopy(offset, charGfx[i], 32*32);
 
-		oamSet(&oamMain, 50+i, x+128-(frameW/2), y+192-frameH, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, charGfx[i], -1, false, false, false, false, false);
+		oamSet(&oamMain, 50+i, x+frameInfo.offsetX, y+frameInfo.offsetY, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, charGfx[i], -1, false, false, false, false, false);
 		charGfxVisible[i] = true;
 	}
 
 	loop = doLoop;
 	timerTicks = 0;
 	timerStart(0, ClockDivider_1024, 0, NULL);
+	currFrame = 0;
 }
 
 void Character::setVisible(bool on)
@@ -213,30 +231,30 @@ void Character::setVisible(bool on)
 
 void Character::update()
 {
-	if (!loop && currFrame >= frameCount)
+	for (int i=0; i<gfxInUse; i++)
+	{
+		int x = (i%frameInfo.realW) * 32;
+		int y = (i/frameInfo.realW) * 32;
+		oamSetXY(&oamMain, 50+i, x+frameInfo.offsetX + shakeX, y+frameInfo.offsetY + shakeY);
+	}
+
+	if (!loop && currFrame >= frameInfo.frameCount)
 		return;
 
 	timerTicks += timerElapsed(0);
 	u32 ms = (float)timerTicks/TIMER_SPEED*1000;
 
-	for (int i=0; i<gfxInUse; i++)
-	{
-		int x = (i%realW) * 32;
-		int y = (i/realW) * 32;
-		oamSetXY(&oamMain, 50+i, x+128-(frameW/2) + xOffset, y+192-frameH + yOffset);
-	}
-
-	if (charData && frameCount && ms >= frameDurations[currFrame])
+	if (charData && frameInfo.frameCount && ms >= frameInfo.frameDurations[currFrame])
 	{
 		timerTicks = 0;
 		timerPause(0);
 
 		if (loop)
-			currFrame = (currFrame+1) % (frameCount);
+			currFrame = (currFrame+1) % (frameInfo.frameCount);
 		else
 		{
 			currFrame++;
-			if (currFrame >= frameCount)
+			if (currFrame >= frameInfo.frameCount)
 			{
 				timerStop(0);
 				if (onAnimFinished) onAnimFinished(pUserData);
@@ -244,9 +262,9 @@ void Character::update()
 		}
 
 		// copy new frame to sprite gfx
+		int frameOffset = frameInfo.frameIndexes[currFrame]*gfxInUse;
 		for (int i=0; i<gfxInUse; i++)
 		{
-			int frameOffset = currFrame*gfxInUse;
 			u8* offset = charData + frameOffset*32*32 + i*32*32;
 			dmaCopy(offset, charGfx[i], 32*32);
 		}

@@ -14,6 +14,20 @@
 #include "cfgFile.h"
 #include "global.h"
 
+struct FrameInfo
+{
+	FrameInfo() : frameCount(0), realW(0), frameW(0), frameH(0), offsetX(0), offsetY(0) {}
+
+	std::vector<u32> frameDurations;
+	std::vector<u16> frameIndexes;
+	u32 frameCount;
+	int realW;
+	int frameW;
+	int frameH;
+	int offsetX;
+	int offsetY;
+};
+
 class Character
 {
 	u16* charGfx[8*6];
@@ -26,18 +40,14 @@ class Character
 	std::string currAnim;
 
 	cfgFile animInfos;
-	u32* frameDurations;
-	u32 frameCount;
-	int realW;
-	int frameW;
-	int frameH;
+	FrameInfo frameInfo;
 	bool loop;
 
 	u32 timerTicks;
 	u32 currFrame;
 
-	int xOffset;
-	int yOffset;
+	int shakeX;
+	int shakeY;
 
 	void* pUserData;
 	voidCallback onAnimFinished;
@@ -51,7 +61,7 @@ public:
 	const std::string& getCurrCharacter() {return currCharacter;}
 	const std::string& getCurrAnim() {return currAnim;}
 
-	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
+	void setOffsets(int x, int y) {shakeX = x; shakeY = y;}
 	void setCharImage(std::string charname, std::string relativeFile, bool doLoop=true);
 	void setVisible(bool on);
 

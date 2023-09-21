@@ -4,9 +4,21 @@
 #include <stdio.h>
 #include <dirent.h>
 
+#include <nds/arm9/input.h>
 #include <nds/interrupts.h>
 
 #include "mp3_shared.h"
+
+void debugPressA(const char* msg)
+{
+	iprintf("%s\n", msg);
+	while (1)
+	{
+		scanKeys();
+		if (keysDown() & KEY_A) break;
+		swiWaitForVBlank();
+	}
+}
 
 void AOdecode(std::string& s)
 {

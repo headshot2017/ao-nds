@@ -20,6 +20,8 @@ struct cbInfo
 	void* pUserData;
 };
 
+void debugPressA(const char* msg);
+
 void AOdecode(std::string& s);
 std::string argumentAt(const std::string& s, int id);
 void fillArguments(std::vector<std::string>& out, std::string& s, int id);

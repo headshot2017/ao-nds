@@ -4,6 +4,7 @@ import math
 import configparser
 
 from PIL import Image
+from PIL import ImageChops
 import requests
 
 import images
@@ -115,6 +116,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
     leftCorner = frames[0][0].size[0]
     rightCorner = 0
     top = frames[0][0].size[1]
+    bottom = 0
 
     # find corners first
     for frame, duration in frames:
@@ -147,38 +149,70 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
                     break
             if found: break
 
-    if leftCorner == frames[0][0].size[0] and rightCorner == 0 and top == frames[0][0].size[1]:
+        found = False
+        for y in range(frame.size[1]-1, -1, -1):
+            for x in range(frame.size[0]):
+                if pix[x, y][3] != 0 and y > bottom:
+                    bottom = y
+                    found = True
+                    break
+            if found: break
+
+    if leftCorner == frames[0][0].size[0] and rightCorner == 0 and top == frames[0][0].size[1] and bottom == 0:
         # empty image?
         rightCorner = 31
         leftCorner = 0
         top = 0
+        bottom = 31
         for i in range(len(frames)):
             frame = frames[i][0]
             frames[i][0] = frame.crop((0, 0, 32, 32))
 
-    # crop
+    # crop and transparency
     croppedWidth = 0
     croppedHeight = 0
     for i in range(len(frames)):
         frame = frames[i][0]
-        frame = frame.crop((leftCorner, top, rightCorner+1, frame.size[1]))
+        frame = frame.crop((leftCorner, top, rightCorner+1, bottom+1))
         croppedWidth = frame.size[0]
         croppedHeight = frame.size[1]
-        frames[i][0] = frame.crop((0, 0, math.ceil(frame.size[0]/32.)*32, math.ceil(frame.size[1]/32.)*32))
+        frame = frame.crop((0, 0, math.ceil(frame.size[0]/32.)*32, math.ceil(frame.size[1]/32.)*32))
 
-    # transparency
-    for frame, duration in frames:
         pix = frame.load()
         for x in range(frame.size[0]):
             for y in range(frame.size[1]):
                 if pix[x, y][3] == 0:
                     pix[x, y] = (255, 0, 255, 255)
 
-    # combine all frames into one and save.
-    result = Image.new("RGB", (frames[0][0].size[0], frames[0][0].size[1] * len(frames)), (255, 0, 255))
+        frames[i][0] = frame.convert("RGB")
+
+    # to find difference between frames: diff = ImageChops.difference(frame1, frame2)
+    # if difference exists, diff.getbbox() will return a tuple. if not, returns None
+
+    # get rid of duplicate frames to reduce size, and use frame indexes instead
+    noDuplicates = []
+    frameIndexes = []
     for i in range(len(frames)):
-        frame = frames[i][0]
-        result.paste(frame, (0, i*frame.size[1]), frame)
+        frame, duration = frames[i]
+
+        found = False
+        for j in range(len(noDuplicates)):
+            other = noDuplicates[j]
+            if not ImageChops.difference(frame, other).getbbox():
+                # frame == other, so use the existing index
+                frameIndexes.append(j)
+                found = True
+                break
+
+        if not found:
+            noDuplicates.append(frame)
+            frameIndexes.append(len(noDuplicates)-1)
+
+    # combine all non-duplicate frames into one and save.
+    result = Image.new("RGB", (frames[0][0].size[0], frames[0][0].size[1] * len(noDuplicates)), (255, 0, 255))
+    for i in range(len(noDuplicates)):
+        frame = noDuplicates[i]
+        result.paste(frame, (0, i*frame.size[1]))
     result.save("temp.png")
 
     # 8-bit tiles, #FF00FF transparency color, LZ77 compression, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
@@ -198,6 +232,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
     # save frame durations (in ms) and sizes into a cfg file.
     with open(ogTarget+"/nds.cfg", "a") as f:
         f.write(extra+no_dir_ext_file.lower()+"_size: %d,%d\n" % (croppedWidth, croppedHeight))
+        f.write(extra+no_dir_ext_file.lower()+"_offset: %d,%d\n" % (leftCorner, top))
         f.write(extra+no_dir_ext_file.lower()+"_durations: ")
         for i in range(len(frames)):
             duration = frames[i][1]
@@ -205,6 +240,14 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
                 f.write("%d" % duration)
             else:
                 f.write("%d," % duration)
+        f.write("\n")
+        f.write(extra+no_dir_ext_file.lower()+"_indexes: ")
+        for i in range(len(frames)):
+            ind = frameIndexes[i]
+            if i == len(frames)-1:
+                f.write("%d" % ind)
+            else:
+                f.write("%d," % ind)
         f.write("\n")
 
 def convertCharIcon(sourceFile, targetFile):
