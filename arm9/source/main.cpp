@@ -28,7 +28,7 @@
 #include "ui/uiwificonnect.h"
 
 #include "acename_ttf.h"
-#include "Igiari_ttf.h"
+#include "Igiari_otf.h"
 
 void showDisclaimer()
 {
@@ -97,7 +97,7 @@ int main()
 	oamInit(&oamSub, SpriteMapping_1D_128, true);
 
 	initFont(acename_ttf, 13);	// index 0
-	initFont(Igiari_ttf, 16);	// index 1
+	initFont(Igiari_otf, 16);	// index 1
 
 	showDisclaimer();
 

@@ -32,7 +32,8 @@ SOURCES		:= source source/mp3 source/courtroom source/ui source/ui/court source/
 INCLUDES	:= include ../common ../helix ../helix/real
 DATA		:=
 IMAGES		:= gfx
-FONTS		:= gfx/Igiari gfx/AceName
+FONTS_TTF	:= gfx/AceName
+FONTS_OTF	:= gfx/Igiari
 EXPORT_DIR	:=
 #---------------------------------------------------------------------------------
 
@@ -76,14 +77,15 @@ export DEPSDIR := $(CURDIR)/$(BUILD)
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(IMAGES),$(CURDIR)/$(dir)) \
-					$(foreach dir,$(FONTS),$(CURDIR)/$(dir))
+					$(foreach dir,$(FONTS_TTF),$(CURDIR)/$(dir)) \
+					$(foreach dir,$(FONTS_OTF),$(CURDIR)/$(dir))
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 PNGFILES	:=	$(foreach dir,$(IMAGES),$(notdir $(wildcard $(dir)/*.png)))
-FONTFILES	:=	$(foreach dir,$(FONTS),$(notdir $(wildcard $(dir)/*.ttf)))
+FONTFILES	:=	$(foreach dir,$(FONTS_TTF),$(notdir $(wildcard $(dir)/*.ttf))) $(foreach dir,$(FONTS_OTF),$(notdir $(wildcard $(dir)/*.otf)))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -140,6 +142,7 @@ $(ARM9ELF)	:	$(OFILES)
 #---------------------------------------------------------------------------------
 %.bin.o	:	%.bin
 %.ttf.o :   %.ttf
+%.otf.o :   %.otf
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
