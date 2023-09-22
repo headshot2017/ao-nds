@@ -1,5 +1,7 @@
 #include "animStream.h"
 
+#include "mp3_shared.h"
+
 animStream::~animStream()
 {
 	unload();
@@ -13,6 +15,7 @@ void animStream::unload()
 		f = 0;
 		delete[] data;
 		data = 0;
+		mp3_fill_buffer();
 	}
 }
 
@@ -35,5 +38,6 @@ u8* animStream::getFrame(int i)
 	int frameOffset = i*frameSize;
 	fseek(f, frameOffset, SEEK_SET);
 	fread(data, frameSize, 1, f);
+	mp3_fill_buffer();
 	return data;
 }

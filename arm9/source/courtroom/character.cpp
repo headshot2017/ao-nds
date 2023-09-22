@@ -220,6 +220,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		u8* ptr = (!frameInfo.streaming) ? charData : stream.getFrame(0);
 		u8* offset = ptr + i*32*32;
 		dmaCopy(offset, charGfx[i], 32*32);
+		mp3_fill_buffer();
 
 		oamSet(&oamMain, 50+i, x+frameInfo.offsetX, y+frameInfo.offsetY, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, charGfx[i], -1, false, false, false, false, false);
 		charGfxVisible[i] = true;
@@ -282,6 +283,7 @@ void Character::update()
 		{
 			u8* offset = ptr + i*32*32;
 			dmaCopy(offset, charGfx[i], 32*32);
+			mp3_fill_buffer();
 		}
 
 		timerUnpause(0);
