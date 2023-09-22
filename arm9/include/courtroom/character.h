@@ -13,19 +13,22 @@
 
 #include "cfgFile.h"
 #include "global.h"
+#include "animStream.h"
 
 struct FrameInfo
 {
-	FrameInfo() : frameCount(0), realW(0), frameW(0), frameH(0), offsetX(0), offsetY(0) {}
+	FrameInfo() : frameCount(0), realW(0), realH(0), frameW(0), frameH(0), offsetX(0), offsetY(0) {}
 
 	std::vector<u32> frameDurations;
 	std::vector<u16> frameIndexes;
 	u32 frameCount;
 	int realW;
+	int realH;
 	int frameW;
 	int frameH;
 	int offsetX;
 	int offsetY;
+	bool streaming;
 };
 
 class Character
@@ -35,6 +38,7 @@ class Character
 	int gfxInUse;
 
 	u8* charData;
+	animStream stream;
 
 	std::string currCharacter;
 	std::string currAnim;

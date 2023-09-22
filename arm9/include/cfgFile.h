@@ -22,7 +22,7 @@ public:
     cfgFile() {}
     cfgFile(const std::string& filename);
 
-    std::string& get(const std::string& key, std::string defaultValue="");
+    std::string get(const std::string& key, std::string defaultValue="");
     void set(const std::string& key, std::string& value);
 
     void save(const std::string& filename);

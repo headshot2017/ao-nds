@@ -133,14 +133,11 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		charData = 0;
 	}
 
-	// load gfx and palette
-	u32 palSize, charSize;
-
-	u8* charDataLZ77 = readFile(IMGbin.c_str(), &charSize);
+	// load palette
+	u32 palSize;
 	u8* charPalette = readFile(PALbin.c_str(), &palSize);
-	if (!charDataLZ77 || !charPalette)
+	if (!charPalette)
 	{
-		if (charDataLZ77) delete[] charDataLZ77;
 		if (charPalette) delete[] charPalette;
 		return;
 	}
@@ -166,7 +163,6 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		frameInfo.frameH = oldH;
 		frameInfo.offsetX = oldOffsetX;
 		frameInfo.offsetY = oldOffsetY;
-		delete[] charDataLZ77;
 		delete[] charPalette;
 		return;
 	}
@@ -176,27 +172,37 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	mp3_fill_buffer();
 
 	frameInfo.realW = ceil(frameInfo.frameW/32.f);
-	int realH = ceil(frameInfo.frameH/32.f);
+	frameInfo.realH = ceil(frameInfo.frameH/32.f);
 
-	// decompress gfx and copy palette to slot 2
-	charData = new u8[frameInfo.realW*32 * realH*32 * frameInfo.frameCount];
-	if (!charData)
+	frameInfo.streaming = (animInfos.get(relativeFile + "_stream") == "1");
+	if (!frameInfo.streaming)
 	{
-		delete[] charDataLZ77;
-		delete[] charPalette;
-		return;
-	}
+		// decompress gfx and copy palette to slot 2
+		stream.unload();
 
-	decompress(charDataLZ77, charData, LZ77);
+		u8* charDataLZ77 = readFile(IMGbin.c_str());
+
+		charData = new u8[frameInfo.realW*32 * frameInfo.realH*32 * frameInfo.frameCount];
+		if (!charData)
+		{
+			delete[] charDataLZ77;
+			delete[] charPalette;
+			return;
+		}
+
+		decompress(charDataLZ77, charData, LZ77);
+		delete[] charDataLZ77;
+	}
+	else
+	{
+		stream.loadFile(IMGbin.c_str(), frameInfo.realW, frameInfo.realH, 32, 32);
+	}
 	mp3_fill_buffer();
 
 	vramSetBankF(VRAM_F_LCD);
 	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
-
-	// free data from memory
 	delete[] charPalette;
-	delete[] charDataLZ77;
 
 	for (int i=0; i<gfxInUse; i++)
 	{
@@ -204,14 +210,15 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		charGfxVisible[i] = false;
 	}
 
-	gfxInUse = frameInfo.realW*realH;
+	gfxInUse = frameInfo.realW*frameInfo.realH;
 
 	for (int i=0; i<gfxInUse; i++)
 	{
 		int x = (i%frameInfo.realW) * 32;
 		int y = (i/frameInfo.realW) * 32;
 
-		u8* offset = charData + i*32*32;
+		u8* ptr = (!frameInfo.streaming) ? charData : stream.getFrame(0);
+		u8* offset = ptr + i*32*32;
 		dmaCopy(offset, charGfx[i], 32*32);
 
 		oamSet(&oamMain, 50+i, x+frameInfo.offsetX, y+frameInfo.offsetY, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, charGfx[i], -1, false, false, false, false, false);
@@ -244,7 +251,7 @@ void Character::update()
 	timerTicks += timerElapsed(0);
 	u32 ms = (float)timerTicks/TIMER_SPEED*1000;
 
-	if (charData && frameInfo.frameCount && ms >= frameInfo.frameDurations[currFrame])
+	if (frameInfo.frameCount && ms >= frameInfo.frameDurations[currFrame])
 	{
 		timerTicks = 0;
 		timerPause(0);
@@ -262,10 +269,18 @@ void Character::update()
 		}
 
 		// copy new frame to sprite gfx
-		int frameOffset = frameInfo.frameIndexes[currFrame]*gfxInUse;
+		u8* ptr;
+		if (!frameInfo.streaming)
+		{
+			int frameOffset = frameInfo.frameIndexes[currFrame]*gfxInUse;
+			ptr = charData + frameOffset*32*32;
+		}
+		else
+			ptr = stream.getFrame(frameInfo.frameIndexes[currFrame]);
+
 		for (int i=0; i<gfxInUse; i++)
 		{
-			u8* offset = charData + frameOffset*32*32 + i*32*32;
+			u8* offset = ptr + i*32*32;
 			dmaCopy(offset, charGfx[i], 32*32);
 		}
 

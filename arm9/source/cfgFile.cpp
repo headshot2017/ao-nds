@@ -9,7 +9,7 @@ cfgFile::cfgFile(const std::string& filename)
     load(filename);
 }
 
-std::string& cfgFile::get(const std::string& key, std::string defaultValue)
+std::string cfgFile::get(const std::string& key, std::string defaultValue)
 {
     return (!keys.count(key)) ? defaultValue : keys[key];
 }

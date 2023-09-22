@@ -215,8 +215,10 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
         result.paste(frame, (0, i*frame.size[1]))
     result.save("temp.png")
 
-    # 8-bit tiles, #FF00FF transparency color, LZ77 compression, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-    subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -gzl -ftb -fh! -m! -Mh4 -Mw4").wait()
+    streamFile = (frames[0][0].size[0] * frames[0][0].size[1] * len(noDuplicates) >= 512*1024)
+
+    # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
+    subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF %s -ftb -fh! -m! -Mh4 -Mw4" % ("" if streamFile else "-gzl")).wait()
     if not os.path.exists("temp.img.bin"):
         print("Failed to convert: %s" % (no_dir_ext_file))
         return
@@ -233,6 +235,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
     with open(ogTarget+"/nds.cfg", "a") as f:
         f.write(extra+no_dir_ext_file.lower()+"_size: %d,%d\n" % (croppedWidth, croppedHeight))
         f.write(extra+no_dir_ext_file.lower()+"_offset: %d,%d\n" % (leftCorner, top))
+        f.write(extra+no_dir_ext_file.lower()+"_stream: %d\n" % (streamFile))
         f.write(extra+no_dir_ext_file.lower()+"_durations: ")
         for i in range(len(frames)):
             duration = frames[i][1]
