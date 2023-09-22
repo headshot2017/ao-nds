@@ -30,13 +30,16 @@ void animStream::loadFile(const char* filename, int tW, int tH, int sW, int sH)
 	sprH = sH;
 
 	f = fopen(filename, "rb");
+	mp3_fill_buffer();
 	data = new u8[frameSize];
+	mp3_fill_buffer();
 }
 
 u8* animStream::getFrame(int i)
 {
 	int frameOffset = i*frameSize;
 	fseek(f, frameOffset, SEEK_SET);
+	mp3_fill_buffer();
 	fread(data, frameSize, 1, f);
 	mp3_fill_buffer();
 	return data;
