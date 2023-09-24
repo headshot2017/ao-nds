@@ -12,6 +12,15 @@ struct charInfo
 	bool taken;
 };
 
+struct areaInfo
+{
+	std::string name;
+	int players;
+	std::string status;
+	std::string cm;
+	std::string lock;
+};
+
 class UIScreenCourt;
 class UISubScreen
 {
@@ -35,6 +44,7 @@ class UIScreenCourt : public UIScreen
 
 	std::vector<charInfo> charList;
 	std::vector<std::string> musicList;
+	std::vector<areaInfo> areaList;
 
 	int currChar;
 
@@ -49,6 +59,7 @@ public:
 
 	const std::vector<charInfo>& getCharList() {return charList;}
 	const std::vector<std::string>& getMusicList() {return musicList;}
+	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	int getCurrCharID() {return currChar;}
 	const charInfo& getCurrChar() {return charList[currChar];}
 

@@ -152,7 +152,30 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 {
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
-	fillArguments(pSelf->musicList, msg, 1);
+	bool musics_time = false;
+	std::size_t delimiterPos = msg.find("#");
+	std::size_t lastPos = delimiterPos;
+	delimiterPos = msg.find("#", delimiterPos+1);
+
+	while (lastPos != std::string::npos)
+	{
+		std::string value = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
+
+		if (musics_time)
+			pSelf->musicList.push_back(value);
+		else if (value.find(".mp3") != std::string::npos || value.find(".ogg") != std::string::npos || value.find(".opus") != std::string::npos || value.find(".wav") != std::string::npos)
+		{
+			musics_time = true;
+			pSelf->musicList.push_back(pSelf->areaList.back().name);
+			pSelf->areaList.pop_back();
+			pSelf->musicList.push_back(value);
+		}
+		else
+			pSelf->areaList.push_back({value, 0, "", "", ""});
+
+		lastPos = delimiterPos;
+		delimiterPos = msg.find("#", delimiterPos+1);
+	}
 	pSelf->musicList.pop_back(); // remove "%"
 
 	gEngine->getSocket()->sendData("RD#%");
