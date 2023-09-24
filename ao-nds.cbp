@@ -83,6 +83,7 @@
 		<Unit filename="arm9/include/sockets/aowebsocket.h" />
 		<Unit filename="arm9/include/stb_truetype.h" />
 		<Unit filename="arm9/include/ui/button.h" />
+		<Unit filename="arm9/include/ui/court/arealist.h" />
 		<Unit filename="arm9/include/ui/court/charselect.h" />
 		<Unit filename="arm9/include/ui/court/console.h" />
 		<Unit filename="arm9/include/ui/court/ingamemenu.h" />
@@ -111,6 +112,7 @@
 		<Unit filename="arm9/source/sockets/aotcpsocket.cpp" />
 		<Unit filename="arm9/source/sockets/aowebsocket.cpp" />
 		<Unit filename="arm9/source/ui/button.cpp" />
+		<Unit filename="arm9/source/ui/court/arealist.cpp" />
 		<Unit filename="arm9/source/ui/court/charselect.cpp" />
 		<Unit filename="arm9/source/ui/court/console.cpp" />
 		<Unit filename="arm9/source/ui/court/ingamemenu.cpp" />

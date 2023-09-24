@@ -11,6 +11,7 @@
 #include "global.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
+#include "ui/court/arealist.h"
 #include "bg_musicList.h"
 #include "spr_back.h"
 #include "spr_areas.h"
@@ -283,6 +284,7 @@ void UICourtMusicList::onToggleList(void* pUserData)
 	UICourtMusicList* pSelf = (UICourtMusicList*)pUserData;
 
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	pSelf->pCourtUI->changeScreen(new UICourtAreaList(pSelf->pCourtUI));
 }
 
 void UICourtMusicList::onScrollUpPressed(void* pUserData)
