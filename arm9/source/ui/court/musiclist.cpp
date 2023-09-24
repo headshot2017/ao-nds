@@ -54,14 +54,14 @@ void UICourtMusicList::init()
 
 	static musicBtnData btnData[7];
 	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_listToggle = new UIButton(&oamSub, (u8*)spr_areasTiles, (u8*)spr_areasPal, btn_back->nextOamInd(), 2, 1, SpriteSize_32x16, 82, 177, 58, 15, 32, 16, 1);
-	btn_scrollUp = new UIButton(&oamSub, (u8*)spr_scrollUpTiles, (u8*)spr_scrollUpPal, btn_listToggle->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 19, 14, 19, 16, 32, 2);
+	btn_listToggle = new UIButton(&oamSub, (u8*)spr_areasTiles, (u8*)spr_areasPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
+	btn_scrollUp = new UIButton(&oamSub, (u8*)spr_scrollUpTiles, (u8*)spr_scrollUpPal, btn_listToggle->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 31, 14, 19, 16, 32, 2);
 	btn_scrollDown = new UIButton(&oamSub, (u8*)spr_scrollDownTiles, (u8*)spr_scrollDownPal, btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
 	for (int i=0; i<7; i++)
 	{
 		lbl_musicBtn[i] = new UILabel(&oamSub, (!i) ? btn_scrollDown->nextOamInd() : btn_musicBtn[i-1]->nextOamInd(), 7, 1, 0, 4, 0);
-		lbl_musicBtn[i]->setPos(4, 30+(17*i)+1);
-		btn_musicBtn[i] = new UIButton(&oamSub, (u8*)spr_musicRedTiles, (u8*)spr_musicRedPal, lbl_musicBtn[i]->nextOamInd(), 8, 1, SpriteSize_32x16, 2, 30+(17*i), 238, 16, 32, 16, 5+i);
+		lbl_musicBtn[i]->setPos(4, 32+(17*i)+1);
+		btn_musicBtn[i] = new UIButton(&oamSub, (u8*)spr_musicRedTiles, (u8*)spr_musicRedPal, lbl_musicBtn[i]->nextOamInd(), 8, 1, SpriteSize_32x16, 2, 32+(17*i), 238, 16, 32, 16, 5+i);
 
 		btnData[i] = {this, i};
 		btn_musicBtn[i]->connect(onMusicClicked, &btnData[i]);
