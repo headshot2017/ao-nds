@@ -93,6 +93,7 @@
 		<Unit filename="arm9/include/ui/label.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
 		<Unit filename="arm9/include/ui/uidirectconn.h" />
+		<Unit filename="arm9/include/ui/uidisconnected.h" />
 		<Unit filename="arm9/include/ui/uimainmenu.h" />
 		<Unit filename="arm9/include/ui/uiscreen.h" />
 		<Unit filename="arm9/include/ui/uiserverlist.h" />
@@ -122,6 +123,7 @@
 		<Unit filename="arm9/source/ui/label.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
 		<Unit filename="arm9/source/ui/uidirectconn.cpp" />
+		<Unit filename="arm9/source/ui/uidisconnected.cpp" />
 		<Unit filename="arm9/source/ui/uimainmenu.cpp" />
 		<Unit filename="arm9/source/ui/uiserverlist.cpp" />
 		<Unit filename="arm9/source/ui/uiwificonnect.cpp" />

@@ -234,6 +234,12 @@ int getTextWidth(int fontID, const char* text)
 
 	for (u32 i=0; i<strlen(text); i++)
 	{
+		if (text[i] == '\n')
+		{
+			textWidth = 0;
+			continue;
+		}
+
 		// how wide is this character
 		int ax;
 		int lsb;

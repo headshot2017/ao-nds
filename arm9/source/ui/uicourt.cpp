@@ -11,6 +11,7 @@
 #include "engine.h"
 #include "global.h"
 #include "ui/uiserverlist.h"
+#include "ui/uidisconnected.h"
 #include "ui/court/loading.h"
 #include "ui/court/console.h"
 
@@ -76,6 +77,9 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 	sock->addMessageCallback("PV", onMessagePV, this);
 	sock->addMessageCallback("ARUP", onMessageARUP, this);
+	sock->addMessageCallback("KK", onMessageKK, this);
+	sock->addMessageCallback("KB", onMessageKB, this);
+	sock->addMessageCallback("BD", onMessageBD, this);
 }
 
 void UIScreenCourt::updateInput()
@@ -270,4 +274,19 @@ void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)
 				break;
 		}
 	}
+}
+
+void UIScreenCourt::onMessageKK(void* pUserData, std::string msg)
+{
+	gEngine->changeScreen(new UIScreenDisconnected("You have been kicked", argumentAt(msg, 1), false));
+}
+
+void UIScreenCourt::onMessageKB(void* pUserData, std::string msg)
+{
+	gEngine->changeScreen(new UIScreenDisconnected("You have been banned", argumentAt(msg, 1), false));
+}
+
+void UIScreenCourt::onMessageBD(void* pUserData, std::string msg)
+{
+	gEngine->changeScreen(new UIScreenDisconnected("You are banned from this server", argumentAt(msg, 1), false));
 }

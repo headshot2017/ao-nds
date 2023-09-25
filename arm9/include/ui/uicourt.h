@@ -75,6 +75,9 @@ public:
 	static void onMessageCharsCheck(void* pUserData, std::string msg);
 	static void onMessagePV(void* pUserData, std::string msg);
 	static void onMessageARUP(void* pUserData, std::string msg);
+	static void onMessageKK(void* pUserData, std::string msg);
+	static void onMessageKB(void* pUserData, std::string msg);
+	static void onMessageBD(void* pUserData, std::string msg);
 
 	u32* sndSelect;
 	u32* sndCancel;

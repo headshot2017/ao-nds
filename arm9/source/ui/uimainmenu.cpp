@@ -10,6 +10,7 @@
 #include "engine.h"
 #include "ui/uiserverlist.h"
 #include "ui/uidirectconn.h"
+#include "ui/uidisconnected.h"
 #include "bg_title.h"
 #include "bg_logo.h"
 #include "spr_viewServerList.h"
