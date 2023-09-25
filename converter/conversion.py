@@ -9,97 +9,99 @@ import requests
 
 import images
 
+def convertBackground(source, target):
+    try: os.mkdir(target)
+    except: pass
+
+    if os.path.exists(target+"/desk_tiles.cfg"):
+        os.remove(target+"/desk_tiles.cfg")
+
+    # convert background first
+    for imgfile in ["defenseempty.png", "prosecutorempty.png", "witnessempty.png", "helperstand.png", "prohelperstand.png", "judgestand.png"]:
+        full_filename = source+"/"+imgfile
+        if not os.path.exists(full_filename):
+            continue
+
+        no_ext_file = os.path.splitext(imgfile)[0]
+
+        img = Image.open(full_filename).convert("RGB")
+        if img.size[0] != 256 or img.size[1] != 192:
+            img = img.resize((256, 192), Image.BICUBIC)
+        img.save("temp.png")
+        img.close()
+
+        # 8-bit tiles, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
+        subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!").wait()
+
+        if os.path.exists(target+"/"+no_ext_file+".img.bin"):
+            os.remove(target+"/"+no_ext_file+".img.bin")
+        if os.path.exists(target+"/"+no_ext_file+".map.bin"):
+            os.remove(target+"/"+no_ext_file+".map.bin")
+        if os.path.exists(target+"/"+no_ext_file+".pal.bin"):
+            os.remove(target+"/"+no_ext_file+".pal.bin")
+        os.rename("temp.img.bin", target+"/"+no_ext_file+".img.bin")
+        os.rename("temp.map.bin", target+"/"+no_ext_file+".map.bin")
+        os.rename("temp.pal.bin", target+"/"+no_ext_file+".pal.bin")
+
+    # then convert desks. we won't bother with helper desks since these are mostly only used for special effects (source: GS4Night background)
+    for imgfile, imgindex in [["defensedesk.png", 0], ["prosecutiondesk.png", 1], ["stand.png", 2], ["judgedesk.png", 3]]:
+        full_filename = source+"/"+imgfile
+        if not os.path.exists(full_filename):
+            continue
+
+        no_ext_file = os.path.splitext(imgfile)[0]
+
+        img = Image.open(full_filename).convert("RGBA")
+        if img.size[0] != 256 or img.size[1] != 192:
+            img = img.resize((256, 192), Image.BICUBIC)
+
+        pix = img.load()
+
+        # find top image corner from top to bottom til we hit a visible pixel
+        found = False
+        top = 0
+        for y in range(img.size[1]):
+            for x in range(img.size[0]):
+                if pix[x, y][3] != 0:
+                    top = y
+                    found = True
+                    break
+            if found: break
+
+        # crop corners
+        img = img.crop((0, top, img.size[0], img.size[1]))
+
+        # in the AA games on DS, desks are loaded as sprites.
+        # the image width will be set to a size divisible by 64,
+        # and the height will be set to a size divisible by 32
+        # so that it can be loaded as 64x32 tiles
+        horizontalTiles = int(math.ceil(img.size[0]/64.))
+        verticalTiles = int(math.ceil(img.size[1]/32.))
+        img = img.crop((0, img.size[1]-(verticalTiles*32), horizontalTiles*64, img.size[1]))
+
+        img.save("temp.png")
+        img.close()
+        
+        with open(target+"/desk_tiles.cfg", "a") as f:
+            f.write("%s: %d,%d\n" % (no_ext_file, horizontalTiles, verticalTiles))
+
+        # 8-bit tiles, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
+        subprocess.Popen("grit temp.png -gB8 -gt -ftb -fh! -m! -Mh4 -Mw8").wait()
+        
+        if os.path.exists(target+"/"+no_ext_file+".img.bin"):
+            os.remove(target+"/"+no_ext_file+".img.bin")
+        if os.path.exists(target+"/"+no_ext_file+".pal.bin"):
+            os.remove(target+"/"+no_ext_file+".pal.bin")
+        os.rename("temp.img.bin", target+"/"+no_ext_file+".img.bin")
+        os.rename("temp.pal.bin", target+"/"+no_ext_file+".pal.bin")
+
 def convertBackgrounds(folder):
     for bg in os.listdir(folder+"/background"):
         if not os.path.isdir(folder+"/background/"+bg):
             continue
 
         print(bg)
-        try: os.mkdir("converted/data/ao-nds/background/"+bg)
-        except: pass
-
-        if os.path.exists("converted/data/ao-nds/background/"+bg+"/desk_tiles.cfg"):
-            os.remove("converted/data/ao-nds/background/"+bg+"/desk_tiles.cfg")
-
-        # convert background first
-        for imgfile in ["defenseempty.png", "prosecutorempty.png", "witnessempty.png", "helperstand.png", "prohelperstand.png", "judgestand.png"]:
-            full_filename = folder+"/background/"+bg+"/"+imgfile
-            if not os.path.exists(full_filename):
-                continue
-
-            no_ext_file = os.path.splitext(imgfile)[0]
-
-            img = Image.open(full_filename).convert("RGB")
-            if img.size[0] != 256 or img.size[1] != 192:
-                img = img.resize((256, 192), Image.BICUBIC)
-            img.save("temp.png")
-            img.close()
-
-            # 8-bit tiles, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
-            subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!").wait()
-
-            if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin"):
-                os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin")
-            if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".map.bin"):
-                os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".map.bin")
-            if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin"):
-                os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin")
-            os.rename("temp.img.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin")
-            os.rename("temp.map.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".map.bin")
-            os.rename("temp.pal.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin")
-
-        # then convert desks. we won't bother with helper desks since these are mostly only used for special effects (source: GS4Night background)
-        for imgfile, imgindex in [["defensedesk.png", 0], ["prosecutiondesk.png", 1], ["stand.png", 2], ["judgedesk.png", 3]]:
-            full_filename = folder+"/background/"+bg+"/"+imgfile
-            if not os.path.exists(full_filename):
-                continue
-
-            no_ext_file = os.path.splitext(imgfile)[0]
-
-            img = Image.open(full_filename).convert("RGBA")
-            if img.size[0] != 256 or img.size[1] != 192:
-                img = img.resize((256, 192), Image.BICUBIC)
-
-            pix = img.load()
-
-            # find top image corner from top to bottom til we hit a visible pixel
-            found = False
-            top = 0
-            for y in range(img.size[1]):
-                for x in range(img.size[0]):
-                    if pix[x, y][3] != 0:
-                        top = y
-                        found = True
-                        break
-                if found: break
-
-            # crop corners
-            img = img.crop((0, top, img.size[0], img.size[1]))
-
-            # in the AA games on DS, desks are loaded as sprites.
-            # the image width will be set to a size divisible by 64,
-            # and the height will be set to a size divisible by 32
-            # so that it can be loaded as 64x32 tiles
-            horizontalTiles = int(math.ceil(img.size[0]/64.))
-            verticalTiles = int(math.ceil(img.size[1]/32.))
-            img = img.crop((0, img.size[1]-(verticalTiles*32), horizontalTiles*64, img.size[1]))
-
-            img.save("temp.png")
-            img.close()
-            
-            with open("converted/data/ao-nds/background/"+bg+"/desk_tiles.cfg", "a") as f:
-                f.write("%s: %d,%d\n" % (no_ext_file, horizontalTiles, verticalTiles))
-
-            # 8-bit tiles, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-            subprocess.Popen("grit temp.png -gB8 -gt -ftb -fh! -m! -Mh4 -Mw8").wait()
-            
-            if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin"):
-                os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin")
-            if os.path.exists("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin"):
-                os.remove("converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin")
-            os.rename("temp.img.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".img.bin")
-            os.rename("temp.pal.bin", "converted/data/ao-nds/background/"+bg+"/"+no_ext_file+".pal.bin")
-
+        convertBackground(folder+"/background/"+bg, "converted/data/ao-nds/background/"+bg)
 
 # frames: [[PIL.Image, ms_duration], [PIL.Image, ms_duration], [PIL.Image, ms_duration]...]
 def convertEmoteFrames(frames, targetFile, ogTarget, extra):

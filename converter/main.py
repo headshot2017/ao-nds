@@ -105,11 +105,33 @@ while 1:
         input()
 
     elif option == 2:
-        conversion.convertBackgrounds(folder)
+        print("Enter the name of the background you wish to convert, or leave empty to convert all backgrounds")
+        option = input("> ")
+
+        if len(option):
+            if os.path.exists(folder+"/background/"+option):
+                conversion.convertBackground(folder+"/background/"+option, "converted/data/ao-nds/background/"+option)
+            else:
+                print("'%s' does not exist" % (option))
+                input("Press enter to continue...\n")
+        else:
+            conversion.convertBackgrounds(folder)
+
         if os.path.exists("temp.png"): os.remove("temp.png")
 
     elif option == 3:
-        conversion.convertCharacters(folder+"/characters", "converted/data/ao-nds/characters")
+        print("Enter the name of the character you wish to convert, or leave empty to convert all characters")
+        option = input("> ")
+
+        if len(option):
+            if os.path.exists(folder+"/characters/"+option):
+                conversion.recursiveCharacter(folder+"/characters/"+option, "converted/data/ao-nds/characters/"+option, "converted/data/ao-nds/characters/"+option)
+            else:
+                print("'%s' does not exist" % (option))
+                input("Press enter to continue...\n")
+        else:
+            conversion.convertCharacters(folder+"/characters", "converted/data/ao-nds/characters")
+
         if os.path.exists("temp.png"): os.remove("temp.png")
 
     elif option == 4:
