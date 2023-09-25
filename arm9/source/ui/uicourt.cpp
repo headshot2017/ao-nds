@@ -75,6 +75,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("MS", onMessageMS, this);
 	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 	sock->addMessageCallback("PV", onMessagePV, this);
+	sock->addMessageCallback("ARUP", onMessageARUP, this);
 }
 
 void UIScreenCourt::updateInput()
@@ -240,4 +241,33 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
 	pSelf->currChar = std::stoi(argumentAt(msg, 3));
+}
+
+void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	int type = std::stoi(argumentAt(msg, 1));
+	for (u32 i=0; i<pSelf->areaList.size(); i++)
+	{
+		std::string value = argumentAt(msg, 2+i);
+		switch(type)
+		{
+			case 0:
+				pSelf->areaList[i].players = std::stoi(value);
+				break;
+
+			case 1:
+				pSelf->areaList[i].status = value;
+				break;
+
+			case 2:
+				pSelf->areaList[i].cm = value;
+				break;
+
+			case 3:
+				pSelf->areaList[i].lock = (value.empty()) ? "Open" : value;
+				break;
+		}
+	}
 }
