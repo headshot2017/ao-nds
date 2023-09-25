@@ -10,13 +10,13 @@ UI design by Samevi
 I still have to finish writing code that handles these:
 - [x] Backgrounds
 - [x] Desk sprites
-- [ ] Character sprites
+- [x] Character sprites
 - [x] Chatbox
 - [ ] Evidence sprites
 - [x] Music
 - [x] Sound effects
-- [ ] Main menu UI
-- [ ] Server browser UI
+- [x] Main menu UI
+- [x] Server browser UI
 - [ ] Courtroom UI (bottom screen)
 
 
