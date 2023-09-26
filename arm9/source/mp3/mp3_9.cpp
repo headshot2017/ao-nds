@@ -36,9 +36,9 @@ void mp3_fill_buffer() {
 				switch(mp3->flag)
 				{
 					case 1: // stream more mp3 data
-						n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE), 1, MP3_FILE_BUFFER_SIZE, mp3_file);
+						n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE), 1, MP3_FILE_BUFFER_SIZE*2, mp3_file);
 						filled += n;
-						if(n < MP3_FILE_BUFFER_SIZE) {
+						if(n < MP3_FILE_BUFFER_SIZE*2) {
 								if (mp3->loop)
 								{
 										float bytes;
@@ -46,7 +46,7 @@ void mp3_fill_buffer() {
 										bytes = (1.f / mp3_length) * mp3->filesize;
 
 										fseek (mp3_file, (int)(mp3_loopsec * bytes) / MP3_FILE_BUFFER_SIZE * MP3_FILE_BUFFER_SIZE, SEEK_SET);
-										n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE + n), 1, MP3_FILE_BUFFER_SIZE-n, mp3_file);
+										n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE + n), 1, MP3_FILE_BUFFER_SIZE*2-n, mp3_file);
 										filled += n;
 								}
 						}
@@ -105,7 +105,7 @@ int mp3_play_file(FILE *file, int loop, float loopsec){
         msg.type = MP3_MSG_START;
         msg.player = mp3;
 
-        filled += fread((void *)(mp3->buffer), 1, MP3_FILE_BUFFER_SIZE*2, mp3_file);
+        filled += fread((void *)(mp3->buffer), 1, MP3_FILE_BUFFER_SIZE*3, mp3_file);
 
         fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
 
@@ -195,7 +195,7 @@ bool mp3_is_playing()
 
 int mp3_init() {
 	mp3 = (mp3_player *)uncached_malloc(sizeof(mp3_player));
-	mp3_buffer = (u8 *)uncached_malloc(MP3_FILE_BUFFER_SIZE*2);
+	mp3_buffer = (u8 *)uncached_malloc(MP3_FILE_BUFFER_SIZE*3);
 	mp3_audioLeft = (u16 *)malloc(MP3_AUDIO_BUFFER_SIZE);
 	mp3_audioRight = (u16 *)malloc(MP3_AUDIO_BUFFER_SIZE);
 	if(mp3 == 0 || mp3_buffer == 0 || mp3_audioLeft == 0 || mp3_audioRight == 0) {
@@ -212,7 +212,7 @@ int mp3_init() {
 	}
 
 	memset((void *)mp3,0,sizeof(*mp3));
-	memset((void *)mp3_buffer,0,MP3_FILE_BUFFER_SIZE*2);
+	memset((void *)mp3_buffer,0,MP3_FILE_BUFFER_SIZE*3);
 	memset((void *)mp3_audioLeft,0,MP3_AUDIO_BUFFER_SIZE);
 	memset((void *)mp3_audioRight,0,MP3_AUDIO_BUFFER_SIZE);
 
