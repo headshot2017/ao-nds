@@ -23,6 +23,7 @@ void animStream::loadFile(const char* filename, int tW, int tH, int sW, int sH)
 {
 	unload();
 
+	currFrame = 0;
 	frameSize = tW*tH*sW*sH;
 	tileW = tW;
 	tileH = tH;
@@ -37,9 +38,16 @@ void animStream::loadFile(const char* filename, int tW, int tH, int sW, int sH)
 
 u8* animStream::getFrame(int i)
 {
-	int frameOffset = i*frameSize;
-	fseek(f, frameOffset, SEEK_SET);
-	mp3_fill_buffer();
+	if (currFrame == i)
+	{
+		currFrame++;
+	}
+	else
+	{
+		int frameOffset = i*frameSize;
+		fseek(f, frameOffset, SEEK_SET);
+		mp3_fill_buffer();
+	}
 	fread(data, frameSize, 1, f);
 	mp3_fill_buffer();
 	return data;

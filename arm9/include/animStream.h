@@ -10,6 +10,7 @@ class animStream
 	FILE* f;
 	u8* data;
 
+	int currFrame; // this is just a predicted number
 	int frameSize;
 	int tileW;
 	int tileH;
