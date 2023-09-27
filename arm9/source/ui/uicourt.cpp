@@ -166,14 +166,31 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 	{
 		std::string value = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
 
+		// remove file extension
+		std::string mp3Music = value;
+		AOdecode(mp3Music);
+		size_t newPos = 0;
+		size_t pos = 0;
+		while (newPos != std::string::npos)
+		{
+			pos = newPos;
+			newPos = mp3Music.find(".", pos+1);
+			mp3_fill_buffer();
+		}
+		if (pos)
+		{
+			mp3Music = mp3Music.substr(0, pos);
+			mp3_fill_buffer();
+		}
+
 		if (musics_time)
-			pSelf->musicList.push_back(value);
+			pSelf->musicList.push_back({value, mp3Music});
 		else if (value.find(".mp3") != std::string::npos || value.find(".ogg") != std::string::npos || value.find(".opus") != std::string::npos || value.find(".wav") != std::string::npos)
 		{
 			musics_time = true;
-			pSelf->musicList.push_back(pSelf->areaList.back().name);
+			pSelf->musicList.push_back({pSelf->areaList.back().name, pSelf->areaList.back().name});
 			pSelf->areaList.pop_back();
-			pSelf->musicList.push_back(value);
+			pSelf->musicList.push_back({value, mp3Music});
 		}
 		else
 			pSelf->areaList.push_back({value, 0, "", "", ""});

@@ -1,5 +1,8 @@
 #include "engine.h"
 
+#include <dirent.h>
+#include <string.h>
+
 #include <nds/ndstypes.h>
 #include <nds/interrupts.h>
 
@@ -10,12 +13,35 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 	alpha = 16;
 	fading = false;
 	running = true;
+
+	cacheMusic("/data/ao-nds/sounds/music");
 }
 
 Engine::~Engine()
 {
 	if (screen) delete screen;
 	if (aosocket) delete aosocket;
+}
+
+void Engine::cacheMusic(const std::string& folder, std::string extra)
+{
+	std::string dirStr = folder + "/" + extra;
+	DIR *dir = opendir(dirStr.c_str());
+	if (!dir) return;
+
+	struct dirent* dent;
+	while( (dent = readdir(dir)) )
+	{
+		if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, "..")) continue;
+
+		std::string value = (extra.empty()) ? dent->d_name : extra+"/"+dent->d_name;
+		if (dent->d_type == DT_DIR)
+			cacheMusic(folder, value);
+		else
+			cachedMusic[value] = true;
+	}
+
+	closedir(dir);
 }
 
 void Engine::changeScreen(UIScreen* next)

@@ -12,6 +12,12 @@ struct charInfo
 	bool taken;
 };
 
+struct musicInfo
+{
+	std::string name;
+	std::string nameDecoded;
+};
+
 struct areaInfo
 {
 	std::string name;
@@ -43,7 +49,7 @@ class UIScreenCourt : public UIScreen
 	UISubScreen* nextScreen;
 
 	std::vector<charInfo> charList;
-	std::vector<std::string> musicList;
+	std::vector<musicInfo> musicList;
 	std::vector<areaInfo> areaList;
 
 	int currChar;
@@ -58,7 +64,7 @@ public:
 	void changeScreen(UISubScreen* newScreen);
 
 	const std::vector<charInfo>& getCharList() {return charList;}
-	const std::vector<std::string>& getMusicList() {return musicList;}
+	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	int getCurrCharID() {return currChar;}
 	const charInfo& getCurrChar() {return charList[currChar];}

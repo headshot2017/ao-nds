@@ -189,7 +189,7 @@ void UICourtMusicList::updateFilter()
 			continue;
 		}
 
-		std::string nameLower(pCourtUI->getMusicList()[i]);
+		std::string nameLower(pCourtUI->getMusicList()[i].name);
 		std::string filterLower(filter);
 		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), [](char c){return std::tolower(c);});
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), [](char c){return std::tolower(c);});
@@ -217,50 +217,34 @@ void UICourtMusicList::reloadScroll()
 			continue;
 		}
 
-		// remove file extension
-		std::string mp3Music = pCourtUI->getMusicList()[filteredMusic[ind]];
-		AOdecode(mp3Music);
+		const musicInfo& mp3Music = pCourtUI->getMusicList()[filteredMusic[ind]];
+		std::string mp3Str = mp3Music.nameDecoded;
+
+		// remove category
 		size_t newPos = 0;
 		size_t pos = 0;
 		while (newPos != std::string::npos)
 		{
-			pos = newPos;
-			newPos = mp3Music.find(".", pos+1);
-			mp3_fill_buffer();
-		}
-		if (pos)
-		{
-			mp3Music = mp3Music.substr(0, pos);
-			mp3_fill_buffer();
-		}
-
-		bool exists = fileExists("/data/ao-nds/sounds/music/" + mp3Music + ".mp3");
-
-		// remove category
-		newPos = 0;
-		pos = 0;
-		while (newPos != std::string::npos)
-		{
 			mp3_fill_buffer();
 			pos = newPos;
-			newPos = mp3Music.find("/", pos+1);
+			newPos = mp3Str.find("/", pos+1);
 			mp3_fill_buffer();
 		}
 		if (pos)
 		{
 			mp3_fill_buffer();
-			mp3Music = mp3Music.substr(pos+1);
+			mp3Str = mp3Str.substr(pos+1);
 			mp3_fill_buffer();
 		}
 
-		u8* btnGfx = (exists) ? (u8*)spr_musicGreenTiles : (u8*)spr_musicRedTiles;
-		u8* btnPal = (exists) ? (u8*)spr_musicGreenPal : (u8*)spr_musicRedPal;
+		u8* btnGfx = (gEngine->musicExists(mp3Music.nameDecoded+".mp3")) ? (u8*)spr_musicGreenTiles : (u8*)spr_musicRedTiles;
+		u8* btnPal = (gEngine->musicExists(mp3Music.nameDecoded+".mp3")) ? (u8*)spr_musicGreenPal : (u8*)spr_musicRedPal;
 		mp3_fill_buffer();
 
 		btn_musicBtn[i]->setVisible(true);
 		btn_musicBtn[i]->setImage(btnGfx, btnPal, 32, 16, 5+i);
 		lbl_musicBtn[i]->setVisible(true);
-		lbl_musicBtn[i]->setText(mp3Music.c_str());
+		lbl_musicBtn[i]->setText(mp3Str.c_str());
 		mp3_fill_buffer();
 	}
 
@@ -347,5 +331,5 @@ void UICourtMusicList::onMusicClicked(void* pUserData)
 	UICourtMusicList* pSelf = pData->pObj;
 	int ind = pSelf->scrollPos + pData->btnInd;
 
-	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getMusicList()[pSelf->filteredMusic[ind]] + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "##%");
+	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getMusicList()[pSelf->filteredMusic[ind]].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "##%");
 }
