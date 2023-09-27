@@ -36,7 +36,7 @@ void mp3_fill_buffer() {
 				switch(mp3->flag)
 				{
 					case 1: // stream more mp3 data
-						n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE), 1, MP3_FILE_BUFFER_SIZE*2, mp3_file);
+						n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE), 1, MP3_FILE_BUFFER_SIZE, mp3_file);
 						filled += n;
 						if(n < MP3_FILE_BUFFER_SIZE*2) {
 								if (mp3->loop)
@@ -46,7 +46,7 @@ void mp3_fill_buffer() {
 										bytes = (1.f / mp3_length) * mp3->filesize;
 
 										fseek (mp3_file, (int)(mp3_loopsec * bytes) / MP3_FILE_BUFFER_SIZE * MP3_FILE_BUFFER_SIZE, SEEK_SET);
-										n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE + n), 1, MP3_FILE_BUFFER_SIZE*2-n, mp3_file);
+										n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE + n), 1, MP3_FILE_BUFFER_SIZE-n, mp3_file);
 										filled += n;
 								}
 						}
