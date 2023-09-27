@@ -105,7 +105,7 @@ int mp3_play_file(FILE *file, int loop, float loopsec){
         msg.type = MP3_MSG_START;
         msg.player = mp3;
 
-        filled += fread((void *)(mp3->buffer), 1, MP3_FILE_BUFFER_SIZE*3, mp3_file);
+        filled += fread((void *)(mp3->buffer), 1, MP3_FILE_BUFFER_SIZE*2, mp3_file);
 
         fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
 

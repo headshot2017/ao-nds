@@ -109,7 +109,7 @@ int mp3_frame() {
 
         // if mp3 is set to loop indefinitely, don't bother with how many data is left
         if(mp3_loop && mp3_bytesleft < 2*MAINBUF_SIZE)
-                mp3_bytesleft += MP3_FILE_BUFFER_SIZE*3;
+                mp3_bytesleft += MP3_FILE_BUFFER_SIZE*2;
 
 
         /* find start of next MP3 frame - assume EOF if no sync found */
