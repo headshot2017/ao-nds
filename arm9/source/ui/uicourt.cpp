@@ -1,6 +1,7 @@
 #include "ui/uicourt.h"
 
 #include <string.h>
+#include <algorithm>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/console.h>
@@ -183,14 +184,17 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 			mp3_fill_buffer();
 		}
 
+		std::string mp3Lower = mp3Music+".mp3";
+		std::transform(mp3Lower.begin(), mp3Lower.end(), mp3Lower.begin(), [](char c){return std::tolower(c);});
+
 		if (musics_time)
-			pSelf->musicList.push_back({value, mp3Music});
+			pSelf->musicList.push_back({value, mp3Music, mp3Lower});
 		else if (value.find(".mp3") != std::string::npos || value.find(".ogg") != std::string::npos || value.find(".opus") != std::string::npos || value.find(".wav") != std::string::npos)
 		{
 			musics_time = true;
-			pSelf->musicList.push_back({pSelf->areaList.back().name, pSelf->areaList.back().name});
+			pSelf->musicList.push_back({pSelf->areaList.back().name, pSelf->areaList.back().name, pSelf->areaList.back().name});
 			pSelf->areaList.pop_back();
-			pSelf->musicList.push_back({value, mp3Music});
+			pSelf->musicList.push_back({value, mp3Music, mp3Lower});
 		}
 		else
 			pSelf->areaList.push_back({value, 0, "", "", ""});

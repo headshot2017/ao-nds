@@ -16,6 +16,7 @@ struct musicInfo
 {
 	std::string name;
 	std::string nameDecoded;
+	std::string nameLower;
 };
 
 struct areaInfo

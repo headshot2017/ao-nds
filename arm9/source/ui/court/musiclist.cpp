@@ -237,8 +237,8 @@ void UICourtMusicList::reloadScroll()
 			mp3_fill_buffer();
 		}
 
-		u8* btnGfx = (gEngine->musicExists(mp3Music.nameDecoded+".mp3")) ? (u8*)spr_musicGreenTiles : (u8*)spr_musicRedTiles;
-		u8* btnPal = (gEngine->musicExists(mp3Music.nameDecoded+".mp3")) ? (u8*)spr_musicGreenPal : (u8*)spr_musicRedPal;
+		u8* btnGfx = (gEngine->musicExists(mp3Music.nameLower)) ? (u8*)spr_musicGreenTiles : (u8*)spr_musicRedTiles;
+		u8* btnPal = (gEngine->musicExists(mp3Music.nameLower)) ? (u8*)spr_musicGreenPal : (u8*)spr_musicRedPal;
 		mp3_fill_buffer();
 
 		btn_musicBtn[i]->setVisible(true);

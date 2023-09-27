@@ -2,6 +2,7 @@
 
 #include <dirent.h>
 #include <string.h>
+#include <algorithm>
 
 #include <nds/ndstypes.h>
 #include <nds/interrupts.h>
@@ -35,6 +36,7 @@ void Engine::cacheMusic(const std::string& folder, std::string extra)
 		if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, "..")) continue;
 
 		std::string value = (extra.empty()) ? dent->d_name : extra+"/"+dent->d_name;
+		std::transform(value.begin(), value.end(), value.begin(), [](char c){return std::tolower(c);});
 		if (dent->d_type == DT_DIR)
 			cacheMusic(folder, value);
 		else
