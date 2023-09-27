@@ -10,6 +10,7 @@
 #include "ui/uicourt.h"
 #include "ui/button.h"
 #include "ui/label.h"
+#include "ui/selectcross.h"
 #include "ui/keyboard.h"
 
 class UICourtCharSelect : public UISubScreen
@@ -27,6 +28,7 @@ class UICourtCharSelect : public UISubScreen
 	UIButton* btn_confirm;
 	UILabel* lbl_charname;
 	UILabel* lbl_pages;
+	UISelectCross* sel_btn;
 
 	UIButton* btn_chars[8];
 

@@ -5,6 +5,7 @@
 
 #include "ui/button.h"
 #include "ui/label.h"
+#include "ui/selectcross.h"
 #include "ui/keyboard.h"
 
 class UICourtAreaList : public UISubScreen
@@ -22,6 +23,7 @@ class UICourtAreaList : public UISubScreen
 	UILabel* lbl_area[4];
 	UILabel* lbl_pages;
 	UILabel* lbl_areaInfo;
+	UISelectCross* sel_btn;
 
 	int holdWait;
 	int pageAdd;

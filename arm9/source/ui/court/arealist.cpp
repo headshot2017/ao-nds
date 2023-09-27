@@ -43,6 +43,7 @@ UICourtAreaList::~UICourtAreaList()
 	}
 	delete lbl_pages;
 	delete lbl_areaInfo;
+	delete sel_btn;
 
 	gEngine->getSocket()->removeMessageCallback("ARUP", cbARUP);
 }
@@ -79,6 +80,7 @@ void UICourtAreaList::init()
 	}
 	lbl_pages = new UILabel(&oamSub, lbl_area[3]->nextOamInd(), 1, 1, RGB15(13, 2, 0), 10, 0);
 	lbl_areaInfo = new UILabel(&oamSub, lbl_pages->nextOamInd(), 3, 9, RGB15(31,31,31), 11, 0);
+	sel_btn = new UISelectCross(&oamSub, lbl_areaInfo->nextOamInd(), 12);
 
 	lbl_areaInfo->setPos(5, 38);
 
@@ -160,6 +162,7 @@ void UICourtAreaList::reloadPage()
 	btn_prevPage->setVisible(currPage > 0);
 	btn_nextPage->setVisible(currPage+1 < maxPages);
 	btn_confirm->setVisible(false);
+	sel_btn->setVisible(false);
 
 	updatePageText();
 }
@@ -265,6 +268,7 @@ void UICourtAreaList::onAreaClicked(void* pUserData)
 	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 32000, 127, 64, false, 0);
 
 	pSelf->btn_confirm->setVisible(true);
+	pSelf->sel_btn->selectButton(pSelf->btn_area[pData->btnInd]);
 	pSelf->updateAreaInfo();
 }
 

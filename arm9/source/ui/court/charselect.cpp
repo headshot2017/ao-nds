@@ -37,6 +37,7 @@ UICourtCharSelect::~UICourtCharSelect()
 	delete btn_confirm;
 	delete lbl_charname;
 	delete lbl_pages;
+	delete sel_btn;
 	for (int i=0; i<8; i++)
 		delete btn_chars[i];
 
@@ -64,6 +65,8 @@ void UICourtCharSelect::init()
 	lbl_charname = new UILabel(&oamSub, btn_confirm->nextOamInd(), 6, 1, RGB15(31, 16, 0), 4, 0);
 	lbl_pages = new UILabel(&oamSub, lbl_charname->nextOamInd(), 1, 1, RGB15(13, 2, 0), 5, 0);
 
+	sel_btn = new UISelectCross(&oamSub, lbl_pages->nextOamInd(), 6);
+
 	static charBtnData btnData[8];
 	for (int y=0; y<2; y++)
 	{
@@ -73,7 +76,7 @@ void UICourtCharSelect::init()
 			btnData[i].btnInd = i;
 			btnData[i].pObj = this;
 
-			btn_chars[i] = new UIButton(&oamSub, (u8*)spr_unknownMugshotTiles, (u8*)spr_unknownMugshotPal, (i>0) ? btn_chars[i-1]->nextOamInd() : lbl_pages->nextOamInd(), 1, 1, SpriteSize_64x64, 37+(x*48), 63+(y*48), 38, 38, 64, 64, 7+i);
+			btn_chars[i] = new UIButton(&oamSub, (u8*)spr_unknownMugshotTiles, (u8*)spr_unknownMugshotPal, (i>0) ? btn_chars[i-1]->nextOamInd() : sel_btn->nextOamInd(), 1, 1, SpriteSize_64x64, 37+(x*48), 63+(y*48), 38, 38, 64, 64, 7+i);
 			btn_chars[i]->connect(onCharClicked, &btnData[i]);
 		}
 	}
@@ -160,6 +163,7 @@ void UICourtCharSelect::updateInput()
 			btn_confirm->setVisible(false);
 			lbl_charname->setVisible(false);
 			lbl_pages->setVisible(false);
+			sel_btn->setVisible(false);
 			for (int i=0; i<8; i++)
 				btn_chars[i]->setVisible(false);
 
@@ -223,6 +227,7 @@ void UICourtCharSelect::reloadPage()
 	btn_pageLeft->setVisible(currPage > 0);
 	btn_pageRight->setVisible(currPage+1 < maxPages);
 	btn_confirm->setVisible(false);
+	sel_btn->setVisible(false);
 
 	updatePageText();
 }
@@ -338,6 +343,8 @@ void UICourtCharSelect::onCharClicked(void* pUserData)
 	pSelf->lbl_charname->setVisible(true);
 	pSelf->lbl_charname->setText(info.name.c_str());
 	pSelf->lbl_charname->setPos(128, 36+2, true);
+
+	pSelf->sel_btn->selectButton(pSelf->btn_chars[pData->btnInd], 2);
 
 	pSelf->btn_confirm->setVisible(!info.taken);
 }
