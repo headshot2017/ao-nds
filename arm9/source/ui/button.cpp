@@ -22,6 +22,7 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 	sprH = sprHeight;
 	visible = true;
 	pressing = false;
+	assignedKey = 0;
 
 	for (int i=0; i<2; i++)
 	{
@@ -152,7 +153,9 @@ void UIButton::updateInput()
 {
 	if (!visible) return;
 
-	if (keysDown() & KEY_TOUCH)
+	u32 keys = keysDown();
+
+	if (keys & KEY_TOUCH)
 	{
 		touchRead(&touchPos);
 		if (callbacks[0].cb && touchPos.px >= (u16)x && touchPos.py >= (u16)y && touchPos.px < (u16)(x+w) && touchPos.py < (u16)(y+h))
@@ -161,6 +164,9 @@ void UIButton::updateInput()
 			callbacks[0].cb(callbacks[0].pUserData);
 		}
 	}
+
+	if (assignedKey && (keys & assignedKey))
+		callbacks[0].cb(callbacks[0].pUserData);
 
 	if (pressing && keysUp() & KEY_TOUCH)
 	{

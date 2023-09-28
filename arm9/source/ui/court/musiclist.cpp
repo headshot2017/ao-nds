@@ -72,6 +72,9 @@ void UICourtMusicList::init()
 	kb_search = new AOkeyboard(filter, 1, btn_sliderHandle->nextOamInd(), 13);
 	dmaCopy(bg_musicListPal, BG_PALETTE_SUB, bg_musicListPalLen);
 
+	btn_back->assignKey(KEY_B);
+	btn_listToggle->assignKey(KEY_R);
+
 	btn_back->connect(onBackClicked, this);
 	btn_listToggle->connect(onToggleList, this);
 	btn_scrollUp->connect(onScrollUpPressed, this, UIButton::PRESSED);

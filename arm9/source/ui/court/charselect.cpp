@@ -85,6 +85,11 @@ void UICourtCharSelect::init()
 	dmaCopy(bg_charSelectPal, BG_PALETTE_SUB, bg_charSelectPalLen);
 	mp3_fill_buffer();
 
+	btn_disconnect->assignKey(KEY_B);
+	btn_confirm->assignKey(KEY_A);
+	btn_pageLeft->assignKey(KEY_LEFT);
+	btn_pageRight->assignKey(KEY_RIGHT);
+
 	btn_pageLeft->setVisible(false);
 	btn_pageLeft->connect(onPrevPage, this, UIButton::PRESSED);
 	btn_pageRight->connect(onNextPage, this, UIButton::PRESSED);

@@ -41,6 +41,8 @@ void UICourtIngameMenu::init()
 	btn_courtRecord = new UIButton(&oamSub, (u8*)spr_courtRecordTiles, (u8*)spr_courtRecordPal, btn_changeChar->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 4);
 	lbl_currChar = new UILabel(&oamSub, btn_courtRecord->nextOamInd(), 6, 1, RGB15(5,5,5), 5, 0);
 
+	btn_courtRecord->assignKey(KEY_R);
+
 	btn_talkIC->connect(onTalkICclicked, this);
 	btn_talkOOC->connect(onTalkOOCclicked, this);
 	btn_music->connect(onMusicClicked, this);
@@ -58,6 +60,11 @@ void UICourtIngameMenu::updateInput()
 	btn_music->updateInput();
 	btn_changeChar->updateInput();
 	btn_courtRecord->updateInput();
+
+	if (keysDown() & KEY_Y)
+	{
+		// IC chatlog
+	}
 }
 
 void UICourtIngameMenu::update()

@@ -137,6 +137,13 @@ void UIScreenServerList::init()
 	btn_nextPage->setVisible(false);
 	btn_manageFav->setVisible(false);
 
+	btn_manageFav->assignKey(KEY_L);
+	btn_listToggle->assignKey(KEY_R);
+	btn_back->assignKey(KEY_B);
+	btn_connect->assignKey(KEY_A);
+	btn_prevPage->assignKey(KEY_LEFT);
+	btn_nextPage->assignKey(KEY_RIGHT);
+
 	static serverBtnData btnData[4];
 	btn_manageFav->connect(onManageFavorite, this);
 	btn_listToggle->connect(onToggleList, this);

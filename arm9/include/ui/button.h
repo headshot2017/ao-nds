@@ -25,6 +25,7 @@ class UIButton
 	int sprH;
 	bool visible;
 	bool pressing;
+	u32 assignedKey;
 
 	cbInfo callbacks[2];
 
@@ -44,6 +45,7 @@ public:
 	void setPriority(int pr);
 	void forceRelease();
 	void connect(voidCallback cb, void* p, int cbType=PRESSED) {callbacks[cbType].cb = cb; callbacks[cbType].pUserData = p;}
+	void assignKey(u32 k) {assignedKey = k;}
 
 	int getX() {return x;}
 	int getY() {return y;}

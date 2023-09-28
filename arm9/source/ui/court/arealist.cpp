@@ -84,6 +84,12 @@ void UICourtAreaList::init()
 
 	lbl_areaInfo->setPos(5, 38);
 
+	btn_back->assignKey(KEY_B);
+	btn_listToggle->assignKey(KEY_R);
+	btn_confirm->assignKey(KEY_A);
+	btn_prevPage->assignKey(KEY_LEFT);
+	btn_nextPage->assignKey(KEY_RIGHT);
+
 	btn_back->connect(onBackClicked, this);
 	btn_listToggle->connect(onToggleList, this);
 	btn_confirm->connect(onConfirmClicked, this);
