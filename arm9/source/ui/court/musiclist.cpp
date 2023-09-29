@@ -84,11 +84,12 @@ void UICourtMusicList::init()
 	btn_sliderHandle->connect(onSliderPressed, this, UIButton::PRESSED);
 	btn_sliderHandle->connect(onSliderReleased, this, UIButton::RELEASED);
 
-	updateFilter();
-	reloadScroll();
-
 	holdWait = -1;
 	pageAdd = 0;
+	draggingHandle = false;
+
+	updateFilter();
+	reloadScroll();
 }
 
 void UICourtMusicList::updateInput()
