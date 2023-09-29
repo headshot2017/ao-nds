@@ -10,6 +10,7 @@
 
 #include "mp3_shared.h"
 #include "engine.h"
+#include "fonts.h"
 #include "global.h"
 #include "ui/uiserverlist.h"
 #include "ui/uidisconnected.h"
@@ -233,12 +234,19 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	AOdecode(name);
 	if (name.empty())
 		name = argumentAt(msg, 3);
-	if (name.size() > 12)
-		name.resize(12);
 
 	std::string chatmsg = argumentAt(msg,5);
 	AOdecode(chatmsg);
 
+	// insert to chatlog
+	std::string logMsg = name+": "+chatmsg;
+	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
+	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
+
+	if (name.size() > 12)
+		name.resize(12);
+
+	// show message in court screen
 	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
 	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, chatmsg, std::stoi(argumentAt(msg,15)), "male");
 }

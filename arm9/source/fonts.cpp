@@ -223,6 +223,134 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 	}
 }
 
+int advanceXPos(int fontID, const char* text, int x, bool skipOnOob, int* oobFlag, int* outWidth)
+{
+	if (fontID < 0 || fontID >= loadedCount)
+		return 0;
+
+	LoadedFont& font = fonts[fontID];
+
+	// how wide is this character
+	int ax;
+	int lsb;
+	stbtt_GetCodepointHMetrics(&font.info, text[0], &ax, &lsb);
+	// (Note that each Codepoint call has an alternative Glyph version which caches the work required to lookup the character word[i].)
+
+	// get bounding box for character (may be offset to account for chars that dip above or below the line)
+	int c_x1, c_y1, c_x2, c_y2;
+	stbtt_GetCodepointBitmapBox(&font.info, text[0], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
+
+	if (outWidth) *outWidth = 0;
+	int out_x = c_x2 - c_x1;
+	bool oob = (x + out_x >= 32);
+	if (oob)
+	{
+		if (skipOnOob)
+		{
+			if (oobFlag) *oobFlag = 2;
+			return x;
+		}
+	}
+	else if (outWidth)
+		*outWidth = out_x;
+
+	if (oob)
+	{
+		if (oobFlag) *oobFlag = 1;
+		return x;
+	}
+
+	// advance x
+	x += roundf(ax * font.scale);
+
+	// add kerning
+	int kern;
+	kern = stbtt_GetCodepointKernAdvance(&font.info, text[0], text[1]);
+	x += roundf(kern * font.scale);
+
+	mp3_fill_buffer();
+
+	if (oobFlag) *oobFlag = 0;
+	return x;
+}
+
+void separateLines(int fontID, const char* text, int gfxPerLine, std::vector<std::string>& out)
+{
+	std::string thisLine;
+	int textX = 0;
+	int currTextGfxInd = 0;
+
+	for (u32 i=0; i<strlen(text); i++)
+	{
+		while (text[i] == '\n')
+		{
+			int line = currTextGfxInd/gfxPerLine;
+			currTextGfxInd = (line+1) * gfxPerLine;
+			out.push_back(thisLine);
+			thisLine.clear();
+			mp3_fill_buffer();
+
+			i++;
+			if (i >= strlen(text))
+				return;
+
+			textX = 0;
+		}
+
+		bool lastBox = (currTextGfxInd % gfxPerLine == gfxPerLine-1);
+		int oobFlag = 0;
+		int outWidth;
+
+		int new_x = advanceXPos(fontID, text+i, textX, lastBox, &oobFlag, &outWidth);
+		mp3_fill_buffer();
+
+		if (oobFlag)
+		{
+			currTextGfxInd++;
+
+			if (currTextGfxInd % gfxPerLine == 0)
+			{
+				// entered a new line
+				textX = 0;
+				out.push_back(thisLine);
+				thisLine.clear();
+				if (oobFlag == 2)
+					i--;
+			}
+			else
+			{
+				thisLine += text[i];
+				textX -= 32;
+				textX = advanceXPos(fontID, text+i, textX, lastBox, &oobFlag, &outWidth);
+				mp3_fill_buffer();
+			}
+		}
+		else
+		{
+			textX = new_x;
+			if (textX > 32)
+			{
+				currTextGfxInd++;
+				if (currTextGfxInd % gfxPerLine == 0)
+				{
+					textX = 0;
+					out.push_back(thisLine);
+					thisLine.clear();
+				}
+				else
+				{
+					thisLine += text[i];
+					textX -= 32;
+				}
+			}
+			else
+				thisLine += text[i];
+		}
+	}
+
+	out.push_back(thisLine);
+}
+
 int getTextWidth(int fontID, const char* text)
 {
 	int textWidth = 0;

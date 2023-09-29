@@ -2,6 +2,7 @@
 #define UICOURT_H_INCLUDED
 
 #include <string>
+#include <vector>
 
 #include "uiscreen.h"
 #include "courtroom/courtroom.h"
@@ -53,6 +54,8 @@ class UIScreenCourt : public UIScreen
 	std::vector<musicInfo> musicList;
 	std::vector<areaInfo> areaList;
 
+	std::vector<std::string> icLog;
+
 	int currChar;
 
 public:
@@ -67,6 +70,7 @@ public:
 	const std::vector<charInfo>& getCharList() {return charList;}
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
+	const std::vector<std::string>& getICLog() {return icLog;}
 	int getCurrCharID() {return currChar;}
 	const charInfo& getCurrChar() {return charList[currChar];}
 

@@ -86,6 +86,7 @@
 		<Unit filename="arm9/include/ui/court/arealist.h" />
 		<Unit filename="arm9/include/ui/court/charselect.h" />
 		<Unit filename="arm9/include/ui/court/console.h" />
+		<Unit filename="arm9/include/ui/court/icchatlog.h" />
 		<Unit filename="arm9/include/ui/court/ingamemenu.h" />
 		<Unit filename="arm9/include/ui/court/loading.h" />
 		<Unit filename="arm9/include/ui/court/musiclist.h" />
@@ -117,6 +118,7 @@
 		<Unit filename="arm9/source/ui/court/arealist.cpp" />
 		<Unit filename="arm9/source/ui/court/charselect.cpp" />
 		<Unit filename="arm9/source/ui/court/console.cpp" />
+		<Unit filename="arm9/source/ui/court/icchatlog.cpp" />
 		<Unit filename="arm9/source/ui/court/ingamemenu.cpp" />
 		<Unit filename="arm9/source/ui/court/loading.cpp" />
 		<Unit filename="arm9/source/ui/court/musiclist.cpp" />

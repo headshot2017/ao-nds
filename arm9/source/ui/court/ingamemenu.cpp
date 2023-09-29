@@ -6,6 +6,7 @@
 
 #include "ui/court/charselect.h"
 #include "ui/court/musiclist.h"
+#include "ui/court/icchatlog.h"
 #include "bg_ingameMain.h"
 #include "spr_talkIC.h"
 #include "spr_talkOOC.h"
@@ -63,7 +64,8 @@ void UICourtIngameMenu::updateInput()
 
 	if (keysDown() & KEY_Y)
 	{
-		// IC chatlog
+		soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
 	}
 }
 
