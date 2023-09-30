@@ -4,7 +4,7 @@
 
 #include "mp3_shared.h"
 
-AOkeyboard::AOkeyboard(std::string& valueRef, int lines, int oamStart, int palSlot) : value(valueRef)
+AOkeyboard::AOkeyboard(int lines, int oamStart, int palSlot)
 {
 	keyboardInit(&m_kb, 1, BgType_Text4bpp, BgSize_T_256x512, 1, 4, false, true);
 	mp3_fill_buffer();

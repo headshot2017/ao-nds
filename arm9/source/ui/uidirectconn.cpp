@@ -30,7 +30,7 @@ void UIScreenDirectConn::init()
 	dmaCopy(bg_logoMap, bgGetMapPtr(bgIndex), bg_logoMapLen);
 	dmaCopy(bg_logoPal, BG_PALETTE, bg_logoPalLen);
 
-	kb_ipInput = new AOkeyboard(ip, 2, 0, 0);
+	kb_ipInput = new AOkeyboard(2, 0, 0);
 	kb_ipInput->setInputYOffset(16);
 
 	btn_ws = new UIButton(&oamSub, (u8*)spr_radioBoxTiles+(16*16), (u8*)spr_radioBoxPal, kb_ipInput->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8, 16, 16, 16, 16, 1);
@@ -58,6 +58,7 @@ void UIScreenDirectConn::updateInput()
 		gEngine->changeScreen(new UIScreenMainMenu);
 	else if (result == 1)
 	{
+		std::string ip = kb_ipInput->getValue();
 		if (useWS)
 		{
 			AOwebSocket* sock = new AOwebSocket;

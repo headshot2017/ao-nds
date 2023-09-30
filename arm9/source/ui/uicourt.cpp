@@ -76,6 +76,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("BN", onMessageBN, this);
 	sock->addMessageCallback("MC", onMessageMC, this);
 	sock->addMessageCallback("MS", onMessageMS, this);
+	sock->addMessageCallback("CT", onMessageCT, this);
 	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 	sock->addMessageCallback("PV", onMessagePV, this);
 	sock->addMessageCallback("ARUP", onMessageARUP, this);
@@ -249,6 +250,22 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	// show message in court screen
 	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
 	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, chatmsg, std::stoi(argumentAt(msg,15)), "male");
+}
+
+void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	std::string name = argumentAt(msg, 1);
+	AOdecode(name);
+
+	std::string chatmsg = argumentAt(msg, 2);
+	AOdecode(chatmsg);
+
+	// insert to chatlog
+	std::string logMsg = name+": "+chatmsg;
+	separateLines(0, logMsg.c_str(), 7, pSelf->oocLog);
+	while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 }
 
 void UIScreenCourt::onMessageCharsCheck(void* pUserData, std::string msg)

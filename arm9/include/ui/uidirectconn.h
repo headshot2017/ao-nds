@@ -18,7 +18,6 @@ class UIScreenDirectConn : public UIScreen
 	UILabel* lbl_tcp;
 	bool useWS;
 
-	std::string ip;
 	AOkeyboard* kb_ipInput;
 
 public:

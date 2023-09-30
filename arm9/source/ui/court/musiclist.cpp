@@ -69,7 +69,7 @@ void UICourtMusicList::init()
 	}
 	btn_sliderHandle = new UIButton(&oamSub, (u8*)spr_sliderHandleTiles, (u8*)spr_sliderHandlePal, btn_musicBtn[6]->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 12);
 
-	kb_search = new AOkeyboard(filter, 1, btn_sliderHandle->nextOamInd(), 13);
+	kb_search = new AOkeyboard(1, btn_sliderHandle->nextOamInd(), 13);
 	dmaCopy(bg_musicListPal, BG_PALETTE_SUB, bg_musicListPalLen);
 
 	btn_back->assignKey(KEY_B);
@@ -108,6 +108,7 @@ void UICourtMusicList::updateInput()
 			btn_scrollDown->setVisible(true);
 			btn_sliderHandle->setVisible(true);
 
+			filter = kb_search->getValue();
 			if (result > 0) updateFilter();
 			reloadScroll();
 		}
@@ -143,7 +144,7 @@ void UICourtMusicList::updateInput()
 			}
 			btn_sliderHandle->setVisible(false);
 
-			kb_search->show("Enter search terms");
+			kb_search->show("Enter search terms", filter.c_str());
 		}
 	}
 }

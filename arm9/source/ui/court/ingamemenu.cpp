@@ -7,6 +7,7 @@
 #include "ui/court/charselect.h"
 #include "ui/court/musiclist.h"
 #include "ui/court/icchatlog.h"
+#include "ui/court/ooc.h"
 #include "bg_ingameMain.h"
 #include "spr_talkIC.h"
 #include "spr_talkOOC.h"
@@ -86,6 +87,7 @@ void UICourtIngameMenu::onTalkOOCclicked(void* pUserData)
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	pSelf->pCourtUI->changeScreen(new UICourtOOC(pSelf->pCourtUI));
 }
 
 void UICourtIngameMenu::onMusicClicked(void* pUserData)

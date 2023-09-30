@@ -12,7 +12,7 @@
 class AOkeyboard
 {
 	Keyboard m_kb;
-	std::string& value;
+	std::string value;
 	std::string valueOld;
 	UILabel* lbl_plswrite;
 	UILabel* lbl_written;
@@ -21,17 +21,18 @@ class AOkeyboard
 	cbInfo escPressed;
 
 public:
-	AOkeyboard(std::string& valueRef, int lines, int oamStart, int palSlot);
+	AOkeyboard(int lines, int oamStart, int palSlot);
 	~AOkeyboard();
 
 	void show(const char* plsWrite, const char* startValue=0);
 	void setInputYOffset(int offset) {lbl_written->setPos(8, 32+offset);}
 	int updateInput();
 	void setValue(std::string newValue);
+	void setValueRef(std::string& newRef);
 
 	int nextOamInd() {return lbl_written->nextOamInd();}
 	bool isVisible() {return m_kb.visible;}
-	std::string& getValue();
+	std::string& getValue() {return value;}
 };
 
 #endif // KEYBOARD_H_INCLUDED

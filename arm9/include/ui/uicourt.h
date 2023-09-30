@@ -55,6 +55,7 @@ class UIScreenCourt : public UIScreen
 	std::vector<areaInfo> areaList;
 
 	std::vector<std::string> icLog;
+	std::vector<std::string> oocLog;
 
 	int currChar;
 
@@ -71,6 +72,7 @@ public:
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	const std::vector<std::string>& getICLog() {return icLog;}
+	const std::vector<std::string>& getOOCLog() {return oocLog;}
 	int getCurrCharID() {return currChar;}
 	const charInfo& getCurrChar() {return charList[currChar];}
 
@@ -83,6 +85,7 @@ public:
 	static void onMessageBN(void* pUserData, std::string msg);
 	static void onMessageMC(void* pUserData, std::string msg);
 	static void onMessageMS(void* pUserData, std::string msg);
+	static void onMessageCT(void* pUserData, std::string msg);
 	static void onMessageCharsCheck(void* pUserData, std::string msg);
 	static void onMessagePV(void* pUserData, std::string msg);
 	static void onMessageARUP(void* pUserData, std::string msg);
@@ -98,6 +101,8 @@ public:
 	u32 sndCancelSize;
 	u32 sndEvTapSize;
 	u32 sndEvPageSize;
+
+	std::string oocName;
 };
 
 #endif // UICOURT_H_INCLUDED

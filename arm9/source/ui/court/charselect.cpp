@@ -81,7 +81,7 @@ void UICourtCharSelect::init()
 		}
 	}
 
-	kb_search = new AOkeyboard(filter, 1, btn_chars[7]->nextOamInd(), 15);
+	kb_search = new AOkeyboard(1, btn_chars[7]->nextOamInd(), 15);
 	dmaCopy(bg_charSelectPal, BG_PALETTE_SUB, bg_charSelectPalLen);
 	mp3_fill_buffer();
 
@@ -139,6 +139,7 @@ void UICourtCharSelect::updateInput()
 
 			btn_disconnect->setVisible(true);
 
+			filter = kb_search->getValue();
 			if (result > 0) updateFilter();
 			reloadPage();
 		}
@@ -172,7 +173,7 @@ void UICourtCharSelect::updateInput()
 			for (int i=0; i<8; i++)
 				btn_chars[i]->setVisible(false);
 
-			kb_search->show("Enter search terms");
+			kb_search->show("Enter search terms", filter.c_str());
 		}
 	}
 }
