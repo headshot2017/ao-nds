@@ -237,7 +237,8 @@ u32* wav_load_handle(const char *filename, u32* sizeOut)
 		if (sizeOut) *sizeOut = 0;
 		return 0;
 	}
-	if (drwav_read_pcm_frames(&wavfp, wavfp.totalPCMFrameCount, pSampleData) == 0)
+	u32 totalRead = drwav_read_pcm_frames(&wavfp, wavfp.totalPCMFrameCount, pSampleData);
+	if (!totalRead)
 	{
 		drwav_uninit(&wavfp);
 		delete[] pSampleData;
@@ -247,14 +248,14 @@ u32* wav_load_handle(const char *filename, u32* sizeOut)
 
 	if (wavfp.bitsPerSample == 8) // 8 bit
 	{
-		u32* _8bitdata = (u32*)malloc((u32)wavfp.totalPCMFrameCount * wavfp.channels * sizeof(u32));
+		u32* _8bitdata = new u32[(u32)wavfp.totalPCMFrameCount * wavfp.channels];
 		drwav_u8_to_s16((drwav_int16*)_8bitdata, (drwav_uint8*)pSampleData, wavfp.totalPCMFrameCount);
 		delete[] pSampleData;
 		pSampleData = _8bitdata;
 	}
 
 	FILE* f = fopen(filename, "rb");
-	if (sizeOut) *sizeOut = (u32)ds_filelength(f);
+	if (sizeOut) *sizeOut = totalRead*2;
 	fclose(f);
 	drwav_uninit(&wavfp);
 
