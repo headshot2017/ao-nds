@@ -153,9 +153,10 @@ void UIButton::updateInput()
 {
 	if (!visible) return;
 
-	u32 keys = keysDown();
+	u32 keyDown = keysDown();
+	u32 keyUp = keysUp();
 
-	if (keys & KEY_TOUCH)
+	if (keyDown & KEY_TOUCH)
 	{
 		touchRead(&touchPos);
 		if (callbacks[0].cb && touchPos.px >= (u16)x && touchPos.py >= (u16)y && touchPos.px < (u16)(x+w) && touchPos.py < (u16)(y+h))
@@ -165,10 +166,13 @@ void UIButton::updateInput()
 		}
 	}
 
-	if (assignedKey && (keys & assignedKey))
+	if (assignedKey && (keyDown & assignedKey))
+	{
+		pressing = true;
 		callbacks[0].cb(callbacks[0].pUserData);
+	}
 
-	if (pressing && keysUp() & KEY_TOUCH)
+	if (pressing && (keyUp & KEY_TOUCH || (assignedKey && keyUp & assignedKey)))
 	{
 		forceRelease();
 	}
