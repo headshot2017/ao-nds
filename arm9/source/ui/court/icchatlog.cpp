@@ -28,6 +28,7 @@ UICourtICChatLog::~UICourtICChatLog()
 	delete lbl_log;
 
 	gEngine->getSocket()->removeMessageCallback("MS", cbMS);
+	gEngine->getSocket()->removeMessageCallback("MC", cbMC);
 }
 
 void UICourtICChatLog::init()
