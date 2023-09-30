@@ -22,6 +22,9 @@ UICourtICChatLog::~UICourtICChatLog()
 
 	delete btn_back;
 	delete btn_courtRecord;
+	delete btn_scrollUp;
+	delete btn_scrollDown;
+	delete btn_sliderHandle;
 	delete lbl_log;
 
 	gEngine->getSocket()->removeMessageCallback("MS", cbMS);
