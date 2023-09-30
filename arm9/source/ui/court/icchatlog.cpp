@@ -65,6 +65,7 @@ void UICourtICChatLog::init()
 	draggingHandle = false;
 
 	cbMS = gEngine->getSocket()->addMessageCallback("MS", onMessageMS, this);
+	cbMC = gEngine->getSocket()->addMessageCallback("MC", onMessageMC, this);
 
 	reloadScroll();
 }
@@ -206,6 +207,19 @@ void UICourtICChatLog::onSliderReleased(void* pUserData)
 }
 
 void UICourtICChatLog::onMessageMS(void* pUserData, std::string msg)
+{
+	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
+
+	if (pSelf->atBottom)
+	{
+		pSelf->scrollPos = (pSelf->pCourtUI->getICLog().size() > 10) ? pSelf->pCourtUI->getICLog().size()-10 : 0;
+		pSelf->reloadScroll();
+	}
+	else
+		pSelf->setSliderHandle();
+}
+
+void UICourtICChatLog::onMessageMC(void* pUserData, std::string msg)
 {
 	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
 

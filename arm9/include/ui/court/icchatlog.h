@@ -24,6 +24,7 @@ class UICourtICChatLog : public UISubScreen
 	bool draggingHandle;
 
 	int cbMS;
+	int cbMC;
 
 public:
 	UICourtICChatLog(UIScreenCourt* courtUI) : UISubScreen(courtUI) {}
@@ -45,6 +46,7 @@ public:
 	static void onSliderReleased(void* pUserData);
 
 	static void onMessageMS(void* pUserData, std::string msg);
+	static void onMessageMC(void* pUserData, std::string msg);
 };
 
 #endif // ICCHATLOG_H_INCLUDED

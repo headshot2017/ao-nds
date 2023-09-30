@@ -224,6 +224,20 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 	std::string trackname = argumentAt(msg, 1);
 	AOdecode(trackname);
 
+	int charID = std::stoi(argumentAt(msg, 2));
+
+	std::string showname = argumentAt(msg, 3);
+	AOdecode(showname);
+
+	// insert to chatlog
+	std::string logName;
+	if (!showname.empty()) logName = showname;
+	else logName = (pSelf->charList.empty()) ? ("char " + std::to_string(charID)) : pSelf->charList[charID].name;
+
+	std::string logMsg = logName+" played music "+trackname;
+	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
+	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
+
 	pSelf->court->playMusic("/data/ao-nds/sounds/music/"+trackname);
 }
 
