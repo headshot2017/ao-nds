@@ -37,56 +37,55 @@ void AOdecode(std::string& s)
 	}
 }
 
-std::string argumentAt(const std::string& s, int id)
+std::string argumentAt(const std::string& s, int id, char delimiter)
 {
 	std::size_t lastPos = 0;
-	std::size_t delimiterPos = s.find("#");
+	std::size_t delimiterPos = s.find(delimiter);
 	int i=0;
 
 	while (lastPos != std::string::npos && i < id)
 	{
 		i++;
 		lastPos = delimiterPos;
-		delimiterPos = s.find("#", delimiterPos+1);
+		delimiterPos = s.find(delimiter, delimiterPos+1);
 	}
 
 	return s.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos - (id==0 ? 0 : 1));
 }
 
-void fillArguments(std::vector<std::string>& out, std::string& s, int id)
+void fillArguments(std::vector<std::string>& out, std::string& s, int id, char delimiter)
 {
 	std::size_t lastPos = 0;
-	std::size_t delimiterPos = s.find("#");
+	std::size_t delimiterPos = s.find(delimiter);
 	int i=0;
 
 	while (i < id)
 	{
 		i++;
 		lastPos = delimiterPos;
-		delimiterPos = s.find("#", delimiterPos+1);
+		delimiterPos = s.find(delimiter, delimiterPos+1);
 	}
 
-	i = 0;
 	while (lastPos != std::string::npos)
 	{
-		out.push_back(s.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1));
+		out.push_back(s.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos - (lastPos==0 ? 0 : 1)));
 
 		lastPos = delimiterPos;
-		delimiterPos = s.find("#", delimiterPos+1);
+		delimiterPos = s.find(delimiter, delimiterPos+1);
 	}
 }
 
-u32 totalArguments(const std::string& s)
+u32 totalArguments(const std::string& s, char delimiter)
 {
 	std::size_t lastPos = 0;
-	std::size_t delimiterPos = s.find("#");
+	std::size_t delimiterPos = s.find(delimiter);
 	u32 i=0;
 
 	while (lastPos != std::string::npos)
 	{
 		i++;
 		lastPos = delimiterPos;
-		delimiterPos = s.find("#", delimiterPos+1);
+		delimiterPos = s.find(delimiter, delimiterPos+1);
 	}
 
 	return i;
@@ -100,9 +99,9 @@ bool fileExists(const std::string& filename)
 	return exist;
 }
 
-u8* readFile(const std::string& filename, u32* outLen)
+u8* readFile(const std::string& filename, u32* outLen, const char* mode)
 {
-	FILE* f = fopen(filename.c_str(), "rb");
+	FILE* f = fopen(filename.c_str(), mode);
 	if (!f)
 	{
 		if (outLen) *outLen = 0;
