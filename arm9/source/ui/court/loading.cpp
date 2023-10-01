@@ -2,11 +2,14 @@
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
+#include <nds/arm9/sound.h>
 
 #include "engine.h"
+#include "ui/uiserverlist.h"
 #include "ui/court/charselect.h"
 #include "bg_talkEmpty.h"
 #include "spr_loading.h"
+#include "spr_disconnect.h"
 
 UICourtLoading::~UICourtLoading()
 {
@@ -23,6 +26,7 @@ UICourtLoading::~UICourtLoading()
 	sock->removeMessageCallback("SM", cbSM);
 	sock->removeMessageCallback("DONE", cbDONE);
 
+	delete btn_disconnect;
 	delete lbl_loading;
 }
 
@@ -45,8 +49,11 @@ void UICourtLoading::init()
 	dmaCopy(spr_loadingPal, &VRAM_I_EXT_SPR_PALETTE[0], spr_loadingPalLen);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	lbl_loading = new UILabel(&oamSub, 1, 8, 1, RGB15(31,31,31), 1, 0);
+	btn_disconnect = new UIButton(&oamSub, (u8*)spr_disconnectTiles, (u8*)spr_disconnectPal, 1, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 1);
+	lbl_loading = new UILabel(&oamSub, btn_disconnect->nextOamInd(), 8, 1, RGB15(31,31,31), 2, 0);
 	setText("Connecting...");
+
+	btn_disconnect->connect(onDisconnectClicked, this);
 
 	AOsocket* sock = gEngine->getSocket();
 	cbSI = sock->addMessageCallback("SI", onMessageSI, this);
@@ -57,7 +64,7 @@ void UICourtLoading::init()
 
 void UICourtLoading::updateInput()
 {
-
+	btn_disconnect->updateInput();
 }
 
 void UICourtLoading::update()
@@ -75,6 +82,14 @@ void UICourtLoading::setText(const char* text)
 {
 	lbl_loading->setText(text);
 	lbl_loading->setPos(128, 96-6, true);
+}
+
+void UICourtLoading::onDisconnectClicked(void* pUserData)
+{
+	UICourtLoading* pSelf = (UICourtLoading*)pUserData;
+
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	gEngine->changeScreen(new UIScreenServerList);
 }
 
 void UICourtLoading::onMessageSI(void* pUserData, std::string msg)

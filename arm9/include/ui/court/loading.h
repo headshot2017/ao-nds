@@ -3,11 +3,13 @@
 
 #include "ui/uicourt.h"
 
+#include "ui/button.h"
 #include "ui/label.h"
 
 class UICourtLoading : public UISubScreen
 {
 	int bgIndex;
+	UIButton* btn_disconnect;
 	UILabel* lbl_loading;
 
 	u16* sprLoading;
@@ -28,6 +30,7 @@ public:
 	void update();
 	void setText(const char* text);
 
+	static void onDisconnectClicked(void* pUserData);
 	static void onMessageSI(void* pUserData, std::string msg);
 	static void onMessageSC(void* pUserData, std::string msg);
 	static void onMessageSM(void* pUserData, std::string msg);
