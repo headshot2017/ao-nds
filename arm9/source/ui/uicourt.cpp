@@ -232,7 +232,8 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 	// insert to chatlog
 	std::string logName;
 	if (!showname.empty()) logName = showname;
-	else logName = (pSelf->charList.empty()) ? ("char " + std::to_string(charID)) : pSelf->charList[charID].name;
+	else if (charID >= 0) logName = (pSelf->charList.empty()) ? ("char " + std::to_string(charID)) : pSelf->charList[charID].name;
+	else logName = "Server";
 
 	std::string logMsg = logName+" played music "+trackname;
 	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
