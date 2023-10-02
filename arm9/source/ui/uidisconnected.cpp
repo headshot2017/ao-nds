@@ -44,7 +44,7 @@ void UIScreenDisconnected::init()
 	dmaCopy(bg_titlePal, BG_PALETTE_SUB, bg_titlePalLen);
 
 	lbl_disconnectMsg = new UILabel(&oamSub, 0, 8, 1, RGB15(31,31,31), 0, 1);
-	lbl_reason = new UILabel(&oamSub, lbl_disconnectMsg->nextOamInd(), 6, 6, RGB15(31,31,31), 1, 0);
+	lbl_reason = new UILabel(&oamSub, lbl_disconnectMsg->nextOamInd(), 8, 6, RGB15(31,31,31), 0, 0);
 	//btn_ok = new UIButton(&oamSub, (u8*)spr_okTiles, (u8*)spr_okPal, lbl_reason->nextOamInd(), 2, 1, SpriteSize_32x32, 128-16, 160, 64, 32, 32, 32, 2);
 
 	lbl_disconnectMsg->setText(disconnectMsg.c_str());

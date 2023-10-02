@@ -353,18 +353,26 @@ void separateLines(int fontID, const char* text, int gfxPerLine, std::vector<std
 
 int getTextWidth(int fontID, const char* text)
 {
-	int textWidth = 0;
-
 	if (fontID < 0 || fontID >= loadedCount)
 		return 0;
 
 	LoadedFont& font = fonts[fontID];
 
+	int lines = 1;
+	for (u32 i=0; i<strlen(text); i++)
+	{
+		if (text[i] == '\n') lines++;
+	}
+
+	int* textWidth = new int[lines];
+	for (int i=0; i<lines; i++) textWidth[i] = 0;
+
+	int line = 0;
 	for (u32 i=0; i<strlen(text); i++)
 	{
 		if (text[i] == '\n')
 		{
-			textWidth = 0;
+			line++;
 			continue;
 		}
 
@@ -379,8 +387,12 @@ int getTextWidth(int fontID, const char* text)
 		stbtt_GetCodepointBitmapBox(&font.info, text[i], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
 		// advance x
-		textWidth += roundf(ax * font.scale);
+		textWidth[line] += roundf(ax * font.scale);
 	}
 
-	return textWidth;
+	int maxLine = 0;
+	for (int i=0; i<lines; i++)
+		maxLine = (textWidth[i] > maxLine) ? textWidth[i] : maxLine;
+	delete[] textWidth;
+	return maxLine;
 }
