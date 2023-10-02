@@ -53,6 +53,7 @@ void UICourtLoading::init()
 	lbl_loading = new UILabel(&oamSub, btn_disconnect->nextOamInd(), 8, 1, RGB15(31,31,31), 2, 0);
 	setText("Connecting...");
 
+	btn_disconnect->assignKey(KEY_B);
 	btn_disconnect->connect(onDisconnectClicked, this);
 
 	AOsocket* sock = gEngine->getSocket();
