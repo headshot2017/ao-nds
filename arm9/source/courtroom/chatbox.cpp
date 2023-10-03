@@ -11,6 +11,7 @@
 #include "global.h"
 #include "fonts.h"
 #include "mp3_shared.h"
+#include "spr_chatboxArrow.h"
 
 Chatbox::Chatbox()
 {
@@ -46,6 +47,22 @@ Chatbox::Chatbox()
 	vramSetBankE(VRAM_E_LCD);
 	vramSetBankF(VRAM_F_LCD);
 
+	arrowX = 243;
+	arrowXadd = 1;
+	arrowTicks = 0;
+	spr_arrowGfx = oamAllocateGfx(&oamMain, SpriteSize_16x16, SpriteColorFormat_256Color);
+	dmaCopy(spr_chatboxArrowTiles, spr_arrowGfx, 16*16);
+	dmaCopy(spr_chatboxArrowPal, &VRAM_F_EXT_SPR_PALETTE[3], 512);
+	oamSet(&oamMain, 127, arrowX, 174, 0, 3, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowGfx, -1, false, false, false, false, false);
+
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = 	RGB15(31,31,31);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GREEN] = 	RGB15(0,31,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_RED] = 		RGB15(31,0,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_ORANGE] = 	RGB15(31,20,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLUE] = 	RGB15(5,18,31);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_YELLOW] = 	RGB15(31,31,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	RGB15(0,0,0);
+
 	u32 dataLen, mapLen, palLen;
 	u8* bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);
 	u8* bgMap = readFile("/data/ao-nds/misc/chatbox.map.bin", &mapLen);
@@ -58,14 +75,6 @@ Chatbox::Chatbox()
 	delete[] bgData;
 	delete[] bgMap;
 	delete[] bgPal;
-
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = 	RGB15(31,31,31);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GREEN] = 	RGB15(0,31,0);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_RED] = 		RGB15(31,0,0);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_ORANGE] = 	RGB15(31,20,0);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLUE] = 	RGB15(5,18,31);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_YELLOW] = 	RGB15(31,31,0);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	RGB15(0,0,0);
 
 	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
@@ -94,6 +103,8 @@ Chatbox::~Chatbox()
 		oamSet(&oamMain, 26+i, 8+(x*32), 132+(y*16), 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		oamFreeGfx(&oamMain, textGfx[i]);
 	}
+
+	oamFreeGfx(&oamMain, spr_arrowGfx);
 }
 
 void Chatbox::setVisible(bool on)
@@ -106,6 +117,8 @@ void Chatbox::setVisible(bool on)
 
 	for (int i=0; i<8*3; i++)
 		oamSetHidden(&oamMain, 26+i, !on);
+
+	oamSetHidden(&oamMain, 127, !on);
 }
 
 void Chatbox::setName(std::string name)
@@ -138,6 +151,8 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 	std::string blipFile = "/data/ao-nds/sounds/blips/" + blip + ".wav";
 	blipSnd = wav_load_handle(blipFile.c_str(), &blipSize);
 
+	oamSetHidden(&oamMain, 127, true);
+
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<8*3; i++)
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
@@ -158,10 +173,22 @@ void Chatbox::update()
 	for (int i=0; i<2; i++)
 		oamSetXY(&oamMain, 24+i, 1+(i*32) + 36-(nameWidth/2) + xOffset, 115+yOffset);
 
+	arrowTicks++;
+	if (arrowTicks >= 3)
+	{
+		arrowTicks = 0;
+		arrowX += arrowXadd;
+		if (arrowX >= 246 || arrowX <= 243)
+			arrowXadd = -arrowXadd;
+		oamSetXY(&oamMain, 127, arrowX, 174);
+	}
 
 	// handle chatbox text typewriter
 	if (currTextInd >= currText.size())
+	{
+		oamSetHidden(&oamMain, 127, false);
 		return;
+	}
 
 	textTicks++;
 	if (blipTicks > 0) blipTicks--;
@@ -223,6 +250,9 @@ void Chatbox::update()
 
 		currTextInd++;
 		if (currTextInd >= currText.size() && onChatboxFinished)
+		{
+			oamSetHidden(&oamMain, 127, false);
 			onChatboxFinished(pUserData);
+		}
 	}
 }

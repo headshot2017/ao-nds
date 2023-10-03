@@ -32,6 +32,12 @@ class Chatbox
 	u16* nameGfx[2];
 	u16* textGfx[8*3]; // 8 rows of sprite text, 3 lines
 
+	// arrow info: X between 243-246, Y=174. reverse arrowXadd when reaching a corner
+	u16* spr_arrowGfx;
+	int arrowX;
+	int arrowXadd;
+	int arrowTicks;
+
 	u32* blipSnd;
 	u32 blipSize;
 
