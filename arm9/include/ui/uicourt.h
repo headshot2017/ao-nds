@@ -102,6 +102,7 @@ public:
 	u32 sndEvTapSize;
 	u32 sndEvPageSize;
 
+	std::string showname;
 	std::string oocName;
 };
 

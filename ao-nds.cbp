@@ -38,6 +38,7 @@
 		<Unit filename="arm9/include/fonts.h" />
 		<Unit filename="arm9/include/global.h" />
 		<Unit filename="arm9/include/ini.h" />
+		<Unit filename="arm9/include/mini/ini.h" />
 		<Unit filename="arm9/include/mongoose.h" />
 		<Unit filename="arm9/include/mongoose_custom.h" />
 		<Unit filename="arm9/include/rapidjson/allocators.h" />
@@ -101,6 +102,7 @@
 		<Unit filename="arm9/include/ui/uimainmenu.h" />
 		<Unit filename="arm9/include/ui/uiscreen.h" />
 		<Unit filename="arm9/include/ui/uiserverlist.h" />
+		<Unit filename="arm9/include/ui/uisettings.h" />
 		<Unit filename="arm9/include/ui/uiwificonnect.h" />
 		<Unit filename="arm9/source/animStream.cpp" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
@@ -134,6 +136,7 @@
 		<Unit filename="arm9/source/ui/uidisconnected.cpp" />
 		<Unit filename="arm9/source/ui/uimainmenu.cpp" />
 		<Unit filename="arm9/source/ui/uiserverlist.cpp" />
+		<Unit filename="arm9/source/ui/uisettings.cpp" />
 		<Unit filename="arm9/source/ui/uiwificonnect.cpp" />
 		<Unit filename="arm9/source/websocket/mongoose.c">
 			<Option compilerVar="CC" />

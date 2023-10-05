@@ -52,6 +52,9 @@ void UIScreenCourt::init()
 	bgExtPaletteEnable();
 	currChar = -1;
 
+	showname = gEngine->getShowname();
+	oocName = gEngine->getOOCname();
+
 	if (keysHeld() & KEY_SELECT)
 		subScreen = new UICourtConsole(this);
 	else

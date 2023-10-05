@@ -14,6 +14,9 @@ class Engine
 	std::string macAddr;
 	std::unordered_map<std::string, bool> cachedMusic;
 
+	std::string defaultShowname;
+	std::string defaultOOCname;
+
 	int alpha;
 	bool fading;
 	bool running;
@@ -27,6 +30,8 @@ public:
 	UIScreen* getScreen() {return screen;}
 	AOsocket* getSocket() {return aosocket;}
 	const std::string& getMacAddr() {return macAddr;}
+	const std::string& getShowname() {return defaultShowname;}
+	const std::string& getOOCname() {return defaultOOCname;}
 	bool isFading() {return fading;}
 	bool isRunning() {return running;}
 	bool musicExists(const std::string& file) {return cachedMusic.count(file);}
@@ -34,6 +39,8 @@ public:
 	void changeScreen(UIScreen* next);
 	void setSocket(AOsocket* sock);
 	void setMacAddr(std::string addr) {macAddr = addr;}
+	void setShowname(std::string val) {defaultShowname = val;}
+	void setOOCname(std::string val) {defaultOOCname = val;}
 
 	void updateInput();
 	void update();

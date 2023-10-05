@@ -14,7 +14,7 @@ std::string cfgFile::get(const std::string& key, std::string defaultValue)
     return (!keys.count(key)) ? defaultValue : keys[key];
 }
 
-void cfgFile::set(const std::string& key, std::string& value)
+void cfgFile::set(const std::string& key, const std::string& value)
 {
     keys[key] = value;
 }

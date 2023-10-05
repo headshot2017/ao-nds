@@ -7,6 +7,8 @@
 #include <nds/ndstypes.h>
 #include <nds/interrupts.h>
 
+#include "cfgFile.h"
+
 Engine* gEngine = nullptr;
 
 Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
@@ -16,6 +18,10 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 	running = true;
 
 	cacheMusic("/data/ao-nds/sounds/music");
+
+	cfgFile settings("/data/ao-nds/settings_nds.cfg");
+	defaultShowname = settings.get("showname", "");
+	defaultOOCname = settings.get("oocname", "");
 }
 
 Engine::~Engine()
