@@ -45,7 +45,7 @@ bool cfgFile::load(const std::string& filename)
             continue; // invalid config syntax
 
         std::string key = line.substr(0, delimiterPos);
-        std::string value = line.substr(delimiterPos + 1);
+        std::string value = line.substr(delimiterPos + 2);
         keys[key] = value;
     }
 
