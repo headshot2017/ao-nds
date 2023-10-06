@@ -76,7 +76,6 @@ public:
 	int getCurrCharID() {return currChar;}
 	const charInfo& getCurrChar() {return charList[currChar];}
 
-	static void onMessageDecryptor(void* pUserData, std::string msg);
 	static void onMessageID(void* pUserData, std::string msg);
 	static void onMessagePN(void* pUserData, std::string msg);
 	static void onMessageSI(void* pUserData, std::string msg);

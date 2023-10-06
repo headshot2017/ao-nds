@@ -70,7 +70,6 @@ void UIScreenCourt::init()
 	sndEvPage = wav_load_handle("/data/ao-nds/sounds/general/sfx-blink.wav", &sndEvPageSize);
 
 	AOsocket* sock = gEngine->getSocket();
-	sock->addMessageCallback("decryptor", onMessageDecryptor, this);
 	sock->addMessageCallback("ID", onMessageID, this);
 	sock->addMessageCallback("PN", onMessagePN, this);
 	sock->addMessageCallback("SI", onMessageSI, this);
@@ -86,6 +85,9 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("KK", onMessageKK, this);
 	sock->addMessageCallback("KB", onMessageKB, this);
 	sock->addMessageCallback("BD", onMessageBD, this);
+
+	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%";
+	gEngine->getSocket()->sendData(hdid);
 }
 
 void UIScreenCourt::updateInput()
@@ -110,12 +112,6 @@ void UIScreenCourt::update()
 void UIScreenCourt::changeScreen(UISubScreen* newScreen)
 {
 	nextScreen = newScreen;
-}
-
-void UIScreenCourt::onMessageDecryptor(void* pUserData, std::string msg)
-{
-	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%";
-	gEngine->getSocket()->sendData(hdid);
 }
 
 void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
