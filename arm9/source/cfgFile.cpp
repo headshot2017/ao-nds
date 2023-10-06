@@ -37,13 +37,10 @@ bool cfgFile::load(const std::string& filename)
     std::string line;
     while (getline(configfile, line))
     {
-        // clear any whitespaces
-        line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
-
         if (line[0] == '#' || line.empty())
             continue; // ignore comments and empty lines
 
-        std::size_t delimiterPos = line.find(":");
+        std::size_t delimiterPos = line.find(": ");
         if (delimiterPos == std::string::npos)
             continue; // invalid config syntax
 
