@@ -186,7 +186,7 @@ void Chatbox::update()
 	// handle chatbox text typewriter
 	if (currTextInd >= currText.size())
 	{
-		oamSetHidden(&oamMain, 127, false);
+		if (visible) oamSetHidden(&oamMain, 127, false);
 		return;
 	}
 
