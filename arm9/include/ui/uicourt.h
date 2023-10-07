@@ -10,6 +10,9 @@
 struct charInfo
 {
 	std::string name;
+	std::string showname;
+	std::string blip;
+	std::string side;
 	bool taken;
 };
 

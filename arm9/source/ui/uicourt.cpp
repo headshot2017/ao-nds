@@ -12,6 +12,7 @@
 #include "engine.h"
 #include "fonts.h"
 #include "global.h"
+#include "mini/ini.h"
 #include "ui/uiserverlist.h"
 #include "ui/uidisconnected.h"
 #include "ui/court/loading.h"
@@ -144,7 +145,26 @@ void UIScreenCourt::onMessageSC(void* pUserData, std::string msg)
 
 	while (lastPos != std::string::npos)
 	{
-		pSelf->charList.push_back({msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1), false});
+		std::string name = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
+		std::string showname = name;
+		std::string blip = "male";
+		std::string side = "wit";
+
+		mINI::INIFile file("/data/ao-nds/characters/" + name + "/char.ini");
+		mINI::INIStructure ini;
+
+		if (file.read(ini))
+		{
+			showname = ini["options"]["showname"];
+			if (showname.empty()) showname = name;
+
+			blip = ini["options"]["blips"];
+			if (blip.empty()) blip = ini["options"]["gender"];
+
+			side = ini["options"]["side"];
+		}
+
+		pSelf->charList.push_back({name, showname, blip, side, false});
 
 		lastPos = delimiterPos;
 		delimiterPos = msg.find("#", delimiterPos+1);
@@ -245,10 +265,11 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 {
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
+	int charID = std::stoi(argumentAt(msg, 9));
+
 	std::string name = argumentAt(msg,16);
+	if (name.empty()) name = argumentAt(msg, 3);
 	AOdecode(name);
-	if (name.empty())
-		name = argumentAt(msg, 3);
 
 	std::string chatmsg = argumentAt(msg,5);
 	AOdecode(chatmsg);
@@ -263,7 +284,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 
 	// show message in court screen
 	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
-	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, chatmsg, std::stoi(argumentAt(msg,15)), "male");
+	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, chatmsg, std::stoi(argumentAt(msg,15)), pSelf->charList[charID].blip);
 }
 
 void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
