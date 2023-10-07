@@ -183,6 +183,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		u8* charDataLZ77 = readFile(IMGbin.c_str());
 
 		charData = new u8[frameInfo.realW*32 * frameInfo.realH*32 * frameInfo.frameCount];
+		mp3_fill_buffer();
+
 		if (!charData)
 		{
 			delete[] charDataLZ77;
@@ -191,6 +193,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		}
 
 		decompress(charDataLZ77, charData, LZ77);
+		mp3_fill_buffer();
 		delete[] charDataLZ77;
 	}
 	else
