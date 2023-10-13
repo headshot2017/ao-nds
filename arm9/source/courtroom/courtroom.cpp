@@ -9,15 +9,7 @@
 #include <nds/arm9/video.h>
 
 #include "mp3_shared.h"
-
-int AOcolorToPalette[] = {
-	COLOR_WHITE,
-	COLOR_GREEN,
-	COLOR_RED,
-	COLOR_ORANGE,
-	COLOR_BLUE,
-	COLOR_YELLOW
-};
+#include "colors.h"
 
 Courtroom::Courtroom()
 {
@@ -66,7 +58,7 @@ void Courtroom::MSchat(std::string charname, std::string anim, std::string preAn
 
 	if (emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
 	{
-		character->setCharImage(tempChar, (tempMsg.empty() ? "(a)" : "(b)") + tempAnim);
+		character->setCharImage(tempChar, ((tempMsg.empty() || tempColor == COLOR_BLUE) ? "(a)" : "(b)") + tempAnim);
 		chatbox->setVisible(true);
 		chatbox->setName(tempName);
 		chatbox->setText(tempMsg, tempColor, tempBlip);
@@ -123,13 +115,14 @@ void Courtroom::update()
 void Courtroom::onChatboxFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
-	pSelf->character->setCharImage(pSelf->tempChar, "(a)"+pSelf->tempAnim);
+	if (pSelf->tempColor != COLOR_BLUE)
+		pSelf->character->setCharImage(pSelf->tempChar, "(a)"+pSelf->tempAnim);
 }
 
 void Courtroom::onAnimFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
-	pSelf->character->setCharImage(pSelf->tempChar, (pSelf->tempMsg.empty() ? "(a)" : "(b)") + pSelf->tempAnim);
+	pSelf->character->setCharImage(pSelf->tempChar, ((pSelf->tempMsg.empty() || pSelf->tempColor == COLOR_BLUE) ? "(a)" : "(b)") + pSelf->tempAnim);
 	pSelf->chatbox->setVisible(true);
 	pSelf->chatbox->setName(pSelf->tempName);
 	pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);

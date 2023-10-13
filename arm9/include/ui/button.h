@@ -25,7 +25,12 @@ class UIButton
 	int sprH;
 	bool visible;
 	bool pressing;
+	bool hflip;
+	bool vflip;
 	u32 assignedKey;
+
+	u8* currData;
+	u8* currPal;
 
 	cbInfo callbacks[2];
 
@@ -40,9 +45,11 @@ public:
 	~UIButton();
 
 	void setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int palSlot);
+	void setFrame(int frame);
 	void setVisible(bool on);
 	void setPos(int xPos, int yPos);
 	void setPriority(int pr);
+	void setFlip(bool h, bool v);
 	void forceRelease();
 	void connect(voidCallback cb, void* p, int cbType=PRESSED) {callbacks[cbType].cb = cb; callbacks[cbType].pUserData = p;}
 	void assignKey(u32 k) {assignedKey = k;}

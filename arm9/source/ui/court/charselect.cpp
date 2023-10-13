@@ -211,7 +211,7 @@ void UICourtCharSelect::reloadPage()
 		{
 			// make char icon dark
 			vramSetBankI(VRAM_I_LCD);
-			for (u32 j=0; j<512; j++)
+			for (u32 j=0; j<256; j++)
 			{
 				u8 r=0, g=0, b=0;
 				fromRGB15(VRAM_I_EXT_SPR_PALETTE[7+i][j], r, g, b);

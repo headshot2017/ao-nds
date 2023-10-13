@@ -18,6 +18,15 @@
 #include "ui/court/loading.h"
 #include "ui/court/console.h"
 
+const char* indToSide[6] = {
+	"def",
+	"pro",
+	"wit",
+	"hld",
+	"hlp",
+	"jud"
+};
+
 UIScreenCourt::UIScreenCourt() : UIScreen()
 {
 	court = 0;
@@ -52,6 +61,7 @@ void UIScreenCourt::init()
 {
 	bgExtPaletteEnable();
 	currChar = -1;
+	memset(bars, 0, sizeof(bars));
 
 	showname = gEngine->getShowname();
 	oocName = gEngine->getOOCname();
@@ -83,6 +93,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 	sock->addMessageCallback("PV", onMessagePV, this);
 	sock->addMessageCallback("ARUP", onMessageARUP, this);
+	sock->addMessageCallback("HP", onMessageHP, this);
 	sock->addMessageCallback("KK", onMessageKK, this);
 	sock->addMessageCallback("KB", onMessageKB, this);
 	sock->addMessageCallback("BD", onMessageBD, this);
@@ -108,11 +119,19 @@ void UIScreenCourt::update()
 
 	court->update();
 	subScreen->update();
+
+	if (!icSendQueue.empty())
+		gEngine->getSocket()->sendData(icSendQueue.front());
 }
 
 void UIScreenCourt::changeScreen(UISubScreen* newScreen)
 {
 	nextScreen = newScreen;
+}
+
+void UIScreenCourt::sendIC(const std::string& msg)
+{
+	icSendQueue.push_back(msg);
 }
 
 void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
@@ -267,6 +286,13 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 
 	int charID = std::stoi(argumentAt(msg, 9));
 
+	if (!pSelf->icSendQueue.empty())
+	{
+		int myCharID = std::stoi(argumentAt(pSelf->icSendQueue.front(), 9));
+		if (charID == myCharID)
+			pSelf->icSendQueue.pop_front();
+	}
+
 	std::string name = argumentAt(msg,16);
 	if (name.empty()) name = argumentAt(msg, 3);
 	AOdecode(name);
@@ -326,6 +352,40 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
 	pSelf->currChar = std::stoi(argumentAt(msg, 3));
+	pSelf->charEmotes.clear();
+	for (int i=0; i<6; i++)
+	{
+		if (pSelf->getCurrChar().side == indToSide[i])
+		{
+			pSelf->icControls.side = i;
+			break;
+		}
+	}
+
+	mINI::INIFile file("/data/ao-nds/characters/" + pSelf->getCurrChar().name + "/char.ini");
+	mINI::INIStructure ini;
+
+	if (file.read(ini))
+	{
+		u32 total = std::stoi(ini["emotions"]["number"]);
+
+		for (u32 i=0; i<total; i++)
+		{
+			std::string I = std::to_string(i+1);
+
+			std::string name = argumentAt(ini["emotions"][I], 0);
+			std::string preanim = argumentAt(ini["emotions"][I], 1);
+			std::string anim = argumentAt(ini["emotions"][I], 2);
+			int emoteModifier = std::stoi(argumentAt(ini["emotions"][I], 3));
+			int deskMod = std::stoi(argumentAt(ini["emotions"][I], 4));
+
+			std::string sound = (ini["soundn"].has(I)) ? ini["soundn"][I] : "1";
+
+			int delay = std::stoi( (ini["soundt"].has(I)) ? ini["soundt"][I] : "0" );
+
+			pSelf->charEmotes.push_back({name, preanim, anim, emoteModifier, deskMod, sound, delay});
+		}
+	}
 }
 
 void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)
@@ -355,6 +415,17 @@ void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)
 				break;
 		}
 	}
+}
+
+void UIScreenCourt::onMessageHP(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	int bar = std::stoi(argumentAt(msg, 1))-1;
+	int hp = std::stoi(argumentAt(msg, 2));
+
+	if (bar < 0 || bar > 1 || hp < 0 || hp > 10) return;
+	pSelf->bars[bar] = hp;
 }
 
 void UIScreenCourt::onMessageKK(void* pUserData, std::string msg)

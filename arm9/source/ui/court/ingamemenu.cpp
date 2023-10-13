@@ -8,6 +8,7 @@
 #include "ui/court/musiclist.h"
 #include "ui/court/icchatlog.h"
 #include "ui/court/ooc.h"
+#include "ui/court/ic.h"
 #include "bg_ingameMain.h"
 #include "spr_talkIC.h"
 #include "spr_talkOOC.h"
@@ -40,7 +41,7 @@ void UICourtIngameMenu::init()
 	btn_talkOOC = new UIButton(&oamSub, (u8*)spr_talkOOCTiles, (u8*)spr_talkOOCPal, btn_talkIC->nextOamInd(), 2, 1, SpriteSize_64x32, 8, 110, 112, 28, 64, 32, 1);
 	btn_music = new UIButton(&oamSub, (u8*)spr_musicAreasTiles, (u8*)spr_musicAreasPal, btn_talkOOC->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 54, 112, 28, 64, 32, 2);
 	btn_changeChar = new UIButton(&oamSub, (u8*)spr_changeCharTiles, (u8*)spr_changeCharPal, btn_music->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 110, 112, 28, 64, 32, 3);
-	btn_courtRecord = new UIButton(&oamSub, (u8*)spr_courtRecordTiles, (u8*)spr_courtRecordPal, btn_changeChar->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 4);
+	btn_courtRecord = new UIButton(&oamSub, (u8*)spr_courtRecordTiles, (u8*)spr_courtRecordPal, btn_changeChar->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 4);
 	lbl_currChar = new UILabel(&oamSub, btn_courtRecord->nextOamInd(), 6, 1, RGB15(5,5,5), 5, 0);
 
 	btn_courtRecord->assignKey(KEY_R);
@@ -80,6 +81,7 @@ void UICourtIngameMenu::onTalkICclicked(void* pUserData)
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	pSelf->pCourtUI->changeScreen(new UICourtIC(pSelf->pCourtUI));
 }
 
 void UICourtIngameMenu::onTalkOOCclicked(void* pUserData)

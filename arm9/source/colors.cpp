@@ -1,0 +1,21 @@
+#include "colors.h"
+
+int AOcolorToPalette[] = {
+	COLOR_WHITE,
+	COLOR_GREEN,
+	COLOR_RED,
+	COLOR_ORANGE,
+	COLOR_BLUE,
+	COLOR_YELLOW,
+	COLOR_BLACK
+};
+
+u32 paletteColorInd[] = {
+	PAL_WHITE,
+	PAL_GREEN,
+	PAL_RED,
+	PAL_ORANGE,
+	PAL_BLUE,
+	PAL_YELLOW,
+	PAL_BLACK
+};

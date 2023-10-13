@@ -14,6 +14,7 @@ UILabel::UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u
 	gfxPerLine = perLine;
 	maxLines = lines;
 	fontID = font;
+	paletteSlot = palSlot;
 
 	textCanvas = new u8[32*16];
 	memset(textCanvas, 0, 32*16);
@@ -91,4 +92,20 @@ void UILabel::setText(const char* text)
 	currText = text;
 	renderMultiLine(fontID, text, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, gfxPerLine, maxLines);
 	mp3_fill_buffer();
+}
+
+void UILabel::setColor(u32 textColor)
+{
+	if (oam == &oamMain)
+	{
+		vramSetBankF(VRAM_F_LCD);
+		VRAM_F_EXT_SPR_PALETTE[paletteSlot][2] = textColor;
+		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+	}
+	else
+	{
+		vramSetBankI(VRAM_I_LCD);
+		VRAM_I_EXT_SPR_PALETTE[paletteSlot][2] = textColor;
+		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	}
 }

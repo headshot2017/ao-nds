@@ -30,6 +30,7 @@
 		</Unit>
 		<Unit filename="arm9/include/animStream.h" />
 		<Unit filename="arm9/include/cfgFile.h" />
+		<Unit filename="arm9/include/colors.h" />
 		<Unit filename="arm9/include/courtroom/background.h" />
 		<Unit filename="arm9/include/courtroom/character.h" />
 		<Unit filename="arm9/include/courtroom/chatbox.h" />
@@ -87,6 +88,7 @@
 		<Unit filename="arm9/include/ui/court/arealist.h" />
 		<Unit filename="arm9/include/ui/court/charselect.h" />
 		<Unit filename="arm9/include/ui/court/console.h" />
+		<Unit filename="arm9/include/ui/court/ic.h" />
 		<Unit filename="arm9/include/ui/court/icchatlog.h" />
 		<Unit filename="arm9/include/ui/court/ingamemenu.h" />
 		<Unit filename="arm9/include/ui/court/loading.h" />
@@ -106,6 +108,7 @@
 		<Unit filename="arm9/include/ui/uiwificonnect.h" />
 		<Unit filename="arm9/source/animStream.cpp" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
+		<Unit filename="arm9/source/colors.cpp" />
 		<Unit filename="arm9/source/courtroom/background.cpp" />
 		<Unit filename="arm9/source/courtroom/character.cpp" />
 		<Unit filename="arm9/source/courtroom/chatbox.cpp" />
@@ -122,6 +125,7 @@
 		<Unit filename="arm9/source/ui/court/arealist.cpp" />
 		<Unit filename="arm9/source/ui/court/charselect.cpp" />
 		<Unit filename="arm9/source/ui/court/console.cpp" />
+		<Unit filename="arm9/source/ui/court/ic.cpp" />
 		<Unit filename="arm9/source/ui/court/icchatlog.cpp" />
 		<Unit filename="arm9/source/ui/court/ingamemenu.cpp" />
 		<Unit filename="arm9/source/ui/court/loading.cpp" />

@@ -45,6 +45,8 @@ std::string argumentAt(const std::string& s, int id, char delimiter)
 
 	while (lastPos != std::string::npos && i < id)
 	{
+		mp3_fill_buffer();
+
 		i++;
 		lastPos = delimiterPos;
 		delimiterPos = s.find(delimiter, delimiterPos+1);

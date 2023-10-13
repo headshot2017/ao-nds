@@ -3,9 +3,12 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 
 #include "uiscreen.h"
 #include "courtroom/courtroom.h"
+
+extern const char* indToSide[6];
 
 struct charInfo
 {
@@ -30,6 +33,18 @@ struct areaInfo
 	std::string status;
 	std::string cm;
 	std::string lock;
+};
+
+struct emoteInfo
+{
+	std::string name;
+	std::string preanim;
+	std::string anim;
+	int emoteModifier;
+	int deskMod;
+
+	std::string sound;
+	int delay;
 };
 
 class UIScreenCourt;
@@ -61,6 +76,9 @@ class UIScreenCourt : public UIScreen
 	std::vector<std::string> oocLog;
 
 	int currChar;
+	std::vector<emoteInfo> charEmotes;
+
+	std::deque<std::string> icSendQueue;
 
 public:
 	UIScreenCourt();
@@ -71,6 +89,8 @@ public:
 	void update();
 	void changeScreen(UISubScreen* newScreen);
 
+	void sendIC(const std::string& msg);
+
 	const std::vector<charInfo>& getCharList() {return charList;}
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
@@ -78,6 +98,7 @@ public:
 	const std::vector<std::string>& getOOCLog() {return oocLog;}
 	int getCurrCharID() {return currChar;}
 	const charInfo& getCurrChar() {return charList[currChar];}
+	const std::vector<emoteInfo>& getCharEmotes() {return charEmotes;}
 
 	static void onMessageID(void* pUserData, std::string msg);
 	static void onMessagePN(void* pUserData, std::string msg);
@@ -91,6 +112,7 @@ public:
 	static void onMessageCharsCheck(void* pUserData, std::string msg);
 	static void onMessagePV(void* pUserData, std::string msg);
 	static void onMessageARUP(void* pUserData, std::string msg);
+	static void onMessageHP(void* pUserData, std::string msg);
 	static void onMessageKK(void* pUserData, std::string msg);
 	static void onMessageKB(void* pUserData, std::string msg);
 	static void onMessageBD(void* pUserData, std::string msg);
@@ -106,6 +128,26 @@ public:
 
 	std::string showname;
 	std::string oocName;
+
+	int bars[2];
+
+	struct ICControls
+	{
+		ICControls() : additive(0), preanim(0), immediate(0), flip(0), shake(0), flash(0), evidence(-1), side(0), color(0), pairID(-1), offset(0) {}
+		int additive;
+		int preanim;
+		int immediate;
+		int flip;
+		int shake;
+		int flash;
+
+		int evidence;
+		int side;
+		int color;
+
+		int pairID;
+		int offset;
+	} icControls;
 };
 
 #endif // UICOURT_H_INCLUDED

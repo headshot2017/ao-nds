@@ -10,6 +10,7 @@
 
 #include "global.h"
 #include "fonts.h"
+#include "colors.h"
 #include "mp3_shared.h"
 #include "spr_chatboxArrow.h"
 
@@ -55,13 +56,13 @@ Chatbox::Chatbox()
 	dmaCopy(spr_chatboxArrowPal, &VRAM_F_EXT_SPR_PALETTE[3], 512);
 	oamSet(&oamMain, 127, arrowX, 174, 0, 3, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowGfx, -1, false, false, false, false, false);
 
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = 	RGB15(31,31,31);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GREEN] = 	RGB15(0,31,0);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_RED] = 		RGB15(31,0,0);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_ORANGE] = 	RGB15(31,20,0);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLUE] = 	RGB15(5,18,31);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_YELLOW] = 	RGB15(31,31,0);
-	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	RGB15(0,0,0);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = 	PAL_WHITE;
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GREEN] = 	PAL_GREEN;
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_RED] = 		PAL_RED;
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_ORANGE] = 	PAL_ORANGE;
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLUE] = 	PAL_BLUE;
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_YELLOW] = 	PAL_YELLOW;
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	PAL_BLACK;
 
 	u32 dataLen, mapLen, palLen;
 	u8* bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);

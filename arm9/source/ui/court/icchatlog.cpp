@@ -42,7 +42,7 @@ void UICourtICChatLog::init()
 	dmaCopy(bg_icLogPal, BG_PALETTE_SUB, bg_icLogPalLen);
 
 	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_courtRecord = new UIButton(&oamSub, (u8*)spr_courtRecordTiles, (u8*)spr_courtRecordPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 1);
+	btn_courtRecord = new UIButton(&oamSub, (u8*)spr_courtRecordTiles, (u8*)spr_courtRecordPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);
 	btn_scrollUp = new UIButton(&oamSub, (u8*)spr_scrollUpTiles, (u8*)spr_scrollUpPal, btn_courtRecord->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 33, 14, 19, 16, 32, 2);
 	btn_scrollDown = new UIButton(&oamSub, (u8*)spr_scrollDownTiles, (u8*)spr_scrollDownPal, btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
 	btn_sliderHandle = new UIButton(&oamSub, (u8*)spr_sliderHandleTiles, (u8*)spr_sliderHandlePal, btn_scrollDown->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 4);

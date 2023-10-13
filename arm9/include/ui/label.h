@@ -15,6 +15,7 @@ class UILabel
 
 	OamState* oam;
 	int oamStart;
+	int paletteSlot;
 
 	std::string currText;
 	int fontID;
@@ -26,6 +27,7 @@ public:
 	void setVisible(bool on);
 	void setPos(int x, int y, bool center=false);
 	void setText(const char* text);
+	void setColor(u32 textColor);
 
 	int nextOamInd() {return oamStart+(gfxPerLine*maxLines);}
 };

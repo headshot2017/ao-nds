@@ -12,18 +12,6 @@
 
 #include "global.h"
 
-enum
-{
-	COLOR_WHITE=1,
-	COLOR_GREEN=3,
-	COLOR_RED=5,
-	COLOR_ORANGE=7,
-	COLOR_BLUE=9,
-	COLOR_YELLOW=11,
-	COLOR_BLACK=13,
-	COLOR_MAX
-};
-
 class Chatbox
 {
 	int bgIndex;
