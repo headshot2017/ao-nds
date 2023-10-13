@@ -278,6 +278,35 @@ def convertCharIcon(sourceFile, targetFile):
     os.rename("temp.img.bin", no_ext_file+".img.bin")
     os.rename("temp.pal.bin", no_ext_file+".pal.bin")
 
+def convertEmoteButtons(source, target):
+    if not os.path.exists(target):
+        os.mkdir(target)
+
+    for f in os.listdir(source):
+        img = Image.open(source+"/"+f).convert("RGBA").crop((0, 0, 64, 64))
+        pix = img.load()
+        for x in range(img.size[0]):
+            for y in range(img.size[1]):
+                if pix[x, y][3] < 128:
+                    pix[x, y] = (255, 0, 255, 255)
+                else:
+                    pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
+
+        img.save("temp.png")
+        img.close()
+
+        no_ext_file = target + "/" + os.path.splitext(f)[0]
+
+        # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
+        subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8").wait()
+
+        if os.path.exists(no_ext_file+".img.bin"):
+            os.remove(no_ext_file+".img.bin")
+        if os.path.exists(no_ext_file+".pal.bin"):
+            os.remove(no_ext_file+".pal.bin")
+        os.rename("temp.img.bin", no_ext_file+".img.bin")
+        os.rename("temp.pal.bin", no_ext_file+".pal.bin")
+
 def convertEmoteAPNG(sourceFile, targetFile, ogTarget, extra):
     frames = images.load_apng(sourceFile)
     convertEmoteFrames(frames, targetFile, ogTarget, extra)
@@ -303,6 +332,12 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
     if not os.path.exists(target):
         os.mkdir(target)
 
+    if os.path.exists(target+"/nds.cfg"):
+        os.remove(target+"/nds.cfg")
+
+    # copy char.ini from source to target
+    open(target+"/char.ini", "w").write(open(source+"/char.ini").read())
+
     for emote in os.listdir(source):
         filename = source+"/"+emote
         if os.path.isdir(filename) and emote.lower() != "emotions":
@@ -318,21 +353,14 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
         elif emote.lower().endswith(".gif"):
             convertEmoteGIF(filename, target+"/"+emote, ogTarget, extra)
 
+    convertEmoteButtons(source+"/emotions", target+"/emotions")
+
 def convertCharacters(source, target):
     for char in os.listdir(source):
         if not os.path.exists(source+"/"+char+"/char.ini"):
             continue # invalid char folder
 
-        if not os.path.exists(target+"/"+char):
-            os.mkdir(target+"/"+char)
-
-        if os.path.exists(target+"/"+char+"/nds.cfg"):
-            os.remove(target+"/"+char+"/nds.cfg")
-
         print(char)
-
-        # copy char.ini from source to target
-        open(target+"/"+char+"/char.ini", "w").write(open(source+"/"+char+"/char.ini").read())
 
         recursiveCharacter(source+"/"+char, target+"/"+char, target+"/"+char)
 
