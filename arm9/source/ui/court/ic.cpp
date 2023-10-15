@@ -154,6 +154,8 @@ void UICourtIC::init()
 	btn_back->assignKey(KEY_B);
 	btn_courtRecord->assignKey(KEY_R);
 	btn_shouts->assignKey(KEY_L);
+	btn_prevPage->assignKey(KEY_LEFT);
+	btn_nextPage->assignKey(KEY_RIGHT);
 
 	btn_back->connect(onBackClicked, this);
 	btn_courtRecord->connect(onCourtRecord, this);
