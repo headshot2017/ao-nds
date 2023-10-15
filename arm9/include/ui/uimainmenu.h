@@ -4,7 +4,9 @@
 #include "uiscreen.h"
 
 #include <nds/ndstypes.h>
+
 #include "button.h"
+#include "label.h"
 
 class UIScreenMainMenu : public UIScreen
 {
@@ -19,6 +21,7 @@ class UIScreenMainMenu : public UIScreen
 	UIButton* btn_viewServerList;
 	UIButton* btn_directConnect;
 	UIButton* btn_settings;
+	UILabel* lbl_dsi;
 
 	u32* sndGavel;
 	u32 sndGavelSize;

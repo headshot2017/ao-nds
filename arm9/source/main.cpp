@@ -91,11 +91,14 @@ int main()
 		while (1) swiWaitForVBlank();
 	}
 
-	if (!fatInitDefault())
+	if (!isDSiMode())
 	{
-		consoleDemoInit();
-		iprintf("Failed to initialize libfat\nPlease check your microSD card\n");
-		while (1) swiWaitForVBlank();
+		if (!fatInitDefault())
+		{
+			consoleDemoInit();
+			iprintf("Failed to initialize libfat\nPlease check your microSD card\n");
+			while (1) swiWaitForVBlank();
+		}
 	}
 
 	videoSetMode(MODE_3_2D);
