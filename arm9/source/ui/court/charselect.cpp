@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include <algorithm>
 
 #include <nds/arm9/background.h>
@@ -85,7 +86,7 @@ void UICourtCharSelect::init()
 	}
 
 	kb_search = new AOkeyboard(1, btn_chars[7]->nextOamInd(), 15);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+	memcpy(BG_PALETTE_SUB, bgPal, 512);
 	mp3_fill_buffer();
 
 	btn_disconnect->assignKey(KEY_B);
@@ -137,7 +138,7 @@ void UICourtCharSelect::updateInput()
 		int result = kb_search->updateInput();
 		if (result != 0)
 		{
-			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+			memcpy(BG_PALETTE_SUB, bgPal, 512);
 			bgShow(bgIndex);
 
 			btn_disconnect->setVisible(true);

@@ -1,5 +1,7 @@
 #include "ui/court/ingamemenu.h"
 
+#include <string.h>
+
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
@@ -34,7 +36,7 @@ void UICourtIngameMenu::init()
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+	memcpy(BG_PALETTE_SUB, bgPal, 512);
 
 	delete[] bgTiles;
 	delete[] bgMap;

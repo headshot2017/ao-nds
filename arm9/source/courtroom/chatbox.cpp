@@ -55,7 +55,7 @@ Chatbox::Chatbox()
 	u8* chatboxArrowPal = readFile("nitro:/spr_chatboxArrow.pal.bin");
 	spr_arrowGfx = oamAllocateGfx(&oamMain, SpriteSize_16x16, SpriteColorFormat_256Color);
 	dmaCopy(chatboxArrowImg, spr_arrowGfx, 16*16);
-	dmaCopy(chatboxArrowPal, &VRAM_F_EXT_SPR_PALETTE[3], 512);
+	memcpy(&VRAM_F_EXT_SPR_PALETTE[3], chatboxArrowPal, 512);
 	oamSet(&oamMain, 127, arrowX, 174, 0, 3, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowGfx, -1, false, false, false, false, false);
 	delete[] chatboxArrowImg;
 	delete[] chatboxArrowPal;
@@ -75,7 +75,7 @@ Chatbox::Chatbox()
 
 	dmaCopy(bgData, bgGetGfxPtr(bgIndex), dataLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
-	dmaCopy(bgPal, (void *)&VRAM_E_EXT_PALETTE[bgIndex][1], palLen);
+	memcpy(&VRAM_E_EXT_PALETTE[bgIndex][1], bgPal, palLen);
 
 	delete[] bgData;
 	delete[] bgMap;

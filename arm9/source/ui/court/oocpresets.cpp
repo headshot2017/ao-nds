@@ -1,6 +1,7 @@
 #include "ui/court/oocpresets.h"
 
 #include <math.h>
+#include <string.h>
 
 #include <nds/dma.h>
 #include <nds/arm9/background.h>
@@ -72,7 +73,7 @@ void UICourtOOCPresets::init()
 	lbl_pages = new UILabel(&oamSub, lbl_preset[3]->nextOamInd(), 1, 1, RGB15(13, 2, 0), 6, 0);
 
 	kb_input = new AOkeyboard(1, lbl_pages->nextOamInd(), 11);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+	memcpy(BG_PALETTE_SUB, bgPal, 512);
 
 	btn_back->assignKey(KEY_B);
 	btn_addOrConfirm->assignKey(KEY_A);
@@ -107,7 +108,7 @@ void UICourtOOCPresets::updateInput()
 		int result = kb_input->updateInput();
 		if (result != 0)
 		{
-			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+			memcpy(BG_PALETTE_SUB, bgPal, 512);
 			bgShow(bgIndex);
 
 			btn_back->setVisible(true);

@@ -1,5 +1,7 @@
 #include "ui/uidirectconn.h"
 
+#include <string.h>
+
 #include <nds/dma.h>
 
 #include "sockets/aotcpsocket.h"
@@ -31,7 +33,7 @@ void UIScreenDirectConn::init()
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	dmaCopy(bgPal, BG_PALETTE, 512);
+	memcpy(BG_PALETTE, bgPal, 512);
 
 	delete[] bgTiles;
 	delete[] bgMap;

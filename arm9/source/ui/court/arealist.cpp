@@ -1,6 +1,7 @@
 #include "ui/court/arealist.h"
 
 #include <math.h>
+#include <string.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/input.h>
@@ -57,7 +58,7 @@ void UICourtAreaList::init()
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+	memcpy(BG_PALETTE_SUB, bgPal, 512);
 
 	delete[] bgTiles;
 	delete[] bgMap;

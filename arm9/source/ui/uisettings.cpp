@@ -1,5 +1,7 @@
 #include "ui/uisettings.h"
 
+#include <string.h>
+
 #include <nds/dma.h>
 #include <nds/arm9/background.h>
 #include <nds/arm9/sound.h>
@@ -48,7 +50,7 @@ void UIScreenSettings::init()
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	dmaCopy(bgPal, BG_PALETTE, 512);
+	memcpy(BG_PALETTE, bgPal, 512);
 
 	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
@@ -68,7 +70,7 @@ void UIScreenSettings::init()
 	btn_back = new UIButton(&oamSub, "nitro:/spr_back", btn_oocname->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
 
 	kb_input = new AOkeyboard(2, btn_back->nextOamInd(), 4);
-	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
+	memcpy(BG_PALETTE_SUB, bgSubPal, 512);
 
 	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav", &sndSelectSize);
 	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav", &sndCancelSize);
@@ -96,7 +98,7 @@ void UIScreenSettings::updateInput()
 		int result = kb_input->updateInput();
 		if (result != 0)
 		{
-			dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
+			memcpy(BG_PALETTE_SUB, bgSubPal, 512);
 			bgShow(subBgIndex);
 
 			lbl_showname->setVisible(true);

@@ -12,6 +12,9 @@ class UIScreenMainMenu : public UIScreen
 	int subBgIndex;
 	u32 bgTilesLen;
 	u32 bgSubTilesLen;
+	u8* bgSubTiles;
+	u8* bgSubMap;
+	u8* bgSubPal;
 
 	UIButton* btn_viewServerList;
 	UIButton* btn_directConnect;

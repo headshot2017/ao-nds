@@ -84,11 +84,11 @@ void UIScreenServerList::init()
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	dmaCopy(bgPal, BG_PALETTE, 512);
+	memcpy(BG_PALETTE, bgPal, 512);
 
 	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
-	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
+	memcpy(BG_PALETTE_SUB, bgSubPal, 512);
 
 	delete[] bgTiles;
 	delete[] bgMap;
@@ -103,7 +103,7 @@ void UIScreenServerList::init()
 	vramSetBankF(VRAM_F_LCD);
 	spr_arrowDownGfx = oamAllocateGfx(&oamMain, SpriteSize_16x16, SpriteColorFormat_256Color);
 	dmaCopy(spr_arrowDownTiles, spr_arrowDownGfx, 16*16);
-	dmaCopy(spr_arrowDownPal, &VRAM_F_EXT_SPR_PALETTE[0], 512);
+	memcpy(&VRAM_F_EXT_SPR_PALETTE[0], spr_arrowDownPal, 512);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
 	delete[] spr_arrowDownTiles;

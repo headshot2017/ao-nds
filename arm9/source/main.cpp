@@ -35,7 +35,7 @@ u32 showDisclaimer()
 	bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	dmaCopy(bgTiles, bgGetGfxPtr(0), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(0), bgMapLen);
-	dmaCopy(bgPal, BG_PALETTE, bgPalLen);
+	memcpy(BG_PALETTE, bgPal, bgPalLen);
 
 	delete[] bgTiles;
 	delete[] bgMap;

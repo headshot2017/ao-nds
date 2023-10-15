@@ -1,5 +1,7 @@
 #include "ui/button.h"
 
+#include <string.h>
+
 #include <nds/dma.h>
 
 #include "mp3_shared.h"
@@ -67,14 +69,14 @@ UIButton::UIButton(OamState* chosenOam, std::string file, int oamStartInd, int h
 	if (oam == &oamMain)
 	{
 		vramSetBankF(VRAM_F_LCD);
-		if (currPal) dmaCopy(currPal, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
+		if (currPal) memcpy(&VRAM_F_EXT_SPR_PALETTE[palSlot], currPal, 512);
 		else dmaFillHalfWords(0, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	}
 	else
 	{
 		vramSetBankI(VRAM_I_LCD);
-		if (currPal) dmaCopy(currPal, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
+		if (currPal) memcpy(&VRAM_I_EXT_SPR_PALETTE[palSlot], currPal, 512);
 		else dmaFillHalfWords(0, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
@@ -134,14 +136,14 @@ void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSl
 	if (oam == &oamMain)
 	{
 		vramSetBankF(VRAM_F_LCD);
-		if (currPal) dmaCopy(currPal, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
+		if (currPal) memcpy(&VRAM_F_EXT_SPR_PALETTE[palSlot], currPal, 512);
 		else dmaFillHalfWords(0, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	}
 	else
 	{
 		vramSetBankI(VRAM_I_LCD);
-		if (currPal) dmaCopy(currPal, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
+		if (currPal) memcpy(&VRAM_I_EXT_SPR_PALETTE[palSlot], currPal, 512);
 		else dmaFillHalfWords(0, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}

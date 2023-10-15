@@ -10,8 +10,15 @@
 class UICourtIC : public UISubScreen
 {
 	int bgIndex;
-	u32 bgTilesLen;
-	u8* bgPal;
+	u32 bg_icTilesLen;
+	u32 bg_icExtTilesLen;
+
+	u8* bg_icTiles;
+	u8* bg_icMap;
+	u8* bg_icPal;
+	u8* bg_icExtTiles;
+	u8* bg_icExtMap;
+	u8* bg_icExtPal;
 
 	UIButton* btn_back;
 	UIButton* btn_courtRecord;

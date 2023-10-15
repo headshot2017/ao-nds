@@ -65,11 +65,11 @@ void UIScreenWifi::init()
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	dmaCopy(bgPal, BG_PALETTE, 512);
+	memcpy(BG_PALETTE, bgPal, 512);
 
 	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
-	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
+	memcpy(BG_PALETTE_SUB, bgSubPal, 512);
 
 	delete[] bgTiles;
 	delete[] bgMap;
@@ -94,7 +94,7 @@ void UIScreenWifi::init()
 
 	vramSetBankI(VRAM_I_LCD);
 	VRAM_I_EXT_SPR_PALETTE[0][2] = RGB15(31,31,31);
-	dmaCopy(sprLoadingPal, &VRAM_I_EXT_SPR_PALETTE[1], 512);
+	memcpy(&VRAM_I_EXT_SPR_PALETTE[1], sprLoadingPal, 512);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
 	delete[] sprLoadingPal;
