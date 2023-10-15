@@ -354,7 +354,8 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
         elif emote.lower().endswith(".gif"):
             convertEmoteGIF(filename, target+"/"+emote, ogTarget, extra)
 
-    convertEmoteButtons(source+"/emotions", target+"/emotions")
+    if not extra:
+        convertEmoteButtons(source+"/emotions", target+"/emotions")
 
 def convertCharacters(source, target):
     for char in os.listdir(source):
