@@ -3,3 +3,6 @@
 build
 *.layout
 *.depend
+*.img.bin
+*.map.bin
+*.pal.bin

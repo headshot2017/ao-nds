@@ -7,17 +7,11 @@
 #include "mp3_shared.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
-#include "bg_icLog.h"
-#include "spr_back.h"
-#include "spr_courtRecord.h"
-#include "spr_scrollUp.h"
-#include "spr_scrollDown.h"
-#include "spr_sliderHandle.h"
 
 UICourtICChatLog::~UICourtICChatLog()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_icLogTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_icLogMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 
 	delete btn_back;
@@ -37,15 +31,24 @@ void UICourtICChatLog::init()
 	atBottom = true;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	dmaCopy(bg_icLogTiles, bgGetGfxPtr(bgIndex), bg_icLogTilesLen);
-	dmaCopy(bg_icLogMap, bgGetMapPtr(bgIndex), bg_icLogMapLen);
-	dmaCopy(bg_icLogPal, BG_PALETTE_SUB, bg_icLogPalLen);
 
-	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_courtRecord = new UIButton(&oamSub, (u8*)spr_courtRecordTiles, (u8*)spr_courtRecordPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);
-	btn_scrollUp = new UIButton(&oamSub, (u8*)spr_scrollUpTiles, (u8*)spr_scrollUpPal, btn_courtRecord->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 33, 14, 19, 16, 32, 2);
-	btn_scrollDown = new UIButton(&oamSub, (u8*)spr_scrollDownTiles, (u8*)spr_scrollDownPal, btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
-	btn_sliderHandle = new UIButton(&oamSub, (u8*)spr_sliderHandleTiles, (u8*)spr_sliderHandlePal, btn_scrollDown->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 4);
+	u8* bgTiles = readFile("nitro:/bg_icLog.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_icLog.map.bin");
+	u8* bgPal = readFile("nitro:/bg_icLog.pal.bin");
+
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+	delete[] bgPal;
+
+	btn_back = new UIButton(&oamSub, "nitro:/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_courtRecord = new UIButton(&oamSub, "nitro:/spr_courtRecord", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);
+	btn_scrollUp = new UIButton(&oamSub, "nitro:/spr_scrollUp", btn_courtRecord->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 33, 14, 19, 16, 32, 2);
+	btn_scrollDown = new UIButton(&oamSub, "nitro:/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
+	btn_sliderHandle = new UIButton(&oamSub, "nitro:/spr_sliderHandle", btn_scrollDown->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 4);
 	lbl_log = new UILabel(&oamSub, btn_sliderHandle->nextOamInd(), 7, 10, RGB15(31,31,31), 5, 0);
 	lbl_log->setPos(9, 32);
 

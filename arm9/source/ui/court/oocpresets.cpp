@@ -10,16 +10,6 @@
 #include "engine.h"
 #include "global.h"
 #include "ui/court/ooc.h"
-#include "bg_oocPresets.h"
-#include "spr_back.h"
-#include "spr_add.h"
-#include "spr_confirm.h"
-#include "spr_delete.h"
-#include "spr_edit.h"
-#include "spr_serverUnselected.h"
-#include "spr_serverSelected.h"
-#include "spr_pageLeft.h"
-#include "spr_pageRight.h"
 
 struct presetBtnData
 {
@@ -29,9 +19,11 @@ struct presetBtnData
 
 UICourtOOCPresets::~UICourtOOCPresets()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_oocPresetsTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_oocPresetsMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
+
+	delete[] bgPal;
 
 	delete btn_back;
 	delete btn_addOrConfirm;
@@ -52,19 +44,27 @@ void UICourtOOCPresets::init()
 {
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	bgSetPriority(bgIndex, 1);
-	dmaCopy(bg_oocPresetsTiles, bgGetGfxPtr(bgIndex), bg_oocPresetsTilesLen);
-	dmaCopy(bg_oocPresetsMap, bgGetMapPtr(bgIndex), bg_oocPresetsMapLen);
 
-	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_addOrConfirm = new UIButton(&oamSub, (u8*)spr_addTiles, (u8*)spr_addPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 1);
-	btn_delete = new UIButton(&oamSub, (u8*)spr_deleteTiles, (u8*)spr_deletePal, btn_addOrConfirm->nextOamInd(), 3, 1, SpriteSize_32x64, 0, 0, 80, 33, 32, 64, 2);
-	btn_edit = new UIButton(&oamSub, (u8*)spr_editTiles, (u8*)spr_editPal, btn_delete->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 3);
-	btn_prevPage = new UIButton(&oamSub, (u8*)spr_pageLeftTiles, (u8*)spr_pageLeftPal, btn_edit->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 4);
-	btn_nextPage = new UIButton(&oamSub, (u8*)spr_pageRightTiles, (u8*)spr_pageRightPal, btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 5);
+	u8* bgTiles = readFile("nitro:/bg_oocPresets.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_oocPresets.map.bin");
+	bgPal = readFile("nitro:/bg_oocPresets.pal.bin");
+
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+
+	btn_back = new UIButton(&oamSub, "nitro:/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_addOrConfirm = new UIButton(&oamSub, "nitro:/spr_addConfirm", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 1);
+	btn_delete = new UIButton(&oamSub, "nitro:/spr_delete", btn_addOrConfirm->nextOamInd(), 3, 1, SpriteSize_32x64, 0, 0, 80, 33, 32, 64, 2);
+	btn_edit = new UIButton(&oamSub, "nitro:/spr_edit", btn_delete->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 3);
+	btn_prevPage = new UIButton(&oamSub, "nitro:/spr_pageLeft", btn_edit->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 4);
+	btn_nextPage = new UIButton(&oamSub, "nitro:/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 5);
 	for (int i=0; i<4; i++)
 	{
 		int nextOam = (i == 0) ? btn_nextPage->nextOamInd() : lbl_preset[i-1]->nextOamInd();
-		btn_preset[i] = new UIButton(&oamSub, (u8*)spr_serverUnselectedTiles, (u8*)spr_serverUnselectedPal, nextOam, 7, 1, SpriteSize_32x32, 128-112, 36+(i*32), 224, 26, 32, 32, 7+i);
+		btn_preset[i] = new UIButton(&oamSub, "nitro:/spr_serverBtn", nextOam, 7, 1, SpriteSize_32x32, 128-112, 36+(i*32), 224, 26, 32, 32, 7+i);
 		lbl_preset[i] = new UILabel(&oamSub, btn_preset[i]->nextOamInd(), 8, 1, RGB15(13, 2, 0), 6, 0);
 		btn_preset[i]->setPriority(1);
 		btn_preset[i]->setVisible(false);
@@ -72,7 +72,7 @@ void UICourtOOCPresets::init()
 	lbl_pages = new UILabel(&oamSub, lbl_preset[3]->nextOamInd(), 1, 1, RGB15(13, 2, 0), 6, 0);
 
 	kb_input = new AOkeyboard(1, lbl_pages->nextOamInd(), 11);
-	dmaCopy(bg_oocPresetsPal, BG_PALETTE_SUB, bg_oocPresetsPalLen);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	btn_back->assignKey(KEY_B);
 	btn_addOrConfirm->assignKey(KEY_A);
@@ -107,7 +107,7 @@ void UICourtOOCPresets::updateInput()
 		int result = kb_input->updateInput();
 		if (result != 0)
 		{
-			dmaCopy(bg_oocPresetsPal, BG_PALETTE_SUB, bg_oocPresetsPalLen);
+			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 			bgShow(bgIndex);
 
 			btn_back->setVisible(true);
@@ -145,13 +145,13 @@ void UICourtOOCPresets::update()
 
 void UICourtOOCPresets::deselect()
 {
-	btn_addOrConfirm->setImage((u8*)spr_addTiles, (u8*)spr_addPal, 32, 32, 1);
+	btn_addOrConfirm->setFrame(0);
 	btn_delete->setVisible(false);
 	btn_edit->setVisible(false);
 
 	if (currPreset == -1) return;
 
-	btn_preset[currPreset]->setImage((u8*)spr_serverUnselectedTiles, (u8*)spr_serverUnselectedPal, 32, 32, 7+currPreset);
+	btn_preset[currPreset]->setFrame(0);
 	currPreset = -1;
 }
 
@@ -289,13 +289,13 @@ void UICourtOOCPresets::onPresetClicked(void* pUserData)
 
 	// unselect preset
 	if (pSelf->currPreset != -1)
-		pSelf->btn_preset[pSelf->currPreset]->setImage((u8*)spr_serverUnselectedTiles, (u8*)spr_serverUnselectedPal, 32, 32, 7+pSelf->currPreset);
+		pSelf->btn_preset[pSelf->currPreset]->setFrame(0);
 
 	// select preset
 	pSelf->currPreset = pData->btnInd;
-	pSelf->btn_preset[pSelf->currPreset]->setImage((u8*)spr_serverSelectedTiles, (u8*)spr_serverSelectedPal, 32, 32, 7+pSelf->currPreset);
+	pSelf->btn_preset[pSelf->currPreset]->setFrame(1);
 
-	pSelf->btn_addOrConfirm->setImage((u8*)spr_confirmTiles, (u8*)spr_confirmPal, 32, 32, 1);
+	pSelf->btn_addOrConfirm->setFrame(1);
 	pSelf->btn_delete->setVisible(true);
 	pSelf->btn_edit->setVisible(true);
 }

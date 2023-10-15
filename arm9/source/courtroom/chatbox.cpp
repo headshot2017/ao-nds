@@ -12,7 +12,6 @@
 #include "fonts.h"
 #include "colors.h"
 #include "mp3_shared.h"
-#include "spr_chatboxArrow.h"
 
 Chatbox::Chatbox()
 {
@@ -51,10 +50,15 @@ Chatbox::Chatbox()
 	arrowX = 243;
 	arrowXadd = 1;
 	arrowTicks = 0;
+
+	u8* chatboxArrowImg = readFile("nitro:/spr_chatboxArrow.img.bin");
+	u8* chatboxArrowPal = readFile("nitro:/spr_chatboxArrow.pal.bin");
 	spr_arrowGfx = oamAllocateGfx(&oamMain, SpriteSize_16x16, SpriteColorFormat_256Color);
-	dmaCopy(spr_chatboxArrowTiles, spr_arrowGfx, 16*16);
-	dmaCopy(spr_chatboxArrowPal, &VRAM_F_EXT_SPR_PALETTE[3], 512);
+	dmaCopy(chatboxArrowImg, spr_arrowGfx, 16*16);
+	dmaCopy(chatboxArrowPal, &VRAM_F_EXT_SPR_PALETTE[3], 512);
 	oamSet(&oamMain, 127, arrowX, 174, 0, 3, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowGfx, -1, false, false, false, false, false);
+	delete[] chatboxArrowImg;
+	delete[] chatboxArrowPal;
 
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = 	PAL_WHITE;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GREEN] = 	PAL_GREEN;

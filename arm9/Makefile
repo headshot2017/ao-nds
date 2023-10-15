@@ -32,8 +32,6 @@ SOURCES		:= source source/mp3 source/courtroom source/ui source/ui/court source/
 INCLUDES	:= include ../common ../helix ../helix/real
 DATA		:=
 IMAGES		:= gfx
-FONTS_TTF	:= gfx/AceName
-FONTS_OTF	:= gfx/Igiari
 EXPORT_DIR	:=
 #---------------------------------------------------------------------------------
 
@@ -56,7 +54,7 @@ LDFLAGS		=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # Any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:= -ldswifi9 -lfat -lnds9
+LIBS		:= -ldswifi9 -lfilesystem -lfat -lnds9
 
 #---------------------------------------------------------------------------------
 # List of directories containing libraries, this must be the top level containing
@@ -76,16 +74,13 @@ export DEPSDIR := $(CURDIR)/$(BUILD)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
-					$(foreach dir,$(IMAGES),$(CURDIR)/$(dir)) \
-					$(foreach dir,$(FONTS_TTF),$(CURDIR)/$(dir)) \
-					$(foreach dir,$(FONTS_OTF),$(CURDIR)/$(dir))
+					$(foreach dir,$(IMAGES),$(CURDIR)/$(dir))
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 PNGFILES	:=	$(foreach dir,$(IMAGES),$(notdir $(wildcard $(dir)/*.png)))
-FONTFILES	:=	$(foreach dir,$(FONTS_TTF),$(notdir $(wildcard $(dir)/*.ttf))) $(foreach dir,$(FONTS_OTF),$(notdir $(wildcard $(dir)/*.otf)))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -102,9 +97,9 @@ endif
 #---------------------------------------------------------------------------------
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
-					$(PNGFILES:.png=.o) \
-					$(addsuffix .o,$(FONTFILES)) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+
+export IMGBIN	:=	$(foreach img,$(PNGFILES),$(TOPDIR)/nitrofiles/$(img:.png=.img.bin))
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
@@ -133,30 +128,25 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
-$(ARM9ELF)	:	$(OFILES)
+$(ARM9ELF)	:	$(IMGBIN) $(OFILES)
 	@echo linking $(notdir $@)
 	@$(LD)  $(LDFLAGS) $(OFILES) $(LIBPATHS) $(LIBS) -o $@
 
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------
-%.ttf.o :   %.ttf
+%.bin.o :   %.bin
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
 
 #---------------------------------------------------------------------------------
-%.otf.o :   %.otf
+$(TOPDIR)/nitrofiles/%.img.bin : %.png
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
-	@$(bin2o)
+	grit $< -ftb -fh! -o$@
 
 
-#---------------------------------------------------------------------------------
-%.s %.h	: %.png %.grit
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	grit $< -fts -o$*
 
 -include $(DEPSDIR)/*.d
 

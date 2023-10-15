@@ -1,6 +1,8 @@
 #ifndef BUTTON_H_INCLUDED
 #define BUTTON_H_INCLUDED
 
+#include <string>
+
 #include <nds/ndstypes.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/input.h>
@@ -41,10 +43,10 @@ public:
 		RELEASED
 	};
 
-	UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot);
+	UIButton(OamState* chosenOam, std::string file, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot);
 	~UIButton();
 
-	void setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int palSlot);
+	void setImage(std::string file, int sprWidth, int sprHeight, int palSlot);
 	void setFrame(int frame);
 	void setVisible(bool on);
 	void setPos(int xPos, int yPos);

@@ -9,6 +9,7 @@
 class UICourtIngameMenu : public UISubScreen
 {
 	int bgIndex;
+	u32 bgTilesLen;
 
 	UIButton* btn_talkIC;
 	UIButton* btn_talkOOC;

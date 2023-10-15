@@ -9,8 +9,12 @@ class UIScreenWifi : public UIScreen
 {
 	int bgIndex;
 	int subBgIndex;
+	u32 bgTilesLen;
+	u32 bgSubTilesLen;
 
+	u8* sprLoadingImg;
 	u16* sprLoading;
+
 	u16* textGfx[8];
 	u8* textCanvas;
 

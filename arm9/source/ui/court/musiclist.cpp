@@ -12,14 +12,6 @@
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/arealist.h"
-#include "bg_musicList.h"
-#include "spr_back.h"
-#include "spr_areas.h"
-#include "spr_scrollUp.h"
-#include "spr_scrollDown.h"
-#include "spr_sliderHandle.h"
-#include "spr_musicGreen.h"
-#include "spr_musicRed.h"
 
 struct musicBtnData
 {
@@ -29,9 +21,11 @@ struct musicBtnData
 
 UICourtMusicList::~UICourtMusicList()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_musicListTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_musicListMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
+
+	delete[] bgPal;
 
 	delete btn_back;
 	delete btn_listToggle;
@@ -50,27 +44,35 @@ void UICourtMusicList::init()
 	scrollPos = 0;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	dmaCopy(bg_musicListTiles, bgGetGfxPtr(bgIndex), bg_musicListTilesLen);
-	dmaCopy(bg_musicListMap, bgGetMapPtr(bgIndex), bg_musicListMapLen);
+
+	u8* bgTiles = readFile("nitro:/bg_musicList.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_musicList.map.bin");
+	bgPal = readFile("nitro:/bg_musicList.pal.bin");
+
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+
+	delete[] bgTiles;
+	delete[] bgMap;
 
 	static musicBtnData btnData[7];
-	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_listToggle = new UIButton(&oamSub, (u8*)spr_areasTiles, (u8*)spr_areasPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
-	btn_scrollUp = new UIButton(&oamSub, (u8*)spr_scrollUpTiles, (u8*)spr_scrollUpPal, btn_listToggle->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 31, 14, 19, 16, 32, 2);
-	btn_scrollDown = new UIButton(&oamSub, (u8*)spr_scrollDownTiles, (u8*)spr_scrollDownPal, btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
+	btn_back = new UIButton(&oamSub, "nitro:/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_listToggle = new UIButton(&oamSub, "nitro:/spr_areas", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
+	btn_scrollUp = new UIButton(&oamSub, "nitro:/spr_scrollUp", btn_listToggle->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 31, 14, 19, 16, 32, 2);
+	btn_scrollDown = new UIButton(&oamSub, "nitro:/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
 	for (int i=0; i<7; i++)
 	{
 		lbl_musicBtn[i] = new UILabel(&oamSub, (!i) ? btn_scrollDown->nextOamInd() : btn_musicBtn[i-1]->nextOamInd(), 7, 1, 0, 4, 0);
 		lbl_musicBtn[i]->setPos(4, 32+(17*i)+1);
-		btn_musicBtn[i] = new UIButton(&oamSub, (u8*)spr_musicRedTiles, (u8*)spr_musicRedPal, lbl_musicBtn[i]->nextOamInd(), 8, 1, SpriteSize_32x16, 2, 32+(17*i), 238, 16, 32, 16, 5+i);
+		btn_musicBtn[i] = new UIButton(&oamSub, "nitro:/spr_musicBtn", lbl_musicBtn[i]->nextOamInd(), 8, 1, SpriteSize_32x16, 2, 32+(17*i), 238, 16, 32, 16, 5+i);
 
 		btnData[i] = {this, i};
 		btn_musicBtn[i]->connect(onMusicClicked, &btnData[i]);
 	}
-	btn_sliderHandle = new UIButton(&oamSub, (u8*)spr_sliderHandleTiles, (u8*)spr_sliderHandlePal, btn_musicBtn[6]->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 12);
+	btn_sliderHandle = new UIButton(&oamSub, "nitro:/spr_sliderHandle", btn_musicBtn[6]->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 12);
 
 	kb_search = new AOkeyboard(1, btn_sliderHandle->nextOamInd(), 13);
-	dmaCopy(bg_musicListPal, BG_PALETTE_SUB, bg_musicListPalLen);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	btn_back->assignKey(KEY_B);
 	btn_listToggle->assignKey(KEY_R);
@@ -99,7 +101,7 @@ void UICourtMusicList::updateInput()
 		int result = kb_search->updateInput();
 		if (result != 0)
 		{
-			dmaCopy(bg_musicListPal, BG_PALETTE_SUB, bg_musicListPalLen);
+			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 			bgShow(bgIndex);
 
 			btn_back->setVisible(true);
@@ -242,12 +244,8 @@ void UICourtMusicList::reloadScroll()
 			mp3_fill_buffer();
 		}
 
-		u8* btnGfx = (gEngine->musicExists(mp3Music.nameLower)) ? (u8*)spr_musicGreenTiles : (u8*)spr_musicRedTiles;
-		u8* btnPal = (gEngine->musicExists(mp3Music.nameLower)) ? (u8*)spr_musicGreenPal : (u8*)spr_musicRedPal;
-		mp3_fill_buffer();
-
 		btn_musicBtn[i]->setVisible(true);
-		btn_musicBtn[i]->setImage(btnGfx, btnPal, 32, 16, 5+i);
+		btn_musicBtn[i]->setFrame( (gEngine->musicExists(mp3Music.nameLower)) ? 0 : 1 );
 		lbl_musicBtn[i]->setVisible(true);
 		lbl_musicBtn[i]->setText(mp3Str.c_str());
 		mp3_fill_buffer();

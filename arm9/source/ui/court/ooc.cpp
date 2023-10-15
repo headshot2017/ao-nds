@@ -8,18 +8,14 @@
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/oocpresets.h"
-#include "bg_ooc.h"
-#include "spr_back.h"
-#include "spr_presets.h"
-#include "spr_scrollUp.h"
-#include "spr_scrollDown.h"
-#include "spr_sliderHandle.h"
 
 UICourtOOC::~UICourtOOC()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_oocTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_oocMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
+
+	delete[] bgPal;
 
 	delete btn_back;
 	delete btn_presets;
@@ -39,19 +35,27 @@ void UICourtOOC::init()
 	atBottom = true;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	dmaCopy(bg_oocTiles, bgGetGfxPtr(bgIndex), bg_oocTilesLen);
-	dmaCopy(bg_oocMap, bgGetMapPtr(bgIndex), bg_oocMapLen);
 
-	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_presets = new UIButton(&oamSub, (u8*)spr_presetsTiles, (u8*)spr_presetsPal, btn_back->nextOamInd(), 2, 1, SpriteSize_32x16, 256-59-1, 1, 59, 15, 32, 16, 1);
-	btn_scrollUp = new UIButton(&oamSub, (u8*)spr_scrollUpTiles, (u8*)spr_scrollUpPal, btn_presets->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 19, 14, 19, 16, 32, 2);
-	btn_scrollDown = new UIButton(&oamSub, (u8*)spr_scrollDownTiles, (u8*)spr_scrollDownPal, btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
-	btn_sliderHandle = new UIButton(&oamSub, (u8*)spr_sliderHandleTiles, (u8*)spr_sliderHandlePal, btn_scrollDown->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 4);
+	u8* bgTiles = readFile("nitro:/bg_ooc.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_ooc.map.bin");
+	bgPal = readFile("nitro:/bg_ooc.pal.bin");
+
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+
+	btn_back = new UIButton(&oamSub, "nitro:/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_presets = new UIButton(&oamSub, "nitro:/spr_presets", btn_back->nextOamInd(), 2, 1, SpriteSize_32x16, 256-59-1, 1, 59, 15, 32, 16, 1);
+	btn_scrollUp = new UIButton(&oamSub, "nitro:/spr_scrollUp", btn_presets->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 19, 14, 19, 16, 32, 2);
+	btn_scrollDown = new UIButton(&oamSub, "nitro:/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
+	btn_sliderHandle = new UIButton(&oamSub, "nitro:/spr_sliderHandle", btn_scrollDown->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 4);
 	lbl_log = new UILabel(&oamSub, btn_sliderHandle->nextOamInd(), 7, 12, RGB15(31,31,31), 5, 0);
 	lbl_oocName = new UILabel(&oamSub, lbl_log->nextOamInd(), 4, 1, RGB15(31,31,31), 5, 0);
 
 	kb_input = new AOkeyboard(3, lbl_oocName->nextOamInd(), 5);
-	dmaCopy(bg_oocPal, BG_PALETTE_SUB, bg_oocPalLen);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	isWritingChat = false;
 
 	lbl_log->setPos(9, 17);
@@ -91,7 +95,7 @@ void UICourtOOC::updateInput()
 			else
 				pCourtUI->oocName = kb_input->getValue();
 
-			dmaCopy(bg_oocPal, BG_PALETTE_SUB, bg_oocPalLen);
+			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 			bgShow(bgIndex);
 
 			btn_back->setVisible(true);

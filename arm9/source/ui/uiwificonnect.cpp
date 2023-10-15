@@ -7,14 +7,12 @@
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
+#include <nds/interrupts.h>
 #include <dswifi9.h>
 
 #include "engine.h"
 #include "fonts.h"
 #include "ui/uimainmenu.h"
-#include "bg_logo.h"
-#include "bg_title.h"
-#include "spr_loading.h"
 
 const char* assocStatusDetails[] = {
 	"Not connecting",
@@ -29,6 +27,7 @@ const char* assocStatusDetails[] = {
 UIScreenWifi::~UIScreenWifi()
 {
 	delete[] textCanvas;
+	delete[] sprLoadingImg;
 
 	oamFreeGfx(&oamSub, sprLoading);
 	oamClearSprite(&oamSub, 0);
@@ -38,12 +37,12 @@ UIScreenWifi::~UIScreenWifi()
 		oamClearSprite(&oamSub, 1+i);
 	}
 
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_logoTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_logoMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
 
-	dmaFillHalfWords(0, bgGetGfxPtr(subBgIndex), bg_titleTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), bg_titleMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 }
 
@@ -54,10 +53,31 @@ void UIScreenWifi::init()
 	frame = 0;
 	textCanvas = new u8[32*16];
 
+	u8* bgTiles = readFile("nitro:/bg_logo.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_logo.map.bin");
+	u8* bgPal = readFile("nitro:/bg_logo.pal.bin");
+	u8* bgSubTiles = readFile("nitro:/bg_title.img.bin", &bgSubTilesLen);
+	u8* bgSubMap = readFile("nitro:/bg_title.map.bin");
+	u8* bgSubPal = readFile("nitro:/bg_title.pal.bin");
+
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	subBgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	bgShow(bgIndex);
-	bgShow(subBgIndex);
+
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+	dmaCopy(bgPal, BG_PALETTE, 512);
+
+	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
+	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
+	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+	delete[] bgPal;
+	delete[] bgSubTiles;
+	delete[] bgSubMap;
+	delete[] bgSubPal;
+
 	sprLoading = oamAllocateGfx(&oamSub, SpriteSize_16x16, SpriteColorFormat_256Color);
 	for (int i=0; i<8; i++)
 	{
@@ -65,22 +85,19 @@ void UIScreenWifi::init()
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 	}
 
-	u8* offset = (u8*)spr_loadingTiles + (frame*16*16);
+	sprLoadingImg = readFile("nitro:/spr_loading.img.bin");
+	u8* sprLoadingPal = readFile("nitro:/spr_loading.pal.bin");
+
+	u8* offset = sprLoadingImg + (frame*16*16);
 	dmaCopy(offset, sprLoading, 16*16);
 	oamSet(&oamSub, 0, 256-24, 192-24, 0, 1, SpriteSize_16x16, SpriteColorFormat_256Color, sprLoading, -1, false, false, false, false, false);
 
 	vramSetBankI(VRAM_I_LCD);
 	VRAM_I_EXT_SPR_PALETTE[0][2] = RGB15(31,31,31);
-	dmaCopy(spr_loadingPal, &VRAM_I_EXT_SPR_PALETTE[1], spr_loadingPalLen);
+	dmaCopy(sprLoadingPal, &VRAM_I_EXT_SPR_PALETTE[1], 512);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	dmaCopy(bg_logoTiles, bgGetGfxPtr(bgIndex), bg_logoTilesLen);
-	dmaCopy(bg_logoMap, bgGetMapPtr(bgIndex), bg_logoMapLen);
-	dmaCopy(bg_logoPal, BG_PALETTE, bg_logoPalLen);
-
-	dmaCopy(bg_titleTiles, bgGetGfxPtr(subBgIndex), bg_titleTilesLen);
-	dmaCopy(bg_titleMap, bgGetMapPtr(subBgIndex), bg_titleMapLen);
-	dmaCopy(bg_titlePal, BG_PALETTE_SUB, bg_titlePalLen);
+	delete[] sprLoadingPal;
 
 	Wifi_InitDefault(INIT_ONLY);
 
@@ -127,7 +144,7 @@ void UIScreenWifi::update()
 	{
 		ticks = 0;
 		frame = (frame+1) % 8;
-		u8* offset = (u8*)spr_loadingTiles + (frame*16*16);
+		u8* offset = sprLoadingImg + (frame*16*16);
 		dmaCopy(offset, sprLoading, 16*16);
 	}
 

@@ -11,6 +11,7 @@
 class UIScreenDirectConn : public UIScreen
 {
 	int bgIndex;
+	u32 bgTilesLen;
 
 	UIButton* btn_ws;
 	UIButton* btn_tcp;

@@ -9,17 +9,11 @@
 #include "ui/court/icchatlog.h"
 #include "ui/court/ooc.h"
 #include "ui/court/ic.h"
-#include "bg_ingameMain.h"
-#include "spr_talkIC.h"
-#include "spr_talkOOC.h"
-#include "spr_musicAreas.h"
-#include "spr_changeChar.h"
-#include "spr_courtRecord.h"
 
 UICourtIngameMenu::~UICourtIngameMenu()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_ingameMainTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_ingameMainMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 
 	delete btn_talkIC;
@@ -33,15 +27,24 @@ UICourtIngameMenu::~UICourtIngameMenu()
 void UICourtIngameMenu::init()
 {
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	dmaCopy(bg_ingameMainTiles, bgGetGfxPtr(bgIndex), bg_ingameMainTilesLen);
-	dmaCopy(bg_ingameMainMap, bgGetMapPtr(bgIndex), bg_ingameMainMapLen);
-	dmaCopy(bg_ingameMainPal, BG_PALETTE_SUB, bg_ingameMainPalLen);
 
-	btn_talkIC = new UIButton(&oamSub, (u8*)spr_talkICTiles, (u8*)spr_talkICPal, 0, 2, 1, SpriteSize_64x32, 8, 54, 112, 28, 64, 32, 0);
-	btn_talkOOC = new UIButton(&oamSub, (u8*)spr_talkOOCTiles, (u8*)spr_talkOOCPal, btn_talkIC->nextOamInd(), 2, 1, SpriteSize_64x32, 8, 110, 112, 28, 64, 32, 1);
-	btn_music = new UIButton(&oamSub, (u8*)spr_musicAreasTiles, (u8*)spr_musicAreasPal, btn_talkOOC->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 54, 112, 28, 64, 32, 2);
-	btn_changeChar = new UIButton(&oamSub, (u8*)spr_changeCharTiles, (u8*)spr_changeCharPal, btn_music->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 110, 112, 28, 64, 32, 3);
-	btn_courtRecord = new UIButton(&oamSub, (u8*)spr_courtRecordTiles, (u8*)spr_courtRecordPal, btn_changeChar->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 4);
+	u8* bgTiles = readFile("nitro:/bg_ingameMain.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_ingameMain.map.bin");
+	u8* bgPal = readFile("nitro:/bg_ingameMain.pal.bin");
+
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+	delete[] bgPal;
+
+	btn_talkIC = new UIButton(&oamSub, "nitro:/spr_talkIC", 0, 2, 1, SpriteSize_64x32, 8, 54, 112, 28, 64, 32, 0);
+	btn_talkOOC = new UIButton(&oamSub, "nitro:/spr_talkOOC", btn_talkIC->nextOamInd(), 2, 1, SpriteSize_64x32, 8, 110, 112, 28, 64, 32, 1);
+	btn_music = new UIButton(&oamSub, "nitro:/spr_musicAreas", btn_talkOOC->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 54, 112, 28, 64, 32, 2);
+	btn_changeChar = new UIButton(&oamSub, "nitro:/spr_changeChar", btn_music->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 110, 112, 28, 64, 32, 3);
+	btn_courtRecord = new UIButton(&oamSub, "nitro:/spr_courtRecord", btn_changeChar->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 4);
 	lbl_currChar = new UILabel(&oamSub, btn_courtRecord->nextOamInd(), 6, 1, RGB15(5,5,5), 5, 0);
 
 	btn_courtRecord->assignKey(KEY_R);

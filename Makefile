@@ -29,7 +29,7 @@ all: $(TARGET).nds
 #---------------------------------------------------------------------------------
 $(TARGET).nds	:	arm7/$(TARGET).elf arm9/$(TARGET).elf
 	@echo Compiling ARM7 and ARM9
-	ndstool -c $(TARGET).nds -7 arm7/$(TARGET).elf -9 arm9/$(TARGET).elf -b $(ICON) "$(TEXT1);$(TEXT2)"
+	ndstool -c $(TARGET).nds -7 arm7/$(TARGET).elf -9 arm9/$(TARGET).elf -b $(ICON) "$(TEXT1);$(TEXT2)" $(NITRODIR)
 
 #---------------------------------------------------------------------------------
 arm7/$(TARGET).elf:

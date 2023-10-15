@@ -13,6 +13,9 @@ class UIScreenSettings : public UIScreen
 {
 	int bgIndex;
 	int subBgIndex;
+	u32 bgTilesLen;
+	u32 bgSubTilesLen;
+	u8* bgSubPal;
 
 	UILabel* lbl_showname;
 	UILabel* lbl_shownameValue;

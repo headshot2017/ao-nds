@@ -4,7 +4,7 @@
 
 #include "mp3_shared.h"
 
-UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot)
+UIButton::UIButton(OamState* chosenOam, std::string file, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot)
 {
 	oam = chosenOam;
 	oamStart = oamStartInd;
@@ -26,8 +26,16 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 	vflip = false;
 	assignedKey = 0;
 
-	currData = data;
-	currPal = palData;
+	if (!file.empty())
+	{
+		currData = readFile(file+".img.bin");
+		currPal = readFile(file+".pal.bin");
+	}
+	else
+	{
+		currData = 0;
+		currPal = 0;
+	}
 
 	for (int i=0; i<2; i++)
 	{
@@ -44,9 +52,9 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 			int i = vert * spriteHorTiles + hor;
 			spriteGfx[i] = oamAllocateGfx(oam, spriteSize, SpriteColorFormat_256Color);
 
-			if (data)
+			if (currData)
 			{
-				u8* offset = data + (i*sprWidth*sprHeight);
+				u8* offset = currData + (i*sprWidth*sprHeight);
 				dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
 			}
 			else
@@ -59,14 +67,14 @@ UIButton::UIButton(OamState* chosenOam, u8* data, u8* palData, int oamStartInd, 
 	if (oam == &oamMain)
 	{
 		vramSetBankF(VRAM_F_LCD);
-		if (palData) dmaCopy(palData, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
+		if (currPal) dmaCopy(currPal, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
 		else dmaFillHalfWords(0, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	}
 	else
 	{
 		vramSetBankI(VRAM_I_LCD);
-		if (palData) dmaCopy(palData, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
+		if (currPal) dmaCopy(currPal, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		else dmaFillHalfWords(0, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
@@ -83,12 +91,27 @@ UIButton::~UIButton()
 		oamFreeGfx(oam, spriteGfx[i]);
 	}
 	delete[] spriteGfx;
+	if (currData) delete[] currData;
+	if (currPal) delete[] currPal;
 }
 
-void UIButton::setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int palSlot)
+void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSlot)
 {
-	currData = data;
-	currPal = palData;
+	if (currData) delete[] currData;
+	if (currPal) delete[] currPal;
+	mp3_fill_buffer();
+
+	if (!file.empty())
+	{
+		currData = readFile(file+".img.bin");
+		currPal = readFile(file+".pal.bin");
+		mp3_fill_buffer();
+	}
+	else
+	{
+		currData = 0;
+		currPal = 0;
+	}
 
 	for (int vert=0; vert<spriteVertTiles; vert++)
 	{
@@ -97,8 +120,13 @@ void UIButton::setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int 
 			mp3_fill_buffer();
 
 			int i = vert * spriteHorTiles + hor;
-			u8* offset = data + (i*sprWidth*sprHeight);
-			dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
+			if (currData)
+			{
+				u8* offset = currData + (i*sprWidth*sprHeight);
+				dmaCopy(offset, spriteGfx[i], sprWidth*sprHeight);
+			}
+			else
+				dmaFillHalfWords(0, spriteGfx[i], sprWidth*sprHeight);
 		}
 	}
 
@@ -106,13 +134,15 @@ void UIButton::setImage(u8* data, u8* palData, int sprWidth, int sprHeight, int 
 	if (oam == &oamMain)
 	{
 		vramSetBankF(VRAM_F_LCD);
-		dmaCopy(palData, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
+		if (currPal) dmaCopy(currPal, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
+		else dmaFillHalfWords(0, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	}
 	else
 	{
 		vramSetBankI(VRAM_I_LCD);
-		dmaCopy(palData, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
+		if (currPal) dmaCopy(currPal, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
+		else dmaFillHalfWords(0, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
 

@@ -10,6 +10,9 @@
 class UICourtMusicList : public UISubScreen
 {
 	int bgIndex;
+	u32 bgTilesLen;
+	u8* bgPal;
+
 	u32 scrollPos;
 
 	UIButton* btn_back;

@@ -17,31 +17,37 @@
 #include <nds/interrupts.h>
 #include <nds/ndstypes.h>
 #include <fat.h>
+#include <filesystem.h>
 
 #include "mp3_shared.h"
 #include "global.h"
 #include "fonts.h"
-#include "bg_disclaimer.h"
 #include "engine.h"
-#include "sockets/aowebsocket.h"
-#include "sockets/aotcpsocket.h"
 #include "ui/uiwificonnect.h"
 
-#include "acename_ttf.h"
-#include "Igiari_otf.h"
-
-void showDisclaimer()
+u32 showDisclaimer()
 {
+	u32 bgTilesLen, bgMapLen, bgPalLen;
+	u8* bgTiles = readFile("nitro:/bg_disclaimer.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_disclaimer.map.bin", &bgMapLen);
+	u8* bgPal = readFile("nitro:/bg_disclaimer.pal.bin", &bgPalLen);
+
 	bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	dmaCopy(bg_disclaimerTiles, bgGetGfxPtr(0), bg_disclaimerTilesLen);
-	dmaCopy(bg_disclaimerMap, bgGetMapPtr(0), bg_disclaimerMapLen);
-	dmaCopy(bg_disclaimerPal, BG_PALETTE, bg_disclaimerPalLen);
+	dmaCopy(bgTiles, bgGetGfxPtr(0), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(0), bgMapLen);
+	dmaCopy(bgPal, BG_PALETTE, bgPalLen);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+	delete[] bgPal;
 
 	REG_BLDCNT = BLEND_FADE_BLACK | BLEND_SRC_BG0;
 	REG_BLDY = 16;
+
+	return bgTilesLen;
 }
 
-void fadeDisclaimer() {
+void fadeDisclaimer(u32 tilesLen) {
 	int ticks = 0;
 	int alpha = 16;
 	int alphaAdd = -1;
@@ -59,8 +65,8 @@ void fadeDisclaimer() {
 			alphaAdd = 1;
 	}
 
-	dmaFillHalfWords(0, bgGetGfxPtr(0), bg_disclaimerTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(0), bg_disclaimerMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(0), tilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(0), 1536);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
 	REG_BLDCNT = BLEND_NONE;
 }
@@ -77,6 +83,13 @@ int main()
 	srand(time(0));
 
 	irqSet(IRQ_VBLANK, Vblank);
+
+	if (!nitroFSInit(0))
+	{
+		consoleDemoInit();
+		iprintf("Failed to initialize NitroFS\nPlease check your microSD card\n");
+		while (1) swiWaitForVBlank();
+	}
 
 	if (!fatInitDefault())
 	{
@@ -96,12 +109,14 @@ int main()
 	oamInit(&oamMain, SpriteMapping_1D_128, true);
 	oamInit(&oamSub, SpriteMapping_1D_128, true);
 
-	initFont(acename_ttf, 13);	// index 0
-	initFont(Igiari_otf, 16);	// index 1
+	u8* acename = readFile("nitro:/AceName/acename.ttf");
+	u8* igiari = readFile("nitro:/Igiari/Igiari.otf");
+	initFont(acename, 13);	// index 0
+	initFont(igiari, 16);	// index 1
 
-	showDisclaimer();
+	u32 tilesLen = showDisclaimer();
 
-	fadeDisclaimer();
+	fadeDisclaimer(tilesLen);
 
 	gEngine = new Engine;
 	gEngine->changeScreen(new UIScreenWifi);
@@ -121,6 +136,8 @@ int main()
 	}
 
 	delete gEngine;
+	delete[] acename;
+	delete[] igiari;
 
 	return 0;
 }

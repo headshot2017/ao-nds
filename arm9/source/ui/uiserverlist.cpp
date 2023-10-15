@@ -21,19 +21,6 @@
 #include "ui/uicourt.h"
 #include "sockets/aowebsocket.h"
 #include "sockets/aotcpsocket.h"
-#include "bg_serverList.h"
-#include "bg_serverDesc.h"
-#include "spr_arrowDown.h"
-#include "spr_addFav.h"
-#include "spr_delete.h"
-#include "spr_favorites.h"
-#include "spr_public.h"
-#include "spr_back.h"
-#include "spr_connect.h"
-#include "spr_pageLeft.h"
-#include "spr_pageRight.h"
-#include "spr_serverUnselected.h"
-#include "spr_serverSelected.h"
 
 struct serverBtnData
 {
@@ -43,12 +30,12 @@ struct serverBtnData
 
 UIScreenServerList::~UIScreenServerList()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_serverDescTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_serverDescMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
 
-	dmaFillHalfWords(0, bgGetGfxPtr(subBgIndex), bg_serverListTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), bg_serverListMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 
 	oamClearSprite(&oamMain, 0);
@@ -84,23 +71,43 @@ UIScreenServerList::~UIScreenServerList()
 
 void UIScreenServerList::init()
 {
+	u8* bgTiles = readFile("nitro:/bg_serverDesc.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_serverDesc.map.bin");
+	u8* bgPal = readFile("nitro:/bg_serverDesc.pal.bin");
+	u8* bgSubTiles = readFile("nitro:/bg_serverList.img.bin", &bgSubTilesLen);
+	u8* bgSubMap = readFile("nitro:/bg_serverList.map.bin");
+	u8* bgSubPal = readFile("nitro:/bg_serverList.pal.bin");
+
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	subBgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	bgSetPriority(subBgIndex, 1);
 
-	dmaCopy(bg_serverDescTiles, bgGetGfxPtr(bgIndex), bg_serverDescTilesLen);
-	dmaCopy(bg_serverDescMap, bgGetMapPtr(bgIndex), bg_serverDescMapLen);
-	dmaCopy(bg_serverDescPal, BG_PALETTE, bg_serverDescPalLen);
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+	dmaCopy(bgPal, BG_PALETTE, 512);
 
-	dmaCopy(bg_serverListTiles, bgGetGfxPtr(subBgIndex), bg_serverListTilesLen);
-	dmaCopy(bg_serverListMap, bgGetMapPtr(subBgIndex), bg_serverListMapLen);
-	dmaCopy(bg_serverListPal, BG_PALETTE_SUB, bg_serverListPalLen);
+	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
+	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
+	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+	delete[] bgPal;
+	delete[] bgSubTiles;
+	delete[] bgSubMap;
+	delete[] bgSubPal;
+
+	u8* spr_arrowDownTiles = readFile("nitro:/spr_arrowDown.img.bin");
+	u8* spr_arrowDownPal = readFile("nitro:/spr_arrowDown.pal.bin");
 
 	vramSetBankF(VRAM_F_LCD);
 	spr_arrowDownGfx = oamAllocateGfx(&oamMain, SpriteSize_16x16, SpriteColorFormat_256Color);
-	dmaCopy(spr_arrowDownTiles, spr_arrowDownGfx, spr_arrowDownTilesLen);
-	dmaCopy(spr_arrowDownPal, &VRAM_F_EXT_SPR_PALETTE[0], spr_arrowDownPalLen);
+	dmaCopy(spr_arrowDownTiles, spr_arrowDownGfx, 16*16);
+	dmaCopy(spr_arrowDownPal, &VRAM_F_EXT_SPR_PALETTE[0], 512);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+
+	delete[] spr_arrowDownTiles;
+	delete[] spr_arrowDownPal;
 
 	oamSet(&oamMain, 0, 32, 192-20, 0, 0, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowDownGfx, -1, false, false, false, false, false);
 	oamSet(&oamMain, 1, 256-16-32, 192-20, 0, 0, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowDownGfx, -1, false, false, false, false, false);
@@ -114,16 +121,16 @@ void UIScreenServerList::init()
 	lbl_players->setVisible(false);
 	lbl_playercount->setVisible(false);
 
-	btn_manageFav = new UIButton(&oamSub, (u8*)spr_addFavTiles, (u8*)spr_addFavPal, 2, 3, 1, SpriteSize_32x64, 0, 0, 80, 33, 32, 64, 1);
-	btn_listToggle = new UIButton(&oamSub, (u8*)spr_favoritesTiles, (u8*)spr_favoritesPal, btn_manageFav->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 2);
-	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
-	btn_connect = new UIButton(&oamSub, (u8*)spr_connectTiles, (u8*)spr_connectPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 4);
-	btn_prevPage = new UIButton(&oamSub, (u8*)spr_pageLeftTiles, (u8*)spr_pageLeftPal, btn_connect->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 5);
-	btn_nextPage = new UIButton(&oamSub, (u8*)spr_pageRightTiles, (u8*)spr_pageRightPal, btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 6);
+	btn_manageFav = new UIButton(&oamSub, "nitro:/spr_addFav", 2, 3, 1, SpriteSize_32x64, 0, 0, 80, 33, 32, 64, 1);
+	btn_listToggle = new UIButton(&oamSub, "nitro:/spr_favoritesPublic", btn_manageFav->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 2);
+	btn_back = new UIButton(&oamSub, "nitro:/spr_back", btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
+	btn_connect = new UIButton(&oamSub, "nitro:/spr_connect", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 4);
+	btn_prevPage = new UIButton(&oamSub, "nitro:/spr_pageLeft", btn_connect->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 5);
+	btn_nextPage = new UIButton(&oamSub, "nitro:/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 6);
 	for (int i=0; i<4; i++)
 	{
 		int nextOam = (i == 0) ? btn_nextPage->nextOamInd() : lbl_server[i-1]->nextOamInd();
-		btn_server[i] = new UIButton(&oamSub, (u8*)spr_serverUnselectedTiles, (u8*)spr_serverUnselectedPal, nextOam, 7, 1, SpriteSize_32x32, 128-112, 36+(i*32), 224, 26, 32, 32, 7+i);
+		btn_server[i] = new UIButton(&oamSub, "nitro:/spr_serverBtn", nextOam, 7, 1, SpriteSize_32x32, 128-112, 36+(i*32), 224, 26, 32, 32, 7+i);
 		lbl_server[i] = new UILabel(&oamSub, btn_server[i]->nextOamInd(), 8, 1, RGB15(13, 2, 0), 11, 0);
 		btn_server[i]->setPriority(1);
 		btn_server[i]->setVisible(false);
@@ -241,7 +248,7 @@ void UIScreenServerList::reloadPage()
 {
 	if (currServer != -1)
 	{
-		btn_server[currServer]->setImage((u8*)spr_serverUnselectedTiles, (u8*)spr_serverUnselectedPal, 32, 32, 7+currServer);
+		btn_server[currServer]->setFrame(0);
 		btn_manageFav->setVisible(false);
 		currServer = -1;
 	}
@@ -354,13 +361,13 @@ void UIScreenServerList::onToggleList(void* pUserData)
 	pSelf->isFavorites = -pSelf->isFavorites+1;
 	if (pSelf->isFavorites)
 	{
-		pSelf->btn_manageFav->setImage((u8*)spr_deleteTiles, (u8*)spr_deletePal, 32, 64, 1);
-		pSelf->btn_listToggle->setImage((u8*)spr_publicTiles, (u8*)spr_publicPal, 32, 64, 2);
+		pSelf->btn_manageFav->setImage("nitro:/spr_delete", 32, 64, 1);
+		pSelf->btn_listToggle->setFrame(1);
 	}
 	else
 	{
-		pSelf->btn_manageFav->setImage((u8*)spr_addFavTiles, (u8*)spr_addFavPal, 32, 64, 1);
-		pSelf->btn_listToggle->setImage((u8*)spr_favoritesTiles, (u8*)spr_favoritesPal, 32, 64, 2);
+		pSelf->btn_manageFav->setImage("nitro:/spr_addFav", 32, 64, 1);
+		pSelf->btn_listToggle->setFrame(0);
 	}
 
 	pSelf->currPage = 0;
@@ -434,11 +441,11 @@ void UIScreenServerList::onServerClicked(void* pUserData)
 
 	// unselect server
 	if (pSelf->currServer != -1)
-		pSelf->btn_server[pSelf->currServer]->setImage((u8*)spr_serverUnselectedTiles, (u8*)spr_serverUnselectedPal, 32, 32, 7+pSelf->currServer);
+		pSelf->btn_server[pSelf->currServer]->setFrame(0);
 
 	// select server
 	pSelf->currServer = pData->btnInd;
-	pSelf->btn_server[pSelf->currServer]->setImage((u8*)spr_serverSelectedTiles, (u8*)spr_serverSelectedPal, 32, 32, 7+pSelf->currServer);
+	pSelf->btn_server[pSelf->currServer]->setFrame(1);
 
 	const serverInfo& server = pSelf->m_servers[pSelf->isFavorites][pSelf->currServer + pSelf->currPage*4];
 	if (!pSelf->isFavorites)

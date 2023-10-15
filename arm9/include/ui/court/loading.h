@@ -9,9 +9,12 @@
 class UICourtLoading : public UISubScreen
 {
 	int bgIndex;
+	u32 bgTilesLen;
+
 	UIButton* btn_disconnect;
 	UILabel* lbl_loading;
 
+	u8* sprLoadingImg;
 	u16* sprLoading;
 	int ticks;
 	int frame;

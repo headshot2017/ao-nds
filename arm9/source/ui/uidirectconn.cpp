@@ -7,13 +7,12 @@
 #include "ui/uicourt.h"
 #include "ui/uimainmenu.h"
 #include "engine.h"
-#include "bg_logo.h"
-#include "spr_radioBox.h"
+#include "global.h"
 
 UIScreenDirectConn::~UIScreenDirectConn()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_logoTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_logoMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
 
 	delete kb_ipInput;
@@ -25,16 +24,24 @@ UIScreenDirectConn::~UIScreenDirectConn()
 
 void UIScreenDirectConn::init()
 {
+	u8* bgTiles = readFile("nitro:/bg_logo.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_logo.map.bin");
+	u8* bgPal = readFile("nitro:/bg_logo.pal.bin");
+
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	dmaCopy(bg_logoTiles, bgGetGfxPtr(bgIndex), bg_logoTilesLen);
-	dmaCopy(bg_logoMap, bgGetMapPtr(bgIndex), bg_logoMapLen);
-	dmaCopy(bg_logoPal, BG_PALETTE, bg_logoPalLen);
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+	dmaCopy(bgPal, BG_PALETTE, 512);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+	delete[] bgPal;
 
 	kb_ipInput = new AOkeyboard(2, 0, 0);
 	kb_ipInput->setInputYOffset(16);
 
-	btn_ws = new UIButton(&oamSub, (u8*)spr_radioBoxTiles+(16*16), (u8*)spr_radioBoxPal, kb_ipInput->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8, 16, 16, 16, 16, 1);
-	btn_tcp = new UIButton(&oamSub, (u8*)spr_radioBoxTiles, (u8*)spr_radioBoxPal, btn_ws->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8+20, 16, 16, 16, 16, 1);
+	btn_ws = new UIButton(&oamSub, "nitro:/spr_radioBox", kb_ipInput->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8, 16, 16, 16, 16, 1);
+	btn_tcp = new UIButton(&oamSub, "nitro:/spr_radioBox", btn_ws->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8+20, 16, 16, 16, 16, 1);
 	lbl_ws = new UILabel(&oamSub, btn_tcp->nextOamInd(), 2, 1, RGB15(31,31,31), 2, 0);
 	lbl_tcp = new UILabel(&oamSub, lbl_ws->nextOamInd(), 2, 1, RGB15(31,31,31), 2, 0);
 
@@ -44,8 +51,9 @@ void UIScreenDirectConn::init()
 	lbl_ws->setText("WebSocket");
 	lbl_tcp->setPos(btn_tcp->getX()+20, btn_tcp->getY()+2, false);
 	lbl_tcp->setText("TCP");
-	useWS = true;
 
+	btn_ws->setFrame(1);
+	useWS = true;
 }
 
 void UIScreenDirectConn::updateInput()
@@ -93,8 +101,8 @@ void UIScreenDirectConn::onWSButton(void* pUserData)
 	UIScreenDirectConn* pSelf = (UIScreenDirectConn*)pUserData;
 
 	pSelf->useWS = true;
-	pSelf->btn_ws->setImage((u8*)spr_radioBoxTiles+(16*16), (u8*)spr_radioBoxPal, 16, 16, 1);
-	pSelf->btn_tcp->setImage((u8*)spr_radioBoxTiles, (u8*)spr_radioBoxPal, 16, 16, 1);
+	pSelf->btn_ws->setFrame(1);
+	pSelf->btn_tcp->setFrame(0);
 }
 
 void UIScreenDirectConn::onTcpButton(void* pUserData)
@@ -102,6 +110,6 @@ void UIScreenDirectConn::onTcpButton(void* pUserData)
 	UIScreenDirectConn* pSelf = (UIScreenDirectConn*)pUserData;
 
 	pSelf->useWS = false;
-	pSelf->btn_ws->setImage((u8*)spr_radioBoxTiles, (u8*)spr_radioBoxPal, 16, 16, 1);
-	pSelf->btn_tcp->setImage((u8*)spr_radioBoxTiles+(16*16), (u8*)spr_radioBoxPal, 16, 16, 1);
+	pSelf->btn_ws->setFrame(0);
+	pSelf->btn_tcp->setFrame(1);
 }

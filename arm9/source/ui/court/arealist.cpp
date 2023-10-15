@@ -11,13 +11,6 @@
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/musiclist.h"
-#include "bg_areas.h"
-#include "spr_back.h"
-#include "spr_music.h"
-#include "spr_confirm.h"
-#include "spr_pageLeft.h"
-#include "spr_pageRight.h"
-#include "spr_area.h"
 
 struct areaBtnData
 {
@@ -27,8 +20,8 @@ struct areaBtnData
 
 UICourtAreaList::~UICourtAreaList()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_areasTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_areasMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 
 	delete btn_back;
@@ -57,20 +50,29 @@ void UICourtAreaList::init()
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	bgSetPriority(bgIndex, 1);
-	dmaCopy(bg_areasTiles, bgGetGfxPtr(bgIndex), bg_areasTilesLen);
-	dmaCopy(bg_areasMap, bgGetMapPtr(bgIndex), bg_areasMapLen);
-	dmaCopy(bg_areasPal, BG_PALETTE_SUB, bg_areasPalLen);
+
+	u8* bgTiles = readFile("nitro:/bg_areas.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_areas.map.bin");
+	u8* bgPal = readFile("nitro:/bg_areas.pal.bin");
+
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+	delete[] bgPal;
 
 	static areaBtnData btnData[4];
-	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_listToggle = new UIButton(&oamSub, (u8*)spr_musicTiles, (u8*)spr_musicPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
-	btn_confirm = new UIButton(&oamSub, (u8*)spr_confirmTiles, (u8*)spr_confirmPal, btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 2);
-	btn_prevPage = new UIButton(&oamSub, (u8*)spr_pageLeftTiles, (u8*)spr_pageLeftPal, btn_confirm->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 4);
-	btn_nextPage = new UIButton(&oamSub, (u8*)spr_pageRightTiles, (u8*)spr_pageRightPal, btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 5);
+	btn_back = new UIButton(&oamSub, "nitro:/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_listToggle = new UIButton(&oamSub, "nitro:/spr_music", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
+	btn_confirm = new UIButton(&oamSub, "nitro:/spr_confirm", btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 2);
+	btn_prevPage = new UIButton(&oamSub, "nitro:/spr_pageLeft", btn_confirm->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 4);
+	btn_nextPage = new UIButton(&oamSub, "nitro:/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 5);
 	for (int i=0; i<4; i++)
 	{
 		int nextOam = (i == 0) ? btn_nextPage->nextOamInd() : lbl_area[i-1]->nextOamInd();
-		btn_area[i] = new UIButton(&oamSub, (u8*)spr_areaTiles, (u8*)spr_areaPal, nextOam, 3, 1, SpriteSize_64x32, 108, 34+(i*31), 142, 26, 64, 32, 6+i);
+		btn_area[i] = new UIButton(&oamSub, "nitro:/spr_area", nextOam, 3, 1, SpriteSize_64x32, 108, 34+(i*31), 142, 26, 64, 32, 6+i);
 		lbl_area[i] = new UILabel(&oamSub, btn_area[i]->nextOamInd(), 8, 1, RGB15(13, 2, 0), 10, 0);
 		btn_area[i]->setVisible(false);
 		btn_area[i]->setPriority(1);

@@ -8,20 +8,18 @@
 #include "engine.h"
 #include "cfgFile.h"
 #include "ui/uimainmenu.h"
-#include "bg_top.h"
-#include "bg_bottomAlt.h"
-#include "spr_settingsInput.h"
-#include "spr_back.h"
 
 UIScreenSettings::~UIScreenSettings()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_topTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_topMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
 
-	dmaFillHalfWords(0, bgGetGfxPtr(subBgIndex), bg_bottomAltTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), bg_bottomAltMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
+
+	delete[] bgSubPal;
 
 	delete lbl_showname;
 	delete lbl_shownameValue;
@@ -41,23 +39,36 @@ void UIScreenSettings::init()
 	subBgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	bgSetPriority(subBgIndex, 1);
 
-	dmaCopy(bg_topTiles, bgGetGfxPtr(bgIndex), bg_topTilesLen);
-	dmaCopy(bg_topMap, bgGetMapPtr(bgIndex), bg_topMapLen);
-	dmaCopy(bg_topPal, BG_PALETTE, bg_topPalLen);
+	u8* bgTiles = readFile("nitro:/bg_top.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_top.map.bin");
+	u8* bgPal = readFile("nitro:/bg_top.pal.bin");
+	u8* bgSubTiles = readFile("nitro:/bg_bottomAlt.img.bin", &bgSubTilesLen);
+	u8* bgSubMap = readFile("nitro:/bg_bottomAlt.map.bin");
+	bgSubPal = readFile("nitro:/bg_bottomAlt.pal.bin");
 
-	dmaCopy(bg_bottomAltTiles, bgGetGfxPtr(subBgIndex), bg_bottomAltTilesLen);
-	dmaCopy(bg_bottomAltMap, bgGetMapPtr(subBgIndex), bg_bottomAltMapLen);
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+	dmaCopy(bgPal, BG_PALETTE, 512);
+
+	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
+	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+	delete[] bgPal;
+	delete[] bgSubTiles;
+	delete[] bgSubMap;
 
 	lbl_showname = new UILabel(&oamSub, 0, 4, 1, RGB15(31,31,31), 0, 0);
 	lbl_shownameValue = new UILabel(&oamSub, lbl_showname->nextOamInd(), 4, 1, 0, 1, 0);
 	lbl_oocname = new UILabel(&oamSub, lbl_shownameValue->nextOamInd(), 4, 1, RGB15(31,31,31), 0, 0);
 	lbl_oocnameValue = new UILabel(&oamSub, lbl_oocname->nextOamInd(), 4, 1, 0, 1, 0);
-	btn_showname = new UIButton(&oamSub, (u8*)spr_settingsInputTiles, (u8*)spr_settingsInputPal, lbl_oocnameValue->nextOamInd(), 6, 1, SpriteSize_32x16, 128-96, 48, 192, 16, 32, 16, 2);
-	btn_oocname = new UIButton(&oamSub, (u8*)spr_settingsInputTiles, (u8*)spr_settingsInputPal, btn_showname->nextOamInd(), 6, 1, SpriteSize_32x16, 128-96, 104, 192, 16, 32, 16, 2);
-	btn_back = new UIButton(&oamSub, (u8*)spr_backTiles, (u8*)spr_backPal, btn_oocname->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
+	btn_showname = new UIButton(&oamSub, "nitro:/spr_settingsInput", lbl_oocnameValue->nextOamInd(), 6, 1, SpriteSize_32x16, 128-96, 48, 192, 16, 32, 16, 2);
+	btn_oocname = new UIButton(&oamSub, "nitro:/spr_settingsInput", btn_showname->nextOamInd(), 6, 1, SpriteSize_32x16, 128-96, 104, 192, 16, 32, 16, 2);
+	btn_back = new UIButton(&oamSub, "nitro:/spr_back", btn_oocname->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
 
 	kb_input = new AOkeyboard(2, btn_back->nextOamInd(), 4);
-	dmaCopy(bg_bottomAltPal, BG_PALETTE_SUB, bg_bottomAltPalLen);
+	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 
 	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav", &sndSelectSize);
 	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav", &sndCancelSize);
@@ -85,7 +96,7 @@ void UIScreenSettings::updateInput()
 		int result = kb_input->updateInput();
 		if (result != 0)
 		{
-			dmaCopy(bg_bottomAltPal, BG_PALETTE_SUB, bg_bottomAltPalLen);
+			dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 			bgShow(subBgIndex);
 
 			lbl_showname->setVisible(true);

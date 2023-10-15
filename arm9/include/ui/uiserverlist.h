@@ -23,6 +23,8 @@ class UIScreenServerList : public UIScreen
 {
 	int bgIndex;
 	int subBgIndex;
+	u32 bgTilesLen;
+	u32 bgSubTilesLen;
 
 	u16* spr_arrowDownGfx;
 	UIButton* btn_manageFav;

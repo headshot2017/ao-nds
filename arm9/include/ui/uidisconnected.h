@@ -12,6 +12,8 @@ class UIScreenDisconnected : public UIScreen
 {
 	int bgIndex;
 	int subBgIndex;
+	u32 bgTilesLen;
+	u32 bgSubTilesLen;
 
 	std::string disconnectMsg;
 	std::string reason;

@@ -11,18 +11,6 @@
 #include "colors.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/icchatlog.h"
-#include "bg_ic.h"
-#include "bg_icExt.h"
-#include "spr_icCornerBtns.h"
-#include "spr_pairMute.h"
-#include "spr_icOptions.h"
-#include "spr_sides.h"
-#include "spr_tools.h"
-#include "spr_icControls.h"
-#include "spr_emoteLeft.h"
-#include "spr_emoteLeftArrow.h"
-#include "spr_barDefense.h"
-#include "spr_barProsecutor.h"
 
 struct emoteBtnData
 {
@@ -32,9 +20,11 @@ struct emoteBtnData
 
 UICourtIC::~UICourtIC()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bg_icTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bg_icMapLen);
+	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
+
+	delete[] bgPal;
 
 	delete btn_back;
 	delete btn_courtRecord;
@@ -68,25 +58,33 @@ void UICourtIC::init()
 {
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	bgSetPriority(bgIndex, 1);
-	dmaCopy(bg_icTiles, bgGetGfxPtr(bgIndex), bg_icTilesLen);
-	dmaCopy(bg_icMap, bgGetMapPtr(bgIndex), bg_icMapLen);
 
-	btn_back = new UIButton(&oamSub, (u8*)spr_icCornerBtnsTiles, (u8*)spr_icCornerBtnsPal, 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_courtRecord = new UIButton(&oamSub, (u8*)spr_icCornerBtnsTiles, (u8*)spr_icCornerBtnsPal, btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 0);
-	btn_shouts = new UIButton(&oamSub, (u8*)spr_icCornerBtnsTiles, (u8*)spr_icCornerBtnsPal, btn_courtRecord->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 0, 80, 32, 32, 32, 0);
-	btn_pair = new UIButton(&oamSub, (u8*)spr_pairMuteTiles, (u8*)spr_pairMutePal, btn_shouts->nextOamInd(), 3, 1, SpriteSize_32x32, 36, 114, 68, 17, 32, 32, 1);
-	btn_mute = new UIButton(&oamSub, (u8*)spr_pairMuteTiles, (u8*)spr_pairMutePal, btn_pair->nextOamInd(), 3, 1, SpriteSize_32x32, 153, 114, 68, 17, 32, 32, 1);
-	btn_optionsToggle = new UIButton(&oamSub, (u8*)spr_icOptionsTiles, (u8*)spr_icOptionsPal, btn_mute->nextOamInd(), 1, 1, SpriteSize_64x32, 99, 113, 59, 17, 64, 32, 2);
-	btn_sideSelect = new UIButton(&oamSub, (u8*)spr_sidesTiles, (u8*)spr_sidesPal, btn_optionsToggle->nextOamInd(), 3, 1, SpriteSize_32x16, 183, 162, 73, 15, 32, 16, 3);
-	btn_tools = new UIButton(&oamSub, (u8*)spr_toolsTiles, (u8*)spr_toolsPal, btn_sideSelect->nextOamInd(), 2, 1, SpriteSize_32x16, 105, 23, 46, 14, 32, 16, 4);
-	btn_additive = new UIButton(&oamSub, (u8*)spr_icControlsTiles, (u8*)spr_icControlsPal, btn_tools->nextOamInd(), 2, 1, SpriteSize_32x16, 38, 116, 64, 15, 32, 16, 5);
-	btn_preanim = new UIButton(&oamSub, (u8*)spr_icControlsTiles, (u8*)spr_icControlsPal, btn_additive->nextOamInd(), 2, 1, SpriteSize_32x16, 105, 116, 47, 15, 32, 16, 5);
-	btn_immediate = new UIButton(&oamSub, (u8*)spr_icControlsTiles, (u8*)spr_icControlsPal, btn_preanim->nextOamInd(), 2, 1, SpriteSize_32x16, 155, 116, 64, 15, 32, 16, 5);
-	btn_flip = new UIButton(&oamSub, (u8*)spr_icControlsTiles, (u8*)spr_icControlsPal, btn_immediate->nextOamInd(), 2, 1, SpriteSize_32x16, 46, 133, 47, 15, 32, 16, 5);
-	btn_shake = new UIButton(&oamSub, (u8*)spr_icControlsTiles, (u8*)spr_icControlsPal, btn_flip->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 133, 64, 15, 32, 16, 5);
-	btn_flash = new UIButton(&oamSub, (u8*)spr_icControlsTiles, (u8*)spr_icControlsPal, btn_shake->nextOamInd(), 2, 1, SpriteSize_32x16, 163, 133, 47, 15, 32, 16, 5);
-	btn_prevPage = new UIButton(&oamSub, (u8*)spr_emoteLeftTiles, (u8*)spr_emoteLeftPal, btn_flash->nextOamInd(), 1, 2, SpriteSize_16x32, 9, 71, 16, 40, 16, 32, 6);
-	btn_nextPage = new UIButton(&oamSub, (u8*)spr_emoteLeftTiles, (u8*)spr_emoteLeftPal, btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 231, 71, 16, 40, 16, 32, 6);
+	u8* bgTiles = readFile("nitro:/bg_ic.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("nitro:/bg_ic.map.bin");
+	bgPal = readFile("nitro:/bg_ic.pal.bin");
+
+	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
+
+	delete[] bgTiles;
+	delete[] bgMap;
+
+	btn_back = new UIButton(&oamSub, "nitro:/spr_icCornerBtns", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_courtRecord = new UIButton(&oamSub, "nitro:/spr_icCornerBtns", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 0);
+	btn_shouts = new UIButton(&oamSub, "nitro:/spr_icCornerBtns", btn_courtRecord->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 0, 80, 32, 32, 32, 0);
+	btn_pair = new UIButton(&oamSub, "nitro:/spr_pairMute", btn_shouts->nextOamInd(), 3, 1, SpriteSize_32x32, 36, 114, 68, 17, 32, 32, 1);
+	btn_mute = new UIButton(&oamSub, "nitro:/spr_pairMute", btn_pair->nextOamInd(), 3, 1, SpriteSize_32x32, 153, 114, 68, 17, 32, 32, 1);
+	btn_optionsToggle = new UIButton(&oamSub, "nitro:/spr_icOptions", btn_mute->nextOamInd(), 1, 1, SpriteSize_64x32, 99, 113, 59, 17, 64, 32, 2);
+	btn_sideSelect = new UIButton(&oamSub, "nitro:/spr_sides", btn_optionsToggle->nextOamInd(), 3, 1, SpriteSize_32x16, 183, 162, 73, 15, 32, 16, 3);
+	btn_tools = new UIButton(&oamSub, "nitro:/spr_tools", btn_sideSelect->nextOamInd(), 2, 1, SpriteSize_32x16, 105, 23, 46, 14, 32, 16, 4);
+	btn_additive = new UIButton(&oamSub, "nitro:/spr_icControls", btn_tools->nextOamInd(), 2, 1, SpriteSize_32x16, 38, 116, 64, 15, 32, 16, 5);
+	btn_preanim = new UIButton(&oamSub, "nitro:/spr_icControls", btn_additive->nextOamInd(), 2, 1, SpriteSize_32x16, 105, 116, 47, 15, 32, 16, 5);
+	btn_immediate = new UIButton(&oamSub, "nitro:/spr_icControls", btn_preanim->nextOamInd(), 2, 1, SpriteSize_32x16, 155, 116, 64, 15, 32, 16, 5);
+	btn_flip = new UIButton(&oamSub, "nitro:/spr_icControls", btn_immediate->nextOamInd(), 2, 1, SpriteSize_32x16, 46, 133, 47, 15, 32, 16, 5);
+	btn_shake = new UIButton(&oamSub, "nitro:/spr_icControls", btn_flip->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 133, 64, 15, 32, 16, 5);
+	btn_flash = new UIButton(&oamSub, "nitro:/spr_icControls", btn_shake->nextOamInd(), 2, 1, SpriteSize_32x16, 163, 133, 47, 15, 32, 16, 5);
+	btn_prevPage = new UIButton(&oamSub, "nitro:/spr_emoteLeft", btn_flash->nextOamInd(), 1, 2, SpriteSize_16x32, 9, 71, 16, 40, 16, 32, 6);
+	btn_nextPage = new UIButton(&oamSub, "nitro:/spr_emoteLeft", btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 231, 71, 16, 40, 16, 32, 6);
 
 	static emoteBtnData btnData[4];
 	for (u32 i=0; i<4; i++)
@@ -95,7 +93,7 @@ void UICourtIC::init()
 		btnData[i] = {this, i};
 		btnPalettes[i] = 0;
 
-		btn_emote[i] = new UIButton(&oamSub, 0, 0, nextOam, 1, 1, SpriteSize_64x64, 38+(i*47), 71, 40, 40, 64, 64, 7+i);
+		btn_emote[i] = new UIButton(&oamSub, "", nextOam, 1, 1, SpriteSize_64x64, 38+(i*47), 71, 40, 40, 64, 64, 7+i);
 		btn_emote[i]->connect(onEmoteClicked, &btnData[i]);
 	}
 
@@ -103,23 +101,22 @@ void UICourtIC::init()
 	{
 		int nextOam = (!i) ? btn_emote[3]->nextOamInd() : spr_bars[i-1]->nextOamInd();
 
-		u8* data = (!i) ? (u8*)spr_barDefenseTiles : (u8*)spr_barProsecutorTiles;
-		u8* palData = (!i) ? (u8*)spr_barDefensePal : (u8*)spr_barProsecutorPal;
-		spr_bars[i] = new UIButton(&oamSub, data, palData, nextOam, 3, 1, SpriteSize_32x16, 35+(i*103), 43, 84, 14, 32, 16, 11+i);
+		std::string file = (!i) ? "spr_barDefense" : "spr_barProsecutor";
+		spr_bars[i] = new UIButton(&oamSub, file, nextOam, 3, 1, SpriteSize_32x16, 35+(i*103), 43, 84, 14, 32, 16, 11+i);
 	}
 
-	spr_arrowLeft = new UIButton(&oamSub, (u8*)spr_emoteLeftArrowTiles, (u8*)spr_emoteLeftArrowPal, spr_bars[1]->nextOamInd(), 1, 1, SpriteSize_8x16, 13, 84, 7, 13, 8, 16, 13);
-	spr_arrowRight = new UIButton(&oamSub, (u8*)spr_emoteLeftArrowTiles, (u8*)spr_emoteLeftArrowPal, spr_arrowLeft->nextOamInd(), 1, 1, SpriteSize_8x16, 236, 84, 7, 13, 8, 16, 13);
+	spr_arrowLeft = new UIButton(&oamSub, "nitro:/spr_emoteLeftArrow", spr_bars[1]->nextOamInd(), 1, 1, SpriteSize_8x16, 13, 84, 7, 13, 8, 16, 13);
+	spr_arrowRight = new UIButton(&oamSub, "nitro:/spr_emoteLeftArrow", spr_arrowLeft->nextOamInd(), 1, 1, SpriteSize_8x16, 236, 84, 7, 13, 8, 16, 13);
 
 	lbl_showname = new UILabel(&oamSub, spr_arrowRight->nextOamInd(), 2, 1, RGB15(31,31,31), 14, 0);
 	lbl_color = new UILabel(&oamSub, lbl_showname->nextOamInd(), 2, 1, RGB15(31,31,31), 15, 0);
 	lbl_showname->setPos(77, 163);
-	lbl_showname->setText(gEngine->getShowname().c_str());
+	lbl_showname->setText(pCourtUI->showname.c_str());
 	lbl_color->setPos(84, 178);
 	lbl_color->setText("Message");
 
 	kb_input = new AOkeyboard(4, lbl_color->nextOamInd(), 14);
-	dmaCopy(bg_icPal, BG_PALETTE_SUB, bg_icPalLen);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	isWritingChat = false;
 
 	btn_prevPage->setPriority(1);
@@ -242,9 +239,9 @@ void UICourtIC::updateInput()
 					pCourtUI->showname = kb_input->getValue();
 			}
 
+			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 			if (displayingOptions)
 			{
-				dmaCopy(bg_icExtPal, BG_PALETTE_SUB, bg_icExtPalLen);
 				btn_additive->setVisible(true);
 				btn_preanim->setVisible(true);
 				btn_immediate->setVisible(true);
@@ -254,7 +251,6 @@ void UICourtIC::updateInput()
 			}
 			else
 			{
-				dmaCopy(bg_icPal, BG_PALETTE_SUB, bg_icPalLen);
 				btn_pair->setVisible(true);
 				btn_mute->setVisible(true);
 				lbl_showname->setVisible(true);
@@ -381,11 +377,10 @@ void UICourtIC::reloadPage()
 
 		std::string buttonFile = "/data/ao-nds/characters/" + pCourtUI->getCurrChar().name + "/emotions/button" + std::to_string(ind+1) + "_off";
 		bool exists = fileExists(buttonFile+".img.bin");
-		u8* gfxPtr = (exists) ? readFile(buttonFile+".img.bin") : 0;
 		btnPalettes[i] = (exists) ? readFile(buttonFile+".pal.bin") : 0;
 		mp3_fill_buffer();
 
-		btn_emote[i]->setImage(gfxPtr, btnPalettes[i], 64, 64, 7+i);
+		btn_emote[i]->setImage((exists) ? buttonFile : "", 64, 64, 7+i);
 		btn_emote[i]->setVisible(true);
 
 		if (i == currEmoteSelected)
@@ -400,12 +395,6 @@ void UICourtIC::reloadPage()
 				mp3_fill_buffer();
 			}
 			vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
-		}
-
-		if (exists)
-		{
-			delete[] gfxPtr;
-			mp3_fill_buffer();
 		}
 	}
 
@@ -492,11 +481,16 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 
 	pSelf->displayingOptions = !pSelf->displayingOptions;
+
+	delete[] pSelf->bgPal;
+	u8* bgTiles;
+	u8* bgMap;
+
 	if (pSelf->displayingOptions)
 	{
-		dmaCopy(bg_icExtTiles, bgGetGfxPtr(pSelf->bgIndex), bg_icExtTilesLen);
-		dmaCopy(bg_icExtMap, bgGetMapPtr(pSelf->bgIndex), bg_icExtMapLen);
-		dmaCopy(bg_icExtPal, BG_PALETTE_SUB, bg_icExtPalLen);
+		bgTiles = readFile("nitro:/bg_icExt.img.bin", &pSelf->bgTilesLen);
+		bgMap = readFile("nitro:/bg_icExt.map.bin");
+		pSelf->bgPal = readFile("nitro:/bg_icExt.pal.bin");
 
 		pSelf->lbl_showname->setVisible(false);
 		pSelf->btn_additive->setVisible(true);
@@ -512,9 +506,9 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 	}
 	else
 	{
-		dmaCopy(bg_icTiles, bgGetGfxPtr(pSelf->bgIndex), bg_icTilesLen);
-		dmaCopy(bg_icMap, bgGetMapPtr(pSelf->bgIndex), bg_icMapLen);
-		dmaCopy(bg_icPal, BG_PALETTE_SUB, bg_icPalLen);
+		bgTiles = readFile("nitro:/bg_ic.img.bin", &pSelf->bgTilesLen);
+		bgMap = readFile("nitro:/bg_ic.map.bin");
+		pSelf->bgPal = readFile("nitro:/bg_ic.pal.bin");
 
 		pSelf->lbl_showname->setVisible(true);
 		pSelf->btn_additive->setVisible(false);
@@ -528,6 +522,10 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 
 		pSelf->btn_optionsToggle->setPos(pSelf->btn_optionsToggle->getX(), 113);
 	}
+
+	dmaCopy(bgTiles, bgGetGfxPtr(pSelf->bgIndex), pSelf->bgTilesLen);
+	dmaCopy(bgMap, bgGetMapPtr(pSelf->bgIndex), 1536);
+	dmaCopy(pSelf->bgPal, BG_PALETTE_SUB, 512);
 
 	pSelf->btn_optionsToggle->setFrame(pSelf->displayingOptions);
 }
