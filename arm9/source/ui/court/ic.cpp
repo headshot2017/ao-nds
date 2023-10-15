@@ -107,7 +107,7 @@ void UICourtIC::init()
 	{
 		int nextOam = (!i) ? btn_emote[3]->nextOamInd() : spr_bars[i-1]->nextOamInd();
 
-		std::string file = (!i) ? "spr_barDefense" : "spr_barProsecutor";
+		std::string file = (!i) ? "nitro:/spr_barDefense" : "nitro:/spr_barProsecutor";
 		spr_bars[i] = new UIButton(&oamSub, file, nextOam, 3, 1, SpriteSize_32x16, 35+(i*103), 43, 84, 14, 32, 16, 11+i);
 	}
 
