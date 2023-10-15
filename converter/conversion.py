@@ -336,7 +336,8 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
         os.remove(target+"/nds.cfg")
 
     # copy char.ini from source to target
-    open(target+"/char.ini", "w").write(open(source+"/char.ini").read())
+    if not extra:
+        open(target+"/char.ini", "w").write(open(source+"/char.ini").read())
 
     for emote in os.listdir(source):
         filename = source+"/"+emote
