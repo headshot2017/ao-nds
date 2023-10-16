@@ -51,8 +51,8 @@ Chatbox::Chatbox()
 	arrowXadd = 1;
 	arrowTicks = 0;
 
-	u8* chatboxArrowImg = readFile("nitro:/spr_chatboxArrow.img.bin");
-	u8* chatboxArrowPal = readFile("nitro:/spr_chatboxArrow.pal.bin");
+	u8* chatboxArrowImg = readFile("/data/ao-nds/ui/spr_chatboxArrow.img.bin");
+	u8* chatboxArrowPal = readFile("/data/ao-nds/ui/spr_chatboxArrow.pal.bin");
 	spr_arrowGfx = oamAllocateGfx(&oamMain, SpriteSize_16x16, SpriteColorFormat_256Color);
 	dmaCopy(chatboxArrowImg, spr_arrowGfx, 16*16);
 	memcpy(&VRAM_F_EXT_SPR_PALETTE[3], chatboxArrowPal, 512);

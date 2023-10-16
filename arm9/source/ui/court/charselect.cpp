@@ -51,9 +51,9 @@ void UICourtCharSelect::init()
 	pageAdd = 0;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	u8* bgTiles = readFile("nitro:/bg_charSelect.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_charSelect.map.bin");
-	bgPal = readFile("nitro:/bg_charSelect.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_charSelect.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_charSelect.map.bin");
+	bgPal = readFile("/data/ao-nds/ui/bg_charSelect.pal.bin");
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
@@ -61,10 +61,10 @@ void UICourtCharSelect::init()
 	delete[] bgTiles;
 	delete[] bgMap;
 
-	btn_pageLeft = new UIButton(&oamSub, "nitro:/spr_pageLeft_tall", 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
-	btn_pageRight = new UIButton(&oamSub, "nitro:/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
-	btn_disconnect = new UIButton(&oamSub, "nitro:/spr_disconnect", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 2);
-	btn_confirm = new UIButton(&oamSub, "nitro:/spr_confirm", btn_disconnect->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 3);
+	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
+	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
+	btn_disconnect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_disconnect", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 2);
+	btn_confirm = new UIButton(&oamSub, "/data/ao-nds/ui/spr_confirm", btn_disconnect->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 3);
 
 	lbl_charname = new UILabel(&oamSub, btn_confirm->nextOamInd(), 6, 1, RGB15(31, 16, 0), 4, 0);
 	lbl_pages = new UILabel(&oamSub, lbl_charname->nextOamInd(), 1, 1, RGB15(13, 2, 0), 5, 0);
@@ -80,7 +80,7 @@ void UICourtCharSelect::init()
 			btnData[i].btnInd = i;
 			btnData[i].pObj = this;
 
-			btn_chars[i] = new UIButton(&oamSub, "nitro:/spr_unknownMugshot", (i>0) ? btn_chars[i-1]->nextOamInd() : sel_btn->nextOamInd(), 1, 1, SpriteSize_64x64, 37+(x*48), 63+(y*48), 38, 38, 64, 64, 7+i);
+			btn_chars[i] = new UIButton(&oamSub, "/data/ao-nds/ui/spr_unknownMugshot", (i>0) ? btn_chars[i-1]->nextOamInd() : sel_btn->nextOamInd(), 1, 1, SpriteSize_64x64, 37+(x*48), 63+(y*48), 38, 38, 64, 64, 7+i);
 			btn_chars[i]->connect(onCharClicked, &btnData[i]);
 		}
 	}
@@ -206,7 +206,7 @@ void UICourtCharSelect::reloadPage()
 		bool exists = fileExists("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon.img.bin");
 		mp3_fill_buffer();
 
-		btn_chars[i]->setImage((exists ? ("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon") : "nitro:/spr_unknownMugshot"), 64, 64, 7+i);
+		btn_chars[i]->setImage((exists ? ("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon") : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 7+i);
 		btn_chars[i]->setVisible(true);
 
 		if (pCourtUI->getCharList()[ind].taken)

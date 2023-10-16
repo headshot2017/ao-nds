@@ -12,8 +12,8 @@ UISelectCross::UISelectCross(OamState* chosenOam, int oamStartInd, int palSlot)
 	oam = chosenOam;
 	oamStart = oamStartInd;
 
-	u8* tiles = readFile("nitro:/spr_buttonCorner.img.bin");
-	u8* pal = readFile("nitro:/spr_buttonCorner.pal.bin");
+	u8* tiles = readFile("/data/ao-nds/ui/spr_buttonCorner.img.bin");
+	u8* pal = readFile("/data/ao-nds/ui/spr_buttonCorner.pal.bin");
 	spriteGfx = oamAllocateGfx(oam, SpriteSize_16x16, SpriteColorFormat_256Color);
 	dmaCopy(tiles, spriteGfx, 16*16);
 	mp3_fill_buffer();

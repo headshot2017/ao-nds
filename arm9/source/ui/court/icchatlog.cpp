@@ -34,9 +34,9 @@ void UICourtICChatLog::init()
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 
-	u8* bgTiles = readFile("nitro:/bg_icLog.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_icLog.map.bin");
-	u8* bgPal = readFile("nitro:/bg_icLog.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_icLog.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_icLog.map.bin");
+	u8* bgPal = readFile("/data/ao-nds/ui/bg_icLog.pal.bin");
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
@@ -46,11 +46,11 @@ void UICourtICChatLog::init()
 	delete[] bgMap;
 	delete[] bgPal;
 
-	btn_back = new UIButton(&oamSub, "nitro:/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_courtRecord = new UIButton(&oamSub, "nitro:/spr_courtRecord", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);
-	btn_scrollUp = new UIButton(&oamSub, "nitro:/spr_scrollUp", btn_courtRecord->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 33, 14, 19, 16, 32, 2);
-	btn_scrollDown = new UIButton(&oamSub, "nitro:/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
-	btn_sliderHandle = new UIButton(&oamSub, "nitro:/spr_sliderHandle", btn_scrollDown->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 4);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_courtRecord", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);
+	btn_scrollUp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollUp", btn_courtRecord->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 33, 14, 19, 16, 32, 2);
+	btn_scrollDown = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
+	btn_sliderHandle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_sliderHandle", btn_scrollDown->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 4);
 	lbl_log = new UILabel(&oamSub, btn_sliderHandle->nextOamInd(), 7, 10, RGB15(31,31,31), 5, 0);
 	lbl_log->setPos(9, 32);
 

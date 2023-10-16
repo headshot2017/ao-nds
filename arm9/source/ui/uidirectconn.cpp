@@ -26,9 +26,9 @@ UIScreenDirectConn::~UIScreenDirectConn()
 
 void UIScreenDirectConn::init()
 {
-	u8* bgTiles = readFile("nitro:/bg_logo.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_logo.map.bin");
-	u8* bgPal = readFile("nitro:/bg_logo.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_logo.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_logo.map.bin");
+	u8* bgPal = readFile("/data/ao-nds/ui/bg_logo.pal.bin");
 
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
@@ -42,8 +42,8 @@ void UIScreenDirectConn::init()
 	kb_ipInput = new AOkeyboard(2, 0, 0);
 	kb_ipInput->setInputYOffset(16);
 
-	btn_ws = new UIButton(&oamSub, "nitro:/spr_radioBox", kb_ipInput->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8, 16, 16, 16, 16, 1);
-	btn_tcp = new UIButton(&oamSub, "nitro:/spr_radioBox", btn_ws->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8+20, 16, 16, 16, 16, 1);
+	btn_ws = new UIButton(&oamSub, "/data/ao-nds/ui/spr_radioBox", kb_ipInput->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8, 16, 16, 16, 16, 1);
+	btn_tcp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_radioBox", btn_ws->nextOamInd(), 1, 1, SpriteSize_16x16, 256-76, 8+20, 16, 16, 16, 16, 1);
 	lbl_ws = new UILabel(&oamSub, btn_tcp->nextOamInd(), 2, 1, RGB15(31,31,31), 2, 0);
 	lbl_tcp = new UILabel(&oamSub, lbl_ws->nextOamInd(), 2, 1, RGB15(31,31,31), 2, 0);
 

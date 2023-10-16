@@ -52,9 +52,9 @@ void UICourtAreaList::init()
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	bgSetPriority(bgIndex, 1);
 
-	u8* bgTiles = readFile("nitro:/bg_areas.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_areas.map.bin");
-	u8* bgPal = readFile("nitro:/bg_areas.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_areas.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_areas.map.bin");
+	u8* bgPal = readFile("/data/ao-nds/ui/bg_areas.pal.bin");
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
@@ -65,15 +65,15 @@ void UICourtAreaList::init()
 	delete[] bgPal;
 
 	static areaBtnData btnData[4];
-	btn_back = new UIButton(&oamSub, "nitro:/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_listToggle = new UIButton(&oamSub, "nitro:/spr_music", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
-	btn_confirm = new UIButton(&oamSub, "nitro:/spr_confirm", btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 2);
-	btn_prevPage = new UIButton(&oamSub, "nitro:/spr_pageLeft", btn_confirm->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 4);
-	btn_nextPage = new UIButton(&oamSub, "nitro:/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 5);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_listToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_music", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
+	btn_confirm = new UIButton(&oamSub, "/data/ao-nds/ui/spr_confirm", btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 2);
+	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft", btn_confirm->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 4);
+	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 5);
 	for (int i=0; i<4; i++)
 	{
 		int nextOam = (i == 0) ? btn_nextPage->nextOamInd() : lbl_area[i-1]->nextOamInd();
-		btn_area[i] = new UIButton(&oamSub, "nitro:/spr_area", nextOam, 3, 1, SpriteSize_64x32, 108, 34+(i*31), 142, 26, 64, 32, 6+i);
+		btn_area[i] = new UIButton(&oamSub, "/data/ao-nds/ui/spr_area", nextOam, 3, 1, SpriteSize_64x32, 108, 34+(i*31), 142, 26, 64, 32, 6+i);
 		lbl_area[i] = new UILabel(&oamSub, btn_area[i]->nextOamInd(), 8, 1, RGB15(13, 2, 0), 10, 0);
 		btn_area[i]->setVisible(false);
 		btn_area[i]->setPriority(1);

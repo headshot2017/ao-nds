@@ -53,12 +53,12 @@ void UIScreenWifi::init()
 	frame = 0;
 	textCanvas = new u8[32*16];
 
-	u8* bgTiles = readFile("nitro:/bg_logo.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_logo.map.bin");
-	u8* bgPal = readFile("nitro:/bg_logo.pal.bin");
-	u8* bgSubTiles = readFile("nitro:/bg_title.img.bin", &bgSubTilesLen);
-	u8* bgSubMap = readFile("nitro:/bg_title.map.bin");
-	u8* bgSubPal = readFile("nitro:/bg_title.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_logo.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_logo.map.bin");
+	u8* bgPal = readFile("/data/ao-nds/ui/bg_logo.pal.bin");
+	u8* bgSubTiles = readFile("/data/ao-nds/ui/bg_title.img.bin", &bgSubTilesLen);
+	u8* bgSubMap = readFile("/data/ao-nds/ui/bg_title.map.bin");
+	u8* bgSubPal = readFile("/data/ao-nds/ui/bg_title.pal.bin");
 
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	subBgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
@@ -85,8 +85,8 @@ void UIScreenWifi::init()
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 	}
 
-	sprLoadingImg = readFile("nitro:/spr_loading.img.bin");
-	u8* sprLoadingPal = readFile("nitro:/spr_loading.pal.bin");
+	sprLoadingImg = readFile("/data/ao-nds/ui/spr_loading.img.bin");
+	u8* sprLoadingPal = readFile("/data/ao-nds/ui/spr_loading.pal.bin");
 
 	u8* offset = sprLoadingImg + (frame*16*16);
 	dmaCopy(offset, sprLoading, 16*16);

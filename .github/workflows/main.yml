@@ -17,9 +17,15 @@ jobs:
       run: |
         make clean
         make
+
+    - name: Prepare dist folder
+      run: |
+        mkdir dist
+        mv ./ao-nds.nds ./dist/
+        mv ./fat ./dist/
         
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: NDS ROM
-        path: ./ao-nds.nds
+        path: ./dist

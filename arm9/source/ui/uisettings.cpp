@@ -41,12 +41,12 @@ void UIScreenSettings::init()
 	subBgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	bgSetPriority(subBgIndex, 1);
 
-	u8* bgTiles = readFile("nitro:/bg_top.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_top.map.bin");
-	u8* bgPal = readFile("nitro:/bg_top.pal.bin");
-	u8* bgSubTiles = readFile("nitro:/bg_bottomAlt.img.bin", &bgSubTilesLen);
-	u8* bgSubMap = readFile("nitro:/bg_bottomAlt.map.bin");
-	bgSubPal = readFile("nitro:/bg_bottomAlt.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_top.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_top.map.bin");
+	u8* bgPal = readFile("/data/ao-nds/ui/bg_top.pal.bin");
+	u8* bgSubTiles = readFile("/data/ao-nds/ui/bg_bottomAlt.img.bin", &bgSubTilesLen);
+	u8* bgSubMap = readFile("/data/ao-nds/ui/bg_bottomAlt.map.bin");
+	bgSubPal = readFile("/data/ao-nds/ui/bg_bottomAlt.pal.bin");
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
@@ -65,9 +65,9 @@ void UIScreenSettings::init()
 	lbl_shownameValue = new UILabel(&oamSub, lbl_showname->nextOamInd(), 4, 1, 0, 1, 0);
 	lbl_oocname = new UILabel(&oamSub, lbl_shownameValue->nextOamInd(), 4, 1, RGB15(31,31,31), 0, 0);
 	lbl_oocnameValue = new UILabel(&oamSub, lbl_oocname->nextOamInd(), 4, 1, 0, 1, 0);
-	btn_showname = new UIButton(&oamSub, "nitro:/spr_settingsInput", lbl_oocnameValue->nextOamInd(), 6, 1, SpriteSize_32x16, 128-96, 48, 192, 16, 32, 16, 2);
-	btn_oocname = new UIButton(&oamSub, "nitro:/spr_settingsInput", btn_showname->nextOamInd(), 6, 1, SpriteSize_32x16, 128-96, 104, 192, 16, 32, 16, 2);
-	btn_back = new UIButton(&oamSub, "nitro:/spr_back", btn_oocname->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
+	btn_showname = new UIButton(&oamSub, "/data/ao-nds/ui/spr_settingsInput", lbl_oocnameValue->nextOamInd(), 6, 1, SpriteSize_32x16, 128-96, 48, 192, 16, 32, 16, 2);
+	btn_oocname = new UIButton(&oamSub, "/data/ao-nds/ui/spr_settingsInput", btn_showname->nextOamInd(), 6, 1, SpriteSize_32x16, 128-96, 104, 192, 16, 32, 16, 2);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_oocname->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
 
 	kb_input = new AOkeyboard(2, btn_back->nextOamInd(), 4);
 	memcpy(BG_PALETTE_SUB, bgSubPal, 512);

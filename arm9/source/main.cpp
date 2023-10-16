@@ -17,7 +17,6 @@
 #include <nds/interrupts.h>
 #include <nds/ndstypes.h>
 #include <fat.h>
-#include <filesystem.h>
 
 #include "mp3_shared.h"
 #include "global.h"
@@ -28,9 +27,9 @@
 u32 showDisclaimer()
 {
 	u32 bgTilesLen, bgMapLen, bgPalLen;
-	u8* bgTiles = readFile("nitro:/bg_disclaimer.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_disclaimer.map.bin", &bgMapLen);
-	u8* bgPal = readFile("nitro:/bg_disclaimer.pal.bin", &bgPalLen);
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_disclaimer.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_disclaimer.map.bin", &bgMapLen);
+	u8* bgPal = readFile("/data/ao-nds/ui/bg_disclaimer.pal.bin", &bgPalLen);
 
 	bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	dmaCopy(bgTiles, bgGetGfxPtr(0), bgTilesLen);
@@ -84,19 +83,30 @@ int main()
 
 	irqSet(IRQ_VBLANK, Vblank);
 
-	if (!nitroFSInit(0))
-	{
-		consoleDemoInit();
-		iprintf("Failed to initialize NitroFS\nPlease check your microSD card\n");
-		while (1) swiWaitForVBlank();
-	}
-
 	if (!isDSiMode() && !fatInitDefault())
 	{
 		consoleDemoInit();
-		iprintf("Failed to initialize libfat\nPlease check your microSD card\n");
+		iprintf("Failed to initialize libfat\nPlease check your SD card\n");
 		while (1) swiWaitForVBlank();
 	}
+
+	DIR *dir1 = opendir("/data/ao-nds");
+	DIR *dir2 = opendir("/data/ao-nds/ui");
+	if (!dir1)
+	{
+		consoleDemoInit();
+		iprintf("'/data/ao-nds' folder does not exist in the SD card\n\nPlease check your AO NDS installation");
+		while (1) swiWaitForVBlank();
+	}
+	else if (!dir2)
+	{
+		consoleDemoInit();
+		iprintf("'/data/ao-nds/ui' folder does not exist in the SD card\n\nPlease check your AO NDS installation");
+		while (1) swiWaitForVBlank();
+	}
+
+	closedir(dir1);
+	closedir(dir2);
 
 	videoSetMode(MODE_3_2D);
 	videoSetModeSub(MODE_0_2D);
@@ -109,8 +119,8 @@ int main()
 	oamInit(&oamMain, SpriteMapping_1D_128, true);
 	oamInit(&oamSub, SpriteMapping_1D_128, true);
 
-	u8* acename = readFile("nitro:/AceName/acename.ttf");
-	u8* igiari = readFile("nitro:/Igiari/Igiari.otf");
+	u8* acename = readFile("/data/ao-nds/ui/AceName/acename.ttf");
+	u8* igiari = readFile("/data/ao-nds/ui/Igiari/Igiari.otf");
 	initFont(acename, 13);	// index 0
 	initFont(igiari, 16);	// index 1
 

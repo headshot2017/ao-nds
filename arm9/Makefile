@@ -54,7 +54,7 @@ LDFLAGS		=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # Any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:= -ldswifi9 -lfilesystem -lfat -lnds9
+LIBS		:= -ldswifi9 -lfat -lnds9
 
 #---------------------------------------------------------------------------------
 # List of directories containing libraries, this must be the top level containing
@@ -99,7 +99,7 @@ endif
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
 
-export IMGBIN	:=	$(foreach img,$(PNGFILES),$(TOPDIR)/nitrofiles/$(img:.png=.img.bin))
+export IMGBIN	:=	$(foreach imgfile,$(PNGFILES),$(TOPDIR)/fat/data/ao-nds/ui/$(imgfile:.png=.img.bin))
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
@@ -141,7 +141,7 @@ $(ARM9ELF)	:	$(IMGBIN) $(OFILES)
 	@$(bin2o)
 
 #---------------------------------------------------------------------------------
-$(TOPDIR)/nitrofiles/%.img.bin : %.png
+$(TOPDIR)/fat/data/ao-nds/ui/%.img.bin : %.png
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	grit $< -ftb -fh! -o$@

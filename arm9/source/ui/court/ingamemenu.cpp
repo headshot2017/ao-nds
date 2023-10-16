@@ -30,9 +30,9 @@ void UICourtIngameMenu::init()
 {
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 
-	u8* bgTiles = readFile("nitro:/bg_ingameMain.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_ingameMain.map.bin");
-	u8* bgPal = readFile("nitro:/bg_ingameMain.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_ingameMain.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_ingameMain.map.bin");
+	u8* bgPal = readFile("/data/ao-nds/ui/bg_ingameMain.pal.bin");
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
@@ -42,11 +42,11 @@ void UICourtIngameMenu::init()
 	delete[] bgMap;
 	delete[] bgPal;
 
-	btn_talkIC = new UIButton(&oamSub, "nitro:/spr_talkIC", 0, 2, 1, SpriteSize_64x32, 8, 54, 112, 28, 64, 32, 0);
-	btn_talkOOC = new UIButton(&oamSub, "nitro:/spr_talkOOC", btn_talkIC->nextOamInd(), 2, 1, SpriteSize_64x32, 8, 110, 112, 28, 64, 32, 1);
-	btn_music = new UIButton(&oamSub, "nitro:/spr_musicAreas", btn_talkOOC->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 54, 112, 28, 64, 32, 2);
-	btn_changeChar = new UIButton(&oamSub, "nitro:/spr_changeChar", btn_music->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 110, 112, 28, 64, 32, 3);
-	btn_courtRecord = new UIButton(&oamSub, "nitro:/spr_courtRecord", btn_changeChar->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 4);
+	btn_talkIC = new UIButton(&oamSub, "/data/ao-nds/ui/spr_talkIC", 0, 2, 1, SpriteSize_64x32, 8, 54, 112, 28, 64, 32, 0);
+	btn_talkOOC = new UIButton(&oamSub, "/data/ao-nds/ui/spr_talkOOC", btn_talkIC->nextOamInd(), 2, 1, SpriteSize_64x32, 8, 110, 112, 28, 64, 32, 1);
+	btn_music = new UIButton(&oamSub, "/data/ao-nds/ui/spr_musicAreas", btn_talkOOC->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 54, 112, 28, 64, 32, 2);
+	btn_changeChar = new UIButton(&oamSub, "/data/ao-nds/ui/spr_changeChar", btn_music->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 110, 112, 28, 64, 32, 3);
+	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_courtRecord", btn_changeChar->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 4);
 	lbl_currChar = new UILabel(&oamSub, btn_courtRecord->nextOamInd(), 6, 1, RGB15(5,5,5), 5, 0);
 
 	btn_courtRecord->assignKey(KEY_R);

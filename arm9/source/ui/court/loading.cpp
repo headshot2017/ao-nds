@@ -37,9 +37,9 @@ void UICourtLoading::init()
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 
-	u8* bgTiles = readFile("nitro:/bg_talkEmpty.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_talkEmpty.map.bin");
-	u8* bgPal = readFile("nitro:/bg_talkEmpty.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_talkEmpty.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_talkEmpty.map.bin");
+	u8* bgPal = readFile("/data/ao-nds/ui/bg_talkEmpty.pal.bin");
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
@@ -50,8 +50,8 @@ void UICourtLoading::init()
 	delete[] bgPal;
 
 	sprLoading = oamAllocateGfx(&oamSub, SpriteSize_16x16, SpriteColorFormat_256Color);
-	sprLoadingImg = readFile("nitro:/spr_loading.img.bin");
-	u8* sprLoadingPal = readFile("nitro:/spr_loading.pal.bin");
+	sprLoadingImg = readFile("/data/ao-nds/ui/spr_loading.img.bin");
+	u8* sprLoadingPal = readFile("/data/ao-nds/ui/spr_loading.pal.bin");
 	u8* offset = sprLoadingImg + (frame*16*16);
 	dmaCopy(offset, sprLoading, 16*16);
 	oamSet(&oamSub, 0, 256-24, 192-36, 0, 0, SpriteSize_16x16, SpriteColorFormat_256Color, sprLoading, -1, false, false, false, false, false);
@@ -62,7 +62,7 @@ void UICourtLoading::init()
 
 	delete[] sprLoadingPal;
 
-	btn_disconnect = new UIButton(&oamSub, "nitro:/spr_disconnect", 1, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 1);
+	btn_disconnect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_disconnect", 1, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 1);
 	lbl_loading = new UILabel(&oamSub, btn_disconnect->nextOamInd(), 8, 1, RGB15(31,31,31), 2, 0);
 	setText("Connecting...");
 

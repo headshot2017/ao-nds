@@ -46,9 +46,9 @@ void UICourtMusicList::init()
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 
-	u8* bgTiles = readFile("nitro:/bg_musicList.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("nitro:/bg_musicList.map.bin");
-	bgPal = readFile("nitro:/bg_musicList.pal.bin");
+	u8* bgTiles = readFile("/data/ao-nds/ui/bg_musicList.img.bin", &bgTilesLen);
+	u8* bgMap = readFile("/data/ao-nds/ui/bg_musicList.map.bin");
+	bgPal = readFile("/data/ao-nds/ui/bg_musicList.pal.bin");
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
@@ -57,20 +57,20 @@ void UICourtMusicList::init()
 	delete[] bgMap;
 
 	static musicBtnData btnData[7];
-	btn_back = new UIButton(&oamSub, "nitro:/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_listToggle = new UIButton(&oamSub, "nitro:/spr_areas", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
-	btn_scrollUp = new UIButton(&oamSub, "nitro:/spr_scrollUp", btn_listToggle->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 31, 14, 19, 16, 32, 2);
-	btn_scrollDown = new UIButton(&oamSub, "nitro:/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_listToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_areas", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
+	btn_scrollUp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollUp", btn_listToggle->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 31, 14, 19, 16, 32, 2);
+	btn_scrollDown = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
 	for (int i=0; i<7; i++)
 	{
 		lbl_musicBtn[i] = new UILabel(&oamSub, (!i) ? btn_scrollDown->nextOamInd() : btn_musicBtn[i-1]->nextOamInd(), 7, 1, 0, 4, 0);
 		lbl_musicBtn[i]->setPos(4, 32+(17*i)+1);
-		btn_musicBtn[i] = new UIButton(&oamSub, "nitro:/spr_musicBtn", lbl_musicBtn[i]->nextOamInd(), 8, 1, SpriteSize_32x16, 2, 32+(17*i), 238, 16, 32, 16, 5+i);
+		btn_musicBtn[i] = new UIButton(&oamSub, "/data/ao-nds/ui/spr_musicBtn", lbl_musicBtn[i]->nextOamInd(), 8, 1, SpriteSize_32x16, 2, 32+(17*i), 238, 16, 32, 16, 5+i);
 
 		btnData[i] = {this, i};
 		btn_musicBtn[i]->connect(onMusicClicked, &btnData[i]);
 	}
-	btn_sliderHandle = new UIButton(&oamSub, "nitro:/spr_sliderHandle", btn_musicBtn[6]->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 12);
+	btn_sliderHandle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_sliderHandle", btn_musicBtn[6]->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 12);
 
 	kb_search = new AOkeyboard(1, btn_sliderHandle->nextOamInd(), 13);
 	memcpy(BG_PALETTE_SUB, bgPal, 512);
