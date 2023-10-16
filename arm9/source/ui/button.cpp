@@ -246,7 +246,7 @@ void UIButton::updateInput()
 		}
 	}
 
-	if (assignedKey && (keyDown & assignedKey))
+	if (!pressing && assignedKey && (keyDown & assignedKey))
 	{
 		pressing = true;
 		callbacks[0].cb(callbacks[0].pUserData);
