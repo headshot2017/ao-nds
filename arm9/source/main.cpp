@@ -83,7 +83,7 @@ int main()
 
 	irqSet(IRQ_VBLANK, Vblank);
 
-	if (!isDSiMode() && !fatInitDefault())
+	if (!fatInitDefault())
 	{
 		consoleDemoInit();
 		iprintf("Failed to initialize libfat\nPlease check your SD card\n");
