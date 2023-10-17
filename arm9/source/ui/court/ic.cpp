@@ -12,6 +12,7 @@
 #include "colors.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/icchatlog.h"
+#include "ui/court/judge.h"
 #include "ui/court/mute.h"
 
 struct emoteBtnData
@@ -96,6 +97,7 @@ void UICourtIC::init()
 	static emoteBtnData btnData[4];
 	for (u32 i=0; i<4; i++)
 	{
+		mp3_fill_buffer();
 		int nextOam = (!i) ? btn_nextPage->nextOamInd() : btn_emote[i-1]->nextOamInd();
 		btnData[i] = {this, i};
 
@@ -105,6 +107,7 @@ void UICourtIC::init()
 
 	for (int i=0; i<2; i++)
 	{
+		mp3_fill_buffer();
 		int nextOam = (!i) ? btn_emote[3]->nextOamInd() : spr_bars[i-1]->nextOamInd();
 
 		std::string file = (!i) ? "/data/ao-nds/ui/spr_barDefense" : "/data/ao-nds/ui/spr_barProsecutor";
@@ -123,6 +126,7 @@ void UICourtIC::init()
 
 	kb_input = new AOkeyboard(4, lbl_color->nextOamInd(), 14);
 	memcpy(BG_PALETTE_SUB, bg_icPal, 512);
+	mp3_fill_buffer();
 	isWritingChat = false;
 
 	btn_prevPage->setPriority(1);
@@ -531,6 +535,8 @@ void UICourtIC::onToolsClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+
+	pSelf->pCourtUI->changeScreen(new UICourtJudge(pSelf->pCourtUI));
 }
 
 void UICourtIC::onAdditiveClicked(void* pUserData)

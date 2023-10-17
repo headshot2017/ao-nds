@@ -91,6 +91,7 @@
 		<Unit filename="arm9/include/ui/court/ic.h" />
 		<Unit filename="arm9/include/ui/court/icchatlog.h" />
 		<Unit filename="arm9/include/ui/court/ingamemenu.h" />
+		<Unit filename="arm9/include/ui/court/judge.h" />
 		<Unit filename="arm9/include/ui/court/loading.h" />
 		<Unit filename="arm9/include/ui/court/musiclist.h" />
 		<Unit filename="arm9/include/ui/court/mute.h" />
@@ -129,6 +130,7 @@
 		<Unit filename="arm9/source/ui/court/ic.cpp" />
 		<Unit filename="arm9/source/ui/court/icchatlog.cpp" />
 		<Unit filename="arm9/source/ui/court/ingamemenu.cpp" />
+		<Unit filename="arm9/source/ui/court/judge.cpp" />
 		<Unit filename="arm9/source/ui/court/loading.cpp" />
 		<Unit filename="arm9/source/ui/court/musiclist.cpp" />
 		<Unit filename="arm9/source/ui/court/mute.cpp" />
