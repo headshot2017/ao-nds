@@ -183,7 +183,7 @@ void UIScreenCourt::onMessageSC(void* pUserData, std::string msg)
 			side = ini["options"]["side"];
 		}
 
-		pSelf->charList.push_back({name, showname, blip, side, false});
+		pSelf->charList.push_back({name, showname, blip, side, false, false});
 
 		lastPos = delimiterPos;
 		delimiterPos = msg.find("#", delimiterPos+1);
@@ -286,12 +286,11 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 
 	int charID = std::stoi(argumentAt(msg, 9));
 
-	if (!pSelf->icSendQueue.empty())
-	{
-		int myCharID = std::stoi(argumentAt(pSelf->icSendQueue.front(), 9));
-		if (charID == myCharID)
-			pSelf->icSendQueue.pop_front();
-	}
+	if (!pSelf->icSendQueue.empty() && charID == pSelf->currChar)
+		pSelf->icSendQueue.pop_front();
+
+	if (pSelf->charList[charID].muted)
+		return;
 
 	std::string name = argumentAt(msg,16);
 	if (name.empty()) name = argumentAt(msg, 3);
@@ -361,6 +360,8 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 			break;
 		}
 	}
+	if (pSelf->getCurrChar().muted)
+		pSelf->getCurrChar().muted = false;
 
 	mINI::INIFile file("/data/ao-nds/characters/" + pSelf->getCurrChar().name + "/char.ini");
 	mINI::INIStructure ini;

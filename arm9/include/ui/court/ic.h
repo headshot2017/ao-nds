@@ -48,8 +48,6 @@ class UICourtIC : public UISubScreen
 	AOkeyboard* kb_input;
 	bool isWritingChat;
 
-	u8* btnPalettes[4];
-
 	u32 currPage;
 	u32 currEmoteSelected;
 

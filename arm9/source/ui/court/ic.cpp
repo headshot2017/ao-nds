@@ -12,6 +12,7 @@
 #include "colors.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/icchatlog.h"
+#include "ui/court/mute.h"
 
 struct emoteBtnData
 {
@@ -97,7 +98,6 @@ void UICourtIC::init()
 	{
 		int nextOam = (!i) ? btn_nextPage->nextOamInd() : btn_emote[i-1]->nextOamInd();
 		btnData[i] = {this, i};
-		btnPalettes[i] = 0;
 
 		btn_emote[i] = new UIButton(&oamSub, "", nextOam, 1, 1, SpriteSize_64x64, 38+(i*47), 71, 40, 40, 64, 64, 7+i);
 		btn_emote[i]->connect(onEmoteClicked, &btnData[i]);
@@ -360,14 +360,11 @@ void UICourtIC::reloadPage()
 
 	for (u32 i=0; i<4; i++)
 	{
-		if (btnPalettes[i]) delete btnPalettes[i];
-
 		mp3_fill_buffer();
 
 		u32 ind = currPage*4 + i;
 		if (ind >= pCourtUI->getCharEmotes().size())
 		{
-			btnPalettes[i] = 0;
 			btn_emote[i]->setVisible(false);
 			continue;
 		}
@@ -385,25 +382,13 @@ void UICourtIC::reloadPage()
 
 		std::string buttonFile = "/data/ao-nds/characters/" + pCourtUI->getCurrChar().name + "/emotions/button" + std::to_string(ind+1) + "_off";
 		bool exists = fileExists(buttonFile+".img.bin");
-		btnPalettes[i] = (exists) ? readFile(buttonFile+".pal.bin") : 0;
 		mp3_fill_buffer();
 
 		btn_emote[i]->setImage((exists) ? buttonFile : "", 64, 64, 7+i);
 		btn_emote[i]->setVisible(true);
 
 		if (i == currEmoteSelected)
-		{
-			// make emote button dark
-			vramSetBankI(VRAM_I_LCD);
-			for (u32 j=0; j<256; j++)
-			{
-				u8 r=0, g=0, b=0;
-				fromRGB15(VRAM_I_EXT_SPR_PALETTE[7+i][j], r, g, b);
-				VRAM_I_EXT_SPR_PALETTE[7+i][j] = RGB15(r>>1, g>>1, b>>1);
-				mp3_fill_buffer();
-			}
-			vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
-		}
+			btn_emote[i]->darken();
 	}
 
 	u32 maxPages = (u32)ceil(pCourtUI->getCharEmotes().size()/4.f);
@@ -481,6 +466,8 @@ void UICourtIC::onMuteClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+
+	pSelf->pCourtUI->changeScreen(new UICourtMute(pSelf->pCourtUI));
 }
 
 void UICourtIC::onOptionsToggled(void* pUserData)
@@ -625,24 +612,13 @@ void UICourtIC::onEmoteClicked(void* pUserData)
 
 	if (pData->btnInd == pSelf->currEmoteSelected) return;
 
-	// unlock VRAM so it can be accessed here
-	vramSetBankI(VRAM_I_LCD);
-
 	// restore previous emote button palette
-	dmaCopy(pSelf->btnPalettes[pSelf->currEmoteSelected], &VRAM_I_EXT_SPR_PALETTE[7+pSelf->currEmoteSelected], 512);
+	pSelf->btn_emote[pSelf->currEmoteSelected]->restorePalette();
 
 	pSelf->currEmoteSelected = pData->btnInd;
 
-	// make emote button dark
-	for (u32 j=0; j<256; j++)
-	{
-		u8 r=0, g=0, b=0;
-		fromRGB15(VRAM_I_EXT_SPR_PALETTE[7+pSelf->currEmoteSelected][j], r, g, b);
-		VRAM_I_EXT_SPR_PALETTE[7+pSelf->currEmoteSelected][j] = RGB15(r>>1, g>>1, b>>1);
-		mp3_fill_buffer();
-	}
-
-	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	// darken selected button palette
+	pSelf->btn_emote[pSelf->currEmoteSelected]->darken();
 }
 
 void UICourtIC::onMessagePV(void* pUserData, std::string msg)

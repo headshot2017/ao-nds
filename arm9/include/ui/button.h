@@ -17,6 +17,7 @@ class UIButton
 	SpriteSize spriteSize;
 	OamState* oam;
 	int oamStart;
+	int paletteSlot;
 	touchPosition touchPos;
 
 	int x;
@@ -53,6 +54,9 @@ public:
 	void setPriority(int pr);
 	void setFlip(bool h, bool v);
 	void forceRelease();
+	void darken();
+	void restorePalette();
+
 	void connect(voidCallback cb, void* p, int cbType=PRESSED) {callbacks[cbType].cb = cb; callbacks[cbType].pUserData = p;}
 	void assignKey(u32 k) {assignedKey = k;}
 

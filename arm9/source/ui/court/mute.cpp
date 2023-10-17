@@ -1,4 +1,4 @@
-#include "ui/court/charselect.h"
+#include "ui/court/mute.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -11,16 +11,15 @@
 
 #include "mp3_shared.h"
 #include "engine.h"
-#include "ui/uiserverlist.h"
-#include "ui/court/ingamemenu.h"
+#include "ui/court/ic.h"
 
-struct charBtnData
+struct charMuteBtnData
 {
-	UICourtCharSelect* pObj;
+	UICourtMute* pObj;
 	int btnInd;
 };
 
-UICourtCharSelect::~UICourtCharSelect()
+UICourtMute::~UICourtMute()
 {
 	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
@@ -30,8 +29,8 @@ UICourtCharSelect::~UICourtCharSelect()
 
 	delete btn_pageLeft;
 	delete btn_pageRight;
-	delete btn_disconnect;
-	delete btn_confirm;
+	delete btn_back;
+	delete btn_muteToggle;
 	delete lbl_charname;
 	delete lbl_pages;
 	delete sel_btn;
@@ -39,11 +38,9 @@ UICourtCharSelect::~UICourtCharSelect()
 		delete btn_chars[i];
 
 	delete kb_search;
-
-	gEngine->getSocket()->removeMessageCallback("PV", cbPV);
 }
 
-void UICourtCharSelect::init()
+void UICourtMute::init()
 {
 	currPage = 0;
 	currCharSelected = -1;
@@ -63,15 +60,15 @@ void UICourtCharSelect::init()
 
 	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
 	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
-	btn_disconnect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_disconnect", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 2);
-	btn_confirm = new UIButton(&oamSub, "/data/ao-nds/ui/spr_confirm", btn_disconnect->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 3);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 2);
+	btn_muteToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_muteToggle", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 3);
 
-	lbl_charname = new UILabel(&oamSub, btn_confirm->nextOamInd(), 6, 1, RGB15(31, 16, 0), 4, 0);
+	lbl_charname = new UILabel(&oamSub, btn_muteToggle->nextOamInd(), 6, 1, RGB15(31, 16, 0), 4, 0);
 	lbl_pages = new UILabel(&oamSub, lbl_charname->nextOamInd(), 1, 1, RGB15(13, 2, 0), 5, 0);
 
 	sel_btn = new UISelectCross(&oamSub, lbl_pages->nextOamInd(), 6);
 
-	static charBtnData btnData[8];
+	static charMuteBtnData btnData[8];
 	for (int y=0; y<2; y++)
 	{
 		for (int x=0; x<4; x++)
@@ -89,8 +86,8 @@ void UICourtCharSelect::init()
 	memcpy(BG_PALETTE_SUB, bgPal, 512);
 	mp3_fill_buffer();
 
-	btn_disconnect->assignKey(KEY_B);
-	btn_confirm->assignKey(KEY_A);
+	btn_back->assignKey(KEY_B);
+	btn_muteToggle->assignKey(KEY_A);
 	btn_pageLeft->assignKey(KEY_LEFT);
 	btn_pageRight->assignKey(KEY_RIGHT);
 
@@ -99,15 +96,14 @@ void UICourtCharSelect::init()
 	btn_pageRight->connect(onNextPage, this, UIButton::PRESSED);
 	btn_pageLeft->connect(onPageBtnRelease, this, UIButton::RELEASED);
 	btn_pageRight->connect(onPageBtnRelease, this, UIButton::RELEASED);
-	btn_disconnect->connect(onDisconnectClicked, this);
-	btn_confirm->connect(onConfirmClicked, this);
+	btn_back->connect(onBackClicked, this);
+	btn_muteToggle->connect(onMuteToggled, this);
 
-	cbPV = gEngine->getSocket()->addMessageCallback("PV", onMessagePV, this);
 	updateFilter();
 	reloadPage();
 }
 
-void UICourtCharSelect::update()
+void UICourtMute::update()
 {
 	if (pageAdd)
 	{
@@ -131,7 +127,7 @@ void UICourtCharSelect::update()
 	}
 }
 
-void UICourtCharSelect::updateInput()
+void UICourtMute::updateInput()
 {
 	if (kb_search->isVisible())
 	{
@@ -141,7 +137,7 @@ void UICourtCharSelect::updateInput()
 			memcpy(BG_PALETTE_SUB, bgPal, 512);
 			bgShow(bgIndex);
 
-			btn_disconnect->setVisible(true);
+			btn_back->setVisible(true);
 
 			filter = kb_search->getValue();
 			if (result > 0) updateFilter();
@@ -152,8 +148,8 @@ void UICourtCharSelect::updateInput()
 
 	btn_pageLeft->updateInput();
 	btn_pageRight->updateInput();
-	btn_disconnect->updateInput();
-	btn_confirm->updateInput();
+	btn_back->updateInput();
+	btn_muteToggle->updateInput();
 	for (int i=0; i<8; i++) btn_chars[i]->updateInput();
 
 	if (keysDown() & KEY_TOUCH)
@@ -169,8 +165,8 @@ void UICourtCharSelect::updateInput()
 
 			btn_pageLeft->setVisible(false);
 			btn_pageRight->setVisible(false);
-			btn_disconnect->setVisible(false);
-			btn_confirm->setVisible(false);
+			btn_back->setVisible(false);
+			btn_muteToggle->setVisible(false);
 			lbl_charname->setVisible(false);
 			lbl_pages->setVisible(false);
 			sel_btn->setVisible(false);
@@ -182,7 +178,7 @@ void UICourtCharSelect::updateInput()
 	}
 }
 
-void UICourtCharSelect::reloadPage()
+void UICourtMute::reloadPage()
 {
 	if (currCharSelected != -1)
 	{
@@ -209,20 +205,20 @@ void UICourtCharSelect::reloadPage()
 		btn_chars[i]->setImage((exists ? ("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon") : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 7+i);
 		btn_chars[i]->setVisible(true);
 
-		if (pCourtUI->getCharList()[ind].taken)
+		if (pCourtUI->getCharList()[ind].muted)
 			btn_chars[i]->darken();
 	}
 
 	u32 maxPages = (u32)ceil(filteredChars.size()/8.f);
 	btn_pageLeft->setVisible(currPage > 0);
 	btn_pageRight->setVisible(currPage+1 < maxPages);
-	btn_confirm->setVisible(false);
+	btn_muteToggle->setVisible(false);
 	sel_btn->setVisible(false);
 
 	updatePageText();
 }
 
-void UICourtCharSelect::updatePageText()
+void UICourtMute::updatePageText()
 {
 	char buf[32];
 	u32 maxPages = (u32)ceil(filteredChars.size()/8.f);
@@ -237,7 +233,7 @@ void UICourtCharSelect::updatePageText()
 	mp3_fill_buffer();
 }
 
-void UICourtCharSelect::updateFilter()
+void UICourtMute::updateFilter()
 {
 	filteredChars.clear();
 	currPage = 0;
@@ -266,9 +262,9 @@ void UICourtCharSelect::updateFilter()
 	}
 }
 
-void UICourtCharSelect::onPrevPage(void* pUserData)
+void UICourtMute::onPrevPage(void* pUserData)
 {
-	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
+	UICourtMute* pSelf = (UICourtMute*)pUserData;
 	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	pSelf->holdWait = 35;
@@ -278,9 +274,9 @@ void UICourtCharSelect::onPrevPage(void* pUserData)
 	pSelf->updatePageText();
 }
 
-void UICourtCharSelect::onNextPage(void* pUserData)
+void UICourtMute::onNextPage(void* pUserData)
 {
-	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
+	UICourtMute* pSelf = (UICourtMute*)pUserData;
 	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	pSelf->holdWait = 35;
@@ -290,38 +286,48 @@ void UICourtCharSelect::onNextPage(void* pUserData)
 	pSelf->updatePageText();
 }
 
-void UICourtCharSelect::onPageBtnRelease(void* pUserData)
+void UICourtMute::onPageBtnRelease(void* pUserData)
 {
-	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
+	UICourtMute* pSelf = (UICourtMute*)pUserData;
 
 	pSelf->pageAdd = 0;
 	pSelf->reloadPage();
 }
 
-void UICourtCharSelect::onDisconnectClicked(void* pUserData)
+void UICourtMute::onBackClicked(void* pUserData)
 {
-	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
+	UICourtMute* pSelf = (UICourtMute*)pUserData;
 
 	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
-	gEngine->changeScreen(new UIScreenServerList);
+	pSelf->pCourtUI->changeScreen(new UICourtIC(pSelf->pCourtUI));
 }
 
-void UICourtCharSelect::onConfirmClicked(void* pUserData)
+void UICourtMute::onMuteToggled(void* pUserData)
 {
-	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
+	UICourtMute* pSelf = (UICourtMute*)pUserData;
 
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currCharSelected;
-	gEngine->getSocket()->sendData("CC#0#" + std::to_string(pSelf->filteredChars[ind]) + "#" + gEngine->getMacAddr() + "#%");
+	charInfo& character = pSelf->pCourtUI->getCharList()[pSelf->filteredChars[ind]];
+	character.muted = !character.muted;
 
-	pSelf->btn_confirm->setVisible(false);
+	if (character.muted)
+	{
+		pSelf->btn_muteToggle->setFrame(1);
+		pSelf->btn_chars[pSelf->currCharSelected]->darken();
+	}
+	else
+	{
+		pSelf->btn_muteToggle->setFrame(0);
+		pSelf->btn_chars[pSelf->currCharSelected]->restorePalette();
+	}
 }
 
-void UICourtCharSelect::onCharClicked(void* pUserData)
+void UICourtMute::onCharClicked(void* pUserData)
 {
-	charBtnData* pData = (charBtnData*)pUserData;
-	UICourtCharSelect* pSelf = pData->pObj;
+	charMuteBtnData* pData = (charMuteBtnData*)pUserData;
+	UICourtMute* pSelf = pData->pObj;
 
 	if (pSelf->currCharSelected == pData->btnInd) return;
 	pSelf->currCharSelected = pData->btnInd;
@@ -336,12 +342,6 @@ void UICourtCharSelect::onCharClicked(void* pUserData)
 
 	pSelf->sel_btn->selectButton(pSelf->btn_chars[pData->btnInd], 2);
 
-	pSelf->btn_confirm->setVisible(!info.taken);
-}
-
-void UICourtCharSelect::onMessagePV(void* pUserData, std::string msg)
-{
-	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
-
-	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
+	pSelf->btn_muteToggle->setVisible((int)ind != pSelf->pCourtUI->getCurrCharID());
+	pSelf->btn_muteToggle->setFrame((info.muted) ? 1 : 0);
 }

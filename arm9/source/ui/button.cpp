@@ -10,6 +10,7 @@ UIButton::UIButton(OamState* chosenOam, std::string file, int oamStartInd, int h
 {
 	oam = chosenOam;
 	oamStart = oamStartInd;
+	paletteSlot = palSlot;
 
 	spriteHorTiles = horTiles;
 	spriteVertTiles = vertTiles;
@@ -99,6 +100,8 @@ UIButton::~UIButton()
 
 void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSlot)
 {
+	paletteSlot = palSlot;
+
 	if (currData) delete[] currData;
 	if (currPal) delete[] currPal;
 	mp3_fill_buffer();
@@ -227,6 +230,54 @@ void UIButton::forceRelease()
 
 	pressing = false;
 	if (callbacks[1].cb) callbacks[1].cb(callbacks[1].pUserData);
+}
+
+void UIButton::darken()
+{
+	if (oam == &oamMain)
+	{
+		vramSetBankF(VRAM_F_LCD);
+		for (u32 j=0; j<256; j++)
+		{
+			u8 r=0, g=0, b=0;
+			fromRGB15(VRAM_F_EXT_SPR_PALETTE[paletteSlot][j], r, g, b);
+			VRAM_F_EXT_SPR_PALETTE[paletteSlot][j] = RGB15(r>>1, g>>1, b>>1);
+			mp3_fill_buffer();
+		}
+		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+	}
+	else
+	{
+		vramSetBankI(VRAM_I_LCD);
+		for (u32 j=0; j<256; j++)
+		{
+			u8 r=0, g=0, b=0;
+			fromRGB15(VRAM_I_EXT_SPR_PALETTE[paletteSlot][j], r, g, b);
+			VRAM_I_EXT_SPR_PALETTE[paletteSlot][j] = RGB15(r>>1, g>>1, b>>1);
+			mp3_fill_buffer();
+		}
+		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	}
+}
+
+void UIButton::restorePalette()
+{
+	if (!currPal) return;
+
+	if (oam == &oamMain)
+	{
+		vramSetBankF(VRAM_F_LCD);
+		memcpy(&VRAM_F_EXT_SPR_PALETTE[paletteSlot], currPal, 512);
+		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+	}
+	else
+	{
+		vramSetBankI(VRAM_I_LCD);
+		memcpy(&VRAM_I_EXT_SPR_PALETTE[paletteSlot], currPal, 512);
+		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
+	}
+
+	mp3_fill_buffer();
 }
 
 void UIButton::updateInput()

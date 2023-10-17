@@ -93,6 +93,7 @@
 		<Unit filename="arm9/include/ui/court/ingamemenu.h" />
 		<Unit filename="arm9/include/ui/court/loading.h" />
 		<Unit filename="arm9/include/ui/court/musiclist.h" />
+		<Unit filename="arm9/include/ui/court/mute.h" />
 		<Unit filename="arm9/include/ui/court/ooc.h" />
 		<Unit filename="arm9/include/ui/court/oocpresets.h" />
 		<Unit filename="arm9/include/ui/keyboard.h" />
@@ -130,6 +131,7 @@
 		<Unit filename="arm9/source/ui/court/ingamemenu.cpp" />
 		<Unit filename="arm9/source/ui/court/loading.cpp" />
 		<Unit filename="arm9/source/ui/court/musiclist.cpp" />
+		<Unit filename="arm9/source/ui/court/mute.cpp" />
 		<Unit filename="arm9/source/ui/court/ooc.cpp" />
 		<Unit filename="arm9/source/ui/court/oocpresets.cpp" />
 		<Unit filename="arm9/source/ui/keyboard.cpp" />

@@ -17,6 +17,7 @@ struct charInfo
 	std::string blip;
 	std::string side;
 	bool taken;
+	bool muted;
 };
 
 struct musicInfo
@@ -91,13 +92,13 @@ public:
 
 	void sendIC(const std::string& msg);
 
-	const std::vector<charInfo>& getCharList() {return charList;}
+	std::vector<charInfo>& getCharList() {return charList;}
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	const std::vector<std::string>& getICLog() {return icLog;}
 	const std::vector<std::string>& getOOCLog() {return oocLog;}
 	int getCurrCharID() {return currChar;}
-	const charInfo& getCurrChar() {return charList[currChar];}
+	charInfo& getCurrChar() {return charList[currChar];}
 	const std::vector<emoteInfo>& getCharEmotes() {return charEmotes;}
 
 	static void onMessageID(void* pUserData, std::string msg);
