@@ -92,6 +92,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("CT", onMessageCT, this);
 	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 	sock->addMessageCallback("PV", onMessagePV, this);
+	sock->addMessageCallback("FA", onMessageFA, this);
 	sock->addMessageCallback("ARUP", onMessageARUP, this);
 	sock->addMessageCallback("HP", onMessageHP, this);
 	sock->addMessageCallback("KK", onMessageKK, this);
@@ -388,6 +389,29 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 			pSelf->charEmotes.push_back({name, preanim, anim, emoteModifier, deskMod, sound, delay});
 		}
 	}
+}
+
+void UIScreenCourt::onMessageFA(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	pSelf->areaList.clear();
+
+	std::size_t delimiterPos = msg.find("#");
+	std::size_t lastPos = delimiterPos;
+	delimiterPos = msg.find("#", delimiterPos+1);
+
+	while (lastPos != std::string::npos)
+	{
+		std::string area = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
+
+		pSelf->areaList.push_back({area, 0, "", "", ""});
+
+		lastPos = delimiterPos;
+		delimiterPos = msg.find("#", delimiterPos+1);
+	}
+
+	pSelf->areaList.pop_back(); // remove "%"
 }
 
 void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)

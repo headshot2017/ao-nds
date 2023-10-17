@@ -112,6 +112,7 @@ public:
 	static void onMessageCT(void* pUserData, std::string msg);
 	static void onMessageCharsCheck(void* pUserData, std::string msg);
 	static void onMessagePV(void* pUserData, std::string msg);
+	static void onMessageFA(void* pUserData, std::string msg);
 	static void onMessageARUP(void* pUserData, std::string msg);
 	static void onMessageHP(void* pUserData, std::string msg);
 	static void onMessageKK(void* pUserData, std::string msg);
