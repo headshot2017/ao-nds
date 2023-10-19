@@ -52,15 +52,21 @@ class UIScreenCourt;
 class UISubScreen
 {
 public:
-	UISubScreen(UIScreenCourt* courtUI) : pCourtUI(courtUI) {}
-	virtual ~UISubScreen() {}
+	UISubScreen(UIScreenCourt* courtUI) : pCourtUI(courtUI), bgIndex(-1), bgTilesLen(0), bgPal(0) {}
+	virtual ~UISubScreen();
 
 	virtual void init() {}
 	virtual void updateInput() {}
 	virtual void update() {}
 
+	void loadBg(std::string filename, bool deletePal=false);
+
 protected:
 	UIScreenCourt* pCourtUI;
+
+	int bgIndex;
+	u32 bgTilesLen;
+	u8* bgPal;
 };
 
 class UIScreenCourt : public UIScreen

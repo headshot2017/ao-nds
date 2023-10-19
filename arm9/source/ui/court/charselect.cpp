@@ -22,12 +22,6 @@ struct charBtnData
 
 UICourtCharSelect::~UICourtCharSelect()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
-	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
-
-	delete[] bgPal;
-
 	delete btn_pageLeft;
 	delete btn_pageRight;
 	delete btn_disconnect;
@@ -51,15 +45,7 @@ void UICourtCharSelect::init()
 	pageAdd = 0;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-	u8* bgTiles = readFile("/data/ao-nds/ui/bg_charSelect.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("/data/ao-nds/ui/bg_charSelect.map.bin");
-	bgPal = readFile("/data/ao-nds/ui/bg_charSelect.pal.bin");
-
-	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-
-	delete[] bgTiles;
-	delete[] bgMap;
+	loadBg("/data/ao-nds/ui/bg_charSelect");
 
 	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
 	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);

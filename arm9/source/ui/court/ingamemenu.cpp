@@ -14,10 +14,6 @@
 
 UICourtIngameMenu::~UICourtIngameMenu()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
-	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
-
 	delete btn_talkIC;
 	delete btn_talkOOC;
 	delete btn_music;
@@ -29,18 +25,7 @@ UICourtIngameMenu::~UICourtIngameMenu()
 void UICourtIngameMenu::init()
 {
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-
-	u8* bgTiles = readFile("/data/ao-nds/ui/bg_ingameMain.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("/data/ao-nds/ui/bg_ingameMain.map.bin");
-	u8* bgPal = readFile("/data/ao-nds/ui/bg_ingameMain.pal.bin");
-
-	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	memcpy(BG_PALETTE_SUB, bgPal, 512);
-
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
+	loadBg("/data/ao-nds/ui/bg_ingameMain", true);
 
 	btn_talkIC = new UIButton(&oamSub, "/data/ao-nds/ui/spr_talkIC", 0, 2, 1, SpriteSize_64x32, 8, 54, 112, 28, 64, 32, 0);
 	btn_talkOOC = new UIButton(&oamSub, "/data/ao-nds/ui/spr_talkOOC", btn_talkIC->nextOamInd(), 2, 1, SpriteSize_64x32, 8, 110, 112, 28, 64, 32, 1);

@@ -9,7 +9,6 @@
 
 class UICourtIC : public UISubScreen
 {
-	int bgIndex;
 	u32 bg_icTilesLen;
 	u32 bg_icExtTilesLen;
 

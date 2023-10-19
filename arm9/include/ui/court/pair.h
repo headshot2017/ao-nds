@@ -8,9 +8,6 @@
 
 class UICourtPair : public UISubScreen
 {
-	int bgIndex;
-	u32 bgTilesLen;
-
 	UIButton* btn_back;
 	UIButton* btn_disable;
 	UIButton* btn_charSelect;

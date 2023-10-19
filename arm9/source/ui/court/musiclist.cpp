@@ -22,12 +22,6 @@ struct musicBtnData
 
 UICourtMusicList::~UICourtMusicList()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
-	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
-
-	delete[] bgPal;
-
 	delete btn_back;
 	delete btn_listToggle;
 	delete btn_scrollUp;
@@ -45,16 +39,7 @@ void UICourtMusicList::init()
 	scrollPos = 0;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-
-	u8* bgTiles = readFile("/data/ao-nds/ui/bg_musicList.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("/data/ao-nds/ui/bg_musicList.map.bin");
-	bgPal = readFile("/data/ao-nds/ui/bg_musicList.pal.bin");
-
-	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-
-	delete[] bgTiles;
-	delete[] bgMap;
+	loadBg("/data/ao-nds/ui/bg_musicList");
 
 	static musicBtnData btnData[7];
 	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);

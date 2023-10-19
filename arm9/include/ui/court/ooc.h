@@ -9,10 +9,6 @@
 
 class UICourtOOC : public UISubScreen
 {
-	int bgIndex;
-	u32 bgTilesLen;
-	u8* bgPal;
-
 	u32 scrollPos;
 	bool atBottom;
 

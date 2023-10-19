@@ -25,8 +25,6 @@ struct emoteBtnData
 UICourtIC::~UICourtIC()
 {
 	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), (displayingOptions) ? bg_icExtTilesLen : bg_icTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
-	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 
 	delete[] bg_icTiles;
 	delete[] bg_icMap;

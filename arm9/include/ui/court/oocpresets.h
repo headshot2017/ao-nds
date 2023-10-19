@@ -9,10 +9,6 @@
 
 class UICourtOOCPresets : public UISubScreen
 {
-	int bgIndex;
-	u32 bgTilesLen;
-	u8* bgPal;
-
 	UIButton* btn_back;
 	UIButton* btn_addOrConfirm;
 	UIButton* btn_delete;

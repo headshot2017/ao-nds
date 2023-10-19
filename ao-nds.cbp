@@ -149,6 +149,7 @@
 		<Unit filename="arm9/source/ui/uimainmenu.cpp" />
 		<Unit filename="arm9/source/ui/uiserverlist.cpp" />
 		<Unit filename="arm9/source/ui/uisettings.cpp" />
+		<Unit filename="arm9/source/ui/uisubscreen.cpp" />
 		<Unit filename="arm9/source/ui/uiwificonnect.cpp" />
 		<Unit filename="arm9/source/websocket/mongoose.c">
 			<Option compilerVar="CC" />

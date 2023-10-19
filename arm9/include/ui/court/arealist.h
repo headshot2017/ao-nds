@@ -10,9 +10,6 @@
 
 class UICourtAreaList : public UISubScreen
 {
-	int bgIndex;
-	u32 bgTilesLen;
-
 	u32 currPage;
 	int currAreaSelected;
 
