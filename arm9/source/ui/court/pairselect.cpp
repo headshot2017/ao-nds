@@ -21,12 +21,6 @@ struct charPairBtnData
 
 UICourtPairSelect::~UICourtPairSelect()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
-	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
-
-	delete[] bgPal;
-
 	delete btn_pageLeft;
 	delete btn_pageRight;
 	delete btn_back;
