@@ -14,6 +14,7 @@
 #include "ui/court/icchatlog.h"
 #include "ui/court/judge.h"
 #include "ui/court/mute.h"
+#include "ui/court/pair.h"
 
 struct emoteBtnData
 {
@@ -236,7 +237,7 @@ void UICourtIC::updateInput()
 						std::to_string(pCourtUI->icControls.color) + "#" +
 						pCourtUI->showname + "#" +
 						std::to_string(pCourtUI->icControls.pairID) + "#" +
-						std::to_string(pCourtUI->icControls.offset) + "#" +
+						std::to_string(pCourtUI->icControls.xOffset) + "&" + std::to_string(pCourtUI->icControls.yOffset) + "#" +
 						std::to_string(pCourtUI->icControls.immediate) + "#" +
 						std::to_string(0) + "#" + // sfx looping
 						std::to_string(pCourtUI->icControls.shake) + "#" +
@@ -464,6 +465,8 @@ void UICourtIC::onPairClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+
+	pSelf->pCourtUI->changeScreen(new UICourtPair(pSelf->pCourtUI));
 }
 
 void UICourtIC::onMuteClicked(void* pUserData)

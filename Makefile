@@ -16,7 +16,7 @@ export TOPDIR		:=	$(CURDIR)
 #---------------------------------------------------------------------------------
 TEXT1 		:= Attorney Online DS
 TEXT2 		:= Headshotnoby
-#TEXT3 		:= 
+#TEXT3 		:=
 ICON 		:= icon.bmp
 #NITRODIR	:= -d nitrofiles
 #---------------------------------------------------------------------------------

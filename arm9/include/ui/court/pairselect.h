@@ -1,5 +1,5 @@
-#ifndef MUTE_H_INCLUDED
-#define MUTE_H_INCLUDED
+#ifndef PAIRSELECT_H_INCLUDED
+#define PAIRSELECT_H_INCLUDED
 
 #include <string>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "ui/selectcross.h"
 #include "ui/keyboard.h"
 
-class UICourtMute : public UISubScreen
+class UICourtPairSelect : public UISubScreen
 {
 	int bgIndex;
 	u32 bgTilesLen;
@@ -27,7 +27,7 @@ class UICourtMute : public UISubScreen
 	UIButton* btn_pageLeft;
 	UIButton* btn_pageRight;
 	UIButton* btn_back;
-	UIButton* btn_muteToggle;
+	UIButton* btn_pair;
 	UILabel* lbl_charname;
 	UILabel* lbl_pages;
 	UISelectCross* sel_btn;
@@ -40,8 +40,8 @@ class UICourtMute : public UISubScreen
 	int pageAdd;
 
 public:
-	UICourtMute(UIScreenCourt* courtUI) : UISubScreen(courtUI) {}
-	~UICourtMute();
+	UICourtPairSelect(UIScreenCourt* courtUI) : UISubScreen(courtUI) {}
+	~UICourtPairSelect();
 
 	void init();
 	void updateInput();
@@ -55,8 +55,8 @@ public:
 	static void onNextPage(void* pUserData);
 	static void onPageBtnRelease(void* pUserData);
 	static void onBackClicked(void* pUserData);
-	static void onMuteToggled(void* pUserData);
+	static void onPairClicked(void* pUserData);
 	static void onCharClicked(void* pUserData);
 };
 
-#endif // MUTE_H_INCLUDED
+#endif // PAIRSELECT_H_INCLUDED
