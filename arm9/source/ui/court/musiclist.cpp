@@ -32,6 +32,7 @@ UICourtMusicList::~UICourtMusicList()
 		delete lbl_musicBtn[i];
 	}
 	delete btn_sliderHandle;
+	delete kb_search;
 }
 
 void UICourtMusicList::init()
@@ -256,7 +257,7 @@ void UICourtMusicList::onToggleList(void* pUserData)
 {
 	UICourtMusicList* pSelf = (UICourtMusicList*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtAreaList(pSelf->pCourtUI));
 }
 
