@@ -370,8 +370,40 @@ def convertCharacters(source, target):
 
         recursiveCharacter(source+"/"+char, target+"/"+char, target+"/"+char)
 
-def convertEvidenceImages(folder):
-    pass
+def convertEvidenceImages(source, target):
+    if not os.path.exists(target+"/small"): os.mkdir(target+"/small")
+    if not os.path.exists(target+"/large"): os.mkdir(target+"/large")
+
+    for f in os.listdir(source):
+        try:
+            imgOriginal = Image.open(source+"/"+f).convert("RGBA")
+        except:
+            continue
+
+        no_ext_file = os.path.splitext(f)[0]
+        print(no_ext_file)
+        imgs = [[imgOriginal.resize((38, 38)).crop((0, 0, 64, 64)), "small"], [imgOriginal.crop((3, 3, 67, 67)), "large"]]
+
+        for img, sizeStr in imgs:
+            pix = img.load()
+            for x in range(img.size[0]):
+                for y in range(img.size[1]):
+                    if pix[x, y][3] < 128:
+                        pix[x, y] = (255, 0, 255, 255)
+                    else:
+                        pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
+
+            img.save("temp.png")
+            img.close()
+
+            # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
+            subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8").wait()
+
+            targetFile = target + "/" + sizeStr + "/" + no_ext_file
+            if os.path.exists(targetFile + ".img.bin"): os.remove(targetFile + ".img.bin")
+            if os.path.exists(targetFile + ".pal.bin"): os.remove(targetFile + ".pal.bin")
+            os.rename("temp.img.bin", targetFile + ".img.bin")
+            os.rename("temp.pal.bin", targetFile + ".pal.bin")
 
 def convertSounds(source, target):
     if not os.path.exists(target):

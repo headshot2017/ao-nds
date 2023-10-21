@@ -135,7 +135,7 @@ while 1:
         if os.path.exists("temp.png"): os.remove("temp.png")
 
     elif option == 4:
-        conversion.convertEvidenceImages(folder)
+        conversion.convertEvidenceImages(folder+"/evidence", "converted/data/ao-nds/evidence")
         if os.path.exists("temp.png"): os.remove("temp.png")
 
     elif option == 5:
