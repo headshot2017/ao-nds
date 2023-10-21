@@ -430,7 +430,8 @@ def convertMusic(source, target):
             targetFile = os.path.splitext(target+"/"+f)[0] + ".mp3"
 
             # need to apply this metadata title so that the mp3 player used in the NDS app doesn't act funky when loading it
-            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -map 0:a -ar 22050 -ac 2 -b:a 96k -metadata title=\"000000000000000000000000000000000000000\" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
+            # also delete any cover art, that freezes the ROM
+            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -map 0:a -ar 22050 -ac 2 -b:a 80k -metadata title=\"000000000000000000000000000000000000000\" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
 
 def convertChatbox(folder):
     print(folder+"/misc/default/chatbox.png")
