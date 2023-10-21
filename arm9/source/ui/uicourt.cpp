@@ -49,6 +49,8 @@ UIScreenCourt::~UIScreenCourt()
 	delete[] sndCancel;
 	delete[] sndEvTap;
 	delete[] sndEvPage;
+	delete[] sndEvShow;
+	delete[] sndCrtRcrd;
 
 	AOsocket* sock = gEngine->getSocket();
 	sock->clearCallbacks();
@@ -79,6 +81,8 @@ void UIScreenCourt::init()
 	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav", &sndCancelSize);
 	sndEvTap = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip.wav", &sndEvTapSize);
 	sndEvPage = wav_load_handle("/data/ao-nds/sounds/general/sfx-blink.wav", &sndEvPageSize);
+	sndEvShow = wav_load_handle("/data/ao-nds/sounds/general/sfx-shooop.wav", &sndEvShowSize);
+	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav", &sndCrtRcrdSize);
 
 	AOsocket* sock = gEngine->getSocket();
 	sock->addMessageCallback("ID", onMessageID, this);
@@ -94,6 +98,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("PV", onMessagePV, this);
 	sock->addMessageCallback("FA", onMessageFA, this);
 	sock->addMessageCallback("ARUP", onMessageARUP, this);
+	sock->addMessageCallback("LE", onMessageLE, this);
 	sock->addMessageCallback("HP", onMessageHP, this);
 	sock->addMessageCallback("KK", onMessageKK, this);
 	sock->addMessageCallback("KB", onMessageKB, this);
@@ -441,6 +446,52 @@ void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)
 				break;
 		}
 	}
+}
+
+void UIScreenCourt::onMessageLE(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	pSelf->evidenceList.clear();
+
+	std::size_t delimiterPos = msg.find("#");
+	std::size_t lastPos = delimiterPos;
+	delimiterPos = msg.find("#", delimiterPos+1);
+
+	while (lastPos != std::string::npos)
+	{
+		std::string info = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
+		if (info.at(0) == '%') break;
+
+		std::string name = argumentAt(info, 0, '&');
+		std::string desc = argumentAt(info, 1, '&');
+		std::string image = argumentAt(info, 2, '&');
+		AOdecode(name);
+		AOdecode(desc);
+		AOdecode(image);
+
+		// remove file extension from image
+		size_t newExtPos = 0;
+		size_t extPos = 0;
+		while (newExtPos != std::string::npos)
+		{
+			extPos = newExtPos;
+			newExtPos = image.find(".", extPos+1);
+			mp3_fill_buffer();
+		}
+		if (extPos)
+		{
+			image = image.substr(0, extPos);
+			mp3_fill_buffer();
+		}
+
+		pSelf->evidenceList.push_back({name, desc, image});
+
+		lastPos = delimiterPos;
+		delimiterPos = msg.find("#", delimiterPos+1);
+	}
+
+	//pSelf->evidenceList.pop_back(); // remove "%"
 }
 
 void UIScreenCourt::onMessageHP(void* pUserData, std::string msg)

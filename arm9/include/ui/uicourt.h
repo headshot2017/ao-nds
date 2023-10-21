@@ -36,6 +36,13 @@ struct areaInfo
 	std::string lock;
 };
 
+struct evidenceInfo
+{
+	std::string name;
+	std::string description;
+	std::string image;
+};
+
 struct emoteInfo
 {
 	std::string name;
@@ -78,6 +85,7 @@ class UIScreenCourt : public UIScreen
 	std::vector<charInfo> charList;
 	std::vector<musicInfo> musicList;
 	std::vector<areaInfo> areaList;
+	std::vector<evidenceInfo> evidenceList;
 
 	std::vector<std::string> icLog;
 	std::vector<std::string> oocLog;
@@ -101,6 +109,7 @@ public:
 	std::vector<charInfo>& getCharList() {return charList;}
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
+	const std::vector<evidenceInfo>& getEvidenceList() {return evidenceList;}
 	const std::vector<std::string>& getICLog() {return icLog;}
 	const std::vector<std::string>& getOOCLog() {return oocLog;}
 	int getCurrCharID() {return currChar;}
@@ -120,6 +129,7 @@ public:
 	static void onMessagePV(void* pUserData, std::string msg);
 	static void onMessageFA(void* pUserData, std::string msg);
 	static void onMessageARUP(void* pUserData, std::string msg);
+	static void onMessageLE(void* pUserData, std::string msg);
 	static void onMessageHP(void* pUserData, std::string msg);
 	static void onMessageKK(void* pUserData, std::string msg);
 	static void onMessageKB(void* pUserData, std::string msg);
@@ -129,10 +139,14 @@ public:
 	u32* sndCancel;
 	u32* sndEvTap;
 	u32* sndEvPage;
+	u32* sndEvShow;
+	u32* sndCrtRcrd;
 	u32 sndSelectSize;
 	u32 sndCancelSize;
 	u32 sndEvTapSize;
 	u32 sndEvPageSize;
+	u32 sndEvShowSize;
+	u32 sndCrtRcrdSize;
 
 	std::string showname;
 	std::string oocName;
