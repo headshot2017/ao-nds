@@ -63,7 +63,7 @@ void UICourtPairSelect::init()
 			btnData[i].btnInd = i;
 			btnData[i].pObj = this;
 
-			btn_chars[i] = new UIButton(&oamSub, "/data/ao-nds/ui/spr_unknownMugshot", (i>0) ? btn_chars[i-1]->nextOamInd() : sel_btn->nextOamInd(), 1, 1, SpriteSize_64x64, 37+(x*48), 63+(y*48), 38, 38, 64, 64, 7+i);
+			btn_chars[i] = new UIButton(&oamSub, "", (i>0) ? btn_chars[i-1]->nextOamInd() : sel_btn->nextOamInd(), 1, 1, SpriteSize_64x64, 37+(x*48), 63+(y*48), 38, 38, 64, 64, 7+i);
 			btn_chars[i]->connect(onCharClicked, &btnData[i]);
 		}
 	}
