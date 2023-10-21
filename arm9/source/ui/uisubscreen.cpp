@@ -9,7 +9,7 @@ UISubScreen::~UISubScreen()
 {
 	if (bgPal) delete[] bgPal;
 
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
+	if (bgTilesLen) dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 }
