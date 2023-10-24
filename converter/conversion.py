@@ -382,7 +382,7 @@ def convertEvidenceImages(source, target):
 
         no_ext_file = os.path.splitext(f)[0]
         print(no_ext_file)
-        imgs = [[imgOriginal.resize((38, 38)).crop((0, 0, 64, 64)), "small"], [imgOriginal.crop((0, 0, 128, 128)), "large"]]
+        imgs = [[imgOriginal.resize((38, 38)).crop((0, 0, 64, 64)), "small"], [imgOriginal.crop((3, 3, 68, 68)), "large"]]
 
         for img, sizeStr in imgs:
             pix = img.load()
