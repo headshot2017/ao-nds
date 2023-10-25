@@ -13,6 +13,7 @@ UILabel::UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u
 	oamStart = oamStartInd;
 	gfxPerLine = perLine;
 	maxLines = lines;
+	lineOffset = 12;
 	fontID = font;
 	paletteSlot = palSlot;
 
@@ -75,7 +76,7 @@ void UILabel::setPos(int x, int y, bool center)
 		mp3_fill_buffer();
 
 		int xPos = x + ((i % gfxPerLine) * 32) - ((center) ? w/2 : 0);
-		int yPos = y + ((i / gfxPerLine) * 12);
+		int yPos = y + ((i / gfxPerLine) * lineOffset);
 
 		oamSetXY(oam, oamStart+i, xPos, yPos);
 	}

@@ -11,6 +11,7 @@ class UILabel
 	u16** textGfx;
 	int gfxPerLine;
 	int maxLines;
+	int lineOffset;
 	u8* textCanvas;
 
 	OamState* oam;
@@ -28,6 +29,7 @@ public:
 	void setPos(int x, int y, bool center=false);
 	void setText(const char* text);
 	void setColor(u32 textColor);
+	void setLineOffset(int offset) {lineOffset = offset;}
 
 	int nextOamInd() {return oamStart+(gfxPerLine*maxLines);}
 };
