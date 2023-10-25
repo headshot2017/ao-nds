@@ -81,6 +81,9 @@ void Courtroom::playMusic(std::string filename)
 	else
 		filename += ".mp3";
 
+	if (filename == "~stop.mp3")
+		return;
+
 	iprintf("%s\n", filename.c_str());
 	FILE* f = fopen(filename.c_str(), "rb");
 	if (f!=NULL)

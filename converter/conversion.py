@@ -428,6 +428,8 @@ def convertMusic(source, target):
         else:
             print(source+"/"+f)
             targetFile = os.path.splitext(target+"/"+f)[0] + ".mp3"
+            if os.path.splitext(f)[0].lower() == "~stop": # don't convert ~stop.mp3
+                continue
 
             # need to apply this metadata title so that the mp3 player used in the NDS app doesn't act funky when loading it
             # also delete any cover art, that freezes the ROM
