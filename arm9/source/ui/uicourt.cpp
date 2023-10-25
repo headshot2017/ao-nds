@@ -282,6 +282,9 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
 	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
 
+	if (trackname.find("~stop") != std::string::npos)
+		return; // don't play ~stop.mp3
+
 	pSelf->court->playMusic("/data/ao-nds/sounds/music/"+trackname);
 }
 
