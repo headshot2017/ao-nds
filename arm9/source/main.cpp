@@ -20,6 +20,27 @@
 
 u32 showDisclaimer()
 {
+	REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP;
+	REG_BLDCNT_SUB = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP;
+	REG_BLDY = 16;
+	REG_BLDY_SUB = 16;
+
+	int alpha = 32;
+	while (1)
+	{
+		swiWaitForVBlank();
+
+		alpha--;
+		REG_BLDY = alpha>>1;
+		REG_BLDY_SUB = alpha>>1;
+		if (alpha == 0)
+			break;
+	}
+
+	REG_BLDCNT = BLEND_FADE_BLACK | BLEND_SRC_BG0;
+	REG_BLDCNT_SUB = BLEND_NONE;
+	REG_BLDY = 16;
+
 	u32 bgTilesLen, bgMapLen, bgPalLen;
 	u8* bgTiles = readFile("/data/ao-nds/ui/bg_disclaimer.img.bin", &bgTilesLen);
 	u8* bgMap = readFile("/data/ao-nds/ui/bg_disclaimer.map.bin", &bgMapLen);
@@ -34,25 +55,24 @@ u32 showDisclaimer()
 	delete[] bgMap;
 	delete[] bgPal;
 
-	REG_BLDCNT = BLEND_FADE_BLACK | BLEND_SRC_BG0;
-	REG_BLDY = 16;
-
 	return bgTilesLen;
 }
 
 void fadeDisclaimer(u32 tilesLen) {
 	int ticks = 0;
-	int alpha = 16;
+	int alpha = 32;
 	int alphaAdd = -1;
 	while (1)
 	{
+		scanKeys();
+		if (keysDown()) break;
 		swiWaitForVBlank();
 
 		alpha += alphaAdd;
-		REG_BLDY = alpha;
+		REG_BLDY = alpha>>1;
 		if (alpha == 0 && alphaAdd)
 			alphaAdd = 0;
-		else if (alpha == 16)
+		else if (alpha == 32)
 			break;
 		else if (!alphaAdd && ticks++ >= 60*3)
 			alphaAdd = 1;
