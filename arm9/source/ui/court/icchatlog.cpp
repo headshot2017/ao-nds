@@ -9,6 +9,7 @@
 #include "mp3_shared.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
+#include "ui/court/courtrecord.h"
 
 UICourtICChatLog::~UICourtICChatLog()
 {
@@ -142,7 +143,8 @@ void UICourtICChatLog::onCourtRecord(void* pUserData)
 {
 	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 }
 
 void UICourtICChatLog::onScrollUpPressed(void* pUserData)

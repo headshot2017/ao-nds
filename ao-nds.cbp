@@ -88,6 +88,9 @@
 		<Unit filename="arm9/include/ui/court/arealist.h" />
 		<Unit filename="arm9/include/ui/court/charselect.h" />
 		<Unit filename="arm9/include/ui/court/console.h" />
+		<Unit filename="arm9/include/ui/court/courtrecord.h" />
+		<Unit filename="arm9/include/ui/court/evidencedetail.h" />
+		<Unit filename="arm9/include/ui/court/evidenceimage.h" />
 		<Unit filename="arm9/include/ui/court/ic.h" />
 		<Unit filename="arm9/include/ui/court/icchatlog.h" />
 		<Unit filename="arm9/include/ui/court/ingamemenu.h" />
@@ -129,6 +132,9 @@
 		<Unit filename="arm9/source/ui/court/arealist.cpp" />
 		<Unit filename="arm9/source/ui/court/charselect.cpp" />
 		<Unit filename="arm9/source/ui/court/console.cpp" />
+		<Unit filename="arm9/source/ui/court/courtrecord.cpp" />
+		<Unit filename="arm9/source/ui/court/evidencedetail.cpp" />
+		<Unit filename="arm9/source/ui/court/evidenceimage.cpp" />
 		<Unit filename="arm9/source/ui/court/ic.cpp" />
 		<Unit filename="arm9/source/ui/court/icchatlog.cpp" />
 		<Unit filename="arm9/source/ui/court/ingamemenu.cpp" />

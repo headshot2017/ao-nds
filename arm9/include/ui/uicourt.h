@@ -7,6 +7,7 @@
 
 #include "uiscreen.h"
 #include "courtroom/courtroom.h"
+#include "engine.h"
 
 extern const char* indToSide[6];
 
@@ -34,13 +35,6 @@ struct areaInfo
 	std::string status;
 	std::string cm;
 	std::string lock;
-};
-
-struct evidenceInfo
-{
-	std::string name;
-	std::string description;
-	std::string image;
 };
 
 struct emoteInfo
@@ -109,7 +103,7 @@ public:
 	std::vector<charInfo>& getCharList() {return charList;}
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
-	const std::vector<evidenceInfo>& getEvidenceList() {return evidenceList;}
+	std::vector<evidenceInfo>& getEvidenceList(bool priv) {return (priv) ? gEngine->getPrivateEvidence() : evidenceList;}
 	const std::vector<std::string>& getICLog() {return icLog;}
 	const std::vector<std::string>& getOOCLog() {return oocLog;}
 	int getCurrCharID() {return currChar;}

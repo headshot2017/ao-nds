@@ -8,6 +8,8 @@
 #include <nds/interrupts.h>
 
 #include "cfgFile.h"
+#include "mini/ini.h"
+#include "mp3_shared.h"
 
 Engine* gEngine = nullptr;
 
@@ -18,10 +20,13 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 	running = true;
 
 	cacheMusic("/data/ao-nds/sounds/music");
+	cacheEvidence("/data/ao-nds/evidence/small");
 
 	cfgFile settings("/data/ao-nds/settings_nds.cfg");
 	defaultShowname = settings.get("showname", "");
 	defaultOOCname = settings.get("oocname", "");
+
+	loadPrivateEvidence();
 }
 
 Engine::~Engine()
@@ -50,6 +55,58 @@ void Engine::cacheMusic(const std::string& folder, std::string extra)
 	}
 
 	closedir(dir);
+}
+
+void Engine::cacheEvidence(const std::string& folder)
+{
+	DIR *dir = opendir(folder.c_str());
+	if (!dir) return;
+
+	struct dirent* dent;
+	while( (dent = readdir(dir)) )
+	{
+		if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, "..") || !strcmp(dent->d_name + strlen(dent->d_name) - 8, ".pal.bin")) continue;
+
+		std::string value = dent->d_name;
+		value = value.substr(0, value.size()-8);
+
+		cachedEvidence.push_back(value);
+	}
+
+	closedir(dir);
+}
+
+void Engine::loadPrivateEvidence()
+{
+	mINI::INIFile file("/data/ao-nds/private_evidence.ini");
+	mINI::INIStructure ini;
+
+	if (!file.read(ini))
+		return;
+
+	for (int i=0; ; i++)
+	{
+		std::string I = std::to_string(i);
+		if (!ini.has(I))
+			return;
+
+		std::string name = ini[I]["name"];
+		std::string desc = ini[I]["description"];
+		std::string image = ini[I]["image"];
+
+		// remove file extension from image
+		size_t newExtPos = 0;
+		size_t extPos = 0;
+		while (newExtPos != std::string::npos)
+		{
+			extPos = newExtPos;
+			newExtPos = image.find(".", extPos+1);
+		}
+		if (extPos)
+			image = image.substr(0, extPos);
+
+		privateEvidence.push_back({name, desc, image});
+	}
 }
 
 void Engine::changeScreen(UIScreen* next)
@@ -122,6 +179,26 @@ void Engine::update()
 	{
 		aosocket->update();
 	}
+}
+
+void Engine::savePrivateEvidence()
+{
+	mINI::INIFile file("/data/ao-nds/private_evidence.ini");
+	mINI::INIStructure ini;
+	mp3_fill_buffer();
+
+	for (u32 i=0; i<privateEvidence.size(); i++)
+	{
+		std::string I = std::to_string(i);
+
+		ini[I]["name"] = privateEvidence[i].name;
+		ini[I]["description"] = privateEvidence[i].description;
+		ini[I]["image"] = privateEvidence[i].image + ".png";
+		mp3_fill_buffer();
+	}
+
+	file.generate(ini);
+	mp3_fill_buffer();
 }
 
 void Engine::quit()

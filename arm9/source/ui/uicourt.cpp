@@ -9,7 +9,6 @@
 #include <nds/interrupts.h>
 
 #include "mp3_shared.h"
-#include "engine.h"
 #include "fonts.h"
 #include "global.h"
 #include "mini/ini.h"

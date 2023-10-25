@@ -205,7 +205,7 @@ void UICourtAreaList::onToggleList(void* pUserData)
 {
 	UICourtAreaList* pSelf = (UICourtAreaList*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtMusicList(pSelf->pCourtUI));
 }
 

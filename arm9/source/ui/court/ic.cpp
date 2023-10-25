@@ -15,6 +15,7 @@
 #include "ui/court/judge.h"
 #include "ui/court/mute.h"
 #include "ui/court/pair.h"
+#include "ui/court/courtrecord.h"
 
 struct emoteBtnData
 {
@@ -244,6 +245,8 @@ void UICourtIC::updateInput()
 						"-^(b)"+emote.anim+"^(a)"+emote.anim+"^#" + // sfx frames
 						std::to_string(pCourtUI->icControls.additive) + "#||#%"; // "||" is effects (won't bother with these)
 
+					if (pCourtUI->icControls.evidence > -1)
+						pCourtUI->icControls.evidence = -1;
 					pCourtUI->sendIC(msg);
 				}
 				else
@@ -446,7 +449,9 @@ void UICourtIC::onBackClicked(void* pUserData)
 void UICourtIC::onCourtRecord(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+
+	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 }
 
 void UICourtIC::onShoutsToggled(void* pUserData)

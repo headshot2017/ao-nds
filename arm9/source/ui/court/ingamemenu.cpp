@@ -11,6 +11,7 @@
 #include "ui/court/icchatlog.h"
 #include "ui/court/ooc.h"
 #include "ui/court/ic.h"
+#include "ui/court/courtrecord.h"
 
 UICourtIngameMenu::~UICourtIngameMenu()
 {
@@ -102,5 +103,6 @@ void UICourtIngameMenu::onCourtRecordClicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 }
