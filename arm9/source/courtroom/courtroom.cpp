@@ -20,7 +20,7 @@ Courtroom::Courtroom()
 	shakeTicks = 0;
 
 	background = new Background;
-	chatbox = new Chatbox;
+	chatbox = new Chatbox(this);
 	character = new Character;
 
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);

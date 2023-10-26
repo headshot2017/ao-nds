@@ -13,8 +13,10 @@
 #include "colors.h"
 #include "mp3_shared.h"
 
-Chatbox::Chatbox()
+Chatbox::Chatbox(Courtroom* pCourt)
 {
+	m_pCourt = pCourt;
+
 	textCanvas = new u8[32*16];
 	blipSnd = 0;
 

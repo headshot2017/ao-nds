@@ -12,9 +12,13 @@
 
 #include "global.h"
 
+class Courtroom;
+
 class Chatbox
 {
 	int bgIndex;
+
+	Courtroom* m_pCourt;
 
 	u8* textCanvas;
 	u16* nameGfx[2];
@@ -48,7 +52,7 @@ class Chatbox
 	bool visible;
 
 public:
-	Chatbox();
+	Chatbox(Courtroom* pCourt);
 	~Chatbox();
 
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
