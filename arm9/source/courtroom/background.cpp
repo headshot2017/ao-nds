@@ -166,8 +166,8 @@ bool Background::setBg(const std::string& name)
 
 	loadedOnce = true;
 
-	currentSide.clear();
-	setBgSide("def", true);
+	if (currentSide.empty()) currentSide = "def";
+	setBgSide(currentSide, true);
 
 	return true;
 }
