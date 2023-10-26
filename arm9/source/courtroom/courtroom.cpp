@@ -74,6 +74,9 @@ void Courtroom::playMusic(std::string filename)
 {
 	mp3_stop();
 
+	if (filename.find("~stop") != std::string::npos)
+		return; // don't play ~stop.mp3
+
 	// replace file extension
 	auto pos = filename.find_last_of('.');
 	if (pos != std::string::npos)
