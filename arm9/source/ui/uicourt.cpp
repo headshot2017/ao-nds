@@ -314,7 +314,37 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 
 	// show message in court screen
 	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
-	pSelf->court->MSchat(argumentAt(msg,3), argumentAt(msg,4), argumentAt(msg,2), std::stoi(argumentAt(msg,8)), name, chatmsg, std::stoi(argumentAt(msg,15)), pSelf->charList[charID].blip);
+
+	MSchatStruct data = {
+		argumentAt(msg, 1) != "0",
+		argumentAt(msg, 2),
+		argumentAt(msg, 3),
+		argumentAt(msg, 4),
+		chatmsg,
+		argumentAt(msg, 7),
+		std::stoi(argumentAt(msg, 8)),
+		charID,
+		std::stoi(argumentAt(msg, 10)),
+		std::stoi(argumentAt(msg, 11)),
+		std::stoi(argumentAt(msg, 12)),
+		std::stoi(argumentAt(msg, 13)),
+		std::stoi(argumentAt(msg, 14)),
+		std::stoi(argumentAt(msg, 15)),
+		argumentAt(msg, 16),
+		std::stoi(argumentAt(msg, 17)),
+		argumentAt(msg, 18),
+		argumentAt(msg, 19),
+		std::stoi(argumentAt(msg, 20)),
+		std::stoi(argumentAt(msg, 21)),
+		std::stoi(argumentAt(msg, 22)),
+		std::stoi(argumentAt(msg, 23)),
+		std::stoi(argumentAt(msg, 24)),
+		std::stoi(argumentAt(msg, 25)),
+		std::stoi(argumentAt(msg, 29)),
+		pSelf->charList[charID].blip
+	};
+
+	pSelf->court->MSchat(data);
 }
 
 void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)

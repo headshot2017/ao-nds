@@ -7,6 +7,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/input.h>
 #include <nds/arm9/video.h>
+#include <nds/arm9/sound.h>
 
 #include "mp3_shared.h"
 #include "colors.h"
@@ -18,6 +19,9 @@ Courtroom::Courtroom()
 	tempColor = COLOR_WHITE;
 	shakeForce = 0;
 	shakeTicks = 0;
+	flashTicks = 0;
+
+	sndRealization = wav_load_handle("/data/ao-nds/sounds/general/sfx-realization.wav", &sndRealizationSize);
 
 	background = new Background;
 	chatbox = new Chatbox(this);
@@ -32,6 +36,9 @@ Courtroom::~Courtroom()
 	delete background;
 	delete chatbox;
 	delete character;
+
+	delete[] sndRealization;
+
 	mp3_stop();
 }
 
@@ -43,21 +50,35 @@ void Courtroom::setVisible(bool on)
 	character->setVisible(on);
 }
 
-void Courtroom::MSchat(std::string charname, std::string anim, std::string preAnim, int emoteMod, std::string name, std::string msg, int color, std::string blip)
+void Courtroom::MSchat(const MSchatStruct& data)
 {
+	int color = data.textColor;
 	if (color < 0 || color >= 6)
 		color = 0;
 
-	tempChar = charname;
-	tempAnim = anim;
-	tempPreAnim = preAnim;
-	tempName = name;
-	tempMsg = msg;
+	tempChar = data.charname;
+	tempAnim = data.emote;
+	tempPreAnim = data.preanim;
+	tempName = (data.showname.empty()) ? data.charname : data.showname;
+	tempMsg = data.chatmsg;
 	tempColor = AOcolorToPalette[color];
-	tempBlip = blip;
+	tempBlip = data.blip;
+	tempFlash = data.realization;
 
-	if (emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
+	AOdecode(tempName);
+	AOdecode(tempMsg);
+
+	if (data.shake)
+		shake(5, 35);
+
+	if (data.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
 	{
+		if (tempFlash)
+		{
+			flashTicks = 5;
+			soundPlaySample(sndRealization, SoundFormat_16Bit, sndRealizationSize, 32000, 127, 64, false, 0);
+		}
+
 		character->setCharImage(tempChar, ((tempMsg.empty() || tempColor == COLOR_BLUE) ? "(a)" : "(b)") + tempAnim);
 		chatbox->setVisible(true);
 		chatbox->setName(tempName);
@@ -113,6 +134,13 @@ void Courtroom::update()
 	character->update();
 	chatbox->update();
 	background->update();
+
+	if (flashTicks)
+	{
+		flashTicks--;
+		REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP | BLEND_SRC_BG0 | BLEND_SRC_BG1 | BLEND_SRC_BG2 | BLEND_SRC_BG3 | BLEND_SRC_SPRITE;
+		REG_BLDY = 16;
+	}
 }
 
 void Courtroom::onChatboxFinished(void* pUserData)
@@ -125,6 +153,13 @@ void Courtroom::onChatboxFinished(void* pUserData)
 void Courtroom::onAnimFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
+
+	if (pSelf->tempFlash)
+	{
+		pSelf->flashTicks = 5;
+		soundPlaySample(pSelf->sndRealization, SoundFormat_16Bit, pSelf->sndRealizationSize, 32000, 127, 64, false, 0);
+	}
+
 	pSelf->character->setCharImage(pSelf->tempChar, ((pSelf->tempMsg.empty() || pSelf->tempColor == COLOR_BLUE) ? "(a)" : "(b)") + pSelf->tempAnim);
 	pSelf->chatbox->setVisible(true);
 	pSelf->chatbox->setName(pSelf->tempName);

@@ -8,12 +8,46 @@
 #include "courtroom/chatbox.h"
 #include "courtroom/character.h"
 
+struct MSchatStruct
+{
+	bool deskMod;
+	std::string preanim;
+	std::string charname;
+	std::string emote;
+	std::string chatmsg;
+	std::string sfx;
+	int emoteMod;
+	int charID;
+	int sfxDelay;
+	int shoutMod;
+	int evidence;
+	int flip;
+	int realization;
+	int textColor;
+	std::string showname;
+	int otherCharID;
+	std::string otherName;
+	std::string otherEmote;
+	int selfOffset;
+	int otherOffset;
+	int otherFlip;
+	int noInterrupt;
+	int sfxLoop;
+	int shake;
+	int additive;
+	std::string blip;
+};
+
 class Courtroom
 {
 	bool visible;
 
 	int shakeForce;
 	int shakeTicks;
+	int flashTicks;
+
+	u32* sndRealization;
+	u32 sndRealizationSize;
 
 	std::string tempChar;
 	std::string tempAnim;
@@ -22,6 +56,7 @@ class Courtroom
 	std::string tempMsg;
 	int tempColor;
 	std::string tempBlip;
+	int tempFlash;
 
 	Background* background;
 	Chatbox* chatbox;
@@ -36,7 +71,7 @@ public:
 	Character* getCharacter() {return character;}
 
 	void setVisible(bool on);
-	void MSchat(std::string charname, std::string anim, std::string preAnim, int emoteMod, std::string name, std::string msg, int color, std::string blip);
+	void MSchat(const MSchatStruct& data);
 
 	void stopMusic() {playMusic("");}
 	void playMusic(std::string filename);
