@@ -89,7 +89,7 @@ bool Background::setBg(const std::string& name)
 
 void Background::setBgSide(const std::string& side, bool force)
 {
-	if (!sideToBg.count(side) || (!force && side == currentSide))
+	if (currentBg.empty() || !sideToBg.count(side) || (!force && side == currentSide))
 		return;
 
 	u32 bgGfxLen, bgMapLen, bgPalLen, deskPalLen;
