@@ -9,6 +9,15 @@
 #include "mp3_shared.h"
 #include "global.h"
 
+std::unordered_map<std::string, std::string> sideToBg = {
+    {"def", "defenseempty"},
+    {"pro", "prosecutorempty"},
+    {"wit", "witnessempty"},
+    {"jud", "judgestand"},
+    {"hld", "helperstand"},
+    {"hlp", "prohelperstand"}
+};
+
 std::unordered_map<std::string, std::string> sideToDesk = {
     {"def", "defensedesk"},
     {"pro", "prosecutiondesk"},
@@ -38,7 +47,6 @@ Background::Background()
 	bgSetPriority(bgIndex, 3);
 	bgHide(bgIndex);
 	visible = false;
-	loadedOnce = false;
 
 	for (int i=0; i<4*6; i++)
 	{
@@ -59,60 +67,6 @@ Background::~Background()
 		oamFreeGfx(&oamMain, deskGfx[i]);
 	}
 	bgHide(bgIndex);
-	destroyBg();
-}
-
-void Background::destroyBg()
-{
-	if (loadedOnce)
-	{
-		delete[] currentBg["def"].mainBg.data;
-		delete[] currentBg["pro"].mainBg.data;
-		delete[] currentBg["wit"].mainBg.data;
-		delete[] currentBg["hld"].mainBg.data;
-		delete[] currentBg["hlp"].mainBg.data;
-		delete[] currentBg["jud"].mainBg.data;
-		mp3_fill_buffer();
-
-		delete[] currentBg["def"].mainMap.data;
-		delete[] currentBg["pro"].mainMap.data;
-		delete[] currentBg["wit"].mainMap.data;
-		delete[] currentBg["hld"].mainMap.data;
-		delete[] currentBg["hlp"].mainMap.data;
-		delete[] currentBg["jud"].mainMap.data;
-		mp3_fill_buffer();
-
-		delete[] currentBg["def"].mainPal.data;
-		delete[] currentBg["pro"].mainPal.data;
-		delete[] currentBg["wit"].mainPal.data;
-		delete[] currentBg["hld"].mainPal.data;
-		delete[] currentBg["hlp"].mainPal.data;
-		delete[] currentBg["jud"].mainPal.data;
-		mp3_fill_buffer();
-
-		if (currentBg["def"].deskBg.data)
-		{
-			delete[] currentBg["def"].deskBg.data;
-			delete[] currentBg["def"].deskPal.data;
-		}
-		if (currentBg["pro"].deskBg.data)
-		{
-			delete[] currentBg["pro"].deskBg.data;
-			delete[] currentBg["pro"].deskPal.data;
-		}
-		if (currentBg["wit"].deskBg.data)
-		{
-			delete[] currentBg["wit"].deskBg.data;
-			delete[] currentBg["wit"].deskPal.data;
-		}
-		if (currentBg["jud"].deskBg.data)
-		{
-			delete[] currentBg["jud"].deskBg.data;
-			delete[] currentBg["jud"].deskPal.data;
-		}
-
-		mp3_fill_buffer();
-	}
 }
 
 bool Background::setBg(const std::string& name)
@@ -122,49 +76,10 @@ bool Background::setBg(const std::string& name)
 	if (!dir) bgPath = "/data/ao-nds/background/gs4";
 	else closedir(dir);
 
+	currentBg = bgPath;
+
 	if (!deskTiles.load(bgPath + "/desk_tiles.cfg"))
 		return false;
-
-	destroyBg();
-
-	// main bg data
-	currentBg["def"].mainBg.data = readFile(bgPath + "/defenseempty.img.bin",      &currentBg["def"].mainBg.len);
-	currentBg["pro"].mainBg.data = readFile(bgPath + "/prosecutorempty.img.bin",   &currentBg["pro"].mainBg.len);
-	currentBg["wit"].mainBg.data = readFile(bgPath + "/witnessempty.img.bin",      &currentBg["wit"].mainBg.len);
-	currentBg["hld"].mainBg.data = readFile(bgPath + "/helperstand.img.bin",       &currentBg["hld"].mainBg.len);
-	currentBg["hlp"].mainBg.data = readFile(bgPath + "/prohelperstand.img.bin",    &currentBg["hlp"].mainBg.len);
-	currentBg["jud"].mainBg.data = readFile(bgPath + "/judgestand.img.bin",        &currentBg["jud"].mainBg.len);
-
-	currentBg["def"].mainMap.data = readFile(bgPath + "/defenseempty.map.bin",      &currentBg["def"].mainMap.len);
-	currentBg["pro"].mainMap.data = readFile(bgPath + "/prosecutorempty.map.bin",   &currentBg["pro"].mainMap.len);
-	currentBg["wit"].mainMap.data = readFile(bgPath + "/witnessempty.map.bin",      &currentBg["wit"].mainMap.len);
-	currentBg["hld"].mainMap.data = readFile(bgPath + "/helperstand.map.bin",       &currentBg["hld"].mainMap.len);
-	currentBg["hlp"].mainMap.data = readFile(bgPath + "/prohelperstand.map.bin",    &currentBg["hlp"].mainMap.len);
-	currentBg["jud"].mainMap.data = readFile(bgPath + "/judgestand.map.bin",        &currentBg["jud"].mainMap.len);
-
-	currentBg["def"].mainPal.data = readFile(bgPath + "/defenseempty.pal.bin",      &currentBg["def"].mainPal.len);
-	currentBg["pro"].mainPal.data = readFile(bgPath + "/prosecutorempty.pal.bin",   &currentBg["pro"].mainPal.len);
-	currentBg["wit"].mainPal.data = readFile(bgPath + "/witnessempty.pal.bin",      &currentBg["wit"].mainPal.len);
-	currentBg["hld"].mainPal.data = readFile(bgPath + "/helperstand.pal.bin",       &currentBg["hld"].mainPal.len);
-	currentBg["hlp"].mainPal.data = readFile(bgPath + "/prohelperstand.pal.bin",    &currentBg["hlp"].mainPal.len);
-	currentBg["jud"].mainPal.data = readFile(bgPath + "/judgestand.pal.bin",        &currentBg["jud"].mainPal.len);
-
-	// desk bg data
-	currentBg["def"].deskBg.data = readFile(bgPath + "/defensedesk.img.bin",       &currentBg["def"].deskBg.len);
-	currentBg["pro"].deskBg.data = readFile(bgPath + "/prosecutiondesk.img.bin",   &currentBg["pro"].deskBg.len);
-	currentBg["wit"].deskBg.data = readFile(bgPath + "/stand.img.bin",             &currentBg["wit"].deskBg.len);
-	currentBg["jud"].deskBg.data = readFile(bgPath + "/judgedesk.img.bin",         &currentBg["jud"].deskBg.len);
-	currentBg["hld"].deskBg.data = 0;
-	currentBg["hlp"].deskBg.data = 0;
-
-	currentBg["def"].deskPal.data = readFile(bgPath + "/defensedesk.pal.bin",      &currentBg["def"].deskPal.len);
-	currentBg["pro"].deskPal.data = readFile(bgPath + "/prosecutiondesk.pal.bin",  &currentBg["pro"].deskPal.len);
-	currentBg["wit"].deskPal.data = readFile(bgPath + "/stand.pal.bin",            &currentBg["wit"].deskPal.len);
-	currentBg["jud"].deskPal.data = readFile(bgPath + "/judgedesk.pal.bin",        &currentBg["jud"].deskPal.len);
-	currentBg["hld"].deskPal.data = 0;
-	currentBg["hlp"].deskPal.data = 0;
-
-	loadedOnce = true;
 
 	if (currentSide.empty()) currentSide = "def";
 	setBgSide(currentSide, true);
@@ -174,16 +89,36 @@ bool Background::setBg(const std::string& name)
 
 void Background::setBgSide(const std::string& side, bool force)
 {
-	if (!currentBg.count(side) || (!force && side == currentSide))
+	if (!sideToBg.count(side) || (!force && side == currentSide))
 		return;
 
+	u32 bgGfxLen, bgMapLen, bgPalLen, deskPalLen;
+	u8* bgGfx = readFile(currentBg + "/" + sideToBg[side] + ".img.bin", &bgGfxLen);
+	u8* bgMap = readFile(currentBg + "/" + sideToBg[side] + ".map.bin", &bgMapLen);
+	u8* bgPal = readFile(currentBg + "/" + sideToBg[side] + ".pal.bin", &bgPalLen);
+
 	// copy main background
-	dmaCopy(currentBg[side].mainBg.data, bgGetGfxPtr(bgIndex), currentBg[side].mainBg.len);
-	dmaCopy(currentBg[side].mainMap.data, bgGetMapPtr(bgIndex), currentBg[side].mainMap.len);
+	dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), bgMapLen);
 
 	vramSetBankE(VRAM_E_LCD);
-	dmaCopy(currentBg[side].mainPal.data, &VRAM_E_EXT_PALETTE[bgIndex][0], currentBg[side].mainPal.len);
+	dmaCopy(bgPal, &VRAM_E_EXT_PALETTE[bgIndex][0], bgPalLen);
 	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
+
+	mp3_fill_buffer();
+
+	delete[] bgGfx;
+	delete[] bgMap;
+	delete[] bgPal;
+	mp3_fill_buffer();
+
+	u8* deskGfxImg = 0;
+	u8* deskPal = 0;
+	if (sideToDesk.count(side))
+	{
+		deskGfxImg = readFile(currentBg + "/" + sideToDesk[side] + ".img.bin");
+		deskPal = readFile(currentBg + "/" + sideToDesk[side] + ".pal.bin", &deskPalLen);
+	}
 
 	// handle desk sprite
 	int horTiles, verTiles;
@@ -198,6 +133,8 @@ void Background::setBgSide(const std::string& side, bool force)
 
 			for (int x=0; x<horTiles; x++)
 			{
+				mp3_fill_buffer();
+
 				int iScreen = yScreen*4+x;
 
 				deskGfxVisible[iScreen] = false;
@@ -205,12 +142,12 @@ void Background::setBgSide(const std::string& side, bool force)
 		}
 	}
 
-	if (currentBg[side].deskBg.data)
+	if (deskGfxImg)
 	{
 		readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
 
 		vramSetBankF(VRAM_F_LCD);
-		dmaCopy(currentBg[side].deskPal.data, &VRAM_F_EXT_SPR_PALETTE[1], currentBg[side].deskPal.len); // copy palette
+		dmaCopy(deskPal, &VRAM_F_EXT_SPR_PALETTE[1], deskPalLen); // copy palette
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
 		for (int y=0; y<verTiles; y++)
@@ -219,15 +156,20 @@ void Background::setBgSide(const std::string& side, bool force)
 
 			for (int x=0; x<horTiles; x++)
 			{
+				mp3_fill_buffer();
+
 				int iScreen = yScreen*4+x;
 				int i = y*4+x;
 
 				// copy specific 64x32 tile from image data
-				u8* offset = currentBg[side].deskBg.data + i * 64*32;
+				u8* offset = deskGfxImg + i * 64*32;
 				dmaCopy(offset, deskGfx[iScreen], 64*32);
 				deskGfxVisible[iScreen] = true;
 			}
 		}
+
+		delete[] deskGfxImg;
+		delete[] deskPal;
 	}
 
 	currentSide = side;

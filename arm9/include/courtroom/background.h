@@ -11,37 +11,19 @@
 
 #include "cfgFile.h"
 
-struct BgData
-{
-	u8* data;
-	u32 len;
-};
-
-struct LoadedBg
-{
-	BgData mainBg;
-	BgData mainMap;
-	BgData mainPal;
-	BgData deskBg;
-	BgData deskPal;
-};
-
 class Background
 {
-	std::unordered_map<std::string, LoadedBg> currentBg;
+	std::string currentBg;
 	std::string currentSide;
 	cfgFile deskTiles;
 	int bgIndex;
 	bool visible;
-	bool loadedOnce;
 
 	u16* deskGfx[4*6];
 	bool deskGfxVisible[4*6];
 
 	int xOffset;
 	int yOffset;
-
-	void destroyBg();
 
 public:
 	Background();
