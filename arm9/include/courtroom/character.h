@@ -52,6 +52,9 @@ class Character
 
 	int shakeX;
 	int shakeY;
+	int offsetX;
+	int offsetY;
+	bool flip;
 
 	void* pUserData;
 	voidCallback onAnimFinished;
@@ -65,7 +68,9 @@ public:
 	const std::string& getCurrCharacter() {return currCharacter;}
 	const std::string& getCurrAnim() {return currAnim;}
 
-	void setOffsets(int x, int y) {shakeX = x; shakeY = y;}
+	void setShakes(int x, int y) {shakeX = x; shakeY = y;}
+	void setOffsets(int x, int y) {offsetX = x; offsetY = y;}
+	void setFlip(bool on) {flip = on;}
 	void setCharImage(std::string charname, std::string relativeFile, bool doLoop=true);
 	void setVisible(bool on);
 

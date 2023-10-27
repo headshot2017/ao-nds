@@ -90,6 +90,10 @@ Character::Character()
 		oamSet(&oamMain, 50+i, x, y, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
 
+	setShakes(0, 0);
+	setOffsets(0, 0);
+	setFlip(false);
+
 	setVisible(false);
 	setOnAnimFinishedCallback(0, 0);
 }
@@ -244,9 +248,16 @@ void Character::update()
 {
 	for (int i=0; i<gfxInUse; i++)
 	{
-		int x = (i%frameInfo.realW) * 32;
-		int y = (i/frameInfo.realW) * 32;
-		oamSetXY(&oamMain, 50+i, x+frameInfo.offsetX + shakeX, y+frameInfo.offsetY + shakeY);
+		int x = (i%frameInfo.realW) * 32 + frameInfo.offsetX + shakeX + offsetX;
+		int y = (i/frameInfo.realW) * 32 + frameInfo.offsetY + shakeY + offsetY;
+
+		if (y <= -32 || y >= 192)
+		{
+			oamSetHidden(&oamMain, 50+i, true);
+			continue;
+		}
+
+		oamSetXY(&oamMain, 50+i, x, y);
 	}
 
 	if (!loop && currFrame >= frameInfo.frameCount)

@@ -72,6 +72,23 @@ void Courtroom::MSchat(const MSchatStruct& data)
 	if (data.shake)
 		shake(5, 35);
 
+	std::string offsetStr = data.selfOffset;
+	AOdecode(offsetStr);
+
+	int offsetX = 0;
+	int offsetY = 0;
+
+	if (offsetStr.find("&"))
+	{
+		offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
+		offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
+	}
+	else
+		offsetX = std::stoi(offsetStr);
+
+	character->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
+	character->setFlip(data.flip);
+
 	if (data.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
 	{
 		character->setCharImage(tempChar, ((tempMsg.empty() || tempColor == COLOR_BLUE) ? "(a)" : "(b)") + tempAnim);
@@ -125,7 +142,7 @@ void Courtroom::update()
 	if (shakeTicks > 0) shakeTicks--;
 
 	// chatbox gets its' own offsets
-	character->setOffsets(xOffset, yOffset);
+	character->setShakes(xOffset, yOffset);
 	background->setOffsets(xOffset, yOffset);
 	chatbox->setOffsets(
 		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0,

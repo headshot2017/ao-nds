@@ -21,14 +21,14 @@ struct MSchatStruct
 	int sfxDelay;
 	int shoutMod;
 	int evidence;
-	int flip;
+	bool flip;
 	int realization;
 	int textColor;
 	std::string showname;
 	int otherCharID;
 	std::string otherName;
 	std::string otherEmote;
-	int selfOffset;
+	std::string selfOffset;
 	int otherOffset;
 	int otherFlip;
 	int noInterrupt;
