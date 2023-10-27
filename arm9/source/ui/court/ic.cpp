@@ -219,11 +219,16 @@ void UICourtIC::updateInput()
 					else
 						emoteMod = (emote.emoteModifier <= 1) ? pCourtUI->icControls.preanim : emote.emoteModifier;
 
+					std::string chatmsg = kb_input->getValue();
+					std::string showname = pCourtUI->showname;
+					AOencode(chatmsg);
+					AOencode(showname);
+
 					std::string msg = "MS#chat#" +
 						emote.preanim + "#" +
 						character.name + "#" +
 						emote.anim + "#" +
-						kb_input->getValue() + "#" +
+						chatmsg + "#" +
 						indToSide[pCourtUI->icControls.side] + "#" +
 						emote.sound + "#" +
 						std::to_string(emoteMod) + "#" +
@@ -234,7 +239,7 @@ void UICourtIC::updateInput()
 						std::to_string(pCourtUI->icControls.flip) + "#" +
 						std::to_string(pCourtUI->icControls.flash) + "#" +
 						std::to_string(pCourtUI->icControls.color) + "#" +
-						pCourtUI->showname + "#" +
+						showname + "#" +
 						std::to_string(pCourtUI->icControls.pairID) + "#" +
 						std::to_string(pCourtUI->icControls.xOffset) + "&" + std::to_string(pCourtUI->icControls.yOffset) + "#" +
 						std::to_string(pCourtUI->icControls.immediate) + "#" +
@@ -247,6 +252,7 @@ void UICourtIC::updateInput()
 
 					if (pCourtUI->icControls.evidence > -1)
 						pCourtUI->icControls.evidence = -1;
+
 					pCourtUI->sendIC(msg);
 				}
 				else

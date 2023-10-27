@@ -23,6 +23,7 @@ struct cbInfo
 void debugPressA(const char* msg);
 
 void AOdecode(std::string& s);
+void AOencode(std::string& s);
 std::string argumentAt(const std::string& s, int id, char delimiter='#');
 void fillArguments(std::vector<std::string>& out, std::string& s, int id, char delimiter='#');
 u32 totalArguments(const std::string& s, char delimiter='#');

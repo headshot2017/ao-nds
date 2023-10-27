@@ -37,6 +37,23 @@ void AOdecode(std::string& s)
 	}
 }
 
+void AOencode(std::string& s)
+{
+	std::string escapes[] = {"<and>", "<percent>", "<num>", "<dollar>"};
+	std::string unescapes[] = {"&", "%", "#", "$"};
+	for (int i=0; i<4; i++)
+	{
+		size_t pos = 0;
+		while((pos = s.find(unescapes[i], pos)) != std::string::npos)
+		{
+			mp3_fill_buffer();
+			s.replace(pos, unescapes[i].length(), escapes[i]);
+			pos += escapes[i].length();
+		}
+		mp3_fill_buffer();
+	}
+}
+
 std::string argumentAt(const std::string& s, int id, char delimiter)
 {
 	std::size_t lastPos = 0;
