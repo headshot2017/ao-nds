@@ -280,6 +280,20 @@ void UIButton::restorePalette()
 	mp3_fill_buffer();
 }
 
+void UIButton::unloadRAM(bool deletePal)
+{
+	if (currData)
+	{
+		delete[] currData;
+		currData = 0;
+	}
+	if (deletePal && currPal)
+	{
+		delete[] currPal;
+		currPal = 0;
+	}
+}
+
 void UIButton::updateInput()
 {
 	if (!visible) return;

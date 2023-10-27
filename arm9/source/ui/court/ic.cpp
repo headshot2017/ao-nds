@@ -144,6 +144,16 @@ void UICourtIC::init()
 	btn_flash->setFrame(10 + pCourtUI->icControls.flash);
 	btn_sideSelect->setFrame(pCourtUI->icControls.side);
 
+	btn_back->unloadRAM();
+	btn_courtRecord->unloadRAM();
+	btn_pair->unloadRAM();
+	btn_mute->unloadRAM();
+	btn_tools->unloadRAM();
+	btn_prevPage->unloadRAM();
+	btn_nextPage->unloadRAM();
+	spr_arrowLeft->unloadRAM();
+	spr_arrowRight->unloadRAM();
+
 	btn_nextPage->setFlip(true, false);
 	spr_arrowRight->setFlip(true, false);
 
@@ -398,6 +408,7 @@ void UICourtIC::reloadPage()
 
 		btn_emote[i]->setImage((exists) ? buttonFile : "", 64, 64, 7+i);
 		btn_emote[i]->setVisible(true);
+		btn_emote[i]->unloadRAM(false);
 
 		if (i == currEmoteSelected)
 			btn_emote[i]->darken();

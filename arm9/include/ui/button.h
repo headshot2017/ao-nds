@@ -56,6 +56,7 @@ public:
 	void forceRelease();
 	void darken();
 	void restorePalette();
+	void unloadRAM(bool deletePal=true);
 
 	void connect(voidCallback cb, void* p, int cbType=PRESSED) {callbacks[cbType].cb = cb; callbacks[cbType].pUserData = p;}
 	void assignKey(u32 k) {assignedKey = k;}
