@@ -294,7 +294,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	if (!pSelf->icSendQueue.empty() && charID == pSelf->currChar)
 		pSelf->icSendQueue.pop_front();
 
-	if (pSelf->charList[charID].muted)
+	if (!pSelf->charList.empty() && pSelf->charList[charID].muted)
 		return;
 
 	std::string name = argumentAt(msg,16);
