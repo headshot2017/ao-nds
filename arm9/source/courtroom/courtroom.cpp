@@ -74,16 +74,16 @@ void Courtroom::MSchat(const MSchatStruct& data)
 
 	if (data.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
 	{
+		character->setCharImage(tempChar, ((tempMsg.empty() || tempColor == COLOR_BLUE) ? "(a)" : "(b)") + tempAnim);
+		chatbox->setVisible(true);
+		chatbox->setName(tempName);
+		chatbox->setText(tempMsg, tempColor, tempBlip);
+
 		if (tempFlash)
 		{
 			flashTicks = 5;
 			soundPlaySample(sndRealization, SoundFormat_16Bit, sndRealizationSize, 32000, 127, 64, false, 0);
 		}
-
-		character->setCharImage(tempChar, ((tempMsg.empty() || tempColor == COLOR_BLUE) ? "(a)" : "(b)") + tempAnim);
-		chatbox->setVisible(true);
-		chatbox->setName(tempName);
-		chatbox->setText(tempMsg, tempColor, tempBlip);
 	}
 	else
 	{
@@ -155,14 +155,14 @@ void Courtroom::onAnimFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
 
+	pSelf->character->setCharImage(pSelf->tempChar, ((pSelf->tempMsg.empty() || pSelf->tempColor == COLOR_BLUE) ? "(a)" : "(b)") + pSelf->tempAnim);
+	pSelf->chatbox->setVisible(true);
+	pSelf->chatbox->setName(pSelf->tempName);
+	pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
+
 	if (pSelf->tempFlash)
 	{
 		pSelf->flashTicks = 5;
 		soundPlaySample(pSelf->sndRealization, SoundFormat_16Bit, pSelf->sndRealizationSize, 32000, 127, 64, false, 0);
 	}
-
-	pSelf->character->setCharImage(pSelf->tempChar, ((pSelf->tempMsg.empty() || pSelf->tempColor == COLOR_BLUE) ? "(a)" : "(b)") + pSelf->tempAnim);
-	pSelf->chatbox->setVisible(true);
-	pSelf->chatbox->setName(pSelf->tempName);
-	pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
 }
