@@ -64,6 +64,7 @@ void Courtroom::MSchat(const MSchatStruct& data)
 	tempColor = AOcolorToPalette[color];
 	tempBlip = data.blip;
 	tempFlash = data.realization;
+	if (tempBlip.empty()) tempBlip = "male";
 
 	AOdecode(tempName);
 	AOdecode(tempMsg);
