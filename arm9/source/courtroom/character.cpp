@@ -221,15 +221,19 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 	for (int i=0; i<gfxInUse; i++)
 	{
-		int x = (i%frameInfo.realW) * 32;
-		int y = (i/frameInfo.realW) * 32;
+		int x = ((flip) ?
+			((gfxInUse-i-1) % frameInfo.realW)*32 + 256-(frameInfo.realW*32)-frameInfo.offsetX :
+			(i%frameInfo.realW)*32 + frameInfo.offsetX)
+			+ shakeX + offsetX;
+
+		int y = (i/frameInfo.realW)*32 + frameInfo.offsetY + shakeY + offsetY;
 
 		u8* ptr = (!frameInfo.streaming) ? charData : stream.getFrame(0);
 		u8* offset = ptr + i*32*32;
 		dmaCopy(offset, charGfx[i], 32*32);
 		mp3_fill_buffer();
 
-		oamSet(&oamMain, 50+i, x+frameInfo.offsetX, y+frameInfo.offsetY, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, charGfx[i], -1, false, false, false, false, false);
+		oamSet(&oamMain, 50+i, x, y, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, charGfx[i], -1, false, false, flip, false, false);
 		charGfxVisible[i] = true;
 	}
 
@@ -248,8 +252,12 @@ void Character::update()
 {
 	for (int i=0; i<gfxInUse; i++)
 	{
-		int x = (i%frameInfo.realW) * 32 + frameInfo.offsetX + shakeX + offsetX;
-		int y = (i/frameInfo.realW) * 32 + frameInfo.offsetY + shakeY + offsetY;
+		int x = ((flip) ?
+			((gfxInUse-i-1) % frameInfo.realW)*32 + 256-(frameInfo.realW*32)-frameInfo.offsetX :
+			(i%frameInfo.realW)*32 + frameInfo.offsetX)
+			+ shakeX + offsetX;
+
+		int y = (i/frameInfo.realW)*32 + frameInfo.offsetY + shakeY + offsetY;
 
 		if (y <= -32 || y >= 192)
 		{
