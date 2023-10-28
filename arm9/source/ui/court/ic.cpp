@@ -213,7 +213,7 @@ void UICourtIC::updateInput()
 		{
 			if (result > 0)
 			{
-				if (isWritingChat)
+				if (!kb_input->getValue().empty() && isWritingChat)
 				{
 					const charInfo& character = pCourtUI->getCurrChar();
 					const emoteInfo& emote = pCourtUI->getCharEmotes()[currPage*4 + currEmoteSelected];
@@ -265,7 +265,7 @@ void UICourtIC::updateInput()
 
 					pCourtUI->sendIC(msg);
 				}
-				else
+				else if (!isWritingChat)
 					pCourtUI->showname = kb_input->getValue();
 			}
 
