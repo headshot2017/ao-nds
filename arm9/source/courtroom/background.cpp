@@ -148,7 +148,7 @@ void Background::setBgSide(const std::string& side, bool force)
 		readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
 
 		vramSetBankF(VRAM_F_LCD);
-		dmaCopy(deskPal, &VRAM_F_EXT_SPR_PALETTE[1], deskPalLen); // copy palette
+		memcpy(&VRAM_F_EXT_SPR_PALETTE[1], deskPal, deskPalLen); // copy palette
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
 		for (int y=0; y<verTiles; y++)
