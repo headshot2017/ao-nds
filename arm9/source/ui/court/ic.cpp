@@ -120,7 +120,7 @@ void UICourtIC::init()
 	lbl_showname = new UILabel(&oamSub, spr_arrowRight->nextOamInd(), 2, 1, RGB15(31,31,31), 14, 0);
 	lbl_color = new UILabel(&oamSub, lbl_showname->nextOamInd(), 2, 1, RGB15(31,31,31), 15, 0);
 	lbl_showname->setPos(77, 163);
-	lbl_showname->setText(pCourtUI->showname.c_str());
+	lbl_showname->setText((pCourtUI->showname.empty()) ? pCourtUI->getCurrChar().name.c_str() : pCourtUI->showname.c_str());
 	lbl_color->setPos(84, 178);
 	lbl_color->setText("Message");
 
