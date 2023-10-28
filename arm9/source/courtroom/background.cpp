@@ -2,6 +2,7 @@
 
 #include <dirent.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
@@ -99,10 +100,10 @@ void Background::setBgSide(const std::string& side, bool force)
 
 	// copy main background
 	dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
-	dmaCopy(bgMap, bgGetMapPtr(bgIndex), bgMapLen);
+	memcpy(bgGetMapPtr(bgIndex), bgMap, bgMapLen);
 
 	vramSetBankE(VRAM_E_LCD);
-	dmaCopy(bgPal, &VRAM_E_EXT_PALETTE[bgIndex][0], bgPalLen);
+	memcpy(&VRAM_E_EXT_PALETTE[bgIndex][0], bgPal, bgPalLen);
 	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 
 	mp3_fill_buffer();
