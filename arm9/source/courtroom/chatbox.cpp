@@ -165,6 +165,31 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 }
 
+void Chatbox::additiveText(std::string text, int color)
+{
+	int line = currTextGfxInd/8;
+	currTextGfxInd = (line+1) * 8;
+
+	currText = text;
+	textColor = color;
+
+	currTextInd = 0;
+	textX = 0;
+	textTicks = 0;
+	textSpeed = 2;
+	blipTicks = 0;
+
+	memset(textCanvas, 0, 32*16);
+	oamSetHidden(&oamMain, 127, true);
+
+	if (currTextGfxInd >= 8*3)
+	{
+		currTextGfxInd = 0;
+		for (int i=0; i<8*3; i++)
+			dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
+	}
+}
+
 void Chatbox::update()
 {
 	if (visible)

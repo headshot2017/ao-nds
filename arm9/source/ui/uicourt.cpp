@@ -340,7 +340,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 		argumentAt(msg, 23) == "1",
 		std::stoi(argumentAt(msg, 24)),
 		std::stoi(argumentAt(msg, 25)),
-		std::stoi(argumentAt(msg, 29)),
+		argumentAt(msg, 29) == "1",
 		pSelf->charList[charID].blip
 	};
 

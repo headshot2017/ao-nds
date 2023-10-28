@@ -34,7 +34,7 @@ struct MSchatStruct
 	bool noInterrupt;
 	int sfxLoop;
 	int shake;
-	int additive;
+	bool additive;
 	std::string blip;
 };
 
@@ -58,7 +58,10 @@ class Courtroom
 	int tempColor;
 	std::string tempBlip;
 	int tempFlash;
+	int tempID;
+	int tempLastID;
 	bool tempImmediate;
+	bool tempAdditive;
 
 	Background* background;
 	Chatbox* chatbox;

@@ -59,6 +59,7 @@ public:
 	void setVisible(bool on);
 	void setName(std::string name);
 	void setText(std::string text, int color, std::string blip="male");
+	void additiveText(std::string text, int color);
 
 	bool isFinished() {return currTextInd >= currText.size();}
 	void setOnChatboxFinishedCallback(voidCallback newCB, void* userdata) {onChatboxFinished = newCB; pUserData = userdata;}

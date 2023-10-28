@@ -21,6 +21,8 @@ Courtroom::Courtroom()
 	shakeForce = 0;
 	shakeTicks = 0;
 	flashTicks = 0;
+	tempID = -1;
+	tempLastID = -1;
 
 	sndRealization = wav_load_handle("/data/ao-nds/sounds/general/sfx-realization.wav", &sndRealizationSize);
 
@@ -65,6 +67,8 @@ void Courtroom::MSchat(const MSchatStruct& data)
 	tempBlip = data.blip;
 	tempFlash = data.realization;
 	tempImmediate = data.noInterrupt;
+	tempID = data.charID;
+	tempAdditive = data.additive;
 	if (tempBlip.empty()) tempBlip = "male";
 
 	AOdecode(tempName);
@@ -98,7 +102,12 @@ void Courtroom::MSchat(const MSchatStruct& data)
 		character->setCharImage(tempChar, ((tempMsg.empty() || tempColor == COLOR_BLUE) ? "(a)" : "(b)") + tempAnim);
 		chatbox->setVisible(true);
 		chatbox->setName(tempName);
-		chatbox->setText(tempMsg, tempColor, tempBlip);
+
+		if (tempAdditive && tempID == tempLastID)
+			chatbox->additiveText(tempMsg, tempColor);
+		else
+			chatbox->setText(tempMsg, tempColor, tempBlip);
+		tempLastID = tempID;
 
 		if (tempFlash)
 		{
@@ -117,7 +126,12 @@ void Courtroom::MSchat(const MSchatStruct& data)
 		{
 			chatbox->setVisible(true);
 			chatbox->setName(tempName);
-			chatbox->setText(tempMsg, tempColor, tempBlip);
+
+			if (tempAdditive && tempID == tempLastID)
+				chatbox->additiveText(tempMsg, tempColor);
+			else
+				chatbox->setText(tempMsg, tempColor, tempBlip);
+			tempLastID = tempID;
 		}
 		character->setCharImage(tempChar, tempPreAnim, false);
 	}
@@ -200,7 +214,12 @@ void Courtroom::onAnimFinished(void* pUserData)
 	{
 		pSelf->chatbox->setVisible(true);
 		pSelf->chatbox->setName(pSelf->tempName);
-		pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
+
+		if (pSelf->tempAdditive && pSelf->tempID == pSelf->tempLastID)
+			pSelf->chatbox->additiveText(pSelf->tempMsg, pSelf->tempColor);
+		else
+			pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
+		pSelf->tempLastID = pSelf->tempID;
 	}
 
 	if (pSelf->tempFlash)
