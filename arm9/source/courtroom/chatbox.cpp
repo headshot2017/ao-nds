@@ -191,7 +191,7 @@ void Chatbox::update()
 	}
 
 	// handle chatbox text typewriter
-	if (currTextInd >= currText.size())
+	if (isFinished())
 	{
 		if (visible) oamSetHidden(&oamMain, 127, false);
 		return;
@@ -256,7 +256,7 @@ void Chatbox::update()
 		}
 
 		currTextInd++;
-		if (currTextInd >= currText.size() && onChatboxFinished)
+		if (isFinished() && onChatboxFinished)
 		{
 			oamSetHidden(&oamMain, 127, false);
 			onChatboxFinished(pUserData);

@@ -60,6 +60,7 @@ public:
 	void setName(std::string name);
 	void setText(std::string text, int color, std::string blip="male");
 
+	bool isFinished() {return currTextInd >= currText.size();}
 	void setOnChatboxFinishedCallback(voidCallback newCB, void* userdata) {onChatboxFinished = newCB; pUserData = userdata;}
 
 	void update();

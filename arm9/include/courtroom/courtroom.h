@@ -31,7 +31,7 @@ struct MSchatStruct
 	std::string selfOffset;
 	int otherOffset;
 	int otherFlip;
-	int noInterrupt;
+	bool noInterrupt;
 	int sfxLoop;
 	int shake;
 	int additive;
@@ -45,6 +45,7 @@ class Courtroom
 	int shakeForce;
 	int shakeTicks;
 	int flashTicks;
+	bool onPreAnim;
 
 	u32* sndRealization;
 	u32 sndRealizationSize;
@@ -57,6 +58,7 @@ class Courtroom
 	int tempColor;
 	std::string tempBlip;
 	int tempFlash;
+	bool tempImmediate;
 
 	Background* background;
 	Chatbox* chatbox;

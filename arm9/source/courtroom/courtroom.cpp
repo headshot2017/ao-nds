@@ -15,6 +15,7 @@
 Courtroom::Courtroom()
 {
 	visible = false;
+	onPreAnim = false;
 
 	tempColor = COLOR_WHITE;
 	shakeForce = 0;
@@ -28,7 +29,6 @@ Courtroom::Courtroom()
 	character = new Character;
 
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
-	character->setOnAnimFinishedCallback(onAnimFinished, this);
 }
 
 Courtroom::~Courtroom()
@@ -64,6 +64,7 @@ void Courtroom::MSchat(const MSchatStruct& data)
 	tempColor = AOcolorToPalette[color];
 	tempBlip = data.blip;
 	tempFlash = data.realization;
+	tempImmediate = data.noInterrupt;
 	if (tempBlip.empty()) tempBlip = "male";
 
 	AOdecode(tempName);
@@ -88,9 +89,12 @@ void Courtroom::MSchat(const MSchatStruct& data)
 
 	character->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
 	character->setFlip(data.flip);
+	character->setOnAnimFinishedCallback(onAnimFinished, this);
 
 	if (data.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
 	{
+		onPreAnim = false;
+
 		character->setCharImage(tempChar, ((tempMsg.empty() || tempColor == COLOR_BLUE) ? "(a)" : "(b)") + tempAnim);
 		chatbox->setVisible(true);
 		chatbox->setName(tempName);
@@ -104,7 +108,17 @@ void Courtroom::MSchat(const MSchatStruct& data)
 	}
 	else
 	{
-		chatbox->setVisible(false);
+		// play pre-animation
+		onPreAnim = true;
+
+		if (!tempImmediate)
+			chatbox->setVisible(false);
+		else
+		{
+			chatbox->setVisible(true);
+			chatbox->setName(tempName);
+			chatbox->setText(tempMsg, tempColor, tempBlip);
+		}
 		character->setCharImage(tempChar, tempPreAnim, false);
 	}
 }
@@ -164,7 +178,7 @@ void Courtroom::update()
 void Courtroom::onChatboxFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
-	if (pSelf->tempColor != COLOR_BLUE)
+	if (pSelf->tempColor != COLOR_BLUE && (!pSelf->tempImmediate || !pSelf->onPreAnim))
 		pSelf->character->setCharImage(pSelf->tempChar, "(a)"+pSelf->tempAnim);
 }
 
@@ -172,10 +186,22 @@ void Courtroom::onAnimFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
 
-	pSelf->character->setCharImage(pSelf->tempChar, ((pSelf->tempMsg.empty() || pSelf->tempColor == COLOR_BLUE) ? "(a)" : "(b)") + pSelf->tempAnim);
-	pSelf->chatbox->setVisible(true);
-	pSelf->chatbox->setName(pSelf->tempName);
-	pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
+	bool useIdleAnim =
+		pSelf->tempMsg.empty() ||
+		pSelf->tempColor == COLOR_BLUE ||
+		(pSelf->tempImmediate && pSelf->chatbox->isFinished());
+
+	pSelf->onPreAnim = false;
+
+	pSelf->character->setCharImage(pSelf->tempChar, ((useIdleAnim) ? "(a)" : "(b)") + pSelf->tempAnim);
+	if (useIdleAnim) pSelf->character->setOnAnimFinishedCallback(0, 0);
+
+	if (!pSelf->tempImmediate)
+	{
+		pSelf->chatbox->setVisible(true);
+		pSelf->chatbox->setName(pSelf->tempName);
+		pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
+	}
 
 	if (pSelf->tempFlash)
 	{
