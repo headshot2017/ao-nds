@@ -2,7 +2,7 @@
 #define CHATBOX_H_INCLUDED
 
 // chatbox uses the following:
-// BG slot 1, 256x256
+// BG slot 1, 512x256
 // OAM slots 24-25 for name, sprite size 32x16
 // OAM slots 26-49 for text, sprite size 32x16
 

@@ -7,6 +7,7 @@
 #include "courtroom/background.h"
 #include "courtroom/chatbox.h"
 #include "courtroom/character.h"
+#include "courtroom/shout.h"
 
 struct MSchatStruct
 {
@@ -66,6 +67,7 @@ class Courtroom
 	Background* background;
 	Chatbox* chatbox;
 	Character* character;
+	Shout* shout;
 
 public:
 	Courtroom();
@@ -74,6 +76,7 @@ public:
 	Background* getBackground() {return background;}
 	Chatbox* getChatbox() {return chatbox;}
 	Character* getCharacter() {return character;}
+	Shout* getShout() {return shout;}
 
 	void setVisible(bool on);
 	void MSchat(const MSchatStruct& data);
@@ -82,6 +85,7 @@ public:
 	void playMusic(std::string filename);
 
 	void shake(int force, int ticks);
+	void flash(int ticks);
 
 	void update();
 

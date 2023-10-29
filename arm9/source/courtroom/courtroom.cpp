@@ -29,6 +29,7 @@ Courtroom::Courtroom()
 	background = new Background;
 	chatbox = new Chatbox(this);
 	character = new Character;
+	shout = new Shout;
 
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
 }
@@ -38,6 +39,7 @@ Courtroom::~Courtroom()
 	delete background;
 	delete chatbox;
 	delete character;
+	delete shout;
 
 	delete[] sndRealization;
 
@@ -111,7 +113,7 @@ void Courtroom::MSchat(const MSchatStruct& data)
 
 		if (tempFlash)
 		{
-			flashTicks = 5;
+			flash(5);
 			soundPlaySample(sndRealization, SoundFormat_16Bit, sndRealizationSize, 32000, 127, 64, false, 0);
 		}
 	}
@@ -163,6 +165,11 @@ void Courtroom::shake(int force, int ticks)
 	shakeTicks = ticks;
 }
 
+void Courtroom::flash(int ticks)
+{
+	flashTicks = ticks;
+}
+
 void Courtroom::update()
 {
 	int xOffset = (shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0;
@@ -180,6 +187,7 @@ void Courtroom::update()
 	character->update();
 	chatbox->update();
 	background->update();
+	shout->update();
 
 	if (flashTicks)
 	{
@@ -224,7 +232,7 @@ void Courtroom::onAnimFinished(void* pUserData)
 
 	if (pSelf->tempFlash)
 	{
-		pSelf->flashTicks = 5;
+		pSelf->flash(5);
 		soundPlaySample(pSelf->sndRealization, SoundFormat_16Bit, pSelf->sndRealizationSize, 32000, 127, 64, false, 0);
 	}
 }
