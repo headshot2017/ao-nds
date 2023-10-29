@@ -345,7 +345,7 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
 
     for emote in os.listdir(source):
         filename = source+"/"+emote
-        if os.path.isdir(filename) and emote.lower() != "emotions":
+        if os.path.isdir(filename) and emote.lower() != "emotions" and emote.lower() != "custom_objections":
             recursiveCharacter(source+"/"+emote, target+"/"+emote, ogTarget, extra+emote+"/")
         elif emote.lower() == "char_icon.png":
             convertCharIcon(filename, target+"/"+emote)
@@ -360,6 +360,21 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
 
     if not extra:
         convertEmoteButtons(source+"/emotions", target+"/emotions")
+
+        for snd in ["holdit.wav", "holdit.opus", "objection.wav", "objection.opus", "takethat.wav", "takethat.opus", "custom.wav", "custom.opus"]:
+            if not os.path.exists(source+"/"+snd): continue
+            convertSound(source+"/"+snd, target+"/"+snd)
+
+        for custom in ["custom.apng", "custom.webp", "custom.gif", "custom.png"]:
+            if not os.path.exists(source+"/"+custom): continue
+            convertShout(source+"/"+custom, target+"/"+custom)
+
+        if os.path.exists(source+"/custom_objections"):
+            for shout in os.listdir(source+"/custom_objections"):
+                if shout.lower().endswith(".opus") or shout.lower().endswith(".wav"):
+                    convertSound(source+"/custom_objections/"+shout, target+"/custom_objections/"+shout)
+                else:
+                    convertShout(source+"/custom_objections/"+shout, target+"/custom_objections/"+shout)
 
 def convertCharacters(source, target):
     for char in os.listdir(source):
@@ -405,6 +420,10 @@ def convertEvidenceImages(source, target):
             os.rename("temp.img.bin", targetFile + ".img.bin")
             os.rename("temp.pal.bin", targetFile + ".pal.bin")
 
+def convertSound(source, target):
+    targetFile = os.path.splitext(target)[0] + ".wav"
+    subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 32000 -ac 1 -b:a 96k -y \"%s\"" % (source, targetFile)).wait()
+
 def convertSounds(source, target):
     if not os.path.exists(target):
         os.mkdir(target)
@@ -414,9 +433,7 @@ def convertSounds(source, target):
             convertSounds(source+"/"+f, target+"/"+f)
         else:
             print(source+"/"+f)
-            targetFile = os.path.splitext(target+"/"+f)[0] + ".wav"
-
-            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 32000 -ac 1 -b:a 96k -y \"%s\"" % (source+"/"+f, targetFile)).wait()
+            convertSound(source+"/"+f, target+"/"+f)
 
 def convertMusic(source, target):
     if not os.path.exists(target):
@@ -462,12 +479,35 @@ def convertChatbox(folder):
     os.rename("temp.map.bin", "converted/data/ao-nds/misc/chatbox.map.bin")
     os.rename("temp.pal.bin", "converted/data/ao-nds/misc/chatbox.pal.bin")
 
-def convertShout(filename):
-    print(filename)
+def convertShout(source, target):
+    frames = []
 
-    img = Image.open(filename)
-    img.seek(1)
-    img = img.convert("RGBA")
+    if source.lower().endswith(".apng"):
+        frames = images.load_apng(source)
+    elif source.lower().endswith(".webp"):
+        frames = images.load_webp(source)[0]
+    elif source.lower().endswith(".png"):
+        frames = [[Image.open(source).convert("RGBA"), 0]]
+    elif source.lower().endswith(".gif"):
+        img = Image.open(source)
+        for f in range(img.n_frames):
+            img.seek(f)
+            img.load()
+            frames.append([img.convert("RGBA"), img.info["duration"]])
+    else:
+        return
+
+    img = None
+    for i in range(len(frames)-1, -1, -1):
+        frame = frames[i][0]
+        ex = frame.convert("L").getextrema()
+        if ex[0] != ex[1]: # this frame is not blank
+            img = frame
+            break
+
+    if not img:
+        print("Couldn't convert shout %s" % source)
+        return
 
     pix = img.load()
     for y in range(img.size[1]):
@@ -478,8 +518,7 @@ def convertShout(filename):
     img.save("temp.png")
     img.close()
 
-    baseName = os.path.basename(filename)
-    newFile = "converted/data/ao-nds/misc/" + os.path.splitext(baseName)[0]
+    newFile = os.path.splitext(target)[0]
 
     # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, extended palette slot 2, export to .bin, don't generate .h file
     subprocess.Popen("./grit temp.png -gB8 -gt -gTFF00FF -m -p -mp 2 -ftb -fh!").wait()

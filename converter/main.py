@@ -88,9 +88,9 @@ while 1:
 
         print("\nConverting objection images and chatbox...")
         conversion.convertChatbox(folder)
-        conversion.convertShout(folder+"/misc/default/objection_bubble.gif")
-        conversion.convertShout(folder+"/misc/default/holdit_bubble.gif")
-        conversion.convertShout(folder+"/misc/default/takethat_bubble.gif")
+        conversion.convertShout(folder+"/misc/default/objection_bubble.gif", "converted/data/ao-nds/misc/objection_bubble")
+        conversion.convertShout(folder+"/misc/default/holdit_bubble.gif", "converted/data/ao-nds/misc/holdit_bubble")
+        conversion.convertShout(folder+"/misc/default/takethat_bubble.gif", "converted/data/ao-nds/misc/takethat_bubble")
 
         print("Converting placeholder.gif...")
         conversion.convertEmoteGIF(folder+"/themes/default/placeholder.gif", "converted/data/ao-nds/misc/placeholder.gif", "converted/data/ao-nds/misc", "")
@@ -149,9 +149,9 @@ while 1:
 
     elif option == 7:
         conversion.convertChatbox(folder)
-        conversion.convertShout(folder+"/misc/default/objection_bubble.gif")
-        conversion.convertShout(folder+"/misc/default/holdit_bubble.gif")
-        conversion.convertShout(folder+"/misc/default/takethat_bubble.gif")
+        conversion.convertShout(folder+"/misc/default/objection_bubble.gif", "converted/data/ao-nds/misc/objection_bubble")
+        conversion.convertShout(folder+"/misc/default/holdit_bubble.gif", "converted/data/ao-nds/misc/holdit_bubble")
+        conversion.convertShout(folder+"/misc/default/takethat_bubble.gif", "converted/data/ao-nds/misc/takethat_bubble")
         conversion.convertEmoteGIF(folder+"/themes/default/placeholder.gif", "converted/data/ao-nds/misc/placeholder.gif", "converted/data/ao-nds/misc", "")
         if os.path.exists("temp.png"): os.remove("temp.png")
 
