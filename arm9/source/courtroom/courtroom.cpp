@@ -133,7 +133,7 @@ void Courtroom::handleChat()
 
 		if (currIC.realization)
 		{
-			flash(5);
+			flash(3);
 			soundPlaySample(sndRealization, SoundFormat_16Bit, sndRealizationSize, 16000, 127, 64, false, 0);
 		}
 	}
