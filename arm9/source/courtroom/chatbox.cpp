@@ -85,6 +85,7 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
 	visible = false;
+	ignoreBlend = false;
 	setOnChatboxFinishedCallback(0, 0);
 }
 
@@ -204,10 +205,13 @@ void Chatbox::update()
 	if (!visible)
 		return;
 
-	// makes the chatbox transparent.
-	// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
-	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG1 | BLEND_DST_BG0 | BLEND_DST_SPRITE;
-	REG_BLDALPHA = 0x70f;
+	if (!ignoreBlend)
+	{
+		// makes the chatbox transparent.
+		// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
+		REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG1 | BLEND_DST_BG0 | BLEND_DST_SPRITE;
+		REG_BLDALPHA = 0x70f;
+	}
 
 	bgSetScroll(bgIndex, -xOffset, -192+80-yOffset);
 

@@ -53,12 +53,14 @@ class Chatbox
 	voidCallback onChatboxFinished;
 
 	bool visible;
+	bool ignoreBlend;
 
 public:
 	Chatbox(Courtroom* pCourt);
 	~Chatbox();
 
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
+	void setIgnoreBlend(bool on) {ignoreBlend = on;}
 	void setVisible(bool on);
 	void setName(std::string name);
 	void setText(std::string text, int color, std::string blip="male");

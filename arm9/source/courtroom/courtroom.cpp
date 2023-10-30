@@ -188,6 +188,7 @@ void Courtroom::shake(int force, int ticks)
 void Courtroom::flash(int ticks)
 {
 	flashTicks = ticks;
+	chatbox->setIgnoreBlend(true);
 }
 
 void Courtroom::update()
@@ -212,6 +213,9 @@ void Courtroom::update()
 	if (flashTicks)
 	{
 		flashTicks--;
+		if (!flashTicks)
+			chatbox->setIgnoreBlend(false);
+
 		REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP | BLEND_SRC_BG0 | BLEND_SRC_BG1 | BLEND_SRC_BG2 | BLEND_SRC_BG3 | BLEND_SRC_SPRITE;
 		REG_BLDY = 16;
 	}
