@@ -92,6 +92,8 @@ void Courtroom::handleChat()
 		shout->setShout(currIC.charname, currIC.shoutMod, currIC.customShout);
 		return;
 	}
+	else
+		shout->cancelShout();
 
 	std::string chatname = (currIC.showname.empty()) ? currIC.charname : currIC.showname;
 	int color = AOcolorToPalette[currIC.textColor];
