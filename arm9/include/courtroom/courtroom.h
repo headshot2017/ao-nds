@@ -33,6 +33,7 @@ struct MSchatStruct
 	std::string charname;
 	std::string emote;
 	std::string chatmsg;
+	std::string side;
 	std::string sfx;
 	int emoteMod;
 	int charID;

@@ -115,6 +115,7 @@ void Courtroom::handleChat()
 	character->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
 	character->setFlip(currIC.flip);
 	character->setOnAnimFinishedCallback(onAnimFinished, this);
+	background->setBgSide(currIC.side);
 
 	if (currIC.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
 	{

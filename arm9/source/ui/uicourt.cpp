@@ -331,14 +331,13 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 		name.resize(12);
 
 	// show message in court screen
-	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
-
 	MSchatStruct data;
 	data.deskMod = argumentAt(msg, 1) != "0";
 	data.preanim = argumentAt(msg, 2);
 	data.charname = argumentAt(msg, 3);
 	data.emote = argumentAt(msg, 4);
 	data.chatmsg = chatmsg;
+	data.side = argumentAt(msg, 6);
 	data.sfx = argumentAt(msg, 7);
 	data.emoteMod = std::stoi(argumentAt(msg, 8));
 	data.charID = charID;
