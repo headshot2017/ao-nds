@@ -15,6 +15,7 @@ class Background
 {
 	std::string currentBg;
 	std::string currentSide;
+	u32 currBgGfxLen;
 	cfgFile deskTiles;
 	int bgIndex;
 	bool visible;

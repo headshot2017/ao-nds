@@ -93,6 +93,7 @@ while 1:
         conversion.convertShout(folder+"/misc/default/takethat_bubble.gif", "converted/data/ao-nds/misc/takethat_bubble")
 
         print("Converting placeholder.gif...")
+        if os.path.exists("converted/data/ao-nds/misc/nds.cfg"): os.remove("converted/data/ao-nds/misc/nds.cfg")
         conversion.convertEmoteGIF(folder+"/themes/default/placeholder.gif", "converted/data/ao-nds/misc/placeholder.gif", "converted/data/ao-nds/misc", "")
 
         print("Cleaning up temporary files...")
@@ -152,6 +153,7 @@ while 1:
         conversion.convertShout(folder+"/misc/default/objection_bubble.gif", "converted/data/ao-nds/misc/objection_bubble")
         conversion.convertShout(folder+"/misc/default/holdit_bubble.gif", "converted/data/ao-nds/misc/holdit_bubble")
         conversion.convertShout(folder+"/misc/default/takethat_bubble.gif", "converted/data/ao-nds/misc/takethat_bubble")
+        if os.path.exists("converted/data/ao-nds/misc/nds.cfg"): os.remove("converted/data/ao-nds/misc/nds.cfg")
         conversion.convertEmoteGIF(folder+"/themes/default/placeholder.gif", "converted/data/ao-nds/misc/placeholder.gif", "converted/data/ao-nds/misc", "")
         if os.path.exists("temp.png"): os.remove("temp.png")
 

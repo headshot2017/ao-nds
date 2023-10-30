@@ -8,26 +8,40 @@
 #include <string>
 
 #include "cfgFile.h"
+#include "global.h"
+
+class Courtroom;
 
 class Shout
 {
 	int bgIndex;
+	u32 bgMapLen;
 	bool visible;
+
+	Courtroom* m_pCourt;
 
 	int xOffset;
 	int yOffset;
+	int ticks;
 
 	u32* sndShout;
 	u32 sndShoutSize;
 
+	void* pUserData;
+	voidCallback onShoutFinished;
+
 public:
-	Shout();
+	Shout(Courtroom* pCourt);
 	~Shout();
 
+
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
-	void setShout(const std::string& name);
+	void setShout(const std::string& name, int shoutMod, const std::string& custom="");
 	void setVisible(bool on);
 	void freeSound();
+	void cancelShout();
+
+	void setOnShoutFinishedCallback(voidCallback newCB, void* userdata) {onShoutFinished = newCB; pUserData = userdata;}
 
 	void update();
 };

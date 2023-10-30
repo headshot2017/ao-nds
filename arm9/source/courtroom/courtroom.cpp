@@ -2,6 +2,7 @@
 
 #include <dirent.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
@@ -17,21 +18,19 @@ Courtroom::Courtroom()
 	visible = false;
 	onPreAnim = false;
 
-	tempColor = COLOR_WHITE;
 	shakeForce = 0;
 	shakeTicks = 0;
 	flashTicks = 0;
-	tempID = -1;
-	tempLastID = -1;
 
 	sndRealization = wav_load_handle("/data/ao-nds/sounds/general/sfx-realization.wav", &sndRealizationSize);
 
 	background = new Background;
 	chatbox = new Chatbox(this);
 	character = new Character;
-	shout = new Shout;
+	shout = new Shout(this);
 
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
+	shout->setOnShoutFinishedCallback(onShoutFinished, this);
 }
 
 Courtroom::~Courtroom()
@@ -52,18 +51,32 @@ void Courtroom::setVisible(bool on)
 	background->setVisible(on);
 	chatbox->setVisible(on);
 	character->setVisible(on);
+	shout->setVisible(on);
 }
 
 void Courtroom::MSchat(const MSchatStruct& data)
 {
-	int color = data.textColor;
-	if (color < 0 || color >= 6)
-		color = 0;
+	currIC = data;
 
+	if (currIC.textColor < 0 || currIC.textColor >= 6)
+		currIC.textColor = 0;
+
+	AOdecode(currIC.charname);
+	AOdecode(currIC.showname);
+	AOdecode(currIC.selfOffset);
+	AOdecode(currIC.otherOffset);
+	if (currIC.blip.empty()) currIC.blip = "male";
+
+	handleChat();
+}
+
+void Courtroom::handleChat()
+{
+	/*
 	tempChar = data.charname;
 	tempAnim = data.emote;
 	tempPreAnim = data.preanim;
-	tempName = (data.showname.empty()) ? data.charname : data.showname;
+	tempName =
 	tempMsg = data.chatmsg;
 	tempColor = AOcolorToPalette[color];
 	tempBlip = data.blip;
@@ -71,16 +84,22 @@ void Courtroom::MSchat(const MSchatStruct& data)
 	tempImmediate = data.noInterrupt;
 	tempID = data.charID;
 	tempAdditive = data.additive;
-	if (tempBlip.empty()) tempBlip = "male";
+	*/
 
-	AOdecode(tempName);
-	AOdecode(tempMsg);
+	if (currIC.shoutMod)
+	{
+		character->setOnAnimFinishedCallback(0, 0);
+		shout->setShout(currIC.charname, currIC.shoutMod, currIC.customShout);
+		return;
+	}
 
-	if (data.shake)
+	std::string chatname = (currIC.showname.empty()) ? currIC.charname : currIC.showname;
+	int color = AOcolorToPalette[currIC.textColor];
+
+	if (currIC.shake)
 		shake(5, 35);
 
-	std::string offsetStr = data.selfOffset;
-	AOdecode(offsetStr);
+	std::string offsetStr = currIC.selfOffset;
 
 	int offsetX = 0;
 	int offsetY = 0;
@@ -94,24 +113,24 @@ void Courtroom::MSchat(const MSchatStruct& data)
 		offsetX = std::stoi(offsetStr);
 
 	character->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
-	character->setFlip(data.flip);
+	character->setFlip(currIC.flip);
 	character->setOnAnimFinishedCallback(onAnimFinished, this);
 
-	if (data.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + tempChar + "/" + tempPreAnim + ".img.bin"))
+	if (currIC.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
 	{
 		onPreAnim = false;
 
-		character->setCharImage(tempChar, ((tempMsg.empty() || tempColor == COLOR_BLUE) ? "(a)" : "(b)") + tempAnim);
+		character->setCharImage(currIC.charname, ((currIC.chatmsg.empty() || color == COLOR_BLUE) ? "(a)" : "(b)") + currIC.emote);
 		chatbox->setVisible(true);
-		chatbox->setName(tempName);
+		chatbox->setName(chatname);
 
-		if (tempAdditive && tempID == tempLastID)
-			chatbox->additiveText(tempMsg, tempColor);
+		if (currIC.additive && currIC.charID == lastIC.charID)
+			chatbox->additiveText(currIC.chatmsg, color);
 		else
-			chatbox->setText(tempMsg, tempColor, tempBlip);
-		tempLastID = tempID;
+			chatbox->setText(currIC.chatmsg, color, currIC.blip);
+		lastIC = currIC;
 
-		if (tempFlash)
+		if (currIC.realization)
 		{
 			flash(5);
 			soundPlaySample(sndRealization, SoundFormat_16Bit, sndRealizationSize, 32000, 127, 64, false, 0);
@@ -122,20 +141,20 @@ void Courtroom::MSchat(const MSchatStruct& data)
 		// play pre-animation
 		onPreAnim = true;
 
-		if (!tempImmediate)
+		if (!currIC.noInterrupt)
 			chatbox->setVisible(false);
 		else
 		{
 			chatbox->setVisible(true);
-			chatbox->setName(tempName);
+			chatbox->setName(chatname);
 
-			if (tempAdditive && tempID == tempLastID)
-				chatbox->additiveText(tempMsg, tempColor);
+			if (currIC.additive && currIC.charID == lastIC.charID)
+				chatbox->additiveText(currIC.chatmsg, color);
 			else
-				chatbox->setText(tempMsg, tempColor, tempBlip);
-			tempLastID = tempID;
+				chatbox->setText(currIC.chatmsg, color, currIC.blip);
+			lastIC = currIC;
 		}
-		character->setCharImage(tempChar, tempPreAnim, false);
+		character->setCharImage(currIC.charname, currIC.preanim, false);
 	}
 }
 
@@ -176,7 +195,7 @@ void Courtroom::update()
 	int yOffset = (shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0;
 	if (shakeTicks > 0) shakeTicks--;
 
-	// chatbox gets its' own offsets
+	// chatbox and shouts get their own offsets
 	character->setShakes(xOffset, yOffset);
 	background->setOffsets(xOffset, yOffset);
 	chatbox->setOffsets(
@@ -200,39 +219,53 @@ void Courtroom::update()
 void Courtroom::onChatboxFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
-	if (pSelf->tempColor != COLOR_BLUE && (!pSelf->tempImmediate || !pSelf->onPreAnim))
-		pSelf->character->setCharImage(pSelf->tempChar, "(a)"+pSelf->tempAnim);
+
+	int color = AOcolorToPalette[pSelf->currIC.textColor];
+	if (color != COLOR_BLUE && (!pSelf->currIC.noInterrupt || !pSelf->onPreAnim))
+		pSelf->character->setCharImage(pSelf->currIC.charname, "(a)"+pSelf->currIC.emote);
 }
 
 void Courtroom::onAnimFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
 
+	int color = AOcolorToPalette[pSelf->currIC.textColor];
 	bool useIdleAnim =
-		pSelf->tempMsg.empty() ||
-		pSelf->tempColor == COLOR_BLUE ||
-		(pSelf->tempImmediate && pSelf->chatbox->isFinished());
+		pSelf->currIC.chatmsg.empty() ||
+		color == COLOR_BLUE ||
+		(pSelf->currIC.noInterrupt && pSelf->chatbox->isFinished());
 
 	pSelf->onPreAnim = false;
 
-	pSelf->character->setCharImage(pSelf->tempChar, ((useIdleAnim) ? "(a)" : "(b)") + pSelf->tempAnim);
+	pSelf->character->setCharImage(pSelf->currIC.charname, ((useIdleAnim) ? "(a)" : "(b)") + pSelf->currIC.emote);
 	if (useIdleAnim) pSelf->character->setOnAnimFinishedCallback(0, 0);
 
-	if (!pSelf->tempImmediate)
+	if (!pSelf->currIC.noInterrupt)
 	{
+		std::string chatname = (pSelf->currIC.showname.empty()) ? pSelf->currIC.charname : pSelf->currIC.showname;
 		pSelf->chatbox->setVisible(true);
-		pSelf->chatbox->setName(pSelf->tempName);
+		pSelf->chatbox->setName(chatname);
 
-		if (pSelf->tempAdditive && pSelf->tempID == pSelf->tempLastID)
-			pSelf->chatbox->additiveText(pSelf->tempMsg, pSelf->tempColor);
+		if (pSelf->currIC.additive && pSelf->currIC.charID == pSelf->lastIC.charID)
+			pSelf->chatbox->additiveText(pSelf->currIC.chatmsg, color);
 		else
-			pSelf->chatbox->setText(pSelf->tempMsg, pSelf->tempColor, pSelf->tempBlip);
-		pSelf->tempLastID = pSelf->tempID;
+			pSelf->chatbox->setText(pSelf->currIC.chatmsg, color, pSelf->currIC.blip);
+		pSelf->lastIC = pSelf->currIC;
 	}
 
-	if (pSelf->tempFlash)
+	if (pSelf->currIC.realization)
 	{
 		pSelf->flash(5);
 		soundPlaySample(pSelf->sndRealization, SoundFormat_16Bit, pSelf->sndRealizationSize, 32000, 127, 64, false, 0);
 	}
+}
+
+void Courtroom::onShoutFinished(void* pUserData)
+{
+	Courtroom *pSelf = (Courtroom*)pUserData;
+
+	pSelf->currIC.shoutMod = 0;
+	if (pSelf->currIC.emoteMod == 2 || pSelf->currIC.emoteMod == 6)
+		pSelf->currIC.emoteMod--;
+	pSelf->handleChat();
 }

@@ -339,7 +339,6 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
     if os.path.exists(target+"/nds.cfg"):
         os.remove(target+"/nds.cfg")
 
-    # copy char.ini from source to target
     if not extra:
         open(target+"/char.ini", "w").write(open(source+"/char.ini").read())
 
@@ -370,11 +369,15 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
             convertShout(source+"/"+custom, target+"/"+custom)
 
         if os.path.exists(source+"/custom_objections"):
+            if not os.path.exists(target+"/custom_objections"):
+                os.mkdir(target+"/custom_objections")
+
             for shout in os.listdir(source+"/custom_objections"):
                 if shout.lower().endswith(".opus") or shout.lower().endswith(".wav"):
                     convertSound(source+"/custom_objections/"+shout, target+"/custom_objections/"+shout)
                 else:
                     convertShout(source+"/custom_objections/"+shout, target+"/custom_objections/"+shout)
+
 
 def convertCharacters(source, target):
     for char in os.listdir(source):
@@ -466,8 +469,8 @@ def convertChatbox(folder):
     img.save("temp.png")
     img.close()
 
-    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, extended palette slot 1, export to .bin, don't generate .h file
-    subprocess.Popen("./grit temp.png -gB8 -gt -gTFF00FF -m -p -mp 1 -ftb -fh!").wait()
+    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, export to .bin, don't generate .h file
+    subprocess.Popen("./grit temp.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!").wait()
 
     if os.path.exists("converted/data/ao-nds/misc/chatbox.img.bin"):
         os.remove("converted/data/ao-nds/misc/chatbox.img.bin")
@@ -509,19 +512,25 @@ def convertShout(source, target):
         print("Couldn't convert shout %s" % source)
         return
 
+    center = [(img.size[0]-256)/2, (img.size[1]-192)/2]
+    img = img.crop((center[0], center[1], img.size[0]-center[0], img.size[1]-center[1]))
+
     pix = img.load()
     for y in range(img.size[1]):
         for x in range(img.size[0]):
-            if pix[x, y][3] == 0:
+            if pix[x, y][3] < 128:
                 pix[x, y] = (255, 0, 255, 255)
+            elif pix[x, y][3] < 255:
+                pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
 
+    img = img.convert("P", dither=None)
     img.save("temp.png")
     img.close()
 
     newFile = os.path.splitext(target)[0]
 
-    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, extended palette slot 2, export to .bin, don't generate .h file
-    subprocess.Popen("./grit temp.png -gB8 -gt -gTFF00FF -m -p -mp 2 -ftb -fh!").wait()
+    # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, export to .bin, don't generate .h file
+    subprocess.Popen("./grit temp.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!").wait()
 
     if os.path.exists(newFile+".img.bin"):
         os.remove(newFile+".img.bin")

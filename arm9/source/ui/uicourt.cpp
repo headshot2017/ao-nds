@@ -304,6 +304,24 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	std::string chatmsg = argumentAt(msg,5);
 	AOdecode(chatmsg);
 
+	std::string shoutModStr = argumentAt(msg, 11);
+	AOdecode(shoutModStr);
+
+	int shoutMod = 0;
+	std::string customShout = "custom";
+	if (shoutModStr.find("&") != std::string::npos)
+	{
+		shoutMod = std::stoi(argumentAt(shoutModStr, 0, '&'));
+		customShout = "custom_objections/" + argumentAt(shoutModStr, 1, '&');
+
+		// remove file extension
+		auto pos = customShout.find_last_of('.');
+		if (pos != std::string::npos)
+			customShout = customShout.substr(0, pos);
+	}
+	else
+		shoutMod = std::stoi(shoutModStr);
+
 	// insert to chatlog
 	std::string logMsg = name+": "+chatmsg;
 	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
@@ -315,34 +333,34 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	// show message in court screen
 	pSelf->court->getBackground()->setBgSide(argumentAt(msg,6));
 
-	MSchatStruct data = {
-		argumentAt(msg, 1) != "0",
-		argumentAt(msg, 2),
-		argumentAt(msg, 3),
-		argumentAt(msg, 4),
-		chatmsg,
-		argumentAt(msg, 7),
-		std::stoi(argumentAt(msg, 8)),
-		charID,
-		std::stoi(argumentAt(msg, 10)),
-		std::stoi(argumentAt(msg, 11)),
-		std::stoi(argumentAt(msg, 12)),
-		argumentAt(msg, 13) == "1",
-		std::stoi(argumentAt(msg, 14)),
-		std::stoi(argumentAt(msg, 15)),
-		argumentAt(msg, 16),
-		std::stoi(argumentAt(msg, 17)),
-		argumentAt(msg, 18),
-		argumentAt(msg, 19),
-		argumentAt(msg, 20),
-		std::stoi(argumentAt(msg, 21)),
-		std::stoi(argumentAt(msg, 22)),
-		argumentAt(msg, 23) == "1",
-		std::stoi(argumentAt(msg, 24)),
-		std::stoi(argumentAt(msg, 25)),
-		argumentAt(msg, 29) == "1",
-		pSelf->charList[charID].blip
-	};
+	MSchatStruct data;
+	data.deskMod = argumentAt(msg, 1) != "0";
+	data.preanim = argumentAt(msg, 2);
+	data.charname = argumentAt(msg, 3);
+	data.emote = argumentAt(msg, 4);
+	data.chatmsg = chatmsg;
+	data.sfx = argumentAt(msg, 7);
+	data.emoteMod = std::stoi(argumentAt(msg, 8));
+	data.charID = charID;
+	data.sfxDelay = std::stoi(argumentAt(msg, 10));
+	data.shoutMod = shoutMod;
+	data.customShout = customShout;
+	data.evidence = std::stoi(argumentAt(msg, 12));
+	data.flip = argumentAt(msg, 13) == "1";
+	data.realization = std::stoi(argumentAt(msg, 14));
+	data.textColor = std::stoi(argumentAt(msg, 15));
+	data.showname = argumentAt(msg, 16);
+	data.otherCharID = std::stoi(argumentAt(msg, 17));
+	data.otherName = argumentAt(msg, 18);
+	data.otherEmote = argumentAt(msg, 19);
+	data.selfOffset = argumentAt(msg, 20);
+	data.otherOffset = argumentAt(msg, 21);
+	data.otherFlip = std::stoi(argumentAt(msg, 22));
+	data.noInterrupt = argumentAt(msg, 23) == "1";
+	data.sfxLoop = std::stoi(argumentAt(msg, 24));
+	data.shake = std::stoi(argumentAt(msg, 25));
+	data.additive = argumentAt(msg, 29) == "1";
+	data.blip = pSelf->charList[charID].blip;
 
 	pSelf->court->MSchat(data);
 }

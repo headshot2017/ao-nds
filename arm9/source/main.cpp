@@ -122,7 +122,7 @@ int main()
 	closedir(dir1);
 	closedir(dir2);
 
-	videoSetMode(MODE_3_2D);
+	videoSetMode(MODE_0_2D);
 	videoSetModeSub(MODE_0_2D);
 
 	vramSetBankA(VRAM_A_MAIN_BG);

@@ -44,10 +44,11 @@ void readDeskTiles(const std::string& value, int* horizontal, int* vertical)
 Background::Background()
 {
 	//bgIndex = bgInit(3, BgType_ExRotation, BgSize_ER_256x256, 1, 2);
-	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_512x256, 12, 2);
+	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_512x256, 4, 1);
 	bgSetPriority(bgIndex, 3);
 	bgHide(bgIndex);
 	visible = false;
+	currBgGfxLen = 0;
 
 	for (int i=0; i<4*6; i++)
 	{
@@ -62,6 +63,9 @@ Background::Background()
 
 Background::~Background()
 {
+	if (currBgGfxLen) dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), currBgGfxLen);
+	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
+
 	for (int i=0; i<4*6; i++)
 	{
 		oamSet(&oamMain, i, 0, 0, 0, 0, SpriteSize_64x32, SpriteColorFormat_256Color, 0, 0, false, true, false, false, false);
@@ -97,6 +101,7 @@ void Background::setBgSide(const std::string& side, bool force)
 	u8* bgGfx = readFile(currentBg + "/" + sideToBg[side] + ".img.bin", &bgGfxLen);
 	u8* bgMap = readFile(currentBg + "/" + sideToBg[side] + ".map.bin", &bgMapLen);
 	u8* bgPal = readFile(currentBg + "/" + sideToBg[side] + ".pal.bin", &bgPalLen);
+	currBgGfxLen = bgGfxLen;
 
 	// copy main background
 	dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);

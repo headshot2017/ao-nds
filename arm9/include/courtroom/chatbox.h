@@ -17,6 +17,9 @@ class Courtroom;
 class Chatbox
 {
 	int bgIndex;
+	u32 mapLen;
+	u8* bgMap;
+	u8* bgPal;
 
 	Courtroom* m_pCourt;
 

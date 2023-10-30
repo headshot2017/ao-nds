@@ -8,6 +8,7 @@
 #include <nds/arm9/video.h>
 #include <nds/arm9/sound.h>
 
+#include "courtroom/courtroom.h"
 #include "global.h"
 #include "fonts.h"
 #include "colors.h"
@@ -40,13 +41,12 @@ Chatbox::Chatbox(Courtroom* pCourt)
 
 
 	//bgIndex = bgInit(2, BgType_ExRotation, BgSize_ER_256x256, 2, 1);
-	bgIndex = bgInit(1, BgType_Text8bpp, BgSize_T_512x256, 10, 0);
+	bgIndex = bgInit(1, BgType_Text4bpp, BgSize_T_512x256, 2, 5);
 	bgSetPriority(bgIndex, 1);
 	bgSetScroll(bgIndex, 0, -192+80);
 	bgHide(bgIndex);
 	bgUpdate();
 
-	vramSetBankE(VRAM_E_LCD);
 	vramSetBankF(VRAM_F_LCD);
 
 	arrowX = 243;
@@ -70,20 +70,18 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_YELLOW] = 	PAL_YELLOW;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	PAL_BLACK;
 
-	u32 dataLen, mapLen, palLen;
+	u32 dataLen;
 	u8* bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);
-	u8* bgMap = readFile("/data/ao-nds/misc/chatbox.map.bin", &mapLen);
-	u8* bgPal = readFile("/data/ao-nds/misc/chatbox.pal.bin", &palLen);
+	bgMap = readFile("/data/ao-nds/misc/chatbox.map.bin", &mapLen);
+	bgPal = readFile("/data/ao-nds/misc/chatbox.pal.bin");
 
 	dmaCopy(bgData, bgGetGfxPtr(bgIndex), dataLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
-	memcpy(&VRAM_E_EXT_PALETTE[bgIndex][1], bgPal, palLen);
+	memcpy(BG_PALETTE, bgPal, 512);
+	BG_PALETTE[0] = 0;
 
 	delete[] bgData;
-	delete[] bgMap;
-	delete[] bgPal;
 
-	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
 	visible = false;
@@ -93,6 +91,9 @@ Chatbox::Chatbox(Courtroom* pCourt)
 Chatbox::~Chatbox()
 {
 	bgHide(bgIndex);
+	dmaFillHalfWords(0, BG_PALETTE, 512);
+	delete[] bgPal;
+	delete[] bgMap;
 
 	if (blipSnd)
 		delete[] blipSnd;
@@ -118,6 +119,14 @@ void Chatbox::setVisible(bool on)
 {
 	visible = on;
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
+	if (on)
+	{
+		dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
+		memcpy(BG_PALETTE, bgPal, 512);
+		BG_PALETTE[0] = 0;
+	}
+	else
+		dmaFillHalfWords(0, bgGetMapPtr(bgIndex), mapLen);
 
 	for (int i=0; i<2; i++)
 		oamSetHidden(&oamMain, 24+i, !on);
@@ -192,13 +201,13 @@ void Chatbox::additiveText(std::string text, int color)
 
 void Chatbox::update()
 {
-	if (visible)
-	{
-		// makes the chatbox transparent.
-		// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
-		REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG1 | BLEND_DST_BG0 | BLEND_DST_SPRITE;
-		REG_BLDALPHA = 0x70f;
-	}
+	if (!visible)
+		return;
+
+	// makes the chatbox transparent.
+	// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
+	REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG1 | BLEND_DST_BG0 | BLEND_DST_SPRITE;
+	REG_BLDALPHA = 0x70f;
 
 	bgSetScroll(bgIndex, -xOffset, -192+80-yOffset);
 
