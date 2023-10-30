@@ -78,7 +78,7 @@ void UIScreenDisconnected::updateInput()
 void UIScreenDisconnected::onOK(void* pUserData)
 {
 	UIScreenDisconnected* pSelf = (UIScreenDisconnected*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
 
 	if (pSelf->goToWiFi)
 		gEngine->changeScreen(new UIScreenWifi);

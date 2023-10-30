@@ -96,7 +96,7 @@ void UICourtMute::update()
 		holdWait--;
 		if (holdWait <= 0)
 		{
-			soundPlaySample(pCourtUI->sndEvPage, SoundFormat_16Bit, pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+			soundPlaySample(pCourtUI->sndEvPage, SoundFormat_16Bit, pCourtUI->sndEvPageSize, 16000, 127, 64, false, 0);
 			currPage += pageAdd;
 			u32 maxPages = (u32)ceil(filteredChars.size()/8.f);
 
@@ -145,7 +145,7 @@ void UICourtMute::updateInput()
 		if (pos.px >= 213 && pos.py >= 36 && pos.px < 213+17 && pos.py < 36+16)
 		{
 			// search button
-			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 			bgHide(bgIndex);
 
@@ -251,7 +251,7 @@ void UICourtMute::updateFilter()
 void UICourtMute::onPrevPage(void* pUserData)
 {
 	UICourtMute* pSelf = (UICourtMute*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 16000, 127, 64, false, 0);
 
 	pSelf->holdWait = 35;
 	pSelf->pageAdd = -1;
@@ -263,7 +263,7 @@ void UICourtMute::onPrevPage(void* pUserData)
 void UICourtMute::onNextPage(void* pUserData)
 {
 	UICourtMute* pSelf = (UICourtMute*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 16000, 127, 64, false, 0);
 
 	pSelf->holdWait = 35;
 	pSelf->pageAdd = 1;
@@ -284,7 +284,7 @@ void UICourtMute::onBackClicked(void* pUserData)
 {
 	UICourtMute* pSelf = (UICourtMute*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtIC(pSelf->pCourtUI));
 }
 
@@ -292,7 +292,7 @@ void UICourtMute::onMuteToggled(void* pUserData)
 {
 	UICourtMute* pSelf = (UICourtMute*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currCharSelected;
 	charInfo& character = pSelf->pCourtUI->getCharList()[pSelf->filteredChars[ind]];
@@ -317,7 +317,7 @@ void UICourtMute::onCharClicked(void* pUserData)
 
 	if (pSelf->currCharSelected == pData->btnInd) return;
 	pSelf->currCharSelected = pData->btnInd;
-	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 16000, 127, 64, false, 0);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currCharSelected;
 	const charInfo& info = pSelf->pCourtUI->getCharList()[pSelf->filteredChars[ind]];

@@ -108,7 +108,7 @@ void UICourtAreaList::update()
 		holdWait--;
 		if (holdWait <= 0)
 		{
-			soundPlaySample(pCourtUI->sndEvPage, SoundFormat_16Bit, pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+			soundPlaySample(pCourtUI->sndEvPage, SoundFormat_16Bit, pCourtUI->sndEvPageSize, 16000, 127, 64, false, 0);
 			currPage += pageAdd;
 			u32 maxPages = (u32)ceil(pCourtUI->getAreaList().size()/4.f);
 
@@ -197,7 +197,7 @@ void UICourtAreaList::onBackClicked(void* pUserData)
 {
 	UICourtAreaList* pSelf = (UICourtAreaList*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
 }
 
@@ -205,14 +205,14 @@ void UICourtAreaList::onToggleList(void* pUserData)
 {
 	UICourtAreaList* pSelf = (UICourtAreaList*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 16000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtMusicList(pSelf->pCourtUI));
 }
 
 void UICourtAreaList::onConfirmClicked(void* pUserData)
 {
 	UICourtAreaList* pSelf = (UICourtAreaList*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	u32 ind = pSelf->currPage*4 + pSelf->currAreaSelected;
 	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getAreaList()[ind].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "##%");
@@ -223,7 +223,7 @@ void UICourtAreaList::onConfirmClicked(void* pUserData)
 void UICourtAreaList::onPrevPage(void* pUserData)
 {
 	UICourtAreaList* pSelf = (UICourtAreaList*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 16000, 127, 64, false, 0);
 
 	pSelf->holdWait = 35;
 	pSelf->pageAdd = -1;
@@ -235,7 +235,7 @@ void UICourtAreaList::onPrevPage(void* pUserData)
 void UICourtAreaList::onNextPage(void* pUserData)
 {
 	UICourtAreaList* pSelf = (UICourtAreaList*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 16000, 127, 64, false, 0);
 
 	pSelf->holdWait = 35;
 	pSelf->pageAdd = 1;
@@ -259,7 +259,7 @@ void UICourtAreaList::onAreaClicked(void* pUserData)
 
 	if (pSelf->currAreaSelected == pData->btnInd) return;
 	pSelf->currAreaSelected = pData->btnInd;
-	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 16000, 127, 64, false, 0);
 
 	pSelf->btn_confirm->setVisible(true);
 	pSelf->sel_btn->selectButton(pSelf->btn_area[pData->btnInd]);

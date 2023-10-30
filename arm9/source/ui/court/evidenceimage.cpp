@@ -122,7 +122,7 @@ void UICourtEvidenceImage::reloadPage()
 void UICourtEvidenceImage::onPrevPage(void* pUserData)
 {
 	UICourtEvidenceImage* pSelf = (UICourtEvidenceImage*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 16000, 127, 64, false, 0);
 
 	pSelf->currPage--;
 	pSelf->reloadPage();
@@ -131,7 +131,7 @@ void UICourtEvidenceImage::onPrevPage(void* pUserData)
 void UICourtEvidenceImage::onNextPage(void* pUserData)
 {
 	UICourtEvidenceImage* pSelf = (UICourtEvidenceImage*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 16000, 127, 64, false, 0);
 
 	pSelf->currPage++;
 	pSelf->reloadPage();
@@ -141,7 +141,7 @@ void UICourtEvidenceImage::onBackClicked(void* pUserData)
 {
 	UICourtEvidenceImage* pSelf = (UICourtEvidenceImage*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtEvidenceDetail(pSelf->pCourtUI, pSelf->editingEvidence, pSelf->isPrivate, pSelf->currName, pSelf->currDesc, pSelf->lastImage));
 }
 
@@ -149,7 +149,7 @@ void UICourtEvidenceImage::onConfirmClicked(void* pUserData)
 {
 	UICourtEvidenceImage* pSelf = (UICourtEvidenceImage*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currEviSelected;
 	if (!pSelf->adding)
@@ -176,7 +176,7 @@ void UICourtEvidenceImage::onEvidenceClicked(void* pUserData)
 	if (pSelf->currEviSelected == pData->btnInd) return;
 
 	pSelf->currEviSelected = pData->btnInd;
-	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 16000, 127, 64, false, 0);
 
 	pSelf->lbl_evidence->setVisible(true);
 	pSelf->lbl_evidence->setText(gEngine->getEvidence()[ind].c_str());

@@ -315,7 +315,7 @@ void UIScreenServerList::saveFavorites()
 void UIScreenServerList::onManageFavorite(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
 
 	serverInfo* newList;
 
@@ -356,7 +356,7 @@ void UIScreenServerList::onManageFavorite(void* pUserData)
 void UIScreenServerList::onToggleList(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
 
 	pSelf->isFavorites = -pSelf->isFavorites+1;
 	if (pSelf->isFavorites)
@@ -377,7 +377,7 @@ void UIScreenServerList::onToggleList(void* pUserData)
 void UIScreenServerList::onBack(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	soundPlaySample(pSelf->sndCancel, SoundFormat_16Bit, pSelf->sndCancelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndCancel, SoundFormat_16Bit, pSelf->sndCancelSize, 16000, 127, 64, false, 0);
 
 	gEngine->changeScreen(new UIScreenMainMenu);
 }
@@ -385,7 +385,7 @@ void UIScreenServerList::onBack(void* pUserData)
 void UIScreenServerList::onConnect(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
 
 	const serverInfo& server = pSelf->m_servers[pSelf->isFavorites][pSelf->currPage*4 + pSelf->currServer];
 	if (server.ws_port)
@@ -410,7 +410,7 @@ void UIScreenServerList::onConnect(void* pUserData)
 void UIScreenServerList::onPrevPage(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
 
 	if (!pSelf->loaded && !pSelf->isFavorites) return;
 
@@ -421,7 +421,7 @@ void UIScreenServerList::onPrevPage(void* pUserData)
 void UIScreenServerList::onNextPage(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
 
 	if (!pSelf->loaded && !pSelf->isFavorites) return;
 
@@ -437,7 +437,7 @@ void UIScreenServerList::onServerClicked(void* pUserData)
 	if (pSelf->currServer == pData->btnInd) // already selected
 		return;
 
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
 
 	// unselect server
 	if (pSelf->currServer != -1)

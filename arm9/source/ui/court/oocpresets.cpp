@@ -197,7 +197,7 @@ void UICourtOOCPresets::hideEverything()
 void UICourtOOCPresets::onBackClicked(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
 
 	if (pSelf->currPreset == -1)
 		pSelf->pCourtUI->changeScreen(new UICourtOOC(pSelf->pCourtUI));
@@ -208,7 +208,7 @@ void UICourtOOCPresets::onBackClicked(void* pUserData)
 void UICourtOOCPresets::onAddOrConfirm(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	if (pSelf->currPreset == -1)
 	{
@@ -226,7 +226,7 @@ void UICourtOOCPresets::onAddOrConfirm(void* pUserData)
 void UICourtOOCPresets::onDeleteClicked(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	if (pSelf->currPreset == -1) return;
 	pSelf->m_presets.erase(pSelf->m_presets.begin() + (pSelf->currPage*4 + pSelf->currPreset));
@@ -238,7 +238,7 @@ void UICourtOOCPresets::onDeleteClicked(void* pUserData)
 void UICourtOOCPresets::onEditClicked(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	if (pSelf->currPreset == -1) return;
 	pSelf->hideEverything();
@@ -248,7 +248,7 @@ void UICourtOOCPresets::onEditClicked(void* pUserData)
 void UICourtOOCPresets::onPrevPage(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	pSelf->currPage--;
 	pSelf->reloadPage();
@@ -257,7 +257,7 @@ void UICourtOOCPresets::onPrevPage(void* pUserData)
 void UICourtOOCPresets::onNextPage(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	pSelf->currPage++;
 	pSelf->reloadPage();
@@ -271,7 +271,7 @@ void UICourtOOCPresets::onPresetClicked(void* pUserData)
 	if (pSelf->currPreset == pData->btnInd) // already selected
 		return;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
 
 	// unselect preset
 	if (pSelf->currPreset != -1)

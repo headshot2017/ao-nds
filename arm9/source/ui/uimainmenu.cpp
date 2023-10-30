@@ -85,7 +85,7 @@ void UIScreenMainMenu::updateInput()
 void UIScreenMainMenu::onViewServerList(void* pUserData)
 {
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
-	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 16000, 127, 64, false, 0);
 
 	gEngine->changeScreen(new UIScreenServerList);
 }
@@ -93,7 +93,7 @@ void UIScreenMainMenu::onViewServerList(void* pUserData)
 void UIScreenMainMenu::onDirectConnect(void* pUserData)
 {
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
-	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 16000, 127, 64, false, 0);
 
 	gEngine->changeScreen(new UIScreenDirectConn);
 }
@@ -101,7 +101,7 @@ void UIScreenMainMenu::onDirectConnect(void* pUserData)
 void UIScreenMainMenu::onSettings(void* pUserData)
 {
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
-	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 16000, 127, 64, false, 0);
 
 	gEngine->changeScreen(new UIScreenSettings);
 }

@@ -87,7 +87,7 @@ void UICourtLoading::onDisconnectClicked(void* pUserData)
 {
 	UICourtLoading* pSelf = (UICourtLoading*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
 	gEngine->changeScreen(new UIScreenServerList);
 }
 

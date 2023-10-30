@@ -146,7 +146,7 @@ void Shout::update()
 	else if (ticks == 5)
 	{
 		if (sndShout)
-			soundPlaySample(sndShout, SoundFormat_16Bit, sndShoutSize, 32000, 127, 64, false, 0);
+			soundPlaySample(sndShout, SoundFormat_16Bit, sndShoutSize, 16000, 127, 64, false, 0);
 		if (visible) bgShow(bgIndex);
 	}
 	else if (ticks >= 75)
