@@ -79,14 +79,23 @@ def convertBackground(source, target):
         verticalTiles = int(math.ceil(img.size[1]/32.))
         img = img.crop((0, img.size[1]-(verticalTiles*32), horizontalTiles*64, img.size[1]))
 
+        # set transparency
+        pix = img.load()
+        for y in range(img.size[1]):
+            for x in range(img.size[0]):
+                if pix[x, y][3] < 128:
+                    pix[x, y] = (255, 0, 255, 255)
+                else:
+                    pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
+
         img.save("temp.png")
         img.close()
         
         with open(target+"/desk_tiles.cfg", "a") as f:
             f.write("%s: %d,%d\n" % (no_ext_file, horizontalTiles, verticalTiles))
 
-        # 8-bit tiles, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-        subprocess.Popen("grit temp.png -gB8 -gt -ftb -fh! -m! -Mh4 -Mw8").wait()
+        # 8-bit tiles, transparency, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
+        subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh4 -Mw8").wait()
         
         if os.path.exists(target+"/"+no_ext_file+".img.bin"):
             os.remove(target+"/"+no_ext_file+".img.bin")
