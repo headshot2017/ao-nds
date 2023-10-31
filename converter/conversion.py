@@ -247,6 +247,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
         f.write(extra+no_dir_ext_file.lower()+"_size: %d,%d\n" % (croppedWidth, croppedHeight))
         f.write(extra+no_dir_ext_file.lower()+"_offset: %d,%d\n" % (leftCorner, top))
         f.write(extra+no_dir_ext_file.lower()+"_stream: %d\n" % (streamFile))
+        f.write(extra+no_dir_ext_file.lower()+"_frameGfxCount: %d\n" % (len(noDuplicates)))
         f.write(extra+no_dir_ext_file.lower()+"_durations: ")
         for i in range(len(frames)):
             duration = frames[i][1]

@@ -173,6 +173,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	readFrameDurations(animInfos.get(relativeFile + "_durations"), frameInfo.frameDurations);
 	readFrameIndexes(animInfos.get(relativeFile + "_indexes"), frameInfo.frameIndexes);
 	frameInfo.frameCount = frameInfo.frameIndexes.size();
+	u32 gfxCount = std::stoi(animInfos.get(relativeFile + "_frameGfxCount"));
 	mp3_fill_buffer();
 
 	frameInfo.realW = ceil(frameInfo.frameW/32.f);
@@ -184,21 +185,16 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		// decompress gfx and copy palette to slot 2
 		stream.unload();
 
-		u8* charDataLZ77 = readFile(IMGbin.c_str());
-
-		charData = new u8[frameInfo.realW*32 * frameInfo.realH*32 * frameInfo.frameCount];
+		charData = new u8[frameInfo.realW*32 * frameInfo.realH*32 * gfxCount];
 		mp3_fill_buffer();
 
 		if (!charData)
 		{
-			delete[] charDataLZ77;
 			delete[] charPalette;
 			return;
 		}
 
-		decompress(charDataLZ77, charData, LZ77);
-		mp3_fill_buffer();
-		delete[] charDataLZ77;
+		readAndDecompressLZ77Stream(IMGbin.c_str(), charData);
 	}
 	else
 	{

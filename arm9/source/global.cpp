@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <dirent.h>
 
+#include <nds/arm9/decompress.h>
 #include <nds/arm9/input.h>
 #include <nds/interrupts.h>
 
@@ -170,4 +171,49 @@ u32 bmpIndexTo256SpriteIndex(int x, int y, int w, int h, SpriteSize size, bool* 
 	//gfx[targetInd] = (leftOrRight) ?
 	//	(gfx[targetInd] & 0xf) | (1<<8) : // assign palette index right
 	//	1 | ((gfx[targetInd] >> 8) << 8); // assign palette index left
+}
+
+
+
+FILE* streamFile = 0;
+u8* streamData = 0;
+u32 streamPos = 0;
+u32 streamSize = 4096;
+
+static int getHeader(uint8 *source, uint16 *dest, uint32 arg) {
+	return *(uint32*)source;
+}
+
+static uint8 readByteFile(uint8 *source) {
+	/*source -= streamPos;
+	u8 thisByte = *source;
+	if ((u32)(source-streamData) >= streamSize-1)
+	{
+		streamPos += streamSize;
+		fread(streamData, streamSize, 1, streamFile);
+	}
+	return thisByte;*/
+	mp3_fill_buffer();
+	return *source;
+}
+
+TDecompressionStream decompressStreamCBs =
+{
+	getHeader,
+	0,
+	readByteFile
+};
+
+void readAndDecompressLZ77Stream(const char* filename, u8* dest)
+{
+	//streamPos = 0;
+	//streamFile = fopen(filename, "rb");
+	//streamData = new u8[streamSize];
+	streamData = readFile(filename);
+	fread(streamData, streamSize, 1, streamFile);
+
+	swiDecompressLZSSVram(streamData, dest, 0, &decompressStreamCBs);
+
+	//fclose(streamFile);
+	delete[] streamData;
 }
