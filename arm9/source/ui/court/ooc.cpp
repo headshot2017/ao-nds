@@ -110,7 +110,7 @@ void UICourtOOC::updateInput()
 		if (pos.px >= 79 && pos.py >= 162 && pos.px < 79+162 && pos.py < 162+14)
 		{
 			// ooc name input
-			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 
 			hideEverything();
 			isWritingChat = false;
@@ -119,7 +119,7 @@ void UICourtOOC::updateInput()
 		else if (pos.px >= 79 && pos.py >= 177 && pos.px < 79+177 && pos.py < 177+15)
 		{
 			// chat message input
-			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 
 			hideEverything();
 			isWritingChat = true;
@@ -205,7 +205,7 @@ void UICourtOOC::onBackClicked(void* pUserData)
 {
 	UICourtOOC* pSelf = (UICourtOOC*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
 }
 
@@ -213,7 +213,7 @@ void UICourtOOC::onPresetsClicked(void* pUserData)
 {
 	UICourtOOC* pSelf = (UICourtOOC*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtOOCPresets(pSelf->pCourtUI));
 }
 

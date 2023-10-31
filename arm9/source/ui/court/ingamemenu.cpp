@@ -57,7 +57,7 @@ void UICourtIngameMenu::updateInput()
 
 	if (keysDown() & KEY_Y)
 	{
-		soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+		soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
 	}
 }
@@ -71,7 +71,7 @@ void UICourtIngameMenu::onTalkICclicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtIC(pSelf->pCourtUI));
 }
 
@@ -79,7 +79,7 @@ void UICourtIngameMenu::onTalkOOCclicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtOOC(pSelf->pCourtUI));
 }
 
@@ -87,7 +87,7 @@ void UICourtIngameMenu::onMusicClicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtMusicList(pSelf->pCourtUI));
 }
 
@@ -95,7 +95,7 @@ void UICourtIngameMenu::onChangeCharClicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtCharSelect(pSelf->pCourtUI));
 }
 
@@ -103,6 +103,6 @@ void UICourtIngameMenu::onCourtRecordClicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 }

@@ -136,7 +136,7 @@ void Courtroom::handleChat()
 		if (currIC.realization)
 		{
 			flash(3);
-			soundPlaySample(sndRealization, SoundFormat_16Bit, sndRealizationSize, 16000, 127, 64, false, 0);
+			soundPlaySample(sndRealization, SoundFormat_16Bit, sndRealizationSize, 32000, 127, 64, false, 0);
 		}
 	}
 	else
@@ -263,7 +263,7 @@ void Courtroom::onAnimFinished(void* pUserData)
 	if (pSelf->currIC.realization)
 	{
 		pSelf->flash(3);
-		soundPlaySample(pSelf->sndRealization, SoundFormat_16Bit, pSelf->sndRealizationSize, 16000, 127, 64, false, 0);
+		soundPlaySample(pSelf->sndRealization, SoundFormat_16Bit, pSelf->sndRealizationSize, 32000, 127, 64, false, 0);
 	}
 }
 

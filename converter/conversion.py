@@ -435,7 +435,7 @@ def convertEvidenceImages(source, target):
 
 def convertSound(source, target):
     targetFile = os.path.splitext(target)[0] + ".wav"
-    subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 16000 -ac 1 -y \"%s\"" % (source, targetFile)).wait()
+    subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 32000 -ac 1 -y \"%s\"" % (source, targetFile)).wait()
 
 def convertSounds(source, target):
     if not os.path.exists(target):

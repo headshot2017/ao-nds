@@ -246,7 +246,7 @@ void Chatbox::update()
 		char currChar = currText.c_str()[currTextInd];
 		if (blipSnd && currChar != ' ' && blipTicks <= 0)
 		{
-			soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 16000, 127, 64, false, 0);
+			soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
 			blipTicks = 6-textSpeed;
 		}
 

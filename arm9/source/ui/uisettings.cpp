@@ -157,7 +157,7 @@ void UIScreenSettings::saveSettings()
 void UIScreenSettings::onShownameClicked(void* pUserData)
 {
 	UIScreenSettings* pSelf = (UIScreenSettings*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
 
 	pSelf->hideEverything();
 	pSelf->currEditing = pSelf->btn_showname;
@@ -167,7 +167,7 @@ void UIScreenSettings::onShownameClicked(void* pUserData)
 void UIScreenSettings::onOOCnameClicked(void* pUserData)
 {
 	UIScreenSettings* pSelf = (UIScreenSettings*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
 
 	pSelf->hideEverything();
 	pSelf->currEditing = pSelf->btn_oocname;
@@ -177,7 +177,7 @@ void UIScreenSettings::onOOCnameClicked(void* pUserData)
 void UIScreenSettings::onBackClicked(void* pUserData)
 {
 	UIScreenSettings* pSelf = (UIScreenSettings*)pUserData;
-	soundPlaySample(pSelf->sndCancel, SoundFormat_16Bit, pSelf->sndCancelSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->sndCancel, SoundFormat_16Bit, pSelf->sndCancelSize, 32000, 127, 64, false, 0);
 
 	gEngine->changeScreen(new UIScreenMainMenu);
 }

@@ -118,7 +118,7 @@ void UICourtMusicList::updateInput()
 		if (pos.px >= 142 && pos.py >= 177 && pos.px < 142+114 && pos.py < 177+15)
 		{
 			// search button
-			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 
 			bgHide(bgIndex);
 
@@ -249,7 +249,7 @@ void UICourtMusicList::onBackClicked(void* pUserData)
 {
 	UICourtMusicList* pSelf = (UICourtMusicList*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
 }
 
@@ -257,7 +257,7 @@ void UICourtMusicList::onToggleList(void* pUserData)
 {
 	UICourtMusicList* pSelf = (UICourtMusicList*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtAreaList(pSelf->pCourtUI));
 }
 

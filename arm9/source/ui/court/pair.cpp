@@ -176,7 +176,7 @@ void UICourtPair::updateOffset()
 void UICourtPair::onBackClicked(void* pUserData)
 {
 	UICourtPair* pSelf = (UICourtPair*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->changeScreen(new UICourtIC(pSelf->pCourtUI));
 }
@@ -184,7 +184,7 @@ void UICourtPair::onBackClicked(void* pUserData)
 void UICourtPair::onDisableClicked(void* pUserData)
 {
 	UICourtPair* pSelf = (UICourtPair*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->icControls.pairID = -1;
 	pSelf->btn_disable->setVisible(false);
@@ -196,7 +196,7 @@ void UICourtPair::onDisableClicked(void* pUserData)
 void UICourtPair::onCharSelectClicked(void* pUserData)
 {
 	UICourtPair* pSelf = (UICourtPair*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->changeScreen(new UICourtPairSelect(pSelf->pCourtUI));
 }
@@ -204,7 +204,7 @@ void UICourtPair::onCharSelectClicked(void* pUserData)
 void UICourtPair::onResetClicked(void* pUserData)
 {
 	UICourtPair* pSelf = (UICourtPair*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 16000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->icControls.xOffset = 0;
 	pSelf->pCourtUI->icControls.yOffset = 0;
