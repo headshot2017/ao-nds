@@ -118,16 +118,17 @@ Chatbox::~Chatbox()
 
 void Chatbox::setVisible(bool on)
 {
-	visible = on;
-	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
-	if (on)
+	if (!visible && on)
 	{
 		dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
 		memcpy(BG_PALETTE, bgPal, 512);
 		BG_PALETTE[0] = 0;
 	}
-	else
+	else if (!on)
 		dmaFillHalfWords(0, bgGetMapPtr(bgIndex), mapLen);
+
+	visible = on;
+	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
 
 	for (int i=0; i<2; i++)
 		oamSetHidden(&oamMain, 24+i, !on);
