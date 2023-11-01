@@ -235,7 +235,6 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 	loop = doLoop;
 	timerTicks = 0;
-	timerStart(0, ClockDivider_1024, 0, NULL);
 	currFrame = 0;
 }
 
@@ -266,6 +265,9 @@ void Character::update()
 
 	if (!loop && currFrame >= frameInfo.frameCount)
 		return;
+
+	if (!(TIMER_CR(0) & TIMER_ENABLE))
+		timerStart(0, ClockDivider_1024, 0, NULL);
 
 	timerTicks += timerElapsed(0);
 	u32 ms = (float)timerTicks/TIMER_SPEED*1000;
