@@ -50,7 +50,7 @@ def load_apng(file): # this one was hell to implement compared to the three func
 
         final_frame = outputbuf.copy()
         if frame_info:
-            pilframes.append([final_frame, frame_info.delay*10]) # convert delay from centiseconds to milliseconds
+            pilframes.append([final_frame, int(frame_info.delay / float(frame_info.delay_den) * 1000)]) # convert delay to milliseconds
             dispose_op = frame_info.depose_op
         else:
             pilframes.append([final_frame, 0])
