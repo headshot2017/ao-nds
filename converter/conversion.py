@@ -1,7 +1,6 @@
 import os
 import subprocess
 import math
-import configparser
 
 from PIL import Image
 from PIL import ImageChops
@@ -113,7 +112,7 @@ def convertBackgrounds(folder):
         convertBackground(folder+"/background/"+bg, "converted/data/ao-nds/background/"+bg)
 
 # frames: [[PIL.Image, ms_duration], [PIL.Image, ms_duration], [PIL.Image, ms_duration]...]
-def convertEmoteFrames(frames, targetFile, ogTarget, extra):
+def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
     targetPath = os.path.dirname(targetFile)
     no_ext_file = os.path.splitext(targetFile)[0]
     no_dir_ext_file = os.path.basename(no_ext_file)
@@ -224,13 +223,13 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
     for i in range(len(noDuplicates)):
         frame = noDuplicates[i]
         result.paste(frame, (0, i*frame.size[1]))
-    result.save("temp.png")
+    result.save("temp%d.png" % core)
 
     streamFile = (frames[0][0].size[0] * frames[0][0].size[1] * len(noDuplicates) >= 512*1024)
 
     # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-    subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF %s -ftb -fh! -m! -Mh4 -Mw4" % ("" if streamFile else "-gzl")).wait()
-    if not os.path.exists("temp.img.bin"):
+    subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF %s -ftb -fh! -m! -Mh4 -Mw4" % (core, "" if streamFile else "-gzl")).wait()
+    if not os.path.exists("temp%d.img.bin" % core):
         print("Failed to convert: %s" % (no_dir_ext_file))
         return
 
@@ -239,8 +238,8 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
         os.remove(no_ext_file+".img.bin")
     if os.path.exists(no_ext_file+".pal.bin"):
         os.remove(no_ext_file+".pal.bin")
-    os.rename("temp.img.bin", no_ext_file+".img.bin")
-    os.rename("temp.pal.bin", no_ext_file+".pal.bin")
+    os.rename("temp%d.img.bin" % core, no_ext_file+".img.bin")
+    os.rename("temp%d.pal.bin" % core, no_ext_file+".pal.bin")
 
     # save frame durations (in ms) and sizes into a cfg file.
     with open(ogTarget+"/nds.cfg", "a") as f:
@@ -265,7 +264,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, extra):
                 f.write("%d," % ind)
         f.write("\n")
 
-def convertCharIcon(sourceFile, targetFile):
+def convertCharIcon(sourceFile, targetFile, core):
     img = Image.open(sourceFile).convert("RGBA").resize((38, 38)).crop((0, 0, 64, 64))
     pix = img.load()
     for x in range(img.size[0]):
@@ -273,22 +272,22 @@ def convertCharIcon(sourceFile, targetFile):
             if pix[x, y][3] == 0:
                 pix[x, y] = (255, 0, 255, 255)
 
-    img.save("temp.png")
+    img.save("temp%d.png" % core)
     img.close()
 
     no_ext_file = os.path.splitext(targetFile)[0]
 
     # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-    subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8").wait()
+    subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8" % core).wait()
 
     if os.path.exists(no_ext_file+".img.bin"):
         os.remove(no_ext_file+".img.bin")
     if os.path.exists(no_ext_file+".pal.bin"):
         os.remove(no_ext_file+".pal.bin")
-    os.rename("temp.img.bin", no_ext_file+".img.bin")
-    os.rename("temp.pal.bin", no_ext_file+".pal.bin")
+    os.rename("temp%d.img.bin" % core, no_ext_file+".img.bin")
+    os.rename("temp%d.pal.bin" % core, no_ext_file+".pal.bin")
 
-def convertEmoteButtons(source, target):
+def convertEmoteButtons(source, target, core):
     if not os.path.exists(target):
         os.mkdir(target)
 
@@ -306,43 +305,43 @@ def convertEmoteButtons(source, target):
                 else:
                     pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
 
-        img.save("temp.png")
+        img.save("temp%d.png" % core)
         img.close()
 
         no_ext_file = target + "/" + os.path.splitext(f)[0]
 
         # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-        subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8").wait()
+        subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8" % core).wait()
 
         if os.path.exists(no_ext_file+".img.bin"):
             os.remove(no_ext_file+".img.bin")
         if os.path.exists(no_ext_file+".pal.bin"):
             os.remove(no_ext_file+".pal.bin")
-        os.rename("temp.img.bin", no_ext_file+".img.bin")
-        os.rename("temp.pal.bin", no_ext_file+".pal.bin")
+        os.rename("temp%d.img.bin" % core, no_ext_file+".img.bin")
+        os.rename("temp%d.pal.bin" % core, no_ext_file+".pal.bin")
 
-def convertEmoteAPNG(sourceFile, targetFile, ogTarget, extra):
+def convertEmoteAPNG(sourceFile, targetFile, ogTarget, core, extra):
     frames = images.load_apng(sourceFile)
-    convertEmoteFrames(frames, targetFile, ogTarget, extra)
+    convertEmoteFrames(frames, targetFile, ogTarget, core, extra)
 
-def convertEmoteWEBP(sourceFile, targetFile, ogTarget, extra):
+def convertEmoteWEBP(sourceFile, targetFile, ogTarget, core, extra):
     frames = images.load_webp(sourceFile)[0]
-    convertEmoteFrames(frames, targetFile, ogTarget, extra)
+    convertEmoteFrames(frames, targetFile, ogTarget, core, extra)
 
-def convertEmotePNG(sourceFile, targetFile, ogTarget, extra):
+def convertEmotePNG(sourceFile, targetFile, ogTarget, core, extra):
     frames = [[Image.open(sourceFile).convert("RGBA"), 0]]
-    convertEmoteFrames(frames, targetFile, ogTarget, extra)
+    convertEmoteFrames(frames, targetFile, ogTarget, core, extra)
 
-def convertEmoteGIF(sourceFile, targetFile, ogTarget, extra):
+def convertEmoteGIF(sourceFile, targetFile, ogTarget, core, extra):
     frames = []
     img = Image.open(sourceFile)
     for f in range(img.n_frames):
         img.seek(f)
         img.load()
         frames.append([img.convert("RGBA"), img.info["duration"]])
-    convertEmoteFrames(frames, targetFile, ogTarget, extra)
+    convertEmoteFrames(frames, targetFile, ogTarget, core, extra)
 
-def recursiveCharacter(source, target, ogTarget, extra=""):
+def recursiveCharacter(source, target, ogTarget, core, extra=""):
     if not os.path.exists(target):
         os.mkdir(target)
 
@@ -355,20 +354,20 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
     for emote in os.listdir(source):
         filename = source+"/"+emote
         if os.path.isdir(filename) and emote.lower() != "emotions" and emote.lower() != "custom_objections":
-            recursiveCharacter(source+"/"+emote, target+"/"+emote, ogTarget, extra+emote+"/")
+            recursiveCharacter(source+"/"+emote, target+"/"+emote, ogTarget, core, extra+emote+"/")
         elif emote.lower() == "char_icon.png":
-            convertCharIcon(filename, target+"/"+emote)
+            convertCharIcon(filename, target+"/"+emote, core)
         elif emote.lower().endswith(".apng"):
-            convertEmoteAPNG(filename, target+"/"+emote, ogTarget, extra)
+            convertEmoteAPNG(filename, target+"/"+emote, ogTarget, core, extra)
         elif emote.lower().endswith(".webp"):
-            convertEmoteWEBP(filename, target+"/"+emote, ogTarget, extra)
+            convertEmoteWEBP(filename, target+"/"+emote, ogTarget, core, extra)
         elif emote.lower().endswith(".png"):
-            convertEmotePNG(filename, target+"/"+emote, ogTarget, extra)
+            convertEmotePNG(filename, target+"/"+emote, ogTarget, core, extra)
         elif emote.lower().endswith(".gif"):
-            convertEmoteGIF(filename, target+"/"+emote, ogTarget, extra)
+            convertEmoteGIF(filename, target+"/"+emote, ogTarget, core, extra)
 
     if not extra:
-        convertEmoteButtons(source+"/emotions", target+"/emotions")
+        convertEmoteButtons(source+"/emotions", target+"/emotions", core)
 
         for snd in ["holdit.wav", "holdit.opus", "objection.wav", "objection.opus", "takethat.wav", "takethat.opus", "custom.wav", "custom.opus"]:
             if not os.path.exists(source+"/"+snd): continue
@@ -376,7 +375,7 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
 
         for custom in ["custom.apng", "custom.webp", "custom.gif", "custom.png"]:
             if not os.path.exists(source+"/"+custom): continue
-            convertShout(source+"/"+custom, target+"/"+custom)
+            convertShout(source+"/"+custom, target+"/"+custom, core)
 
         if os.path.exists(source+"/custom_objections"):
             if not os.path.exists(target+"/custom_objections"):
@@ -386,17 +385,17 @@ def recursiveCharacter(source, target, ogTarget, extra=""):
                 if shout.lower().endswith(".opus") or shout.lower().endswith(".wav"):
                     convertSound(source+"/custom_objections/"+shout, target+"/custom_objections/"+shout)
                 else:
-                    convertShout(source+"/custom_objections/"+shout, target+"/custom_objections/"+shout)
+                    convertShout(source+"/custom_objections/"+shout, target+"/custom_objections/"+shout, core)
 
 
-def convertCharacters(source, target):
-    for char in os.listdir(source):
-        if not os.path.exists(source+"/"+char+"/char.ini"):
-            continue # invalid char folder
+def convertCharacters(source, target, core):
+    for char in os.listdir(source)[core:]:
+        if not os.path.exists(source+"/"+char+"/char.ini") or os.path.exists(target+"/"+char):
+            continue
 
-        print(char)
+        print("[%d] %s" % (core+1, char))
 
-        recursiveCharacter(source+"/"+char, target+"/"+char, target+"/"+char)
+        recursiveCharacter(source+"/"+char, target+"/"+char, target+"/"+char, core)
 
 def convertEvidenceImages(source, target):
     if not os.path.exists(target+"/small"): os.mkdir(target+"/small")
@@ -492,7 +491,7 @@ def convertChatbox(folder):
     os.rename("temp.map.bin", "converted/data/ao-nds/misc/chatbox.map.bin")
     os.rename("temp.pal.bin", "converted/data/ao-nds/misc/chatbox.pal.bin")
 
-def convertShout(source, target):
+def convertShout(source, target, core=0):
     frames = []
 
     if source.lower().endswith(".apng"):
@@ -534,13 +533,13 @@ def convertShout(source, target):
                 pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
 
     img = img.convert("P", dither=None)
-    img.save("temp.png")
+    img.save("temp%d.png" % core)
     img.close()
 
     newFile = os.path.splitext(target)[0]
 
     # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, export to .bin, don't generate .h file
-    subprocess.Popen("./grit temp.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!").wait()
+    subprocess.Popen("./grit temp%d.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!" % core).wait()
 
     if os.path.exists(newFile+".img.bin"):
         os.remove(newFile+".img.bin")
@@ -548,6 +547,6 @@ def convertShout(source, target):
         os.remove(newFile+".map.bin")
     if os.path.exists(newFile+".pal.bin"):
         os.remove(newFile+".pal.bin")
-    os.rename("temp.img.bin", newFile+".img.bin")
-    os.rename("temp.map.bin", newFile+".map.bin")
-    os.rename("temp.pal.bin", newFile+".pal.bin")
+    os.rename("temp%d.img.bin" % core, newFile+".img.bin")
+    os.rename("temp%d.map.bin" % core, newFile+".map.bin")
+    os.rename("temp%d.pal.bin" % core, newFile+".pal.bin")
