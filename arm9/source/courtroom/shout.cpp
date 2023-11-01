@@ -121,6 +121,8 @@ void Shout::freeSound()
 
 void Shout::cancelShout()
 {
+	if (ticks == -1) return;
+
 	ticks = -1;
 	if (visible) bgHide(bgIndex);
 	if (bgMapLen) dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bgMapLen);

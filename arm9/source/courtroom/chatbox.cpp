@@ -7,6 +7,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
 #include <nds/arm9/sound.h>
+#include <nds/interrupts.h>
 
 #include "courtroom/courtroom.h"
 #include "global.h"
@@ -118,17 +119,22 @@ Chatbox::~Chatbox()
 
 void Chatbox::setVisible(bool on)
 {
-	if (!visible && on)
+	if (visible == on) return;
+
+	if (on)
 	{
 		dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
 		memcpy(BG_PALETTE, bgPal, 512);
 		BG_PALETTE[0] = 0;
+		bgShow(bgIndex);
 	}
-	else if (!on)
+	else
+	{
 		dmaFillHalfWords(0, bgGetMapPtr(bgIndex), mapLen);
+		bgHide(bgIndex);
+	}
 
 	visible = on;
-	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
 
 	for (int i=0; i<2; i++)
 		oamSetHidden(&oamMain, 24+i, !on);
