@@ -284,8 +284,8 @@ void Character::update()
 			currFrame++;
 			if (currFrame >= frameInfo.frameCount)
 			{
-				timerStop(0);
 				if (onAnimFinished) onAnimFinished(pUserData);
+				return;
 			}
 		}
 
