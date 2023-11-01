@@ -9,6 +9,7 @@
 #include <nds/interrupts.h>
 
 #include "mp3_shared.h"
+#include "ui/label.h"
 
 void debugPressA(const char* msg)
 {
@@ -19,6 +20,23 @@ void debugPressA(const char* msg)
 		if (keysDown() & KEY_A) break;
 		swiWaitForVBlank();
 	}
+}
+
+void debugLabelPressA(const char* msg)
+{
+	UILabel* dbg = new UILabel(&oamMain, 120, 6, 1, RGB15(31,0,0), 15, 0);
+	dbg->setPos(0,0);
+	dbg->setText(msg);
+	oamUpdate(&oamMain);
+
+	while (1)
+	{
+		scanKeys();
+		if (keysDown() & KEY_A) break;
+		swiWaitForVBlank();
+	}
+
+	delete dbg;
 }
 
 void AOdecode(std::string& s)

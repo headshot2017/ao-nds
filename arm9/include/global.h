@@ -21,6 +21,7 @@ struct cbInfo
 };
 
 void debugPressA(const char* msg);
+void debugLabelPressA(const char* msg);
 
 void AOdecode(std::string& s);
 void AOencode(std::string& s);
