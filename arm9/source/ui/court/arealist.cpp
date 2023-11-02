@@ -215,7 +215,7 @@ void UICourtAreaList::onConfirmClicked(void* pUserData)
 	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 
 	u32 ind = pSelf->currPage*4 + pSelf->currAreaSelected;
-	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getAreaList()[ind].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "##%");
+	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getAreaList()[ind].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "#" + pSelf->pCourtUI->showname + "#%");
 
 	pSelf->btn_confirm->setVisible(false);
 }

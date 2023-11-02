@@ -321,5 +321,5 @@ void UICourtMusicList::onMusicClicked(void* pUserData)
 	UICourtMusicList* pSelf = pData->pObj;
 	int ind = pSelf->scrollPos + pData->btnInd;
 
-	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getMusicList()[pSelf->filteredMusic[ind]].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "##%");
+	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getMusicList()[pSelf->filteredMusic[ind]].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "#" + pSelf->pCourtUI->showname + "#%");
 }
