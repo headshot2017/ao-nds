@@ -166,8 +166,7 @@ void mp3_frames(DSTIME endtime)
 				if (mp3->flag == 4) break; // mp3 ended, stop here
 
                 // check if we moved onto the 2nd file data buffer, if so move it to the 1st one and request a refill
-                //if(mp3_readPtr > (mp3->buffer +  MP3_FILE_BUFFER_SIZE  + (MP3_FILE_BUFFER_SIZE/2))) {
-                if(mp3_readPtr > (mp3->buffer + MP3_FILE_BUFFER_SIZE)) {
+                if(mp3_readPtr > (mp3->buffer +  MP3_FILE_BUFFER_SIZE  + (MP3_FILE_BUFFER_SIZE/2))) {
 						mp3->flag++;
                         mp3_readPtr = mp3_readPtr - MP3_FILE_BUFFER_SIZE;
                         memcpy((void *)mp3_readPtr, (void *)(mp3_readPtr + MP3_FILE_BUFFER_SIZE), MP3_FILE_BUFFER_SIZE - (mp3_readPtr-mp3->buffer));
