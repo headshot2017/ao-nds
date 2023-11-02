@@ -52,11 +52,28 @@ void mp3_fill_buffer() {
 						}
 						break;
 
-					case 2: // non-looping mp3 reached the end
+					case 2: // ARM7 has paused the playback. it will be automatically resumed after this read
+						n = fread((void *)(mp3->buffer), 1, MP3_FILE_BUFFER_SIZE, mp3_file);
+						filled += n;
+						if(n < MP3_FILE_BUFFER_SIZE) {
+								if (mp3->loop)
+								{
+										float bytes;
+										if (!mp3_length) mp3_length = (float)mp3->soundtime/(float)mp3->rate;
+										bytes = (1.f / mp3_length) * mp3->filesize;
+
+										fseek (mp3_file, (int)(mp3_loopsec * bytes) / MP3_FILE_BUFFER_SIZE * MP3_FILE_BUFFER_SIZE, SEEK_SET);
+										n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE + n), 1, MP3_FILE_BUFFER_SIZE-n, mp3_file);
+										filled += n;
+								}
+						}
+						break;
+
+					case 4: // non-looping mp3 reached the end
 						mp3_stop();
 						break;
 				}
-				mp3->flag = 0;
+				mp3->flag = (mp3->flag == 2) ? 3 : 0;
         }
         //iprintf("out\n");
 }
