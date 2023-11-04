@@ -1,5 +1,8 @@
 # ao-nds
 
+![img1](screenshot1.png)
+![img2](screenshot2.png)
+
 [Attorney Online](https://aceattorneyonline.com) client for the Nintendo DS.
 
 Made with devkitARM & libnds by Headshotnoby<br/>
