@@ -16,6 +16,7 @@ void debugPressA(const char* msg)
 	iprintf("%s\n", msg);
 	while (1)
 	{
+		mp3_fill_buffer();
 		scanKeys();
 		if (keysDown() & KEY_A) break;
 		swiWaitForVBlank();
@@ -31,6 +32,7 @@ void debugLabelPressA(const char* msg)
 
 	while (1)
 	{
+		mp3_fill_buffer();
 		scanKeys();
 		if (keysDown() & KEY_A) break;
 		swiWaitForVBlank();
