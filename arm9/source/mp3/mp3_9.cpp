@@ -1,8 +1,11 @@
+#include <string>
+
 extern "C" {
 #define DR_WAV_IMPLEMENTATION
 #include <nds.h>
 #include <stdio.h>
 #include <fat.h>
+#include <nds/arm9/cache.h>
 #include <nds/arm9/sound.h>
 #include <nds/fifocommon.h>
 #include <nds/fifomessages.h>
@@ -17,6 +20,7 @@ float32 mp3_loopsec;
 u8		*mp3_buffer;
 u16		*mp3_audioLeft;
 u16		*mp3_audioRight;
+std::string mp3_filename;
 
 int filled = 0;
 
@@ -28,10 +32,15 @@ void dump_buffer() {
 }
 
 
+void *uncached_malloc(size_t count) {
+        void *p = malloc(count);
+        return ((p == 0) ? 0 : memUncached(p));
+}
+
 void mp3_fill_buffer() {
         int n;
-        //iprintf("in\n");
-        //mp3_print();
+        FILE* fdup;
+
         if(mp3 && mp3->flag) {
 				switch(mp3->flag)
 				{
@@ -50,12 +59,26 @@ void mp3_fill_buffer() {
 										filled += n;
 								}
 						}
+						mp3->flag = 0;
 						break;
 
-					case 2: // ARM7 has paused the playback. it will be automatically resumed after this read
-						n = fread((void *)(mp3->buffer), 1, MP3_FILE_BUFFER_SIZE, mp3_file);
+					case 2: // ARM7 reaches this state if it gets stuck in mp3_frames(). give it a new buffer to read from
+						//fdup = fopen(mp3_filename.c_str(), "rb");
+						n = ftell(mp3_file) - (MP3_FILE_BUFFER_SIZE*2);
+						if (n < 0) n = 0;
+						fseek(mp3_file, n, SEEK_SET);
+						//fclose(mp3_file);
+						//mp3_file = fdup;
+
+						/*free(memCached(mp3_buffer));
+						mp3_buffer = (u8 *)uncached_malloc(MP3_FILE_BUFFER_SIZE*2);
+						DC_FlushRange(mp3_buffer, MP3_FILE_BUFFER_SIZE*2);*/
+						memset((void *)mp3_buffer,0,MP3_FILE_BUFFER_SIZE*2);
+						//mp3->buffer = mp3_buffer;
+
+						n = fread((void *)(mp3_buffer), 1, MP3_FILE_BUFFER_SIZE*2, mp3_file);
 						filled += n;
-						if(n < MP3_FILE_BUFFER_SIZE) {
+						if(n < MP3_FILE_BUFFER_SIZE*2) {
 								if (mp3->loop)
 								{
 										float bytes;
@@ -63,24 +86,19 @@ void mp3_fill_buffer() {
 										bytes = (1.f / mp3_length) * mp3->filesize;
 
 										fseek (mp3_file, (int)(mp3_loopsec * bytes) / MP3_FILE_BUFFER_SIZE * MP3_FILE_BUFFER_SIZE, SEEK_SET);
-										n = fread((void *)(mp3->buffer + MP3_FILE_BUFFER_SIZE + n), 1, MP3_FILE_BUFFER_SIZE-n, mp3_file);
+										n = fread((void *)(mp3_buffer + MP3_FILE_BUFFER_SIZE + n), 1, MP3_FILE_BUFFER_SIZE-n, mp3_file);
 										filled += n;
 								}
 						}
+						mp3->flag = 3;
 						break;
 
 					case 4: // non-looping mp3 reached the end
 						mp3_stop();
 						break;
 				}
-				mp3->flag = (mp3->flag == 2) ? 3 : 0;
         }
         //iprintf("out\n");
-}
-
-void *uncached_malloc(size_t count) {
-        void *p = malloc(count);
-        return ((p == 0) ? 0 : memUncached(p));
 }
 
 int ds_filelength (FILE *f)
@@ -135,7 +153,10 @@ int mp3_play_file(FILE *file, int loop, float loopsec){
 
 int mp3_play(const char *filename, int loop, float loopsec){
 
-        FILE *file = fopen(filename,"rb");
+        FILE *file = fopen(filename, "rb");
+        if (!file) return -1;
+
+        mp3_filename = filename;
 
         return mp3_play_file(file, loop, loopsec);
 }

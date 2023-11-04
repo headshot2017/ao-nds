@@ -1,8 +1,57 @@
 #include "ui/keyboard.h"
 
 #include <nds/dma.h>
+#include <nds/interrupts.h>
 
 #include "mp3_shared.h"
+
+void keyboardShowAlt(Keyboard* kb)
+{
+	int i;
+
+	swiWaitForVBlank();
+
+	kb->visible = 1;
+
+	bgSetScroll(kb->background, 0, -192);
+
+	bgShow(kb->background);
+
+	if(kb->scrollSpeed)
+	{
+		for(i = -192; i < kb->offset_y; i += kb->scrollSpeed)
+		{
+			mp3_fill_buffer();
+			swiWaitForVBlank();
+			bgSetScroll(kb->background, 0, i);
+			bgUpdate();
+		}
+	}
+
+	bgSetScroll(kb->background, 0, kb->offset_y);
+	bgUpdate();
+}
+
+void keyboardHideAlt(Keyboard* kb)
+{
+	int i;
+
+	kb->visible = 0;
+
+	if(kb->scrollSpeed)
+	{
+		for(i = kb->offset_y; i > -192; i-= kb->scrollSpeed)
+		{
+			mp3_fill_buffer();
+			swiWaitForVBlank();
+			bgSetScroll(kb->background, 0, i);
+			bgUpdate();
+		}
+	}
+	bgHide(kb->background);
+	bgUpdate();
+}
+
 
 AOkeyboard::AOkeyboard(int lines, int oamStart, int palSlot)
 {
@@ -41,7 +90,7 @@ void AOkeyboard::show(const char* plsWrite, const char* startValue)
 	oamUpdate(&oamSub);
 
 	dmaCopy(m_kb.palette, BG_PALETTE_SUB, m_kb.paletteLen);
-	keyboardShow();
+	keyboardShowAlt(&m_kb);
 }
 
 int AOkeyboard::updateInput()
@@ -51,7 +100,7 @@ int AOkeyboard::updateInput()
 	if (c == DVK_ENTER || c == DVK_FOLD)
 	{
 		int ret = -1;
-		keyboardHide();
+		keyboardHideAlt(&m_kb);
 
 		lbl_plswrite->setVisible(false);
 		lbl_written->setVisible(false);

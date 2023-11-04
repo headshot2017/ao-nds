@@ -50,8 +50,6 @@ UIButton::UIButton(OamState* chosenOam, std::string file, int oamStartInd, int h
 	{
 		for (int hor=0; hor<spriteHorTiles; hor++)
 		{
-			mp3_fill_buffer();
-
 			int i = vert * spriteHorTiles + hor;
 			spriteGfx[i] = oamAllocateGfx(oam, spriteSize, SpriteColorFormat_256Color);
 
@@ -81,8 +79,6 @@ UIButton::UIButton(OamState* chosenOam, std::string file, int oamStartInd, int h
 		else dmaFillHalfWords(0, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
-
-	mp3_fill_buffer();
 }
 
 UIButton::~UIButton()
@@ -104,8 +100,6 @@ void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSl
 
 	if (currData) delete[] currData;
 	if (currPal) delete[] currPal;
-	mp3_fill_buffer();
-
 	if (!file.empty())
 	{
 		currData = readFile(file+".img.bin");
@@ -122,8 +116,6 @@ void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSl
 	{
 		for (int hor=0; hor<spriteHorTiles; hor++)
 		{
-			mp3_fill_buffer();
-
 			int i = vert * spriteHorTiles + hor;
 			if (currData)
 			{
@@ -150,8 +142,6 @@ void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSl
 		else dmaFillHalfWords(0, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
-
-	mp3_fill_buffer();
 }
 
 void UIButton::setFrame(int frame)
@@ -160,8 +150,6 @@ void UIButton::setFrame(int frame)
 	{
 		for (int hor=0; hor<spriteHorTiles; hor++)
 		{
-			mp3_fill_buffer();
-
 			int frameOffset = frame*spriteHorTiles*spriteVertTiles;
 			int i = vert * spriteHorTiles + hor;
 			u8* offset = currData + (frameOffset*sprW*sprH) + (i*sprW*sprH);
@@ -175,7 +163,6 @@ void UIButton::setVisible(bool on)
 	visible = on;
 	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 	{
-		mp3_fill_buffer();
 		oamSetHidden(oam, oamStart+i, !on);
 	}
 
@@ -191,8 +178,6 @@ void UIButton::setPos(int xPos, int yPos)
 	{
 		for (int hor=0; hor<spriteHorTiles; hor++)
 		{
-			mp3_fill_buffer();
-
 			int i = vert * spriteHorTiles + hor;
 			int xFlip = (hflip) ? (sprW - w) : 0;
 			int yFlip = (vflip) ? (sprH - h) : 0;
@@ -205,7 +190,6 @@ void UIButton::setPriority(int pr)
 {
 	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 	{
-		mp3_fill_buffer();
 		oamSetPriority(oam, oamStart+i, pr);
 	}
 }
@@ -217,7 +201,6 @@ void UIButton::setFlip(bool h, bool v)
 
 	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 	{
-		mp3_fill_buffer();
 		oamSetFlip(oam, oamStart+i, h, v);
 	}
 
@@ -276,8 +259,6 @@ void UIButton::restorePalette()
 		memcpy(&VRAM_I_EXT_SPR_PALETTE[paletteSlot], currPal, 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
-
-	mp3_fill_buffer();
 }
 
 void UIButton::unloadRAM(bool deletePal)

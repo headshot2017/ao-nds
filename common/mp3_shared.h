@@ -65,7 +65,6 @@ typedef struct {
 #include <stdio.h>
 
 int mp3_init();
-int mp3_play_file(FILE *file,int loop,float loopsec);
 int mp3_play(const char *filename,int loop=0,float loopsec=0);
 void mp3_fill_buffer();
 int mp3_pause();

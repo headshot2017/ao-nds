@@ -23,7 +23,6 @@ UILabel::UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u
 	textGfx = new u16*[gfxPerLine*maxLines];
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
-		mp3_fill_buffer();
 		textGfx[i] = oamAllocateGfx(oam, SpriteSize_32x16, SpriteColorFormat_256Color);
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 		oamSet(oam, oamStart+i, 0, 0, 0, palSlot, SpriteSize_32x16, SpriteColorFormat_256Color, textGfx[i], -1, false, false, false, false, false);
@@ -41,8 +40,6 @@ UILabel::UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u
 		VRAM_I_EXT_SPR_PALETTE[palSlot][2] = textColor;
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
-
-	mp3_fill_buffer();
 }
 
 UILabel::~UILabel()
@@ -51,7 +48,6 @@ UILabel::~UILabel()
 
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
-		mp3_fill_buffer();
 		oamFreeGfx(oam, textGfx[i]);
 		oamClearSprite(oam, oamStart+i);
 	}
@@ -62,7 +58,6 @@ void UILabel::setVisible(bool on)
 {
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
-		mp3_fill_buffer();
 		oamSetHidden(oam, oamStart+i, !on);
 	}
 }
@@ -73,8 +68,6 @@ void UILabel::setPos(int x, int y, bool center)
 
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
-		mp3_fill_buffer();
-
 		int xPos = x + ((i % gfxPerLine) * 32) - ((center) ? w/2 : 0);
 		int yPos = y + ((i / gfxPerLine) * lineOffset);
 
@@ -86,13 +79,11 @@ void UILabel::setText(const char* text)
 {
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
-		mp3_fill_buffer();
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 	}
 
 	currText = text;
 	renderMultiLine(fontID, text, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, gfxPerLine, maxLines);
-	mp3_fill_buffer();
 }
 
 void UILabel::setColor(u32 textColor)

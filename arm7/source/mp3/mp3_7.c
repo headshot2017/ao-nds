@@ -1,4 +1,3 @@
-#define WAV_MAX 32
 #include <nds.h>
 #include <string.h>
 #include <malloc.h>
@@ -98,10 +97,17 @@ void S_TransferPaintBuffer(int count)
 void mp3_stop()
 {
 	if (mp3 == 0) return;
+	mp3 = 0;
 
-	//SCHANNEL_CR(mp3_channelLeft) = 0;
-    //SCHANNEL_CR(mp3_channelRight) = 0;
-	//mp3_state = MP3_IDLE;
+	ds_set_timer(0);
+	SCHANNEL_CR(mp3_channelLeft) = 0;
+	SCHANNEL_CR(mp3_channelRight) = 0;
+	//free((void *)&SCHANNEL_SOURCE(mp3_channelLeft));
+	//free((void *)&SCHANNEL_SOURCE(mp3_channelRight));
+	SCHANNEL_SOURCE(mp3_channelLeft) = 0;
+	SCHANNEL_SOURCE(mp3_channelRight) = 0;
+	mp3_channelLeft = -1;
+	mp3_state = MP3_IDLE;
 }
 
 int mp3_frame() {
@@ -155,59 +161,58 @@ int mp3_frame() {
 
 void mp3_frames(DSTIME endtime)
 {
+	while (paintedtime < endtime)
+	{
+		if (ds_sample_pos() > endtime + mp3FrameInfo.samprate - (mp3FrameInfo.samprate>>1))
+		{
+			// if mp3_fill_buffer() was not called on the ARM9 yet (or some other weird bug), stop here and ask for more data
+			mp3_readPtr = 0;
+			mp3->flag = 2;
+			return;
+		}
 
-        //mp3_debug = 2;
+		mp3_frame();
+		if (mp3->flag == 4) break; // mp3 ended, stop here
 
-        while (paintedtime < endtime)
-        {
-
-                //mp3_debug = 3;
-                mp3_frame();
-				if (mp3->flag == 4) break; // mp3 ended, stop here
-
-                // check if we moved onto the 2nd file data buffer, if so move it to the 1st one and request a refill
-                if(mp3_readPtr > (mp3->buffer +  MP3_FILE_BUFFER_SIZE  + (MP3_FILE_BUFFER_SIZE/2))) {
-						mp3->flag++;
-                        mp3_readPtr = mp3_readPtr - MP3_FILE_BUFFER_SIZE;
-                        memcpy((void *)mp3_readPtr, (void *)(mp3_readPtr + MP3_FILE_BUFFER_SIZE), MP3_FILE_BUFFER_SIZE - (mp3_readPtr-mp3->buffer));
-                        if (mp3->flag == 2)
-                        {
-                            // if mp3_fill_buffer() was not called on the ARM9 yet, stop here and wait for more data
-                            mp3_pause();
-                            return;
-                        }
-                }
-        }
+		// check if we moved onto the 2nd file data buffer, if so move it to the 1st one and request a refill
+		if(mp3_readPtr > (mp3->buffer +  MP3_FILE_BUFFER_SIZE + (MP3_FILE_BUFFER_SIZE>>1)))
+		{
+			mp3_readPtr = mp3_readPtr - MP3_FILE_BUFFER_SIZE;
+			memcpy((void *)mp3_readPtr, (void *)(mp3_readPtr + MP3_FILE_BUFFER_SIZE), MP3_FILE_BUFFER_SIZE - (mp3_readPtr-mp3->buffer));
+			mp3->flag = 1;
+		}
+	}
 }
 
 
 
 
-int mp3_playing() {
+int mp3_playing()
+{
+	if (mp3->flag == 3)
+	{
+		mp3->flag = 0;
+		mp3_readPtr = mp3->buffer;
+	}
+	else if (!mp3_readPtr)
+		return 0;
 
-        DSTIME endtime;
-        //int samps;
+	DSTIME endtime;
 
-        soundtime = ds_sample_pos();
+	soundtime = ds_sample_pos();
 
-// check to make sure that we haven't overshot
-        if (paintedtime < soundtime)
-        {
-                //Con_Printf ("S_Update_ : overflow\n");
-                paintedtime = soundtime;
-        }
+	// check to make sure that we haven't overshot
+	if (paintedtime < soundtime)
+		paintedtime = soundtime;
 
-        //mp3->paintedtime = paintedtime;
+	// mix ahead of current position
+	endtime = soundtime + (mp3FrameInfo.samprate>>4);
 
-        // mix ahead of current position
-        endtime = soundtime + (mp3FrameInfo.samprate/16);//(mp3->rate * 1);
+	mp3_frames(endtime);
 
-        mp3_frames(endtime);
+	if (mp3) mp3->soundtime = soundtime;
 
-		mp3->soundtime = soundtime;
-        //mp3->debug = mp3_debug;
-
-        return 0;
+	return 0;
 }
 
 void mp3_pause() {
@@ -233,7 +238,7 @@ int mp3_resume() {
         paintedtime = 0;
         memset((void *)mp3->audioLeft,0,MP3_AUDIO_BUFFER_SIZE);
         memset((void *)mp3->audioRight,0,MP3_AUDIO_BUFFER_SIZE);
-        mp3_frames(MP3_AUDIO_BUFFER_SAMPS/2);
+        mp3_frames(MP3_AUDIO_BUFFER_SAMPS>>1);
 
         MP3GetLastFrameInfo(hMP3Decoder, &mp3FrameInfo);
         mp3->rate = mp3FrameInfo.samprate;
@@ -331,16 +336,8 @@ void mp3_stopping() {
                 fifoSendValue32(FIFO_USER_01, 0);
                 return;
         }
-        ds_set_timer(0);
-        SCHANNEL_CR(mp3_channelLeft) = 0;
-        SCHANNEL_CR(mp3_channelRight) = 0;
-		free((void *)&SCHANNEL_SOURCE(mp3_channelLeft));
-		free((void *)&SCHANNEL_SOURCE(mp3_channelRight));
-		SCHANNEL_SOURCE(mp3_channelLeft) = 0;
-		SCHANNEL_SOURCE(mp3_channelRight) = 0;
-        mp3_channelLeft = -1;
+        mp3_stop();
         fifoSendValue32(FIFO_USER_01, 0);
-        mp3_state = MP3_IDLE;
 }
 
 void mp3_process() {
@@ -360,8 +357,15 @@ void mp3_process() {
         case MP3_STOPPING:
                 mp3_stopping();
                 break;
+		case MP3_PAUSED:
+                if (mp3->flag == 3)
+                {
+                    mp3->flag = 0;
+                    mp3_readPtr = mp3->buffer;
+                    mp3_resume();
+                }
+                break;
         case MP3_IDLE:
-        case MP3_PAUSED:
         case MP3_ERROR:
                 break;
         }
