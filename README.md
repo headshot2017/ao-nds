@@ -15,12 +15,13 @@ I still have to finish writing code that handles these:
 - [x] Desk sprites
 - [x] Character sprites
 - [x] Chatbox
-- [ ] Evidence sprites
+- [x] Evidence sprites
 - [x] Music
 - [x] Sound effects
 - [x] Main menu UI
 - [x] Server browser UI
-- [ ] Courtroom UI (bottom screen)
+- [x] Courtroom UI (bottom screen)
+- [ ] All IC chat effects
 
 
 Before you can use this, you need to use the AO NDS converter tool
