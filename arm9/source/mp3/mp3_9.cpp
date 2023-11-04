@@ -1,17 +1,19 @@
 #include <string>
-
-extern "C" {
-#define DR_WAV_IMPLEMENTATION
-#include <nds.h>
 #include <stdio.h>
-#include <fat.h>
+
+#include <nds.h>
 #include <nds/arm9/cache.h>
 #include <nds/arm9/sound.h>
 #include <nds/fifocommon.h>
 #include <nds/fifomessages.h>
+
+#define DR_WAV_IMPLEMENTATION
 #include <dr_wav.h>
+
+#include "mp3_shared.h"
 #include "mp3dec.h"
-#include <mp3_shared.h>
+
+extern "C" {
 
 volatile mp3_player		*mp3;
 FILE	*mp3_file;
@@ -20,7 +22,6 @@ float32 mp3_loopsec;
 u8		*mp3_buffer;
 u16		*mp3_audioLeft;
 u16		*mp3_audioRight;
-std::string mp3_filename;
 
 int filled = 0;
 
@@ -63,18 +64,11 @@ void mp3_fill_buffer() {
 						break;
 
 					case 2: // ARM7 reaches this state if it gets stuck in mp3_frames(). give it a new buffer to read from
-						//fdup = fopen(mp3_filename.c_str(), "rb");
 						n = ftell(mp3_file) - (MP3_FILE_BUFFER_SIZE*2);
 						if (n < 0) n = 0;
 						fseek(mp3_file, n, SEEK_SET);
-						//fclose(mp3_file);
-						//mp3_file = fdup;
 
-						/*free(memCached(mp3_buffer));
-						mp3_buffer = (u8 *)uncached_malloc(MP3_FILE_BUFFER_SIZE*2);
-						DC_FlushRange(mp3_buffer, MP3_FILE_BUFFER_SIZE*2);*/
 						memset((void *)mp3_buffer,0,MP3_FILE_BUFFER_SIZE*2);
-						//mp3->buffer = mp3_buffer;
 
 						n = fread((void *)(mp3_buffer), 1, MP3_FILE_BUFFER_SIZE*2, mp3_file);
 						filled += n;
@@ -140,7 +134,7 @@ int mp3_play_file(FILE *file, int loop, float loopsec){
         msg.type = MP3_MSG_START;
         msg.player = mp3;
 
-        filled += fread((void *)(mp3->buffer), 1, MP3_FILE_BUFFER_SIZE*2, mp3_file);
+        filled = fread((void *)(mp3_buffer), 1, MP3_FILE_BUFFER_SIZE*2, mp3_file);
 
         fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
 
@@ -155,8 +149,6 @@ int mp3_play(const char *filename, int loop, float loopsec){
 
         FILE *file = fopen(filename, "rb");
         if (!file) return -1;
-
-        mp3_filename = filename;
 
         return mp3_play_file(file, loop, loopsec);
 }
@@ -176,29 +168,35 @@ int mp3_pause() {
         return (int)fifoGetValue32(FIFO_USER_01);
 }
 int mp3_stop() {
-        mp3_msg msg;
-        int ret;
+		mp3_msg msg;
+		int ret;
 
-        if(mp3 == 0) {
-                return 1;
-        }
+		if(mp3 == 0) {
+				return 1;
+		}
 
-        msg.type = MP3_MSG_STOP;
+		msg.type = MP3_MSG_STOP;
 
-        fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
-        while(!fifoCheckValue32(FIFO_USER_01));
+		fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
+		while(!fifoCheckValue32(FIFO_USER_01));
 
-        ret = (int)fifoGetValue32(FIFO_USER_01);
+		ret = (int)fifoGetValue32(FIFO_USER_01);
 
-        if(mp3_file) {
-                fclose(mp3_file);
-                mp3_file = 0;
-        }
+		if(mp3_file)
+		{
+				fclose(mp3_file);
+				mp3_file = 0;
+		}
 
-		MP3FreeDecoder(mp3->hMP3Decoder);
-		mp3->hMP3Decoder = 0;
+		mp3->flag = 0;
 
-        return ret;
+		if (mp3->hMP3Decoder)
+		{
+			MP3FreeDecoder(mp3->hMP3Decoder);
+			mp3->hMP3Decoder = 0;
+		}
+
+		return ret;
 }
 int mp3_resume() {
         mp3_msg msg;

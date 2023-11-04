@@ -159,11 +159,11 @@ int mp3_frame() {
         return 1;
 }
 
-void mp3_frames(DSTIME endtime)
+void mp3_frames(DSTIME endtime, u8 firstFrames)
 {
 	while (paintedtime < endtime)
 	{
-		if (ds_sample_pos() > endtime + mp3FrameInfo.samprate - (mp3FrameInfo.samprate>>1))
+		if (!firstFrames && ds_sample_pos() > endtime + mp3FrameInfo.samprate - (mp3FrameInfo.samprate>>1))
 		{
 			// if mp3_fill_buffer() was not called on the ARM9 yet (or some other weird bug), stop here and ask for more data
 			mp3_readPtr = 0;
@@ -208,7 +208,7 @@ int mp3_playing()
 	// mix ahead of current position
 	endtime = soundtime + (mp3FrameInfo.samprate>>4);
 
-	mp3_frames(endtime);
+	mp3_frames(endtime, 0);
 
 	if (mp3) mp3->soundtime = soundtime;
 
@@ -238,13 +238,12 @@ int mp3_resume() {
         paintedtime = 0;
         memset((void *)mp3->audioLeft,0,MP3_AUDIO_BUFFER_SIZE);
         memset((void *)mp3->audioRight,0,MP3_AUDIO_BUFFER_SIZE);
-        mp3_frames(MP3_AUDIO_BUFFER_SAMPS>>1);
+        mp3_frames(MP3_AUDIO_BUFFER_SAMPS>>1, 1);
 
         MP3GetLastFrameInfo(hMP3Decoder, &mp3FrameInfo);
         mp3->rate = mp3FrameInfo.samprate;
 
-        //mp3_channelLeft = getFreeChannel();
-        mp3_channelLeft = 0;
+        mp3_channelLeft = getFreeChannel();
 
         //mp3->audio[4] = mp3->audio[5] = 0x7fff;       // force a pop for debugging
 
@@ -255,8 +254,7 @@ int mp3_resume() {
 
         // "lock" (silent) this channel, so that next getFreeChannel call gives a different one...
         SCHANNEL_CR(mp3_channelLeft) = SCHANNEL_ENABLE | SOUND_VOL(0) | SOUND_PAN(0) | (SOUND_FORMAT_16BIT) | (SOUND_REPEAT);
-        //mp3_channelRight = getFreeChannel();
-        mp3_channelRight = 1;
+        mp3_channelRight = getFreeChannel();
         SCHANNEL_CR(mp3_channelLeft) = 0;
 
         SCHANNEL_SOURCE(mp3_channelRight) = (u32)mp3->audioRight;
@@ -337,7 +335,7 @@ void mp3_stopping() {
                 return;
         }
         mp3_stop();
-        fifoSendValue32(FIFO_USER_01, 0);
+        fifoSendValue32(FIFO_USER_01, 1);
 }
 
 void mp3_process() {
