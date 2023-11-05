@@ -72,20 +72,6 @@ void Courtroom::MSchat(const MSchatStruct& data)
 
 void Courtroom::handleChat()
 {
-	/*
-	tempChar = data.charname;
-	tempAnim = data.emote;
-	tempPreAnim = data.preanim;
-	tempName =
-	tempMsg = data.chatmsg;
-	tempColor = AOcolorToPalette[color];
-	tempBlip = data.blip;
-	tempFlash = data.realization;
-	tempImmediate = data.noInterrupt;
-	tempID = data.charID;
-	tempAdditive = data.additive;
-	*/
-
 	if (currIC.shoutMod)
 	{
 		character->setOnAnimFinishedCallback(0, 0);
@@ -123,7 +109,11 @@ void Courtroom::handleChat()
 	{
 		onPreAnim = false;
 
-		character->setCharImage(currIC.charname, ((currIC.chatmsg.empty() || color == COLOR_BLUE) ? "(a)" : "(b)") + currIC.emote);
+		bool isPng = fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.emote + ".img.bin");
+		std::string prefix;
+		if (!isPng) prefix = ((currIC.chatmsg.empty() || color == COLOR_BLUE) ? "(a)" : "(b)");
+
+		character->setCharImage(currIC.charname, prefix + currIC.emote);
 		chatbox->setVisible(true);
 		chatbox->setName(chatname);
 
@@ -227,7 +217,13 @@ void Courtroom::onChatboxFinished(void* pUserData)
 
 	int color = AOcolorToPalette[pSelf->currIC.textColor];
 	if (color != COLOR_BLUE && (!pSelf->currIC.noInterrupt || !pSelf->onPreAnim))
-		pSelf->character->setCharImage(pSelf->currIC.charname, "(a)"+pSelf->currIC.emote);
+	{
+		bool isPng = fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin");
+		std::string prefix;
+		if (!isPng) prefix = "(a)";
+
+		pSelf->character->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
+	}
 }
 
 void Courtroom::onAnimFinished(void* pUserData)
@@ -242,7 +238,11 @@ void Courtroom::onAnimFinished(void* pUserData)
 
 	pSelf->onPreAnim = false;
 
-	pSelf->character->setCharImage(pSelf->currIC.charname, ((useIdleAnim) ? "(a)" : "(b)") + pSelf->currIC.emote);
+	bool isPng = fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin");
+	std::string prefix;
+	if (!isPng) prefix = ((useIdleAnim) ? "(a)" : "(b)");
+
+	pSelf->character->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
 	if (useIdleAnim) pSelf->character->setOnAnimFinishedCallback(0, 0);
 
 	if (!pSelf->currIC.noInterrupt)
