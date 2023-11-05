@@ -15,6 +15,8 @@ class UICourtIngameMenu : public UISubScreen
 	UIButton* btn_courtRecord;
 	UILabel* lbl_currChar;
 
+	int cbPV;
+
 public:
 	UICourtIngameMenu(UIScreenCourt* courtUI) : UISubScreen(courtUI) {}
 	~UICourtIngameMenu();
@@ -28,6 +30,8 @@ public:
 	static void onMusicClicked(void* pUserData);
 	static void onChangeCharClicked(void* pUserData);
 	static void onCourtRecordClicked(void* pUserData);
+
+	static void onMessagePV(void* pUserData, std::string msg);
 };
 
 #endif // INGAMEMENU_H_INCLUDED

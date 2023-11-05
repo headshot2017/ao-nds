@@ -21,6 +21,8 @@ UICourtIngameMenu::~UICourtIngameMenu()
 	delete btn_changeChar;
 	delete btn_courtRecord;
 	delete lbl_currChar;
+
+	gEngine->getSocket()->removeMessageCallback("PV", cbPV);
 }
 
 void UICourtIngameMenu::init()
@@ -45,6 +47,8 @@ void UICourtIngameMenu::init()
 
 	lbl_currChar->setPos(4, 2);
 	lbl_currChar->setText((pCourtUI->getCurrCharID() >= 0) ? pCourtUI->getCurrChar().name.c_str() : "Spectator");
+
+	cbPV = gEngine->getSocket()->addMessageCallback("PV", onMessagePV, this);
 }
 
 void UICourtIngameMenu::updateInput()
@@ -105,4 +109,11 @@ void UICourtIngameMenu::onCourtRecordClicked(void* pUserData)
 
 	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
+}
+
+void UICourtIngameMenu::onMessagePV(void* pUserData, std::string msg)
+{
+	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
+
+	pSelf->lbl_currChar->setText((pSelf->pCourtUI->getCurrCharID() >= 0) ? pSelf->pCourtUI->getCurrChar().name.c_str() : "Spectator");
 }
