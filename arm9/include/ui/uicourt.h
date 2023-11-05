@@ -87,6 +87,7 @@ class UIScreenCourt : public UIScreen
 	int currChar;
 	std::vector<emoteInfo> charEmotes;
 
+	int sendTicks;
 	std::deque<std::string> icSendQueue;
 
 public:

@@ -62,6 +62,7 @@ void UIScreenCourt::init()
 {
 	bgExtPaletteEnable();
 	currChar = -1;
+	sendTicks = 0;
 	memset(bars, 0, sizeof(bars));
 
 	showname = gEngine->getShowname();
@@ -126,7 +127,14 @@ void UIScreenCourt::update()
 	subScreen->update();
 
 	if (!icSendQueue.empty())
-		gEngine->getSocket()->sendData(icSendQueue.front());
+	{
+		sendTicks--;
+		if (sendTicks <= 0)
+		{
+			gEngine->getSocket()->sendData(icSendQueue.front());
+			sendTicks = 10;
+		}
+	}
 }
 
 void UIScreenCourt::changeScreen(UISubScreen* newScreen)
