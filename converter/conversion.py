@@ -117,6 +117,14 @@ def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
     no_ext_file = os.path.splitext(targetFile)[0]
     no_dir_ext_file = os.path.basename(no_ext_file)
 
+    # if aspect ratio is not 4:3, crop
+    ratioW = 256/192.
+    if math.floor(frames[0][0].size[0] / frames[0][0].size[1] * 1000) != 1333:
+        w = ratioW * frames[0][0].size[1]
+        for i in range(len(frames)):
+            frame = frames[i][0]
+            frames[i][0] = frame.crop(((frame.size[0]-w)/2, 0, (frame.size[0]+w)/2, frame.size[1]))
+    
     # resize if not 256x192
     for i in range(len(frames)):
         frame = frames[i][0]
