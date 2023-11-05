@@ -77,6 +77,8 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 			break;
 	}
 	sndShout = wav_load_handle(sndFile.c_str(), &sndShoutSize);
+	if (!sndShout)
+		sndShout = wav_load_handle("/data/ao-nds/sounds/general/sfx-objection.wav", &sndShoutSize);
 
 	bgHide(bgIndex);
 
