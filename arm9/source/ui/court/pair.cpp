@@ -196,7 +196,7 @@ void UICourtPair::onDisableClicked(void* pUserData)
 void UICourtPair::onCharSelectClicked(void* pUserData)
 {
 	UICourtPair* pSelf = (UICourtPair*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->changeScreen(new UICourtPairSelect(pSelf->pCourtUI));
 }

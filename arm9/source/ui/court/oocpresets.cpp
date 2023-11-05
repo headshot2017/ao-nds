@@ -208,15 +208,16 @@ void UICourtOOCPresets::onBackClicked(void* pUserData)
 void UICourtOOCPresets::onAddOrConfirm(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 
 	if (pSelf->currPreset == -1)
 	{
+		soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 		pSelf->hideEverything();
 		pSelf->kb_input->show("Enter an OOC preset", "");
 	}
 	else
 	{
+		soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
 		std::string preset = pSelf->m_presets[pSelf->currPage*4 + pSelf->currPreset];
 		gEngine->getSocket()->sendData("CT#" + pSelf->pCourtUI->oocName + "#" + preset + "#%");
 		pSelf->pCourtUI->changeScreen(new UICourtOOC(pSelf->pCourtUI));
@@ -238,7 +239,7 @@ void UICourtOOCPresets::onDeleteClicked(void* pUserData)
 void UICourtOOCPresets::onEditClicked(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 
 	if (pSelf->currPreset == -1) return;
 	pSelf->hideEverything();
@@ -248,7 +249,7 @@ void UICourtOOCPresets::onEditClicked(void* pUserData)
 void UICourtOOCPresets::onPrevPage(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	pSelf->currPage--;
 	pSelf->reloadPage();
@@ -257,7 +258,7 @@ void UICourtOOCPresets::onPrevPage(void* pUserData)
 void UICourtOOCPresets::onNextPage(void* pUserData)
 {
 	UICourtOOCPresets* pSelf = (UICourtOOCPresets*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	pSelf->currPage++;
 	pSelf->reloadPage();

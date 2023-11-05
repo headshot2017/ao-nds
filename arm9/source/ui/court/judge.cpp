@@ -121,13 +121,13 @@ void UICourtJudge::onBackClicked(void* pUserData)
 void UICourtJudge::onCourtRecord(void* pUserData)
 {
 	UICourtJudge* pSelf = (UICourtJudge*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 }
 
 void UICourtJudge::onBarDefenseMinus(void* pUserData)
 {
 	UICourtJudge* pSelf = (UICourtJudge*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	if (pSelf->pCourtUI->bars[0] <= 0) return;
 	gEngine->getSocket()->sendData("HP#1#" + std::to_string(pSelf->pCourtUI->bars[0]-1) + "#%");
@@ -136,7 +136,7 @@ void UICourtJudge::onBarDefenseMinus(void* pUserData)
 void UICourtJudge::onBarDefensePlus(void* pUserData)
 {
 	UICourtJudge* pSelf = (UICourtJudge*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	if (pSelf->pCourtUI->bars[0] >= 10) return;
 	gEngine->getSocket()->sendData("HP#1#" + std::to_string(pSelf->pCourtUI->bars[0]+1) + "#%");
@@ -145,7 +145,7 @@ void UICourtJudge::onBarDefensePlus(void* pUserData)
 void UICourtJudge::onBarProsecutorMinus(void* pUserData)
 {
 	UICourtJudge* pSelf = (UICourtJudge*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	if (pSelf->pCourtUI->bars[1] <= 0) return;
 	gEngine->getSocket()->sendData("HP#2#" + std::to_string(pSelf->pCourtUI->bars[1]-1) + "#%");
@@ -154,7 +154,7 @@ void UICourtJudge::onBarProsecutorMinus(void* pUserData)
 void UICourtJudge::onBarProsecutorPlus(void* pUserData)
 {
 	UICourtJudge* pSelf = (UICourtJudge*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	if (pSelf->pCourtUI->bars[1] >= 10) return;
 	gEngine->getSocket()->sendData("HP#2#" + std::to_string(pSelf->pCourtUI->bars[1]+1) + "#%");

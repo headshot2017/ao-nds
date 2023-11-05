@@ -307,7 +307,7 @@ void UICourtIC::updateInput()
 	u32 key = keysDown();
 	if (key & KEY_Y)
 	{
-		soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+		soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
 	}
 	else if (key & KEY_TOUCH)
@@ -318,7 +318,7 @@ void UICourtIC::updateInput()
 		if (!displayingOptions && pos.px >= 79 && pos.py >= 162 && pos.px < 79+77 && pos.py < 162+14)
 		{
 			// showname input
-			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+			soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 			isWritingChat = false;
 			hideEverything();
 			kb_input->show("Enter a showname", pCourtUI->showname.c_str());
@@ -326,7 +326,7 @@ void UICourtIC::updateInput()
 		else if (pos.px >= 79 && pos.py >= 177 && pos.px < 79+163 && pos.py < 177+15)
 		{
 			// chat input
-			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+			soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 			isWritingChat = true;
 			hideEverything();
 			kb_input->show("Enter IC chat message", "");
@@ -484,7 +484,7 @@ void UICourtIC::onShoutsToggled(void* pUserData)
 void UICourtIC::onPairClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->changeScreen(new UICourtPair(pSelf->pCourtUI));
 }
@@ -492,7 +492,7 @@ void UICourtIC::onPairClicked(void* pUserData)
 void UICourtIC::onMuteClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->changeScreen(new UICourtMute(pSelf->pCourtUI));
 }
@@ -500,7 +500,7 @@ void UICourtIC::onMuteClicked(void* pUserData)
 void UICourtIC::onOptionsToggled(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 
 	pSelf->displayingOptions = !pSelf->displayingOptions;
 
@@ -547,7 +547,7 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 void UICourtIC::onSideClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->icControls.side = (pSelf->pCourtUI->icControls.side + 1) % 6;
 	pSelf->btn_sideSelect->setFrame(pSelf->pCourtUI->icControls.side);
@@ -557,7 +557,7 @@ void UICourtIC::onSideClicked(void* pUserData)
 void UICourtIC::onToolsClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 
 	pSelf->pCourtUI->changeScreen(new UICourtJudge(pSelf->pCourtUI));
 }

@@ -99,7 +99,7 @@ void UICourtEvidence::updateInput()
 	u32 key = keysDown();
 	if (key & KEY_Y)
 	{
-		soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+		soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
 		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
 	}
 }
