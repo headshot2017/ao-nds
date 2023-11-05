@@ -517,7 +517,7 @@ void UIScreenCourt::onMessageLE(void* pUserData, std::string msg)
 	while (lastPos != std::string::npos)
 	{
 		std::string info = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
-		if (info.at(0) == '%') break;
+		if (info.empty() || info.at(0) == '%') break;
 
 		std::string name = argumentAt(info, 0, '&');
 		std::string desc = argumentAt(info, 1, '&');
