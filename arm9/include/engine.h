@@ -22,6 +22,7 @@ class Engine
 	std::string macAddr;
 	std::unordered_map<std::string, bool> cachedMusic;
 	std::vector<std::string> cachedEvidence;
+	std::unordered_map<std::string, std::string> cachedCharBlips;
 	std::vector<evidenceInfo> privateEvidence;
 
 	std::string defaultShowname;
@@ -33,6 +34,7 @@ class Engine
 
 	void cacheMusic(const std::string& folder, std::string extra="");
 	void cacheEvidence(const std::string& folder);
+	void cacheCharBlips(const std::string& folder);
 	void loadPrivateEvidence();
 
 public:
@@ -45,6 +47,7 @@ public:
 	const std::string& getShowname() {return defaultShowname;}
 	const std::string& getOOCname() {return defaultOOCname;}
 	const std::vector<std::string>& getEvidence() {return cachedEvidence;}
+	const std::string getCharBlip(const std::string& charname) {return (cachedCharBlips.count(charname)) ? cachedCharBlips[charname] : "";}
 	std::vector<evidenceInfo>& getPrivateEvidence() {return privateEvidence;}
 	bool isFading() {return fading;}
 	bool isRunning() {return running;}

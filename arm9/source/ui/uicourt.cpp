@@ -297,8 +297,13 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	if (!pSelf->charList.empty() && pSelf->charList[charID].muted)
 		return;
 
-	std::string name = argumentAt(msg,16);
-	if (name.empty()) name = argumentAt(msg, 3);
+	std::string charname = argumentAt(msg, 3);
+	std::string showname = argumentAt(msg, 16);
+	AOdecode(charname);
+	AOdecode(showname);
+
+	std::string name = showname;
+	if (name.empty()) name = charname;
 	AOdecode(name);
 
 	std::string chatmsg = argumentAt(msg,5);
@@ -330,11 +335,15 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	if (name.size() > 12)
 		name.resize(12);
 
+
+	std::string lowerCharname = charname;
+	std::transform(lowerCharname.begin(), lowerCharname.end(), lowerCharname.begin(), [](char c){return std::tolower(c);});
+
 	// show message in court screen
 	MSchatStruct data;
 	data.deskMod = argumentAt(msg, 1) != "0";
 	data.preanim = argumentAt(msg, 2);
-	data.charname = argumentAt(msg, 3);
+	data.charname = charname;
 	data.emote = argumentAt(msg, 4);
 	data.chatmsg = chatmsg;
 	data.side = argumentAt(msg, 6);
@@ -348,7 +357,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.flip = argumentAt(msg, 13) == "1";
 	data.realization = std::stoi(argumentAt(msg, 14));
 	data.textColor = std::stoi(argumentAt(msg, 15));
-	data.showname = argumentAt(msg, 16);
+	data.showname = showname;
 	data.otherCharID = std::stoi(argumentAt(msg, 17));
 	data.otherName = argumentAt(msg, 18);
 	data.otherEmote = argumentAt(msg, 19);
@@ -359,7 +368,8 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.sfxLoop = std::stoi(argumentAt(msg, 24));
 	data.shake = std::stoi(argumentAt(msg, 25));
 	data.additive = argumentAt(msg, 29) == "1";
-	data.blip = pSelf->charList[charID].blip;
+	data.blip = gEngine->getCharBlip(lowerCharname);
+	if (data.blip.empty()) data.blip = pSelf->charList[charID].blip;
 
 	pSelf->court->MSchat(data);
 }

@@ -21,6 +21,7 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 
 	cacheMusic("/data/ao-nds/sounds/music");
 	cacheEvidence("/data/ao-nds/evidence/small");
+	cacheCharBlips("/data/ao-nds/characters");
 
 	cfgFile settings("/data/ao-nds/settings_nds.cfg");
 	defaultShowname = settings.get("showname", "");
@@ -71,6 +72,33 @@ void Engine::cacheEvidence(const std::string& folder)
 		value = value.substr(0, value.size()-8);
 
 		cachedEvidence.push_back(value);
+	}
+
+	closedir(dir);
+}
+
+void Engine::cacheCharBlips(const std::string& folder)
+{
+	DIR *dir = opendir(folder.c_str());
+	if (!dir) return;
+
+	struct dirent* dent;
+	while( (dent = readdir(dir)) )
+	{
+		if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, "..")) continue;
+
+		std::string charname = dent->d_name;
+		mINI::INIFile file(folder + "/" + charname + "/char.ini");
+		mINI::INIStructure ini;
+
+		if (!file.read(ini))
+			return;
+
+		std::string& blip = ini["options"]["blips"];
+		if (blip.empty()) blip = ini["options"]["gender"];
+
+		std::transform(charname.begin(), charname.end(), charname.begin(), [](char c){return std::tolower(c);});
+		cachedCharBlips[charname] = blip;
 	}
 
 	closedir(dir);
