@@ -26,6 +26,8 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 	cfgFile settings("/data/ao-nds/settings_nds.cfg");
 	defaultShowname = settings.get("showname", "");
 	defaultOOCname = settings.get("oocname", "");
+	chatlogIniswaps = settings.get("chatlog_iniswaps", "") == "1";
+	chatlogShownames = settings.get("chatlog_shownames", "") == "1";
 
 	loadPrivateEvidence();
 }

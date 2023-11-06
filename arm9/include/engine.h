@@ -27,6 +27,8 @@ class Engine
 
 	std::string defaultShowname;
 	std::string defaultOOCname;
+	bool chatlogIniswaps;
+	bool chatlogShownames;
 
 	int alpha;
 	bool fading;
@@ -46,6 +48,8 @@ public:
 	const std::string& getMacAddr() {return macAddr;}
 	const std::string& getShowname() {return defaultShowname;}
 	const std::string& getOOCname() {return defaultOOCname;}
+	const bool showChatlogIniswaps() {return chatlogIniswaps;}
+	const bool showChatlogShownames() {return chatlogShownames;}
 	const std::vector<std::string>& getEvidence() {return cachedEvidence;}
 	const std::string getCharBlip(const std::string& charname) {return (cachedCharBlips.count(charname)) ? cachedCharBlips[charname] : "";}
 	std::vector<evidenceInfo>& getPrivateEvidence() {return privateEvidence;}
@@ -58,6 +62,8 @@ public:
 	void setMacAddr(std::string addr) {macAddr = addr;}
 	void setShowname(std::string val) {defaultShowname = val;}
 	void setOOCname(std::string val) {defaultOOCname = val;}
+	void setChatlogIniswaps(bool val) {chatlogIniswaps = val;}
+	void setChatlogShownames(bool val) {chatlogShownames = val;}
 
 	void updateInput();
 	void update();

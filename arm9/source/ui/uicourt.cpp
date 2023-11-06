@@ -310,10 +310,6 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	AOdecode(charname);
 	AOdecode(showname);
 
-	std::string name = showname;
-	if (name.empty()) name = charname;
-	AOdecode(name);
-
 	std::string chatmsg = argumentAt(msg,5);
 	AOdecode(chatmsg);
 
@@ -336,12 +332,15 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 		shoutMod = std::stoi(shoutModStr);
 
 	// insert to chatlog
+	std::string name = pSelf->charList[charID].showname;
+	if (gEngine->showChatlogIniswaps() && pSelf->charList[charID].name != charname)
+		name += " (" + charname + ")";
+	if (gEngine->showChatlogShownames() && !showname.empty())
+		name += " (" + showname + ")";
+
 	std::string logMsg = name+": "+chatmsg;
 	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
 	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
-
-	if (name.size() > 12)
-		name.resize(12);
 
 
 	std::string lowerCharname = charname;
