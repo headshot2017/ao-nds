@@ -234,7 +234,7 @@ void UIScreenSettings::refreshChatlogPreview()
 	if (gEngine->showChatlogIniswaps())
 		name += " (ApolloSOJ)";
 	if (gEngine->showChatlogShownames())
-		name += " (Headshotnoby)";
+		name += " [Headshotnoby]";
 	name += ": Test message";
 
 	lbl_logPreview->setText(name.c_str());

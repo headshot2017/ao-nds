@@ -336,7 +336,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	if (gEngine->showChatlogIniswaps() && pSelf->charList[charID].name != charname)
 		name += " (" + charname + ")";
 	if (gEngine->showChatlogShownames() && !showname.empty())
-		name += " (" + showname + ")";
+		name += " [" + showname + "]";
 
 	std::string logMsg = name+": "+chatmsg;
 	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
