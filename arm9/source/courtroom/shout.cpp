@@ -13,6 +13,7 @@ Shout::Shout(Courtroom* pCourt)
 	m_pCourt = pCourt;
 
 	bgIndex = bgInit(2, BgType_Text4bpp, BgSize_T_512x256, 2, 6);
+	bgHide(bgIndex);
 	bgMapLen = 0;
 	visible = false;
 
@@ -109,7 +110,7 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 void Shout::setVisible(bool on)
 {
 	visible = on;
-	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
+	(on && ticks != -1) ? bgShow(bgIndex) : bgHide(bgIndex);
 }
 
 void Shout::freeSound()
