@@ -241,7 +241,7 @@ int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int*
 	stbtt_GetCodepointBitmapBox(&font.info, text[0], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
 	if (outWidth) *outWidth = 0;
-	int out_x = c_x2 - c_x1;
+	int out_x = c_x2 - c_x1+1;
 	bool oob = (x + out_x >= w);
 	if (oob)
 	{
@@ -383,8 +383,8 @@ int getTextWidth(int fontID, const char* text, int maxWidth)
 		// (Note that each Codepoint call has an alternative Glyph version which caches the work required to lookup the character word[i].)
 
 		// get bounding box for character (may be offset to account for chars that dip above or below the line)
-		int c_x1, c_y1, c_x2, c_y2;
-		stbtt_GetCodepointBitmapBox(&font.info, text[i], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
+		//int c_x1, c_y1, c_x2, c_y2;
+		//stbtt_GetCodepointBitmapBox(&font.info, text[i], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
 		// advance x
 		textWidth[line] += roundf(ax * font.scale);
