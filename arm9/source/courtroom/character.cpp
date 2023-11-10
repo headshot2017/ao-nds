@@ -233,6 +233,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		charGfxVisible[i] = true;
 	}
 
+	oamUpdate(&oamMain);
 	loop = doLoop;
 	timerTicks = 0;
 	currFrame = 0;
