@@ -282,7 +282,7 @@ void UIButton::updateInput()
 	u32 keyDown = keysDown();
 	u32 keyUp = keysUp();
 
-	if (keyDown & KEY_TOUCH)
+	if (!pressing && keyDown & KEY_TOUCH)
 	{
 		touchRead(&touchPos);
 		if (callbacks[0].cb && touchPos.px >= (u16)x && touchPos.py >= (u16)y && touchPos.px < (u16)(x+w) && touchPos.py < (u16)(y+h))
