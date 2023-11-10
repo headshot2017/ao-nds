@@ -214,7 +214,7 @@ void Chatbox::setName(std::string name)
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-	nameWidth = getTextWidth(0, name.c_str());
+	nameWidth = getTextWidth(0, name.c_str(), 64);
 	renderText(0, name.c_str(), COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)

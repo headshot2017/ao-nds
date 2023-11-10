@@ -12,6 +12,6 @@ int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmp
 int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16* spriteGfxTarget, bool skipOnOob=false, int* oobFlag=0, int* outWidth=0);
 void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16** spriteGfxTargets, int gfxPerLine, int maxLines);
 void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, std::vector<std::string>& out);
-int getTextWidth(int fontID, const char* text);
+int getTextWidth(int fontID, const char* text, int maxWidth=0);
 
 #endif // FONTS_H_INCLUDED

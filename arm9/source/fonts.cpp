@@ -351,7 +351,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 	out.push_back(thisLine);
 }
 
-int getTextWidth(int fontID, const char* text)
+int getTextWidth(int fontID, const char* text, int maxWidth)
 {
 	if (fontID < 0 || fontID >= loadedCount)
 		return 0;
@@ -388,6 +388,9 @@ int getTextWidth(int fontID, const char* text)
 
 		// advance x
 		textWidth[line] += roundf(ax * font.scale);
+
+		if (maxWidth && textWidth[line] >= maxWidth)
+			return maxWidth;
 	}
 
 	int maxLine = 0;
