@@ -233,7 +233,7 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 	textTicks = 0;
 	textSpeed = 2;
 	blipTicks = 0;
-	center = (text.at(0) == '~' && text.at(1) == '~');
+	center = (text.size() >= 2 && text.at(0) == '~' && text.at(1) == '~');
 	currText = (center) ? text.substr(2) : text;
 	if (center)
 	{
@@ -273,7 +273,7 @@ void Chatbox::additiveText(std::string text, int color)
 	textTicks = 0;
 	textSpeed = 2;
 	blipTicks = 0;
-	center = (text.at(0) == '~' && text.at(1) == '~');
+	center = (text.size() >= 2 && text.at(0) == '~' && text.at(1) == '~');
 	currText = (center) ? text.substr(2) : text;
 	if (center)
 	{
