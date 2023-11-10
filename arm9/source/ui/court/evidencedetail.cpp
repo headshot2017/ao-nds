@@ -244,7 +244,7 @@ void UICourtEvidenceDetail::reloadPage()
 
 	scrollPos = 0;
 	renderDesc.clear();
-	separateLines(0, currDesc.c_str(), 7, renderDesc);
+	separateLines(0, currDesc.c_str(), 7, false, renderDesc);
 	reloadDesc();
 
 	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 11);

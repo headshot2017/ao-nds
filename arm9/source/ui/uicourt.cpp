@@ -287,7 +287,7 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 	else logName = "Server";
 
 	std::string logMsg = logName+" played music "+trackname;
-	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
+	separateLines(0, logMsg.c_str(), 7, false, pSelf->icLog);
 	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
 
 	pSelf->court->playMusic("/data/ao-nds/sounds/music/"+trackname);
@@ -339,7 +339,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 		name += " [" + showname + "]";
 
 	std::string logMsg = name+": "+chatmsg;
-	separateLines(0, logMsg.c_str(), 7, pSelf->icLog);
+	separateLines(0, logMsg.c_str(), 7, false, pSelf->icLog);
 	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
 
 
@@ -393,7 +393,7 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 
 	// insert to chatlog
 	std::string logMsg = name+": "+chatmsg;
-	separateLines(0, logMsg.c_str(), 7, pSelf->oocLog);
+	separateLines(0, logMsg.c_str(), 7, false, pSelf->oocLog);
 	while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 }
 

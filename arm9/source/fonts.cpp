@@ -223,7 +223,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 	}
 }
 
-int advanceXPos(int fontID, const char* text, int x, bool skipOnOob, int* oobFlag, int* outWidth)
+int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int* oobFlag, int* outWidth)
 {
 	if (fontID < 0 || fontID >= loadedCount)
 		return 0;
@@ -242,7 +242,7 @@ int advanceXPos(int fontID, const char* text, int x, bool skipOnOob, int* oobFla
 
 	if (outWidth) *outWidth = 0;
 	int out_x = c_x2 - c_x1;
-	bool oob = (x + out_x >= 32);
+	bool oob = (x + out_x >= w);
 	if (oob)
 	{
 		if (skipOnOob)
@@ -274,7 +274,7 @@ int advanceXPos(int fontID, const char* text, int x, bool skipOnOob, int* oobFla
 	return x;
 }
 
-void separateLines(int fontID, const char* text, int gfxPerLine, std::vector<std::string>& out)
+void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, std::vector<std::string>& out)
 {
 	std::string thisLine;
 	int textX = 0;
@@ -301,7 +301,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, std::vector<std
 		int oobFlag = 0;
 		int outWidth;
 
-		int new_x = advanceXPos(fontID, text+i, textX, lastBox, &oobFlag, &outWidth);
+		int new_x = advanceXPos(fontID, text+i, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
 		mp3_fill_buffer();
 
 		if (oobFlag)
@@ -321,7 +321,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, std::vector<std
 			{
 				thisLine += text[i];
 				textX -= 32;
-				textX = advanceXPos(fontID, text+i, textX, lastBox, &oobFlag, &outWidth);
+				textX = advanceXPos(fontID, text+i, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
 				mp3_fill_buffer();
 			}
 		}

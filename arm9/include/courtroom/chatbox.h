@@ -7,10 +7,23 @@
 // OAM slots 26-49 for text, sprite size 32x16
 
 #include <string>
+#include <stack>
+#include <vector>
 
 #include <nds/ndstypes.h>
 
 #include "global.h"
+#include "colors.h"
+
+struct colorSwitchChar
+{
+	int color;
+	char start;
+	char stop;
+	bool talk;
+	bool show;
+	bool removing;
+};
 
 class Courtroom;
 
@@ -39,12 +52,16 @@ class Chatbox
 	int nameWidth;
 	u32 currTextInd;
 	int currTextGfxInd;
+	int currTextLine;
 	std::string currText;
 	int textX;
 	int textTicks;
 	int textSpeed;
-	int textColor;
 	int blipTicks;
+	bool center;
+	std::stack<colorSwitchChar> colorStack;
+	std::vector<std::string> lines;
+	std::vector<int> linesHalfWidth;
 
 	int xOffset;
 	int yOffset;
@@ -54,6 +71,10 @@ class Chatbox
 
 	bool visible;
 	bool ignoreBlend;
+
+	bool handleEscape();
+	bool handleControlChars();
+	void handleNewLine();
 
 public:
 	Chatbox(Courtroom* pCourt);
@@ -67,6 +88,7 @@ public:
 	void additiveText(std::string text, int color);
 
 	bool isFinished() {return currTextInd >= currText.size();}
+	int getColor() {return (colorStack.empty()) ? COLOR_WHITE : colorStack.top().color;}
 	void setOnChatboxFinishedCallback(voidCallback newCB, void* userdata) {onChatboxFinished = newCB; pUserData = userdata;}
 
 	void update();

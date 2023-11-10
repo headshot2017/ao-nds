@@ -12,8 +12,70 @@
 #include "courtroom/courtroom.h"
 #include "global.h"
 #include "fonts.h"
-#include "colors.h"
 #include "mp3_shared.h"
+
+#define MAX_COLOR_SWITCHES 5
+
+colorSwitchChar colorSwitches[MAX_COLOR_SWITCHES] = {
+	{COLOR_GREEN, '`', '`', true, false, false},
+	{COLOR_RED, '~', '~', true, false, false},
+	{COLOR_ORANGE, '|', '|', true, false, false},
+	{COLOR_BLUE, '(', ')', false, true, false},
+	{COLOR_GRAY, '[', ']', true, true, false}
+};
+
+std::string filterChatMsg(std::string& msg)
+{
+	std::string result;
+
+	for (u32 i=0; i<msg.size(); i++)
+	{
+		bool add = true;
+		char currChar = msg.at(i);
+
+		switch(currChar)
+		{
+			case '}':
+			case '{':
+				add = false;
+				break;
+
+			case '\\':
+				i++;
+				if (i < msg.size())
+				{
+					currChar = msg.at(i);
+					switch(currChar)
+					{
+						case 'n':
+							currChar = '\n';
+							break;
+
+						case 's':
+						case 'f':
+							add = false;
+							break;
+					}
+				}
+				break;
+
+			default:
+				for (u32 j=0; j<MAX_COLOR_SWITCHES; j++)
+				{
+					if (!colorSwitches[j].show && (currChar == colorSwitches[j].start || currChar == colorSwitches[j].stop))
+					{
+						add = false;
+						break;
+					}
+				}
+				break;
+		}
+
+		if (add) result += currChar;
+	}
+
+	return result;
+}
 
 Chatbox::Chatbox(Courtroom* pCourt)
 {
@@ -70,6 +132,7 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLUE] = 	PAL_BLUE;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_YELLOW] = 	PAL_YELLOW;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	PAL_BLACK;
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GRAY] = 	PAL_GRAY;
 
 	u32 dataLen;
 	u8* bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);
@@ -160,15 +223,29 @@ void Chatbox::setName(std::string name)
 
 void Chatbox::setText(std::string text, int color, std::string blip)
 {
-	currText = text;
-	textColor = color;
+	colorStack = {};
+	colorStack.push({color, ' ', ' ', (color != COLOR_BLUE)});
 
 	currTextInd = 0;
 	currTextGfxInd = 0;
+	currTextLine = -1;
 	textX = 0;
 	textTicks = 0;
 	textSpeed = 2;
 	blipTicks = 0;
+	center = (text.at(0) == '~' && text.at(1) == '~');
+	currText = (center) ? text.substr(2) : text;
+	if (center)
+	{
+		lines.clear();
+		linesHalfWidth.clear();
+
+		std::string filtered = filterChatMsg(currText);
+		separateLines(1, filtered.c_str(), 8, true, lines);
+		for (u32 i=0; i<lines.size(); i++)
+			linesHalfWidth.push_back(getTextWidth(1, lines[i].c_str())/2);
+	}
+	handleNewLine();
 
 	if (blipSnd)
 		delete[] blipSnd;
@@ -187,14 +264,28 @@ void Chatbox::additiveText(std::string text, int color)
 	int line = currTextGfxInd/8;
 	currTextGfxInd = (line+1) * 8;
 
-	currText = text;
-	textColor = color;
+	colorStack = {};
+	colorStack.push({color, ' ', ' ', (color != COLOR_BLUE)});
 
 	currTextInd = 0;
+	currTextLine = -1;
 	textX = 0;
 	textTicks = 0;
 	textSpeed = 2;
 	blipTicks = 0;
+	center = (text.at(0) == '~' && text.at(1) == '~');
+	currText = (center) ? text.substr(2) : text;
+	if (center)
+	{
+		lines.clear();
+		linesHalfWidth.clear();
+
+		std::string filtered = filterChatMsg(currText);
+		separateLines(1, filtered.c_str(), 8, true, lines);
+		for (u32 i=0; i<lines.size(); i++)
+			linesHalfWidth.push_back(getTextWidth(1, lines[i].c_str())/2);
+	}
+	handleNewLine();
 
 	memset(textCanvas, 0, 32*16);
 	oamSetHidden(&oamMain, 127, true);
@@ -249,7 +340,35 @@ void Chatbox::update()
 	{
 		textTicks = 0;
 
-		char currChar = currText.c_str()[currTextInd];
+		char currChar = currText.at(currTextInd);
+
+		bool stop = handleControlChars();
+		if (stop) return;
+
+		currChar = currText.at(currTextInd);
+		if (currChar == '\\')
+		{
+			currTextInd++;
+			if (isFinished() && onChatboxFinished)
+			{
+				oamSetHidden(&oamMain, 127, false);
+				onChatboxFinished(pUserData);
+				return;
+			}
+
+			bool skip = handleEscape();
+			if (skip)
+			{
+				currTextInd++;
+				if (isFinished() && onChatboxFinished)
+				{
+					oamSetHidden(&oamMain, 127, false);
+					onChatboxFinished(pUserData);
+				}
+				return;
+			}
+		}
+
 		if (blipSnd && currChar != ' ' && blipTicks <= 0)
 		{
 			soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
@@ -267,7 +386,7 @@ void Chatbox::update()
 		int boxWidth = lastBox ? 20 : 32;
 		int oobFlag;
 		int outWidth;
-		int new_x = renderChar(1, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+		int new_x = renderChar(1, currText.c_str()+currTextInd, colorStack.top().color, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
 
 		if (oobFlag)
 		{
@@ -278,13 +397,14 @@ void Chatbox::update()
 			{
 				// entered a new line
 				textX = 0;
+				handleNewLine();
 				if (oobFlag == 2)
 					currTextInd--;
 			}
 			else
 			{
 				textX -= boxWidth;
-				textX = renderChar(1, currText.c_str()+currTextInd, textColor, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+				textX = renderChar(1, currText.c_str()+currTextInd, colorStack.top().color, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
 			}
 		}
 		else
@@ -294,10 +414,22 @@ void Chatbox::update()
 			{
 				currTextGfxInd++;
 				if (currTextGfxInd % 8 == 0)
+				{
 					textX = 0;
+					handleNewLine();
+				}
 				else
 					textX -= boxWidth;
 			}
+		}
+
+		if (colorStack.top().removing)
+		{
+			colorSwitchChar oldColor = colorStack.top();
+			colorStack.pop();
+			colorSwitchChar newColor = colorStack.top();
+			if (oldColor.talk != newColor.talk)
+				m_pCourt->setTalkingAnim(newColor.talk);
 		}
 
 		currTextInd++;
@@ -306,5 +438,119 @@ void Chatbox::update()
 			oamSetHidden(&oamMain, 127, false);
 			onChatboxFinished(pUserData);
 		}
+	}
+}
+
+bool Chatbox::handleEscape()
+{
+	bool skip = true;
+
+	char escape = currText.at(currTextInd);
+	switch(escape)
+	{
+		case 'n':
+			currTextGfxInd = (currTextGfxInd/8+1) * 8;
+			textX = 0;
+			handleNewLine();
+			break;
+
+		case 's':
+			m_pCourt->shake(5, 35);
+			break;
+
+		case 'f':
+			m_pCourt->flash(3);
+			break;
+
+		default:
+			skip = false;
+			break;
+	}
+
+	return skip;
+}
+
+bool Chatbox::handleControlChars()
+{
+	bool keepSearching = true;
+	while (keepSearching)
+	{
+		char currChar = currText.at(currTextInd);
+
+		switch(currChar)
+		{
+			case '{':
+				// slow down
+				if (textSpeed < 5) textSpeed++;
+				break;
+
+			case '}':
+				// speed up
+				if (textSpeed > 0) textSpeed--;
+				break;
+
+			default:
+				{
+					bool switchingColor = false;
+					colorSwitchChar oldColor;
+					colorSwitchChar newColor;
+					if (colorStack.size() > 1 && currChar == colorStack.top().stop)
+					{
+						oldColor = colorStack.top();
+						if (!colorStack.top().show) colorStack.pop();
+						else colorStack.top().removing = true;
+						newColor = colorStack.top();
+						switchingColor = true;
+					}
+
+					if (!switchingColor)
+					{
+						for (int i=0; i<MAX_COLOR_SWITCHES; i++)
+						{
+							if (currChar == colorSwitches[i].start)
+							{
+								oldColor = colorStack.top();
+								colorStack.push(colorSwitches[i]);
+								switchingColor = true;
+								newColor = colorSwitches[i];
+								break;
+							}
+						}
+					}
+
+					if (switchingColor && !colorStack.top().removing && oldColor.talk != newColor.talk)
+						m_pCourt->setTalkingAnim(newColor.talk);
+
+					if (!switchingColor || newColor.show)
+						keepSearching = false;
+				}
+				break;
+		}
+
+		if (keepSearching)
+		{
+			currTextInd++;
+			if (isFinished() && onChatboxFinished)
+			{
+				oamSetHidden(&oamMain, 127, false);
+				onChatboxFinished(pUserData);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void Chatbox::handleNewLine()
+{
+	currTextLine++;
+	int start = (currTextGfxInd < 8*3) ? currTextGfxInd : 0;
+
+	for (int i=start; i<start+8; i++)
+	{
+		int x = (center) ? (128 + (i%8)*32 - linesHalfWidth[currTextLine]) : (8 + (i%8)*32);
+		int y = 132 + (i/8)*16;
+		oamSetXY(&oamMain, 26+i, x, y);
 	}
 }

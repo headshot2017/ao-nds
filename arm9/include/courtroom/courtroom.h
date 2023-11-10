@@ -90,6 +90,7 @@ public:
 	Shout* getShout() {return shout;}
 
 	void setVisible(bool on);
+	void setTalkingAnim(bool on);
 	void MSchat(const MSchatStruct& data);
 
 	void stopMusic() {playMusic("");}

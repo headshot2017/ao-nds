@@ -54,6 +54,14 @@ void Courtroom::setVisible(bool on)
 	shout->setVisible(on);
 }
 
+void Courtroom::setTalkingAnim(bool on)
+{
+	if (onPreAnim) return;
+
+	std::string prefix = (on) ? "(b)" : "(a)";
+	character->setCharImage(currIC.charname, prefix + currIC.emote);
+}
+
 void Courtroom::MSchat(const MSchatStruct& data)
 {
 	currIC = data;
@@ -233,7 +241,7 @@ void Courtroom::onAnimFinished(void* pUserData)
 	int color = AOcolorToPalette[pSelf->currIC.textColor];
 	bool useIdleAnim =
 		pSelf->currIC.chatmsg.empty() ||
-		color == COLOR_BLUE ||
+		color == COLOR_BLUE || pSelf->chatbox->getColor() == COLOR_BLUE ||
 		(pSelf->currIC.noInterrupt && pSelf->chatbox->isFinished());
 
 	pSelf->onPreAnim = false;
