@@ -82,7 +82,7 @@ def convertBackground(source, target):
         pix = img.load()
         for y in range(img.size[1]):
             for x in range(img.size[0]):
-                if pix[x, y][3] < 128:
+                if pix[x, y][3] < 224:
                     pix[x, y] = (255, 0, 255, 255)
                 else:
                     pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
