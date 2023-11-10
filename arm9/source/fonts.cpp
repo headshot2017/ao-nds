@@ -95,7 +95,7 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	stbtt_GetCodepointBitmapBox(&font.info, text[0], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
 	if (outWidth) *outWidth = 0;
-	int out_x = c_x2 - c_x1;
+	int out_x = c_x2 - c_x1+1;
 	bool oob = (x + out_x >= w);
 	if (oob)
 	{
