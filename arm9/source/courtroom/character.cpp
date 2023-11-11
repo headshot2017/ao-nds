@@ -8,6 +8,7 @@
 #include <nds/interrupts.h>
 #include <nds/arm9/input.h>
 #include <nds/arm9/decompress.h>
+#include <nds/arm9/sound.h>
 
 #include "global.h"
 #include "mp3_shared.h"
@@ -72,13 +73,19 @@ void readFrameIndexes(const std::string& value, std::vector<u16>& output)
 
 Character::Character()
 {
-	timerTicks = 0;
+	charTicks = 0;
+	sfxTicks = 0;
 	currFrame = 0;
 	loop = false;
 	gfxInUse = 0;
 
 	charData = 0;
 	frameInfo.frameCount = 0;
+
+	sfx = 0;
+	sfxSize = 0;
+	sfxPlayed = true;
+	sfxDelay = 0;
 
 	for (int i=0; i<8*6; i++)
 	{
@@ -106,8 +113,8 @@ Character::~Character()
 		oamFreeGfx(&oamMain, charGfx[i]);
 	}
 
-	if (charData)
-		delete[] charData;
+	if (charData) delete[] charData;
+	if (sfx) delete[] sfx;
 
 	timerStop(0);
 }
@@ -235,8 +242,17 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 	oamUpdate(&oamMain);
 	loop = doLoop;
-	timerTicks = 0;
+	charTicks = 0;
 	currFrame = 0;
+}
+
+void Character::setSound(const std::string& filename, int delay)
+{
+	if (sfx) delete[] sfx;
+	sfx = wav_load_handle(filename.c_str(), &sfxSize);
+	sfxPlayed = false;
+	sfxTicks = 0;
+	sfxDelay = delay * TIME_MOD;
 }
 
 void Character::setVisible(bool on)
@@ -270,12 +286,26 @@ void Character::update()
 	if (!(TIMER_CR(0) & TIMER_ENABLE))
 		timerStart(0, ClockDivider_1024, 0, NULL);
 
-	timerTicks += timerElapsed(0);
-	u32 ms = (float)timerTicks/TIMER_SPEED*1000;
+	u32 elapsed = timerElapsed(0);
+
+	if (!sfxPlayed && sfx)
+	{
+		sfxTicks += elapsed;
+		u32 ms = (float)sfxTicks/TIMER_SPEED*1000;
+		if (ms >= sfxDelay)
+		{
+			soundPlaySample(sfx, SoundFormat_16Bit, sfxSize, 32000, 127, 64, false, 0);
+			sfxPlayed = true;
+		}
+	}
+
+	charTicks += elapsed;
+
+	u32 ms = (float)charTicks/TIMER_SPEED*1000;
 
 	if (frameInfo.frameCount && ms >= frameInfo.frameDurations[currFrame])
 	{
-		timerTicks = 0;
+		charTicks = 0;
 		timerPause(0);
 
 		if (loop)

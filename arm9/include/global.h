@@ -7,6 +7,9 @@
 #include <nds/ndstypes.h>
 #include <nds/arm9/sprite.h>
 
+// SoundT values in char.ini must be multiplied by this constant to get the actual time
+#define TIME_MOD 40
+
 #define fromRGB15(rgb, r, g, b)\
 	r = rgb & 31;\
 	g = (rgb >> 5) & 31;\

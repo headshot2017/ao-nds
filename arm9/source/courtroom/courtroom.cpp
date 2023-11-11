@@ -113,6 +113,9 @@ void Courtroom::handleChat()
 	character->setOnAnimFinishedCallback(onAnimFinished, this);
 	background->setBgSide(currIC.side);
 
+	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
+		character->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
+
 	if (currIC.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
 	{
 		onPreAnim = false;

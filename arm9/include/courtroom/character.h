@@ -47,7 +47,7 @@ class Character
 	FrameInfo frameInfo;
 	bool loop;
 
-	u32 timerTicks;
+	u32 charTicks;
 	u32 currFrame;
 
 	int shakeX;
@@ -55,6 +55,12 @@ class Character
 	int offsetX;
 	int offsetY;
 	bool flip;
+
+	bool sfxPlayed;
+	u32 sfxTicks;
+	u32 sfxDelay;
+	u32* sfx;
+	u32 sfxSize;
 
 	void* pUserData;
 	voidCallback onAnimFinished;
@@ -72,6 +78,7 @@ public:
 	void setOffsets(int x, int y) {offsetX = x; offsetY = y;}
 	void setFlip(bool on) {flip = on;}
 	void setCharImage(std::string charname, std::string relativeFile, bool doLoop=true);
+	void setSound(const std::string& filename, int delay);
 	void setVisible(bool on);
 
 	void setOnAnimFinishedCallback(voidCallback newCB, void* userdata) {onAnimFinished = newCB; pUserData = userdata;}
