@@ -12,7 +12,7 @@ Shout::Shout(Courtroom* pCourt)
 {
 	m_pCourt = pCourt;
 
-	bgIndex = bgInit(2, BgType_Text4bpp, BgSize_T_512x256, 2, 6);
+	bgIndex = bgInit(2, BgType_Text4bpp, BgSize_T_512x256, 5, 6);
 	bgHide(bgIndex);
 	bgMapLen = 0;
 	visible = false;
@@ -38,7 +38,7 @@ Shout::~Shout()
 
 void Shout::setShout(const std::string& charname, int shoutMod, const std::string& custom)
 {
-	ticks = 0;
+	ticks = 1;
 	freeSound();
 
 	u32 bgGfxLen, bgPalLen;
@@ -124,8 +124,6 @@ void Shout::freeSound()
 
 void Shout::cancelShout()
 {
-	if (ticks == -1) return;
-
 	ticks = -1;
 	if (visible) bgHide(bgIndex);
 	if (bgMapLen) dmaFillHalfWords(0, bgGetMapPtr(bgIndex), bgMapLen);
@@ -133,28 +131,28 @@ void Shout::cancelShout()
 
 void Shout::update()
 {
-	bool shake = (ticks >= 5 && ticks <= 40);
+	bool shake = (ticks > 5 && ticks <= 40);
 	setOffsets(
 		(shake) ? -6 + rand()%12 : 0,
 		(shake) ? -6 + rand()%12 : 0
 	);
 	bgSetScroll(bgIndex, -xOffset, -yOffset);
 
-	if (ticks < 0) return;
+	if (ticks <= 0) return;
 
 	ticks++;
-	if (ticks == 4)
+	if (ticks == 5)
 	{
 		REG_BLDCNT = BLEND_NONE;
 		REG_BLDY = 0;
 	}
-	else if (ticks == 5)
+	else if (ticks == 6)
 	{
 		if (sndShout)
 			soundPlaySample(sndShout, SoundFormat_16Bit, sndShoutSize, 32000, 127, 64, false, 0);
 		if (visible) bgShow(bgIndex);
 	}
-	else if (ticks >= 75)
+	else if (ticks > 75)
 	{
 		cancelShout();
 		if (onShoutFinished)

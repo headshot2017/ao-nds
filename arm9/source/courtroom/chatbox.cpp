@@ -104,7 +104,7 @@ Chatbox::Chatbox(Courtroom* pCourt)
 
 
 	//bgIndex = bgInit(2, BgType_ExRotation, BgSize_ER_256x256, 2, 1);
-	bgIndex = bgInit(1, BgType_Text4bpp, BgSize_T_512x256, 2, 5);
+	bgIndex = bgInit(1, BgType_Text4bpp, BgSize_T_512x256, 3, 5);
 	bgSetPriority(bgIndex, 1);
 	bgSetScroll(bgIndex, 0, -192+80);
 	bgHide(bgIndex);

@@ -44,7 +44,7 @@ void readDeskTiles(const std::string& value, int* horizontal, int* vertical)
 Background::Background()
 {
 	//bgIndex = bgInit(3, BgType_ExRotation, BgSize_ER_256x256, 1, 2);
-	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_512x256, 4, 1);
+	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_512x256, 1, 1);
 	bgSetPriority(bgIndex, 3);
 	bgHide(bgIndex);
 	visible = false;
