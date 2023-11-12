@@ -53,6 +53,14 @@ typedef struct {
         };
 } mp3_msg;
 
+struct _wav_handle
+{
+	u32* data;
+	u32 size;
+	u32 samprate;
+};
+typedef struct _wav_handle wav_handle;
+
 
 #define OUTBUF_SIZE     (MAX_NCHAN * MAX_NGRAN * MAX_NSAMP)
 #define MP3_FILE_BUFFER_SIZE (8 * 1024)
@@ -73,7 +81,9 @@ int mp3_stop();
 int mp3_set_volume(int volume);
 bool mp3_is_playing();
 
-u32* wav_load_handle(const char *filename, u32* sizeOut);
+wav_handle* wav_load_handle(const char *filename);
+void wav_free_handle(wav_handle* handle);
+int wav_play(wav_handle* handle);
 
 #endif // ARM9
 

@@ -4,9 +4,7 @@
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
-#include <nds/arm9/sound.h>
 
-#include "mp3_shared.h"
 #include "engine.h"
 #include "global.h"
 #include "ui/uiwificonnect.h"
@@ -25,12 +23,12 @@ UIScreenDisconnected::~UIScreenDisconnected()
 	delete lbl_disconnectMsg;
 	delete lbl_reason;
 	delete btn_ok;
-	delete[] sndSelect;
+	wav_free_handle(sndSelect);
 }
 
 void UIScreenDisconnected::init()
 {
-	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav", &sndSelectSize);
+	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav");
 
 	u8* bgTiles = readFile("/data/ao-nds/ui/bg_logo.img.bin", &bgTilesLen);
 	u8* bgMap = readFile("/data/ao-nds/ui/bg_logo.map.bin");
@@ -78,7 +76,7 @@ void UIScreenDisconnected::updateInput()
 void UIScreenDisconnected::onOK(void* pUserData)
 {
 	UIScreenDisconnected* pSelf = (UIScreenDisconnected*)pUserData;
-	soundPlaySample(pSelf->sndSelect, SoundFormat_16Bit, pSelf->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndSelect);
 
 	if (pSelf->goToWiFi)
 		gEngine->changeScreen(new UIScreenWifi);

@@ -6,9 +6,7 @@
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
-#include <nds/arm9/sound.h>
 
-#include "mp3_shared.h"
 #include "engine.h"
 #include "ui/uiserverlist.h"
 #include "ui/uidirectconn.h"
@@ -23,7 +21,7 @@ UIScreenMainMenu::~UIScreenMainMenu()
 	dmaFillHalfWords(0, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
-	delete[] sndGavel;
+	wav_free_handle(sndGavel);
 	delete btn_viewServerList;
 	delete btn_directConnect;
 	delete btn_settings;
@@ -32,7 +30,7 @@ UIScreenMainMenu::~UIScreenMainMenu()
 
 void UIScreenMainMenu::init()
 {
-	sndGavel = wav_load_handle("/data/ao-nds/sounds/general/sfx-gavel.wav", &sndGavelSize);
+	sndGavel = wav_load_handle("/data/ao-nds/sounds/general/sfx-gavel.wav");
 
 	u8* bgTiles = readFile("/data/ao-nds/ui/bg_logo.img.bin", &bgTilesLen);
 	u8* bgMap = readFile("/data/ao-nds/ui/bg_logo.map.bin");
@@ -85,7 +83,7 @@ void UIScreenMainMenu::updateInput()
 void UIScreenMainMenu::onViewServerList(void* pUserData)
 {
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
-	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndGavel);
 
 	gEngine->changeScreen(new UIScreenServerList);
 }
@@ -93,7 +91,7 @@ void UIScreenMainMenu::onViewServerList(void* pUserData)
 void UIScreenMainMenu::onDirectConnect(void* pUserData)
 {
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
-	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndGavel);
 
 	gEngine->changeScreen(new UIScreenDirectConn);
 }
@@ -101,7 +99,7 @@ void UIScreenMainMenu::onDirectConnect(void* pUserData)
 void UIScreenMainMenu::onSettings(void* pUserData)
 {
 	UIScreenMainMenu* pSelf = (UIScreenMainMenu*)pUserData;
-	soundPlaySample(pSelf->sndGavel, SoundFormat_16Bit, pSelf->sndGavelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndGavel);
 
 	gEngine->changeScreen(new UIScreenSettings);
 }

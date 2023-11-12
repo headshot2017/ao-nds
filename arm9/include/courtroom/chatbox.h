@@ -14,6 +14,7 @@
 
 #include "global.h"
 #include "colors.h"
+#include "mp3_shared.h"
 
 struct colorSwitchChar
 {
@@ -46,8 +47,7 @@ class Chatbox
 	int arrowXadd;
 	int arrowTicks;
 
-	u32* blipSnd;
-	u32 blipSize;
+	wav_handle* blipSnd;
 
 	int nameWidth;
 	u32 currTextInd;

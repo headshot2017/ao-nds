@@ -8,10 +8,8 @@
 #include <nds/interrupts.h>
 #include <nds/arm9/input.h>
 #include <nds/arm9/decompress.h>
-#include <nds/arm9/sound.h>
 
 #include "global.h"
-#include "mp3_shared.h"
 
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED (BUS_CLOCK/1024)
@@ -83,7 +81,6 @@ Character::Character()
 	frameInfo.frameCount = 0;
 
 	sfx = 0;
-	sfxSize = 0;
 	sfxPlayed = true;
 	sfxDelay = 0;
 
@@ -114,7 +111,7 @@ Character::~Character()
 	}
 
 	if (charData) delete[] charData;
-	if (sfx) delete[] sfx;
+	if (sfx) wav_free_handle(sfx);
 
 	timerStop(0);
 }
@@ -248,8 +245,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 void Character::setSound(const std::string& filename, int delay)
 {
-	if (sfx) delete[] sfx;
-	sfx = wav_load_handle(filename.c_str(), &sfxSize);
+	if (sfx) wav_free_handle(sfx);
+	sfx = wav_load_handle(filename.c_str());
 	sfxPlayed = false;
 	sfxTicks = 0;
 	sfxDelay = delay * TIME_MOD;
@@ -294,7 +291,7 @@ void Character::update()
 		u32 ms = (float)sfxTicks/TIMER_SPEED*1000;
 		if (ms >= sfxDelay)
 		{
-			soundPlaySample(sfx, SoundFormat_16Bit, sfxSize, 32000, 127, 64, false, 0);
+			wav_play(sfx);
 			sfxPlayed = true;
 		}
 	}

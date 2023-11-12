@@ -307,7 +307,7 @@ void UICourtIC::updateInput()
 	u32 key = keysDown();
 	if (key & KEY_Y)
 	{
-		soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+		wav_play(pCourtUI->sndCrtRcrd);
 		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
 	}
 	else if (key & KEY_TOUCH)
@@ -318,7 +318,7 @@ void UICourtIC::updateInput()
 		if (!displayingOptions && pos.px >= 79 && pos.py >= 162 && pos.px < 79+77 && pos.py < 162+14)
 		{
 			// showname input
-			soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+			wav_play(pCourtUI->sndCrtRcrd);
 			isWritingChat = false;
 			hideEverything();
 			kb_input->show("Enter a showname", pCourtUI->showname.c_str());
@@ -326,7 +326,7 @@ void UICourtIC::updateInput()
 		else if (pos.px >= 79 && pos.py >= 177 && pos.px < 79+163 && pos.py < 177+15)
 		{
 			// chat input
-			soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+			wav_play(pCourtUI->sndCrtRcrd);
 			isWritingChat = true;
 			hideEverything();
 			kb_input->show("Enter IC chat message", "");
@@ -334,7 +334,7 @@ void UICourtIC::updateInput()
 		else if (pos.px >= 242 && pos.py >= 177 && pos.px < 242+14 && pos.py < 177+15)
 		{
 			// color switcher
-			soundPlaySample(pCourtUI->sndEvPage, SoundFormat_16Bit, pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+			wav_play(pCourtUI->sndEvPage);
 			pCourtUI->icControls.color = (pCourtUI->icControls.color+1) % 6;
 			lbl_color->setColor(paletteColorInd[pCourtUI->icControls.color]);
 		}
@@ -458,7 +458,7 @@ void UICourtIC::hideEverything()
 void UICourtIC::onBackClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCancel);
 
 	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
 }
@@ -466,7 +466,7 @@ void UICourtIC::onBackClicked(void* pUserData)
 void UICourtIC::onCourtRecord(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 
 	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 }
@@ -474,7 +474,7 @@ void UICourtIC::onCourtRecord(void* pUserData)
 void UICourtIC::onShoutsToggled(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	pSelf->currShout = (pSelf->currShout+1) % 5;
 
@@ -484,7 +484,7 @@ void UICourtIC::onShoutsToggled(void* pUserData)
 void UICourtIC::onPairClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 
 	pSelf->pCourtUI->changeScreen(new UICourtPair(pSelf->pCourtUI));
 }
@@ -492,7 +492,7 @@ void UICourtIC::onPairClicked(void* pUserData)
 void UICourtIC::onMuteClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 
 	pSelf->pCourtUI->changeScreen(new UICourtMute(pSelf->pCourtUI));
 }
@@ -500,7 +500,7 @@ void UICourtIC::onMuteClicked(void* pUserData)
 void UICourtIC::onOptionsToggled(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 
 	pSelf->displayingOptions = !pSelf->displayingOptions;
 
@@ -547,7 +547,7 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 void UICourtIC::onSideClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->pCourtUI->icControls.side = (pSelf->pCourtUI->icControls.side + 1) % 6;
 	pSelf->btn_sideSelect->setFrame(pSelf->pCourtUI->icControls.side);
@@ -557,7 +557,7 @@ void UICourtIC::onSideClicked(void* pUserData)
 void UICourtIC::onToolsClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 
 	pSelf->pCourtUI->changeScreen(new UICourtJudge(pSelf->pCourtUI));
 }
@@ -565,7 +565,7 @@ void UICourtIC::onToolsClicked(void* pUserData)
 void UICourtIC::onAdditiveClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	pSelf->pCourtUI->icControls.additive ^= 1;
 	pSelf->btn_additive->setFrame(pSelf->pCourtUI->icControls.additive);
@@ -574,7 +574,7 @@ void UICourtIC::onAdditiveClicked(void* pUserData)
 void UICourtIC::onPreanimClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	pSelf->pCourtUI->icControls.preanim ^= 1;
 	pSelf->btn_preanim->setFrame(2+pSelf->pCourtUI->icControls.preanim);
@@ -583,7 +583,7 @@ void UICourtIC::onPreanimClicked(void* pUserData)
 void UICourtIC::onImmediateClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	pSelf->pCourtUI->icControls.immediate ^= 1;
 	pSelf->btn_immediate->setFrame(4+pSelf->pCourtUI->icControls.immediate);
@@ -592,7 +592,7 @@ void UICourtIC::onImmediateClicked(void* pUserData)
 void UICourtIC::onFlipClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	pSelf->pCourtUI->icControls.flip ^= 1;
 	pSelf->btn_flip->setFrame(6+pSelf->pCourtUI->icControls.flip);
@@ -601,7 +601,7 @@ void UICourtIC::onFlipClicked(void* pUserData)
 void UICourtIC::onShakeClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	pSelf->pCourtUI->icControls.shake ^= 1;
 	pSelf->btn_shake->setFrame(8+pSelf->pCourtUI->icControls.shake);
@@ -610,7 +610,7 @@ void UICourtIC::onShakeClicked(void* pUserData)
 void UICourtIC::onFlashClicked(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	pSelf->pCourtUI->icControls.flash ^= 1;
 	pSelf->btn_flash->setFrame(10+pSelf->pCourtUI->icControls.flash);
@@ -619,7 +619,7 @@ void UICourtIC::onFlashClicked(void* pUserData)
 void UICourtIC::onPrevPage(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->currPage--;
 	pSelf->reloadPage();
@@ -628,7 +628,7 @@ void UICourtIC::onPrevPage(void* pUserData)
 void UICourtIC::onNextPage(void* pUserData)
 {
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->currPage++;
 	pSelf->reloadPage();

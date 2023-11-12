@@ -6,13 +6,11 @@
 #include <nds/arm9/decompress.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
-#include <nds/arm9/sound.h>
 #include <nds/interrupts.h>
 
 #include "courtroom/courtroom.h"
 #include "global.h"
 #include "fonts.h"
-#include "mp3_shared.h"
 
 #define MAX_COLOR_SWITCHES 5
 
@@ -161,7 +159,7 @@ Chatbox::~Chatbox()
 	delete[] bgMap;
 
 	if (blipSnd)
-		delete[] blipSnd;
+		wav_free_handle(blipSnd);
 
 	delete[] textCanvas;
 	for (int i=0; i<2; i++)
@@ -248,9 +246,9 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 	handleNewLine();
 
 	if (blipSnd)
-		delete[] blipSnd;
+		wav_free_handle(blipSnd);
 	std::string blipFile = "/data/ao-nds/sounds/blips/" + blip + ".wav";
-	blipSnd = wav_load_handle(blipFile.c_str(), &blipSize);
+	blipSnd = wav_load_handle(blipFile.c_str());
 
 	oamSetHidden(&oamMain, 127, true);
 
@@ -371,7 +369,7 @@ void Chatbox::update()
 
 		if (blipSnd && currChar != ' ' && blipTicks <= 0)
 		{
-			soundPlaySample(blipSnd, SoundFormat_16Bit, blipSize, 32000, 127, 64, false, 0);
+			wav_play(blipSnd);
 			blipTicks = 6-textSpeed;
 		}
 

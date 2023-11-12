@@ -7,6 +7,7 @@
 
 #include "button.h"
 #include "label.h"
+#include "mp3_shared.h"
 
 class UIScreenDisconnected : public UIScreen
 {
@@ -23,8 +24,7 @@ class UIScreenDisconnected : public UIScreen
 	UILabel* lbl_reason;
 	UIButton* btn_ok;
 
-	u32* sndSelect;
-	u32 sndSelectSize;
+	wav_handle* sndSelect;
 
 public:
 	UIScreenDisconnected(std::string msg, std::string rsn, bool wifi) : UIScreen(), disconnectMsg(msg), reason(rsn), goToWiFi(wifi) {}

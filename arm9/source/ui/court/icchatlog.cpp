@@ -135,7 +135,7 @@ void UICourtICChatLog::onBackClicked(void* pUserData)
 {
 	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCancel);
 	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
 }
 
@@ -143,7 +143,7 @@ void UICourtICChatLog::onCourtRecord(void* pUserData)
 {
 	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 }
 

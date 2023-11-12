@@ -4,9 +4,7 @@
 
 #include <nds/dma.h>
 #include <nds/arm9/background.h>
-#include <nds/arm9/sound.h>
 
-#include "mp3_shared.h"
 #include "engine.h"
 #include "cfgFile.h"
 #include "ui/uimainmenu.h"
@@ -42,9 +40,8 @@ UIScreenSettings::~UIScreenSettings()
 	delete lbl_logInfo;
 
 	delete kb_input;
-	delete[] sndSelect;
-	delete[] sndCancel;
-	delete[] sndCrtRcrd;
+	wav_free_handle(sndCancel);
+	wav_free_handle(sndCrtRcrd);
 }
 
 void UIScreenSettings::init()
@@ -96,9 +93,8 @@ void UIScreenSettings::init()
 	kb_input = new AOkeyboard(2, lbl_logInfo->nextOamInd(), 3);
 	memcpy(BG_PALETTE_SUB, bgSubPal, 512);
 
-	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav", &sndSelectSize);
-	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav", &sndCancelSize);
-	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav", &sndCrtRcrdSize);
+	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav");
+	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav");
 
 	lbl_showname->setPos(btn_showname->getX(), btn_showname->getY()-12);
 	lbl_shownameValue->setPos(btn_showname->getX()+3, btn_showname->getY()+1);
@@ -254,7 +250,7 @@ void UIScreenSettings::saveSettings()
 void UIScreenSettings::onGeneralTab(void* pUserData)
 {
 	UIScreenSettings* pSelf = (UIScreenSettings*)pUserData;
-	soundPlaySample(pSelf->sndCrtRcrd, SoundFormat_16Bit, pSelf->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndCrtRcrd);
 
 	pSelf->setTab(0);
 }
@@ -262,7 +258,7 @@ void UIScreenSettings::onGeneralTab(void* pUserData)
 void UIScreenSettings::onChatlogTab(void* pUserData)
 {
 	UIScreenSettings* pSelf = (UIScreenSettings*)pUserData;
-	soundPlaySample(pSelf->sndCrtRcrd, SoundFormat_16Bit, pSelf->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndCrtRcrd);
 
 	pSelf->setTab(1);
 }
@@ -270,7 +266,7 @@ void UIScreenSettings::onChatlogTab(void* pUserData)
 void UIScreenSettings::onShownameClicked(void* pUserData)
 {
 	UIScreenSettings* pSelf = (UIScreenSettings*)pUserData;
-	soundPlaySample(pSelf->sndCrtRcrd, SoundFormat_16Bit, pSelf->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndCrtRcrd);
 
 	pSelf->hideEverything();
 	pSelf->currEditing = pSelf->btn_showname;
@@ -280,7 +276,7 @@ void UIScreenSettings::onShownameClicked(void* pUserData)
 void UIScreenSettings::onOOCnameClicked(void* pUserData)
 {
 	UIScreenSettings* pSelf = (UIScreenSettings*)pUserData;
-	soundPlaySample(pSelf->sndCrtRcrd, SoundFormat_16Bit, pSelf->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndCrtRcrd);
 
 	pSelf->hideEverything();
 	pSelf->currEditing = pSelf->btn_oocname;
@@ -314,7 +310,7 @@ void UIScreenSettings::onShownamesToggled(void* pUserData)
 void UIScreenSettings::onBackClicked(void* pUserData)
 {
 	UIScreenSettings* pSelf = (UIScreenSettings*)pUserData;
-	soundPlaySample(pSelf->sndCancel, SoundFormat_16Bit, pSelf->sndCancelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->sndCancel);
 
 	gEngine->changeScreen(new UIScreenMainMenu);
 }

@@ -96,7 +96,7 @@ void UICourtPairSelect::update()
 		holdWait--;
 		if (holdWait <= 0)
 		{
-			soundPlaySample(pCourtUI->sndEvPage, SoundFormat_16Bit, pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+			wav_play(pCourtUI->sndEvPage);
 			currPage += pageAdd;
 			u32 maxPages = (u32)ceil(filteredChars.size()/8.f);
 
@@ -145,7 +145,7 @@ void UICourtPairSelect::updateInput()
 		if (pos.px >= 213 && pos.py >= 36 && pos.px < 213+17 && pos.py < 36+16)
 		{
 			// search button
-			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+			wav_play(pCourtUI->sndSelect);
 
 			bgHide(bgIndex);
 
@@ -251,7 +251,7 @@ void UICourtPairSelect::updateFilter()
 void UICourtPairSelect::onPrevPage(void* pUserData)
 {
 	UICourtPairSelect* pSelf = (UICourtPairSelect*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->holdWait = 35;
 	pSelf->pageAdd = -1;
@@ -263,7 +263,7 @@ void UICourtPairSelect::onPrevPage(void* pUserData)
 void UICourtPairSelect::onNextPage(void* pUserData)
 {
 	UICourtPairSelect* pSelf = (UICourtPairSelect*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->holdWait = 35;
 	pSelf->pageAdd = 1;
@@ -284,7 +284,7 @@ void UICourtPairSelect::onBackClicked(void* pUserData)
 {
 	UICourtPairSelect* pSelf = (UICourtPairSelect*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCancel);
 	pSelf->pCourtUI->changeScreen(new UICourtPair(pSelf->pCourtUI));
 }
 
@@ -292,7 +292,7 @@ void UICourtPairSelect::onPairClicked(void* pUserData)
 {
 	UICourtPairSelect* pSelf = (UICourtPairSelect*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currCharSelected;
 	pSelf->pCourtUI->icControls.pairID = ind;
@@ -307,7 +307,7 @@ void UICourtPairSelect::onCharClicked(void* pUserData)
 
 	if (pSelf->currCharSelected == pData->btnInd) return;
 	pSelf->currCharSelected = pData->btnInd;
-	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvTap);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currCharSelected;
 	const charInfo& info = pSelf->pCourtUI->getCharList()[pSelf->filteredChars[ind]];

@@ -100,7 +100,7 @@ void UICourtCharSelect::update()
 		holdWait--;
 		if (holdWait <= 0)
 		{
-			soundPlaySample(pCourtUI->sndEvPage, SoundFormat_16Bit, pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+			wav_play(pCourtUI->sndEvPage);
 			currPage += pageAdd;
 			u32 maxPages = (u32)ceil(filteredChars.size()/8.f);
 
@@ -149,7 +149,7 @@ void UICourtCharSelect::updateInput()
 		if (pos.px >= 213 && pos.py >= 36 && pos.px < 213+17 && pos.py < 36+16)
 		{
 			// search button
-			soundPlaySample(pCourtUI->sndSelect, SoundFormat_16Bit, pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+			wav_play(pCourtUI->sndSelect);
 
 			bgHide(bgIndex);
 
@@ -255,7 +255,7 @@ void UICourtCharSelect::updateFilter()
 void UICourtCharSelect::onPrevPage(void* pUserData)
 {
 	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->holdWait = 35;
 	pSelf->pageAdd = -1;
@@ -267,7 +267,7 @@ void UICourtCharSelect::onPrevPage(void* pUserData)
 void UICourtCharSelect::onNextPage(void* pUserData)
 {
 	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->holdWait = 35;
 	pSelf->pageAdd = 1;
@@ -288,7 +288,7 @@ void UICourtCharSelect::onDisconnectClicked(void* pUserData)
 {
 	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCancel);
 	gEngine->changeScreen(new UIScreenServerList);
 }
 
@@ -296,7 +296,7 @@ void UICourtCharSelect::onConfirmClicked(void* pUserData)
 {
 	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currCharSelected;
 	gEngine->getSocket()->sendData("CC#0#" + std::to_string(pSelf->filteredChars[ind]) + "#" + gEngine->getMacAddr() + "#%");
@@ -311,7 +311,7 @@ void UICourtCharSelect::onCharClicked(void* pUserData)
 
 	if (pSelf->currCharSelected == pData->btnInd) return;
 	pSelf->currCharSelected = pData->btnInd;
-	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvTap);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currCharSelected;
 	const charInfo& info = pSelf->pCourtUI->getCharList()[pSelf->filteredChars[ind]];

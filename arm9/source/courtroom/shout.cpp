@@ -3,10 +3,8 @@
 #include <string.h>
 
 #include <nds/arm9/background.h>
-#include <nds/arm9/sound.h>
 
 #include "courtroom/courtroom.h"
-#include "mp3_shared.h"
 
 Shout::Shout(Courtroom* pCourt)
 {
@@ -21,7 +19,6 @@ Shout::Shout(Courtroom* pCourt)
 	yOffset = 0;
 
 	sndShout = 0;
-	sndShoutSize = 0;
 
 	onShoutFinished = 0;
 	pUserData = 0;
@@ -77,9 +74,9 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 			sndFile += "/" + custom + ".wav";
 			break;
 	}
-	sndShout = wav_load_handle(sndFile.c_str(), &sndShoutSize);
+	sndShout = wav_load_handle(sndFile.c_str());
 	if (!sndShout)
-		sndShout = wav_load_handle("/data/ao-nds/sounds/general/sfx-objection.wav", &sndShoutSize);
+		sndShout = wav_load_handle("/data/ao-nds/sounds/general/sfx-objection.wav");
 
 	bgHide(bgIndex);
 
@@ -117,7 +114,7 @@ void Shout::freeSound()
 {
 	if (sndShout)
 	{
-		delete[] sndShout;
+		wav_free_handle(sndShout);
 		sndShout = 0;
 	}
 }
@@ -148,8 +145,7 @@ void Shout::update()
 	}
 	else if (ticks == 6)
 	{
-		if (sndShout)
-			soundPlaySample(sndShout, SoundFormat_16Bit, sndShoutSize, 32000, 127, 64, false, 0);
+		wav_play(sndShout);
 		if (visible) bgShow(bgIndex);
 	}
 	else if (ticks > 75)

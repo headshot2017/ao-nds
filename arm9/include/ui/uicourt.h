@@ -8,6 +8,7 @@
 #include "uiscreen.h"
 #include "courtroom/courtroom.h"
 #include "engine.h"
+#include "mp3_shared.h"
 
 extern const char* indToSide[6];
 
@@ -130,18 +131,12 @@ public:
 	static void onMessageKB(void* pUserData, std::string msg);
 	static void onMessageBD(void* pUserData, std::string msg);
 
-	u32* sndSelect;
-	u32* sndCancel;
-	u32* sndEvTap;
-	u32* sndEvPage;
-	u32* sndEvShow;
-	u32* sndCrtRcrd;
-	u32 sndSelectSize;
-	u32 sndCancelSize;
-	u32 sndEvTapSize;
-	u32 sndEvPageSize;
-	u32 sndEvShowSize;
-	u32 sndCrtRcrdSize;
+	wav_handle* sndSelect;
+	wav_handle* sndCancel;
+	wav_handle* sndEvTap;
+	wav_handle* sndEvPage;
+	wav_handle* sndEvShow;
+	wav_handle* sndCrtRcrd;
 
 	std::string showname;
 	std::string oocName;

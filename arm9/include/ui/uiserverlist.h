@@ -8,6 +8,7 @@
 #include "uiscreen.h"
 #include "button.h"
 #include "label.h"
+#include "mp3_shared.h"
 
 struct serverInfo
 {
@@ -41,10 +42,8 @@ class UIScreenServerList : public UIScreen
 	UILabel* lbl_players;
 	UILabel* lbl_playercount;
 
-	u32* sndSelect;
-	u32 sndSelectSize;
-	u32* sndCancel;
-	u32 sndCancelSize;
+	wav_handle* sndSelect;
+	wav_handle* sndCancel;
 
 	int sockfd;
 	std::string tempData;

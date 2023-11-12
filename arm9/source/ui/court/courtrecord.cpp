@@ -99,7 +99,7 @@ void UICourtEvidence::updateInput()
 	u32 key = keysDown();
 	if (key & KEY_Y)
 	{
-		soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+		wav_play(pCourtUI->sndCrtRcrd);
 		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
 	}
 }
@@ -162,7 +162,7 @@ void UICourtEvidence::reloadPage()
 void UICourtEvidence::onPrevPage(void* pUserData)
 {
 	UICourtEvidence* pSelf = (UICourtEvidence*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->currPage--;
 	pSelf->reloadPage();
@@ -171,7 +171,7 @@ void UICourtEvidence::onPrevPage(void* pUserData)
 void UICourtEvidence::onNextPage(void* pUserData)
 {
 	UICourtEvidence* pSelf = (UICourtEvidence*)pUserData;
-	soundPlaySample(pSelf->pCourtUI->sndEvPage, SoundFormat_16Bit, pSelf->pCourtUI->sndEvPageSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvPage);
 
 	pSelf->currPage++;
 	pSelf->reloadPage();
@@ -181,7 +181,7 @@ void UICourtEvidence::onBackClicked(void* pUserData)
 {
 	UICourtEvidence* pSelf = (UICourtEvidence*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCancel, SoundFormat_16Bit, pSelf->pCourtUI->sndCancelSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCancel);
 	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
 }
 
@@ -189,7 +189,7 @@ void UICourtEvidence::onPresentClicked(void* pUserData)
 {
 	UICourtEvidence* pSelf = (UICourtEvidence*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 	if (pSelf->pCourtUI->icControls.evidence > -1)
 	{
 		pSelf->pCourtUI->icControls.evidence = -1;
@@ -207,7 +207,7 @@ void UICourtEvidence::onPrivatePublicClicked(void* pUserData)
 {
 	UICourtEvidence* pSelf = (UICourtEvidence*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 	pSelf->isPrivate = !pSelf->isPrivate;
 
 	pSelf->btn_present->setVisible(!pSelf->isPrivate);
@@ -224,13 +224,13 @@ void UICourtEvidence::onEvidenceClicked(void* pUserData)
 	u32 ind = pSelf->currPage*8 + pData->btnInd;
 	if (pSelf->currEviSelected == pData->btnInd)
 	{
-		soundPlaySample(pSelf->pCourtUI->sndEvShow, SoundFormat_16Bit, pSelf->pCourtUI->sndEvShowSize, 32000, 127, 64, false, 0);
+		wav_play(pSelf->pCourtUI->sndEvShow);
 		pSelf->pCourtUI->changeScreen(new UICourtEvidenceDetail(pSelf->pCourtUI, ind, pSelf->isPrivate));
 		return;
 	}
 
 	pSelf->currEviSelected = pData->btnInd;
-	soundPlaySample(pSelf->pCourtUI->sndEvTap, SoundFormat_16Bit, pSelf->pCourtUI->sndEvTapSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndEvTap);
 
 	bool addButton = (ind == pSelf->pCourtUI->getEvidenceList(pSelf->isPrivate).size());
 

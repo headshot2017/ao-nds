@@ -8,6 +8,7 @@
 #include "courtroom/chatbox.h"
 #include "courtroom/character.h"
 #include "courtroom/shout.h"
+#include "mp3_shared.h"
 
 struct MSchatStruct
 {
@@ -67,8 +68,7 @@ class Courtroom
 	int flashTicks;
 	bool onPreAnim;
 
-	u32* sndRealization;
-	u32 sndRealizationSize;
+	wav_handle* sndRealization;
 
 	MSchatStruct lastIC;
 	MSchatStruct currIC;

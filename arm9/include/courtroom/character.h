@@ -14,6 +14,7 @@
 #include "cfgFile.h"
 #include "global.h"
 #include "animStream.h"
+#include "mp3_shared.h"
 
 struct FrameInfo
 {
@@ -59,8 +60,7 @@ class Character
 	bool sfxPlayed;
 	u32 sfxTicks;
 	u32 sfxDelay;
-	u32* sfx;
-	u32 sfxSize;
+	wav_handle* sfx;
 
 	void* pUserData;
 	voidCallback onAnimFinished;

@@ -61,7 +61,7 @@ void UICourtIngameMenu::updateInput()
 
 	if (keysDown() & KEY_Y)
 	{
-		soundPlaySample(pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+		wav_play(pCourtUI->sndCrtRcrd);
 		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
 	}
 }
@@ -75,7 +75,7 @@ void UICourtIngameMenu::onTalkICclicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 	pSelf->pCourtUI->changeScreen(new UICourtIC(pSelf->pCourtUI));
 }
 
@@ -83,7 +83,7 @@ void UICourtIngameMenu::onTalkOOCclicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 	pSelf->pCourtUI->changeScreen(new UICourtOOC(pSelf->pCourtUI));
 }
 
@@ -91,7 +91,7 @@ void UICourtIngameMenu::onMusicClicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 	pSelf->pCourtUI->changeScreen(new UICourtMusicList(pSelf->pCourtUI));
 }
 
@@ -99,7 +99,7 @@ void UICourtIngameMenu::onChangeCharClicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndSelect, SoundFormat_16Bit, pSelf->pCourtUI->sndSelectSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndSelect);
 	pSelf->pCourtUI->changeScreen(new UICourtCharSelect(pSelf->pCourtUI));
 }
 
@@ -107,7 +107,7 @@ void UICourtIngameMenu::onCourtRecordClicked(void* pUserData)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	soundPlaySample(pSelf->pCourtUI->sndCrtRcrd, SoundFormat_16Bit, pSelf->pCourtUI->sndCrtRcrdSize, 32000, 127, 64, false, 0);
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 }
 

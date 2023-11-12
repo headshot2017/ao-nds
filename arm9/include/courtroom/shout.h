@@ -9,6 +9,7 @@
 
 #include "cfgFile.h"
 #include "global.h"
+#include "mp3_shared.h"
 
 class Courtroom;
 
@@ -24,8 +25,7 @@ class Shout
 	int yOffset;
 	int ticks;
 
-	u32* sndShout;
-	u32 sndShoutSize;
+	wav_handle* sndShout;
 
 	void* pUserData;
 	voidCallback onShoutFinished;

@@ -8,6 +8,7 @@
 #include "button.h"
 #include "label.h"
 #include "keyboard.h"
+#include "mp3_shared.h"
 
 class UIScreenSettings : public UIScreen
 {
@@ -40,12 +41,8 @@ class UIScreenSettings : public UIScreen
 	AOkeyboard* kb_input;
 	UIButton* currEditing;
 
-	u32* sndSelect;
-	u32 sndSelectSize;
-	u32* sndCancel;
-	u32 sndCancelSize;
-	u32* sndCrtRcrd;
-	u32 sndCrtRcrdSize;
+	wav_handle* sndCancel;
+	wav_handle* sndCrtRcrd;
 
 	int tab;
 

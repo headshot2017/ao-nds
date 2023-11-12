@@ -8,9 +8,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/input.h>
 #include <nds/arm9/video.h>
-#include <nds/arm9/sound.h>
 
-#include "mp3_shared.h"
 #include "colors.h"
 
 Courtroom::Courtroom()
@@ -22,7 +20,7 @@ Courtroom::Courtroom()
 	shakeTicks = 0;
 	flashTicks = 0;
 
-	sndRealization = wav_load_handle("/data/ao-nds/sounds/general/sfx-realization.wav", &sndRealizationSize);
+	sndRealization = wav_load_handle("/data/ao-nds/sounds/general/sfx-realization.wav");
 
 	background = new Background;
 	chatbox = new Chatbox(this);
@@ -40,7 +38,7 @@ Courtroom::~Courtroom()
 	delete character;
 	delete shout;
 
-	delete[] sndRealization;
+	wav_free_handle(sndRealization);
 
 	mp3_stop();
 }
@@ -137,7 +135,7 @@ void Courtroom::handleChat()
 		if (currIC.realization)
 		{
 			flash(3);
-			soundPlaySample(sndRealization, SoundFormat_16Bit, sndRealizationSize, 32000, 127, 64, false, 0);
+			wav_play(sndRealization);
 		}
 	}
 	else
@@ -272,7 +270,7 @@ void Courtroom::onAnimFinished(void* pUserData)
 	if (pSelf->currIC.realization)
 	{
 		pSelf->flash(3);
-		soundPlaySample(pSelf->sndRealization, SoundFormat_16Bit, pSelf->sndRealizationSize, 32000, 127, 64, false, 0);
+		wav_play(pSelf->sndRealization);
 	}
 }
 

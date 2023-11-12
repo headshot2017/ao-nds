@@ -40,7 +40,6 @@ void *uncached_malloc(size_t count) {
 
 void mp3_fill_buffer() {
         int n;
-        FILE* fdup;
 
         if(mp3 && mp3->flag) {
 				switch(mp3->flag)
@@ -256,13 +255,12 @@ int mp3_init() {
 }
 
 // WAV
-u32* wav_load_handle(const char *filename, u32* sizeOut)
+wav_handle* wav_load_handle(const char *filename)
 {
 	drwav wavfp;
 
 	if (!drwav_init_file(&wavfp, filename, NULL))
 	{
-		if (sizeOut) *sizeOut = 0;
 		return 0;
 	}
 
@@ -270,7 +268,6 @@ u32* wav_load_handle(const char *filename, u32* sizeOut)
 	if (pSampleData == 0)
 	{
 		drwav_uninit(&wavfp);
-		if (sizeOut) *sizeOut = 0;
 		return 0;
 	}
 	u32 totalRead = drwav_read_pcm_frames(&wavfp, wavfp.totalPCMFrameCount, pSampleData);
@@ -278,7 +275,6 @@ u32* wav_load_handle(const char *filename, u32* sizeOut)
 	{
 		drwav_uninit(&wavfp);
 		delete[] pSampleData;
-		if (sizeOut) *sizeOut = 0;
 		return 0;
 	}
 
@@ -290,12 +286,30 @@ u32* wav_load_handle(const char *filename, u32* sizeOut)
 		pSampleData = _8bitdata;
 	}
 
-	FILE* f = fopen(filename, "rb");
-	if (sizeOut) *sizeOut = totalRead*2;
-	fclose(f);
+	wav_handle* handle = new wav_handle;
+	handle->data = pSampleData;
+	handle->size = totalRead*2;
+	handle->samprate = wavfp.sampleRate;
 	drwav_uninit(&wavfp);
 
-	return pSampleData;
+	return handle;
+}
+
+void wav_free_handle(wav_handle* handle)
+{
+	if (!handle || !handle->data) return;
+
+	delete[] handle->data;
+	handle->data = 0;
+
+	delete[] handle;
+}
+
+int wav_play(wav_handle* handle)
+{
+	if (!handle || !handle->data) return -1;
+
+	return soundPlaySample(handle->data, SoundFormat_16Bit, handle->size, handle->samprate, 127, 64, false, 0);
 }
 
 } // extern "C"

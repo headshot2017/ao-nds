@@ -8,7 +8,6 @@
 #include <nds/arm9/input.h>
 #include <nds/interrupts.h>
 
-#include "mp3_shared.h"
 #include "fonts.h"
 #include "global.h"
 #include "mini/ini.h"
@@ -44,12 +43,12 @@ UIScreenCourt::~UIScreenCourt()
 	if (subScreen)
 		delete subScreen;
 
-	delete[] sndSelect;
-	delete[] sndCancel;
-	delete[] sndEvTap;
-	delete[] sndEvPage;
-	delete[] sndEvShow;
-	delete[] sndCrtRcrd;
+	wav_free_handle(sndSelect);
+	wav_free_handle(sndCancel);
+	wav_free_handle(sndEvTap);
+	wav_free_handle(sndEvPage);
+	wav_free_handle(sndEvShow);
+	wav_free_handle(sndCrtRcrd);
 
 	AOsocket* sock = gEngine->getSocket();
 	sock->clearCallbacks();
@@ -77,12 +76,12 @@ void UIScreenCourt::init()
 	court = new Courtroom;
 	court->setVisible(true);
 
-	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav", &sndSelectSize);
-	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav", &sndCancelSize);
-	sndEvTap = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip.wav", &sndEvTapSize);
-	sndEvPage = wav_load_handle("/data/ao-nds/sounds/general/sfx-blink.wav", &sndEvPageSize);
-	sndEvShow = wav_load_handle("/data/ao-nds/sounds/general/sfx-shooop.wav", &sndEvShowSize);
-	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav", &sndCrtRcrdSize);
+	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav");
+	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav");
+	sndEvTap = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip.wav");
+	sndEvPage = wav_load_handle("/data/ao-nds/sounds/general/sfx-blink.wav");
+	sndEvShow = wav_load_handle("/data/ao-nds/sounds/general/sfx-shooop.wav");
+	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav");
 
 	AOsocket* sock = gEngine->getSocket();
 	sock->addMessageCallback("ID", onMessageID, this);

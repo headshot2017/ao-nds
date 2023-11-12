@@ -7,6 +7,7 @@
 
 #include "button.h"
 #include "label.h"
+#include "mp3_shared.h"
 
 class UIScreenMainMenu : public UIScreen
 {
@@ -23,8 +24,7 @@ class UIScreenMainMenu : public UIScreen
 	UIButton* btn_settings;
 	UILabel* lbl_dsi;
 
-	u32* sndGavel;
-	u32 sndGavelSize;
+	wav_handle* sndGavel;
 
 public:
 	UIScreenMainMenu() : UIScreen() {}
