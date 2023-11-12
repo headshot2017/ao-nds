@@ -47,8 +47,7 @@ class UIScreenServerList : public UIScreen
 
 	int sockfd;
 	std::string tempData;
-	serverInfo* m_servers[2];
-	u32 m_serverCount[2];
+	std::vector<std::vector<serverInfo> > m_servers;
 	std::string publicListMsg;
 
 	int arrowY;

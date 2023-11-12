@@ -60,9 +60,6 @@ UIScreenServerList::~UIScreenServerList()
 	wav_free_handle(sndSelect);
 	wav_free_handle(sndCancel);
 
-	for (int i=0; i<2; i++)
-		if (m_servers[i]) delete[] m_servers[i];
-
 	shutdown(sockfd, 0);
 	closesocket(sockfd);
 }
@@ -174,10 +171,7 @@ void UIScreenServerList::init()
 	loaded = false;
 
 	for (int i=0; i<2; i++)
-	{
-		m_servers[i] = 0;
-		m_serverCount[i] = 0;
-	}
+		m_servers.push_back(std::vector<serverInfo>());
 
 	parseFavoritesList();
 
@@ -254,7 +248,7 @@ void UIScreenServerList::reloadPage()
 	for (u32 i=0; i<4; i++)
 	{
 		u32 ind = currPage*4 + i;
-		if (ind >= m_serverCount[isFavorites])
+		if (ind >= m_servers[isFavorites].size())
 		{
 			btn_server[i]->setVisible(false);
 			lbl_server[i]->setVisible(false);
@@ -267,15 +261,15 @@ void UIScreenServerList::reloadPage()
 		lbl_server[i]->setPos(128, 42+(i*32), true);
 	}
 
-	u32 maxPages = (u32)ceil(m_serverCount[isFavorites]/4.f);
+	u32 maxPages = (u32)ceil(m_servers[isFavorites].size()/4.f);
 	btn_prevPage->setVisible(currPage > 0);
-	btn_nextPage->setVisible(m_serverCount[isFavorites] && currPage < maxPages-1);
+	btn_nextPage->setVisible(m_servers[isFavorites].size() && currPage < maxPages-1);
 
 	lbl_desc->setVisible(false);
 	lbl_players->setVisible(false);
 	lbl_playercount->setVisible(false);
 
-	if (m_serverCount[isFavorites])
+	if (!m_servers[isFavorites].empty())
 	{
 		char buf[8];
 		sprintf(buf, "%lu/%lu", currPage+1, maxPages);
@@ -298,7 +292,7 @@ void UIScreenServerList::saveFavorites()
 	mINI::INIFile file("/data/ao-nds/favorite_servers.ini");
 	mINI::INIStructure ini;
 
-	for (u32 i=0; i<m_serverCount[1]; i++)
+	for (u32 i=0; i<m_servers[1].size(); i++)
 	{
 		ini[std::to_string(i)]["name"] = m_servers[1][i].name;
 		ini[std::to_string(i)]["desc"] = m_servers[1][i].description;
@@ -315,38 +309,20 @@ void UIScreenServerList::onManageFavorite(void* pUserData)
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
 	wav_play(pSelf->sndSelect);
 
-	serverInfo* newList;
+	u32 selectedInd = pSelf->currPage*4 + pSelf->currServer;
 
 	if (!pSelf->isFavorites)
 	{
 		// add favorite
-		newList = new serverInfo[pSelf->m_serverCount[1]+1];
-
-		for (u32 i=0; i<pSelf->m_serverCount[1]; i++)
-			newList[i] = pSelf->m_servers[1][i];
-
-		// assign selected public server to new favorites server slot and increment favorite servers count
-		newList[pSelf->m_serverCount[1]++] = pSelf->m_servers[0][pSelf->currPage*4 + pSelf->currServer];
-
+		pSelf->m_servers[1].push_back(pSelf->m_servers[0][selectedInd]);
 		pSelf->btn_manageFav->setVisible(false);
 	}
 	else
 	{
 		// remove favorite
-		newList = new serverInfo[pSelf->m_serverCount[1]-1];
-		u32 deleteInd = pSelf->currPage*4 + pSelf->currServer;
-
-		for (u32 i=0, addInd=0; i<pSelf->m_serverCount[1]; i++)
-		{
-			if (i == deleteInd) continue;
-			newList[addInd++] = pSelf->m_servers[1][i];
-		}
-
-		pSelf->m_serverCount[1]--;
+		pSelf->m_servers[1].erase(pSelf->m_servers[1].begin() + selectedInd);
 	}
 
-	if (pSelf->m_servers[1]) delete[] pSelf->m_servers[1];
-	pSelf->m_servers[1] = newList;
 	pSelf->saveFavorites();
 	if (pSelf->isFavorites) pSelf->reloadPage();
 }
@@ -450,7 +426,7 @@ void UIScreenServerList::onServerClicked(void* pUserData)
 	{
 		// add fav img
 		pSelf->btn_manageFav->setVisible(true);
-		for (u32 i=0; i<pSelf->m_serverCount[1]; i++)
+		for (u32 i=0; i<pSelf->m_servers[1].size(); i++)
 		{
 			const serverInfo& favServer = pSelf->m_servers[1][i];
 			if (favServer.ip == server.ip && (favServer.port == server.port || favServer.ws_port == server.ws_port))
@@ -497,19 +473,22 @@ void UIScreenServerList::parsePublicList(const std::string& data)
 		return;
 	}
 
-	if (m_servers[0]) delete[] m_servers[0];
-	m_serverCount[0] = doc.Size();
-	m_servers[0] = new serverInfo[m_serverCount[0]];
+	m_servers[0].clear();
+	u32 serverCount = doc.Size();
 
-	for (u32 i=0; i<m_serverCount[0]; i++)
+	for (u32 i=0; i<serverCount; i++)
 	{
 		const rapidjson::Value& server = doc[i];
-		m_servers[0][i].name = server["name"].GetString();
-		m_servers[0][i].description = server["description"].GetString();
-		m_servers[0][i].ip = server["ip"].GetString();
-		m_servers[0][i].players = server["players"].GetUint();
-		m_servers[0][i].port = server["port"].GetUint();
-		m_servers[0][i].ws_port = (server.HasMember("ws_port")) ? server["ws_port"].GetUint() : 0;
+
+		serverInfo info;
+		info.name = server["name"].GetString();
+		info.description = server["description"].GetString();
+		info.ip = server["ip"].GetString();
+		info.players = server["players"].GetUint();
+		info.port = server["port"].GetUint();
+		info.ws_port = (server.HasMember("ws_port")) ? server["ws_port"].GetUint() : 0;
+
+		m_servers[0].push_back(info);
 	}
 
 	loaded = true;
@@ -527,25 +506,27 @@ void UIScreenServerList::parseFavoritesList()
 
 	if (!file.read(ini)) return;
 
-	m_serverCount[1] = ini.size();
-	if (!m_serverCount[1]) return;
-	m_servers[1] = new serverInfo[m_serverCount[1]];
+	m_servers[1].clear();
+	u32 serverCount = ini.size();
 
-	for (u32 i=0; i<m_serverCount[1]; i++)
+	for (u32 i=0; i<serverCount; i++)
 	{
-		m_servers[1][i].name = ini[std::to_string(i)]["name"];
-		m_servers[1][i].description = ini[std::to_string(i)]["desc"];
-		m_servers[1][i].ip = ini[std::to_string(i)]["address"];
-		m_servers[1][i].players = 0;
+		serverInfo info;
+		info.name = ini[std::to_string(i)]["name"];
+		info.description = ini[std::to_string(i)]["desc"];
+		info.ip = ini[std::to_string(i)]["address"];
+		info.players = 0;
 		if (ini[std::to_string(i)]["protocol"] == "tcp")
 		{
-			m_servers[1][i].port = std::stoi(ini[std::to_string(i)]["port"]);
-			m_servers[1][i].ws_port = 0;
+			info.port = std::stoi(ini[std::to_string(i)]["port"]);
+			info.ws_port = 0;
 		}
 		else
 		{
-			m_servers[1][i].port = 0;
-			m_servers[1][i].ws_port = std::stoi(ini[std::to_string(i)]["port"]);
+			info.port = 0;
+			info.ws_port = std::stoi(ini[std::to_string(i)]["port"]);
 		}
+
+		m_servers[1].push_back(info);
 	}
 }
