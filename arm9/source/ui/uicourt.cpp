@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <algorithm>
+#include <array>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/console.h>
@@ -373,6 +374,9 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.noInterrupt = argumentAt(msg, 23) == "1";
 	data.sfxLoop = std::stoi(argumentAt(msg, 24));
 	data.shake = std::stoi(argumentAt(msg, 25));
+	data.frameShake = argumentAt(msg, 26);
+	data.frameFlash = argumentAt(msg, 27);
+	data.frameSFX = argumentAt(msg, 28);
 	data.additive = argumentAt(msg, 29) == "1";
 	data.blip = gEngine->getCharBlip(lowerCharname);
 	if (data.blip.empty()) data.blip = pSelf->charList[charID].blip;
@@ -453,7 +457,30 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 
 			int delay = std::stoi( (ini["soundt"].has(I)) ? ini["soundt"][I] : "0" );
 
-			pSelf->charEmotes.push_back({name, preanim, anim, emoteModifier, deskMod, sound, delay});
+			// set up frameSFX, frameshake, frameflash
+			/// franziska-damage|1=sfx-stab^(b)franziska-mad^(a)franziska-mad|12=sfx-deskslam|16=sfx-deskslam|4=sfx-deskslam^
+			/// franziska-damage|1=1|2=1|3=1^(b)franziska-mad^(a)franziska-mad^
+			/// franziska-damage^(b)franziska-mad^(a)franziska-mad^
+			std::array<std::string, 3> frameEmotes = {preanim, "(b)"+anim, "(a)"+anim};
+			std::array<std::string, 3> frameStrings = {"", "", ""};
+			std::array<std::string, 3> types = {"_FrameSFX", "_FrameScreenshake", "_FrameRealization"};
+
+			for (int j=0; j<3; j++) // frameStrings[j], types[j]
+			{
+				for (int k=0; k<3; k++) // frameEmotes[k]
+				{
+					frameStrings[j] += frameEmotes[k];
+					std::string section = frameEmotes[k] + types[j];
+					if (ini.has(section))
+					{
+						for (auto const& frame : ini[section])
+							frameStrings[j] += "|" + frame.first + "=" + frame.second;
+					}
+					frameStrings[j] += '^';
+				}
+			}
+
+			pSelf->charEmotes.push_back({name, preanim, anim, frameStrings[0], frameStrings[1], frameStrings[2], emoteModifier, deskMod, sound, delay});
 		}
 	}
 }

@@ -43,6 +43,9 @@ struct emoteInfo
 	std::string name;
 	std::string preanim;
 	std::string anim;
+	std::string frameSFX;
+	std::string frameShake;
+	std::string frameFlash;
 	int emoteModifier;
 	int deskMod;
 

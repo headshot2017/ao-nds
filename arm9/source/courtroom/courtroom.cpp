@@ -24,7 +24,7 @@ Courtroom::Courtroom()
 
 	background = new Background;
 	chatbox = new Chatbox(this);
-	character = new Character;
+	character = new Character(this);
 	shout = new Shout(this);
 
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
@@ -119,10 +119,18 @@ void Courtroom::handleChat()
 		onPreAnim = false;
 
 		bool isPng = (currIC.preanim != currIC.emote && fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.emote + ".img.bin"));
+		bool playIdle = (currIC.chatmsg.empty() || color == COLOR_BLUE);
 		std::string prefix;
-		if (!isPng) prefix = ((currIC.chatmsg.empty() || color == COLOR_BLUE) ? "(a)" : "(b)");
+		if (!isPng) prefix = (playIdle ? "(a)" : "(b)");
 
 		character->setCharImage(currIC.charname, prefix + currIC.emote);
+		if (!isPng)
+		{
+			int index = (playIdle) ? 2 : 1;
+			if (!currIC.frameSFX.empty()) character->setFrameSFX(argumentAt(currIC.frameSFX, index, '^'));
+			if (!currIC.frameShake.empty()) character->setFrameShake(argumentAt(currIC.frameShake, index, '^'));
+			if (!currIC.frameFlash.empty()) character->setFrameFlash(argumentAt(currIC.frameFlash, index, '^'));
+		}
 		chatbox->setVisible(true);
 		chatbox->setName(chatname);
 
@@ -157,6 +165,9 @@ void Courtroom::handleChat()
 			lastIC = currIC;
 		}
 		character->setCharImage(currIC.charname, currIC.preanim, false);
+		if (!currIC.frameSFX.empty()) character->setFrameSFX(argumentAt(currIC.frameSFX, 0, '^'));
+		if (!currIC.frameShake.empty()) character->setFrameShake(argumentAt(currIC.frameShake, 0, '^'));
+		if (!currIC.frameFlash.empty()) character->setFrameFlash(argumentAt(currIC.frameFlash, 0, '^'));
 	}
 }
 
@@ -213,10 +224,16 @@ void Courtroom::update()
 	{
 		flashTicks--;
 		if (!flashTicks)
+		{
+			REG_BLDCNT = BLEND_NONE;
+			REG_BLDY = 0;
 			chatbox->setIgnoreBlend(false);
-
-		REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP | BLEND_SRC_BG0 | BLEND_SRC_BG1 | BLEND_SRC_BG2 | BLEND_SRC_BG3 | BLEND_SRC_SPRITE;
-		REG_BLDY = 16;
+		}
+		else
+		{
+			REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP | BLEND_SRC_BG0 | BLEND_SRC_BG1 | BLEND_SRC_BG2 | BLEND_SRC_BG3 | BLEND_SRC_SPRITE;
+			REG_BLDY = 16;
+		}
 	}
 }
 
@@ -232,6 +249,12 @@ void Courtroom::onChatboxFinished(void* pUserData)
 		if (!isPng) prefix = "(a)";
 
 		pSelf->character->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
+		if (!isPng)
+		{
+			if (!pSelf->currIC.frameSFX.empty()) pSelf->character->setFrameSFX(argumentAt(pSelf->currIC.frameSFX, 2, '^'));
+			if (!pSelf->currIC.frameShake.empty()) pSelf->character->setFrameShake(argumentAt(pSelf->currIC.frameShake, 2, '^'));
+			if (!pSelf->currIC.frameFlash.empty()) pSelf->character->setFrameFlash(argumentAt(pSelf->currIC.frameFlash, 2, '^'));
+		}
 	}
 }
 
@@ -252,6 +275,14 @@ void Courtroom::onAnimFinished(void* pUserData)
 	if (!isPng) prefix = ((useIdleAnim) ? "(a)" : "(b)");
 
 	pSelf->character->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
+	if (!isPng)
+	{
+		int index = (useIdleAnim) ? 2 : 1;
+		if (!pSelf->currIC.frameSFX.empty()) pSelf->character->setFrameSFX(argumentAt(pSelf->currIC.frameSFX, index, '^'));
+		if (!pSelf->currIC.frameShake.empty()) pSelf->character->setFrameShake(argumentAt(pSelf->currIC.frameShake, index, '^'));
+		if (!pSelf->currIC.frameFlash.empty()) pSelf->character->setFrameFlash(argumentAt(pSelf->currIC.frameFlash, index, '^'));
+	}
+
 	if (useIdleAnim) pSelf->character->setOnAnimFinishedCallback(0, 0);
 
 	if (!pSelf->currIC.noInterrupt)

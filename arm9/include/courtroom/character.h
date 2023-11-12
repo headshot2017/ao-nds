@@ -8,6 +8,8 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <nds/ndstypes.h>
 
@@ -32,8 +34,12 @@ struct FrameInfo
 	bool streaming;
 };
 
+class Courtroom;
+
 class Character
 {
+	Courtroom* m_pCourt;
+
 	u16* charGfx[8*6];
 	bool charGfxVisible[8*6];
 	int gfxInUse;
@@ -62,13 +68,20 @@ class Character
 	u32 sfxDelay;
 	wav_handle* sfx;
 
+	std::unordered_map<std::string, wav_handle*> cachedFrameSFX;
+	std::unordered_map<int, std::string> frameSFX;
+	std::unordered_set<int> frameFlash;
+	std::unordered_set<int> frameShake;
+
 	void* pUserData;
 	voidCallback onAnimFinished;
 
 	bool visible;
 
+	void clearFrameData();
+
 public:
-	Character();
+	Character(Courtroom* pCourt);
 	~Character();
 
 	const std::string& getCurrCharacter() {return currCharacter;}
@@ -79,10 +92,14 @@ public:
 	void setFlip(bool on) {flip = on;}
 	void setCharImage(std::string charname, std::string relativeFile, bool doLoop=true);
 	void setSound(const std::string& filename, int delay);
+	void setFrameSFX(const std::string& data);
+	void setFrameFlash(const std::string& data);
+	void setFrameShake(const std::string& data);
 	void setVisible(bool on);
 
 	void setOnAnimFinishedCallback(voidCallback newCB, void* userdata) {onAnimFinished = newCB; pUserData = userdata;}
 
+	void triggerFrameData();
 	void update();
 };
 

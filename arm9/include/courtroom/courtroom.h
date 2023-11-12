@@ -55,6 +55,9 @@ struct MSchatStruct
 	bool noInterrupt;
 	int sfxLoop;
 	int shake;
+	std::string frameShake;
+	std::string frameFlash;
+	std::string frameSFX;
 	bool additive;
 	std::string blip;
 };

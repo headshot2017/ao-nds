@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <algorithm>
 
 #include <nds/dma.h>
 #include <nds/timers.h>
@@ -9,6 +10,7 @@
 #include <nds/arm9/input.h>
 #include <nds/arm9/decompress.h>
 
+#include "courtroom/courtroom.h"
 #include "global.h"
 
 //the speed of the timer when using ClockDivider_1024
@@ -69,8 +71,10 @@ void readFrameIndexes(const std::string& value, std::vector<u16>& output)
 }
 
 
-Character::Character()
+Character::Character(Courtroom* pCourt)
 {
+	m_pCourt = pCourt;
+
 	charTicks = 0;
 	sfxTicks = 0;
 	currFrame = 0;
@@ -112,8 +116,20 @@ Character::~Character()
 
 	if (charData) delete[] charData;
 	if (sfx) wav_free_handle(sfx);
+	clearFrameData();
 
 	timerStop(0);
+}
+
+void Character::clearFrameData()
+{
+	for (auto const& cached : cachedFrameSFX)
+		wav_free_handle(cached.second); // second is wav_handle*
+
+	cachedFrameSFX.clear();
+	frameSFX.clear();
+	frameFlash.clear();
+	frameShake.clear();
 }
 
 void Character::setCharImage(std::string charname, std::string relativeFile, bool doLoop)
@@ -206,6 +222,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	}
 	mp3_fill_buffer();
 
+	clearFrameData();
+
 	vramSetBankF(VRAM_F_LCD);
 	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
@@ -252,9 +270,66 @@ void Character::setSound(const std::string& filename, int delay)
 	sfxDelay = delay * TIME_MOD;
 }
 
+void Character::setFrameSFX(const std::string& data)
+{
+	/// (a)franziska-mad|12=sfx-deskslam|16=sfx-deskslam|4=sfx-deskslam
+	u32 args = std::count(data.begin(), data.end(), '|');
+
+	for (u32 i=1; i<=args; i++)
+	{
+		std::string arg = argumentAt(data, i, '|');
+
+		int frame = std::stoi(argumentAt(arg, 0, '='));
+		std::string sfx = argumentAt(arg, 1, '=');
+
+		frameSFX[frame] = sfx;
+
+		if (cachedFrameSFX.count(sfx)) continue;
+		std::string filename = "/data/ao-nds/sounds/general/" + sfx + ".wav";
+		wav_handle* handle = wav_load_handle(filename.c_str());
+		cachedFrameSFX[sfx] = handle;
+	}
+}
+
+void Character::setFrameFlash(const std::string& data)
+{
+	u32 args = std::count(data.begin(), data.end(), '|');
+
+	for (u32 i=1; i<=args; i++)
+	{
+		std::string arg = argumentAt(data, i, '|');
+		int frame = std::stoi(argumentAt(arg, 0, '='));
+
+		frameFlash.insert(frame);
+	}
+}
+
+void Character::setFrameShake(const std::string& data)
+{
+	u32 args = std::count(data.begin(), data.end(), '|');
+
+	for (u32 i=1; i<=args; i++)
+	{
+		std::string arg = argumentAt(data, i, '|');
+		int frame = std::stoi(argumentAt(arg, 0, '='));
+
+		frameShake.insert(frame);
+	}
+}
+
 void Character::setVisible(bool on)
 {
 	visible = on;
+}
+
+void Character::triggerFrameData()
+{
+	if (frameSFX.count(currFrame))
+		wav_play(cachedFrameSFX[frameSFX[currFrame]]);
+	if (frameShake.count(currFrame))
+		m_pCourt->shake(5, 15);
+	if (frameFlash.count(currFrame))
+		m_pCourt->flash(3);
 }
 
 void Character::update()
@@ -310,12 +385,15 @@ void Character::update()
 		else
 		{
 			currFrame++;
+
 			if (currFrame >= frameInfo.frameCount)
 			{
 				if (onAnimFinished) onAnimFinished(pUserData);
 				return;
 			}
 		}
+
+		triggerFrameData();
 
 		// copy new frame to sprite gfx
 		u8* ptr;

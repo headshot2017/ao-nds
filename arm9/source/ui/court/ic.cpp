@@ -255,9 +255,9 @@ void UICourtIC::updateInput()
 						std::to_string(pCourtUI->icControls.immediate) + "#" +
 						std::to_string(0) + "#" + // sfx looping
 						std::to_string(pCourtUI->icControls.shake) + "#" +
-						"-^(b)"+emote.anim+"^(a)"+emote.anim+"^#" + // shake frames
-						"-^(b)"+emote.anim+"^(a)"+emote.anim+"^#" + // realization frames
-						"-^(b)"+emote.anim+"^(a)"+emote.anim+"^#" + // sfx frames
+						emote.frameShake + "#" +
+						emote.frameFlash + "#" +
+						emote.frameSFX + "#" +
 						std::to_string(pCourtUI->icControls.additive) + "#||#%"; // "||" is effects (won't bother with these)
 
 					if (pCourtUI->icControls.evidence > -1)
