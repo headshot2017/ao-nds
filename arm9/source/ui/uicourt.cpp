@@ -301,7 +301,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	if (!pSelf->icSendQueue.empty() && charID == pSelf->currChar)
 		pSelf->icSendQueue.pop_front();
 
-	if (!pSelf->charList.empty() && pSelf->charList[charID].muted)
+	if (pSelf->charList.empty() || pSelf->charList[charID].muted)
 		return;
 
 	std::string charname = argumentAt(msg, 3);
@@ -331,8 +331,8 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 		shoutMod = std::stoi(shoutModStr);
 
 	// insert to chatlog
-	std::string name = pSelf->charList[charID].showname;
-	if (gEngine->showChatlogIniswaps() && pSelf->charList[charID].name != charname)
+	std::string name = pSelf->charList[charID].name;
+	if (gEngine->showChatlogIniswaps() && name != charname)
 		name += " (" + charname + ")";
 	if (gEngine->showChatlogShownames() && !showname.empty())
 		name += " [" + showname + "]";
