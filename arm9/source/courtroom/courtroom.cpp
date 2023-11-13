@@ -81,6 +81,8 @@ void Courtroom::MSchat(const MSchatStruct& data)
 
 void Courtroom::handleChat()
 {
+	evidence->hideEvidence();
+
 	if (currIC.shoutMod)
 	{
 		character->setOnAnimFinishedCallback(0, 0);
@@ -90,9 +92,7 @@ void Courtroom::handleChat()
 	else
 		shout->cancelShout();
 
-	if (currIC.evidence.empty())
-		evidence->hideEvidence();
-	else
+	if (!currIC.evidence.empty())
 		evidence->showEvidence(currIC.evidence, currIC.side == "def" || currIC.side == "hlp");
 
 	std::string chatname = (currIC.showname.empty()) ? currIC.charname : currIC.showname;

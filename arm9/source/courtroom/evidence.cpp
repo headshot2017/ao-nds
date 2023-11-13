@@ -27,7 +27,7 @@ Evidence::Evidence()
 
 	dmaFillHalfWords(0, spriteGfx, 64*64);
 	oamRotateScale(&oamMain, 0, 0, scale, scale);
-	oamSet(&oamMain, 126, 16, 16, 0, 4, SpriteSize_64x64, SpriteColorFormat_256Color, spriteGfx, 0, false, false, false, false, false);
+	oamSet(&oamMain, 126, 16, 16, 1, 4, SpriteSize_64x64, SpriteColorFormat_256Color, spriteGfx, 0, false, false, false, false, false);
 }
 
 Evidence::~Evidence()
