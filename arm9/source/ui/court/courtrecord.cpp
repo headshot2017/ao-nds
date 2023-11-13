@@ -148,7 +148,7 @@ void UICourtEvidence::reloadPage()
 		btn_evidence[i]->setImage((exists ? file : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 7+i);
 		btn_evidence[i]->setVisible(true);
 
-		if (pCourtUI->icControls.evidence == (int)i)
+		if (!isPrivate && pCourtUI->icControls.evidence == (int)i)
 			btn_evidence[i]->darken();
 	}
 
