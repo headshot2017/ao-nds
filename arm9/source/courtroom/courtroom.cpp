@@ -26,6 +26,7 @@ Courtroom::Courtroom()
 	chatbox = new Chatbox(this);
 	character = new Character(this);
 	shout = new Shout(this);
+	evidence = new Evidence;
 
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
 	shout->setOnShoutFinishedCallback(onShoutFinished, this);
@@ -37,6 +38,7 @@ Courtroom::~Courtroom()
 	delete chatbox;
 	delete character;
 	delete shout;
+	delete evidence;
 
 	wav_free_handle(sndRealization);
 
@@ -50,6 +52,7 @@ void Courtroom::setVisible(bool on)
 	chatbox->setVisible(on);
 	character->setVisible(on);
 	shout->setVisible(on);
+	evidence->setVisible(on);
 }
 
 void Courtroom::setTalkingAnim(bool on)
@@ -86,6 +89,11 @@ void Courtroom::handleChat()
 	}
 	else
 		shout->cancelShout();
+
+	if (currIC.evidence.empty())
+		evidence->hideEvidence();
+	else
+		evidence->showEvidence(currIC.evidence, currIC.side == "def" || currIC.side == "hlp");
 
 	std::string chatname = (currIC.showname.empty()) ? currIC.charname : currIC.showname;
 	int color = AOcolorToPalette[currIC.textColor];
@@ -210,6 +218,7 @@ void Courtroom::update()
 	// chatbox and shouts get their own offsets
 	character->setShakes(xOffset, yOffset);
 	background->setOffsets(xOffset, yOffset);
+	evidence->setOffsets(xOffset, yOffset);
 	chatbox->setOffsets(
 		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0,
 		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0
@@ -219,6 +228,7 @@ void Courtroom::update()
 	chatbox->update();
 	background->update();
 	shout->update();
+	evidence->update();
 
 	if (flashTicks)
 	{

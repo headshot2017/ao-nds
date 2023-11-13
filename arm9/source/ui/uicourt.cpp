@@ -48,7 +48,6 @@ UIScreenCourt::~UIScreenCourt()
 	wav_free_handle(sndCancel);
 	wav_free_handle(sndEvTap);
 	wav_free_handle(sndEvPage);
-	wav_free_handle(sndEvShow);
 	wav_free_handle(sndCrtRcrd);
 
 	AOsocket* sock = gEngine->getSocket();
@@ -81,7 +80,7 @@ void UIScreenCourt::init()
 	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav");
 	sndEvTap = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip.wav");
 	sndEvPage = wav_load_handle("/data/ao-nds/sounds/general/sfx-blink.wav");
-	sndEvShow = wav_load_handle("/data/ao-nds/sounds/general/sfx-shooop.wav");
+	sndEvShow = court->getEvidence()->sndEvShow;
 	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav");
 
 	AOsocket* sock = gEngine->getSocket();
@@ -346,6 +345,10 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	std::string lowerCharname = charname;
 	std::transform(lowerCharname.begin(), lowerCharname.end(), lowerCharname.begin(), [](char c){return std::tolower(c);});
 
+	int evidence = std::stoi(argumentAt(msg, 12))-1;
+	std::string evidenceImage;
+	if (evidence >= 0) evidenceImage = pSelf->evidenceList[evidence].image;
+
 	// show message in court screen
 	MSchatStruct data;
 	data.deskMod = argumentAt(msg, 1) != "0";
@@ -360,7 +363,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.sfxDelay = std::stoi(argumentAt(msg, 10));
 	data.shoutMod = shoutMod;
 	data.customShout = customShout;
-	data.evidence = std::stoi(argumentAt(msg, 12));
+	data.evidence = evidenceImage;
 	data.flip = argumentAt(msg, 13) == "1";
 	data.realization = std::stoi(argumentAt(msg, 14));
 	data.textColor = std::stoi(argumentAt(msg, 15));

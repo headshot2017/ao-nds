@@ -7,7 +7,6 @@
 #include <nds/ndstypes.h>
 #include <string>
 
-#include "cfgFile.h"
 #include "global.h"
 #include "mp3_shared.h"
 

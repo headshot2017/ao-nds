@@ -8,6 +8,7 @@
 #include "courtroom/chatbox.h"
 #include "courtroom/character.h"
 #include "courtroom/shout.h"
+#include "courtroom/evidence.h"
 #include "mp3_shared.h"
 
 struct MSchatStruct
@@ -18,7 +19,7 @@ struct MSchatStruct
 		charID(-1),
 		sfxDelay(0),
 		shoutMod(0),
-		evidence(0),
+		evidence(),
 		flip(false),
 		realization(0),
 		textColor(0),
@@ -41,7 +42,7 @@ struct MSchatStruct
 	int sfxDelay;
 	int shoutMod;
 	std::string customShout;
-	int evidence;
+	std::string evidence;
 	bool flip;
 	int realization;
 	int textColor;
@@ -72,6 +73,7 @@ class Courtroom
 	bool onPreAnim;
 
 	wav_handle* sndRealization;
+	wav_handle* sndEvShow;
 
 	MSchatStruct lastIC;
 	MSchatStruct currIC;
@@ -80,6 +82,7 @@ class Courtroom
 	Chatbox* chatbox;
 	Character* character;
 	Shout* shout;
+	Evidence* evidence;
 
 	void handleChat();
 
@@ -91,6 +94,7 @@ public:
 	Chatbox* getChatbox() {return chatbox;}
 	Character* getCharacter() {return character;}
 	Shout* getShout() {return shout;}
+	Evidence* getEvidence() {return evidence;}
 
 	void setVisible(bool on);
 	void setTalkingAnim(bool on);
