@@ -7,6 +7,7 @@
 #include <nds/ndstypes.h>
 #include <nds/interrupts.h>
 
+#include "ui/label.h"
 #include "cfgFile.h"
 #include "mini/ini.h"
 #include "mp3_shared.h"
@@ -19,8 +20,21 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 	fading = false;
 	running = true;
 
+	UILabel* lbl_loading = new UILabel(&oamSub, 0, 8, 1, RGB15(31,31,31), 0, 1);
+
+	lbl_loading->setText("Creating music cache...");
+	lbl_loading->setPos(128, 96-12, true);
+	oamUpdate(&oamSub);
 	cacheMusic("/data/ao-nds/sounds/music");
+
+	lbl_loading->setText("Creating evidence cache...");
+	lbl_loading->setPos(128, 96-12, true);
+	oamUpdate(&oamSub);
 	cacheEvidence("/data/ao-nds/evidence/small");
+
+	lbl_loading->setText("Creating character blip cache...");
+	lbl_loading->setPos(128, 96-12, true);
+	oamUpdate(&oamSub);
 	cacheCharBlips("/data/ao-nds/characters");
 
 	cfgFile settings("/data/ao-nds/settings_nds.cfg");
@@ -30,6 +44,8 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 	chatlogShownames = settings.get("chatlog_shownames", "") == "1";
 
 	loadPrivateEvidence();
+
+	delete lbl_loading;
 }
 
 Engine::~Engine()
