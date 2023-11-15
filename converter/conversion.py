@@ -558,3 +558,22 @@ def convertShout(source, target, core=0):
     os.rename("temp%d.img.bin" % core, newFile+".img.bin")
     os.rename("temp%d.map.bin" % core, newFile+".map.bin")
     os.rename("temp%d.pal.bin" % core, newFile+".pal.bin")
+
+def convertSpeedlines(source, target):
+    img = Image.open(source).convert("RGBA")
+
+    img.save("temp.png")
+    img.close()
+
+    # 8-bit tiles, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
+    subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!").wait()
+
+    if os.path.exists(target+".img.bin"):
+        os.remove(target+".img.bin")
+    if os.path.exists(target+".map.bin"):
+        os.remove(target+".map.bin")
+    if os.path.exists(target+".pal.bin"):
+        os.remove(target+".pal.bin")
+    os.rename("temp.img.bin", target+".img.bin")
+    os.rename("temp.map.bin", target+".map.bin")
+    os.rename("temp.pal.bin", target+".pal.bin")

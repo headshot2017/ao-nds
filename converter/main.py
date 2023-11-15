@@ -97,6 +97,7 @@ if __name__ == "__main__":
             conversion.convertShout(folder+"/misc/default/objection_bubble.gif", "converted/data/ao-nds/misc/objection_bubble")
             conversion.convertShout(folder+"/misc/default/holdit_bubble.gif", "converted/data/ao-nds/misc/holdit_bubble")
             conversion.convertShout(folder+"/misc/default/takethat_bubble.gif", "converted/data/ao-nds/misc/takethat_bubble")
+            conversion.convertSpeedlines(folder+"/themes/default/defense_speedlines.gif", "converted/data/ao-nds/misc/speedlines")
 
             print("Converting placeholder.gif...")
             if os.path.exists("converted/data/ao-nds/misc/nds.cfg"): os.remove("converted/data/ao-nds/misc/nds.cfg")
@@ -164,6 +165,7 @@ if __name__ == "__main__":
             conversion.convertShout(folder+"/misc/default/objection_bubble.gif", "converted/data/ao-nds/misc/objection_bubble")
             conversion.convertShout(folder+"/misc/default/holdit_bubble.gif", "converted/data/ao-nds/misc/holdit_bubble")
             conversion.convertShout(folder+"/misc/default/takethat_bubble.gif", "converted/data/ao-nds/misc/takethat_bubble")
+            conversion.convertSpeedlines(folder+"/themes/default/defense_speedlines.gif", "converted/data/ao-nds/misc/speedlines")
             if os.path.exists("converted/data/ao-nds/misc/nds.cfg"): os.remove("converted/data/ao-nds/misc/nds.cfg")
             conversion.convertEmoteGIF(folder+"/themes/default/placeholder.gif", "converted/data/ao-nds/misc/placeholder.gif", "converted/data/ao-nds/misc", 0, "")
             if os.path.exists("temp.png"): os.remove("temp.png")
