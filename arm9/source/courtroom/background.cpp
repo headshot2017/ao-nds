@@ -50,6 +50,10 @@ Background::Background()
 	visible = false;
 	currBgGfxLen = 0;
 
+	zooming = false;
+	zoomScroll = 0;
+	zoomScrollAdd = 0;
+
 	for (int i=0; i<4*6; i++)
 	{
 		int x = (i%4) * 64;
@@ -94,8 +98,16 @@ bool Background::setBg(const std::string& name)
 
 void Background::setBgSide(const std::string& side, bool force)
 {
-	if (currentBg.empty() || !sideToBg.count(side) || (!force && side == currentSide))
+	if (currentBg.empty() || !sideToBg.count(side) || (!force && !zooming && side == currentSide))
 		return;
+
+	if (zooming)
+	{
+		bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_512x256, 1, 1);
+		bgSetPriority(bgIndex, 3);
+	}
+
+	zooming = false;
 
 	u32 bgGfxLen, bgMapLen, bgPalLen, deskPalLen;
 	u8* bgGfx = readFile(currentBg + "/" + sideToBg[side] + ".img.bin", &bgGfxLen);
@@ -110,6 +122,8 @@ void Background::setBgSide(const std::string& side, bool force)
 	vramSetBankE(VRAM_E_LCD);
 	memcpy(&VRAM_E_EXT_PALETTE[bgIndex][0], bgPal, bgPalLen);
 	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
+
+	BG_PALETTE[0] = ((u16*)bgPal)[0];
 
 	mp3_fill_buffer();
 
@@ -182,6 +196,60 @@ void Background::setBgSide(const std::string& side, bool force)
 	mp3_fill_buffer();
 }
 
+void Background::setZoom(bool scrollLeft, bool force)
+{
+	int newScrollAdd = (scrollLeft) ? 12 : -12;
+	if (!force && zooming && newScrollAdd == zoomScrollAdd)
+		return;
+
+	if (!zooming)
+	{
+		bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 1, 1);
+		bgSetPriority(bgIndex, 3);
+	}
+
+	zooming = true;
+	zoomScroll = 0;
+	zoomScrollAdd = newScrollAdd;
+
+	u32 bgGfxLen, bgMapLen, bgPalLen;
+	u8* bgGfx = readFile("/data/ao-nds/misc/speedlines.img.bin", &bgGfxLen);
+	u8* bgMap = readFile("/data/ao-nds/misc/speedlines.map.bin", &bgMapLen);
+	u8* bgPal = readFile("/data/ao-nds/misc/speedlines.pal.bin", &bgPalLen);
+	currBgGfxLen = bgGfxLen;
+
+	// copy main background
+	dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
+	memcpy(bgGetMapPtr(bgIndex), bgMap, bgMapLen);
+
+	vramSetBankE(VRAM_E_LCD);
+	memcpy(&VRAM_E_EXT_PALETTE[bgIndex][0], bgPal, bgPalLen);
+	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
+
+	BG_PALETTE[0] = ((u16*)bgPal)[0];
+
+	// hide the desk tiles
+	if (!currentSide.empty())
+	{
+		int horTiles, verTiles;
+		readDeskTiles(deskTiles.get(sideToDesk[currentSide]), &horTiles, &verTiles);
+
+		for (int y=0; y<verTiles; y++)
+		{
+			int yScreen = 6-verTiles+y;
+
+			for (int x=0; x<horTiles; x++)
+			{
+				mp3_fill_buffer();
+
+				int iScreen = yScreen*4+x;
+
+				deskGfxVisible[iScreen] = false;
+			}
+		}
+	}
+}
+
 void Background::setVisible(bool on)
 {
 	visible = on;
@@ -190,7 +258,13 @@ void Background::setVisible(bool on)
 
 void Background::update()
 {
-	bgSetScroll(bgIndex, -xOffset, -yOffset);
+	if (zooming)
+	{
+		zoomScroll += zoomScrollAdd;
+		bgSetScroll(bgIndex, -xOffset+zoomScroll, -yOffset);
+	}
+	else
+		bgSetScroll(bgIndex, -xOffset, -yOffset);
 
 	for (int i=0; i<4*6; i++)
 	{

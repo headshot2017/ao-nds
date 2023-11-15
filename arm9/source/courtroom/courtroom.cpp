@@ -117,7 +117,11 @@ void Courtroom::handleChat()
 	character->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
 	character->setFlip(currIC.flip);
 	character->setOnAnimFinishedCallback(onAnimFinished, this);
-	background->setBgSide(currIC.side);
+
+	if (currIC.emoteMod == 5)
+		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
+	else
+		background->setBgSide(currIC.side);
 
 	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
 		character->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
@@ -216,12 +220,12 @@ void Courtroom::update()
 	if (shakeTicks > 0) shakeTicks--;
 
 	// chatbox and shouts get their own offsets
-	character->setShakes(xOffset, yOffset);
-	background->setOffsets(xOffset, yOffset);
-	evidence->setOffsets(xOffset, yOffset);
+	character->setShakes((background->isZoom()) ? 0 : xOffset, yOffset);
+	background->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
+	evidence->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
 	chatbox->setOffsets(
 		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0,
-		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0
+		(shakeTicks > 0 && !background->isZoom()) ? -shakeForce + rand()%(shakeForce*2) : 0
 	);
 
 	character->update();

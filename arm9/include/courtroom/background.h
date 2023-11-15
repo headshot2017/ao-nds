@@ -20,6 +20,10 @@ class Background
 	int bgIndex;
 	bool visible;
 
+	bool zooming;
+	int zoomScroll;
+	int zoomScrollAdd;
+
 	u16* deskGfx[4*6];
 	bool deskGfxVisible[4*6];
 
@@ -30,9 +34,12 @@ public:
 	Background();
 	~Background();
 
+	bool isZoom() {return zooming;}
+
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
 	bool setBg(const std::string& name);
 	void setBgSide(const std::string& side, bool force=false);
+	void setZoom(bool scrollLeft, bool force=false);
 	void setVisible(bool on);
 
 	void update();
