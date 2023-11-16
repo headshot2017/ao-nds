@@ -178,13 +178,13 @@ def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
 
     if leftCorner == frames[0][0].size[0] and rightCorner == 0 and top == frames[0][0].size[1] and bottom == 0:
         # empty image?
-        rightCorner = 31
+        rightCorner = 63
         leftCorner = 0
         top = 0
-        bottom = 31
+        bottom = 63
         for i in range(len(frames)):
             frame = frames[i][0]
-            frames[i][0] = frame.crop((0, 0, 32, 32))
+            frames[i][0] = frame.crop((0, 0, 64, 64))
 
     # crop and transparency
     croppedWidth = 0
@@ -194,7 +194,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
         frame = frame.crop((leftCorner, top, rightCorner+1, bottom+1))
         croppedWidth = frame.size[0]
         croppedHeight = frame.size[1]
-        frame = frame.crop((0, 0, math.ceil(frame.size[0]/32.)*32, math.ceil(frame.size[1]/32.)*32))
+        frame = frame.crop((0, 0, math.ceil(frame.size[0]/64.)*64, math.ceil(frame.size[1]/64.)*64))
 
         pix = frame.load()
         for x in range(frame.size[0]):
@@ -236,7 +236,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
     streamFile = (frames[0][0].size[0] * frames[0][0].size[1] * len(noDuplicates) >= 512*1024)
 
     # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-    subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF %s -ftb -fh! -m! -Mh4 -Mw4" % (core, "" if streamFile else "-gzl")).wait()
+    subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF %s -ftb -fh! -m! -Mh8 -Mw8" % (core, "" if streamFile else "-gzl")).wait()
     if not os.path.exists("temp%d.img.bin" % core):
         print("Failed to convert: %s" % (no_dir_ext_file))
         return

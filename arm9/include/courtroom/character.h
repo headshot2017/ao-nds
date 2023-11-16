@@ -40,8 +40,9 @@ class Character
 {
 	Courtroom* m_pCourt;
 
-	u16* charGfx[8*6];
-	bool charGfxVisible[8*6];
+	int oamStart;
+	u16* charGfx[4*3];
+	bool charGfxVisible[4*3];
 	int gfxInUse;
 
 	u8* charData;
@@ -81,7 +82,7 @@ class Character
 	void clearFrameData();
 
 public:
-	Character(Courtroom* pCourt);
+	Character(Courtroom* pCourt, int start);
 	~Character();
 
 	const std::string& getCurrCharacter() {return currCharacter;}

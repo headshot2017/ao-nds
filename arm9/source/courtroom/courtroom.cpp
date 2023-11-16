@@ -24,7 +24,7 @@ Courtroom::Courtroom()
 
 	background = new Background;
 	chatbox = new Chatbox(this);
-	character = new Character(this);
+	character = new Character(this, 50);
 	shout = new Shout(this);
 	evidence = new Evidence;
 

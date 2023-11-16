@@ -71,9 +71,10 @@ void readFrameIndexes(const std::string& value, std::vector<u16>& output)
 }
 
 
-Character::Character(Courtroom* pCourt)
+Character::Character(Courtroom* pCourt, int start)
 {
 	m_pCourt = pCourt;
+	oamStart = start;
 
 	charTicks = 0;
 	sfxTicks = 0;
@@ -88,14 +89,14 @@ Character::Character(Courtroom* pCourt)
 	sfxPlayed = true;
 	sfxDelay = 0;
 
-	for (int i=0; i<8*6; i++)
+	for (int i=0; i<4*3; i++)
 	{
-		int x = (i%8) * 32;
-		int y = (i/8) * 32;
+		int x = (i%4) * 64;
+		int y = (i/4) * 64;
 
-		charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
+		charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_256Color);
 		charGfxVisible[i] = false;
-		oamSet(&oamMain, 50+i, x, y, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, oamStart+i, x, y, 2, 2, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
 
 	setShakes(0, 0);
@@ -108,9 +109,9 @@ Character::Character(Courtroom* pCourt)
 
 Character::~Character()
 {
-	for (int i=0; i<8*6; i++)
+	for (int i=0; i<4*3; i++)
 	{
-		oamSet(&oamMain, 50+i, 0, 0, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, oamStart+i, 0, 0, 0, 0, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		oamFreeGfx(&oamMain, charGfx[i]);
 	}
 
@@ -196,8 +197,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	u32 gfxCount = std::stoi(animInfos.get(relativeFile + "_frameGfxCount"));
 	mp3_fill_buffer();
 
-	frameInfo.realW = ceil(frameInfo.frameW/32.f);
-	frameInfo.realH = ceil(frameInfo.frameH/32.f);
+	frameInfo.realW = ceil(frameInfo.frameW/64.f);
+	frameInfo.realH = ceil(frameInfo.frameH/64.f);
 
 	frameInfo.streaming = (animInfos.get(relativeFile + "_stream") == "1");
 	if (!frameInfo.streaming)
@@ -205,7 +206,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		// decompress gfx and copy palette to slot 2
 		stream.unload();
 
-		charData = new u8[frameInfo.realW*32 * frameInfo.realH*32 * gfxCount];
+		charData = new u8[frameInfo.realW*64 * frameInfo.realH*64 * gfxCount];
 		mp3_fill_buffer();
 
 		if (!charData)
@@ -218,7 +219,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	}
 	else
 	{
-		stream.loadFile(IMGbin.c_str(), frameInfo.realW, frameInfo.realH, 32, 32);
+		stream.loadFile(IMGbin.c_str(), frameInfo.realW, frameInfo.realH, 64, 64);
 	}
 	mp3_fill_buffer();
 
@@ -231,7 +232,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 	for (int i=0; i<gfxInUse; i++)
 	{
-		oamSet(&oamMain, 50+i, 0, 0, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, oamStart+i, 0, 0, 0, 0, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 		charGfxVisible[i] = false;
 	}
 
@@ -240,18 +241,24 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	for (int i=0; i<gfxInUse; i++)
 	{
 		int x = ((flip) ?
-			((gfxInUse-i-1) % frameInfo.realW)*32 + 256-(frameInfo.realW*32)-frameInfo.offsetX :
-			(i%frameInfo.realW)*32 + frameInfo.offsetX)
+			((gfxInUse-i-1) % frameInfo.realW)*64 + 256-(frameInfo.realW*64)-frameInfo.offsetX :
+			(i%frameInfo.realW)*64 + frameInfo.offsetX)
 			+ shakeX + offsetX;
 
-		int y = (i/frameInfo.realW)*32 + frameInfo.offsetY + shakeY + offsetY;
+		int y = (i/frameInfo.realW)*64 + frameInfo.offsetY + shakeY + offsetY;
+
+		if (y <= -64 || y >= 192)
+		{
+			oamSetHidden(&oamMain, oamStart+i, true);
+			continue;
+		}
 
 		u8* ptr = (!frameInfo.streaming) ? charData : stream.getFrame(0);
-		u8* offset = ptr + i*32*32;
-		dmaCopy(offset, charGfx[i], 32*32);
+		u8* offset = ptr + i*64*64;
+		dmaCopy(offset, charGfx[i], 64*64);
 		mp3_fill_buffer();
 
-		oamSet(&oamMain, 50+i, x, y, 2, 2, SpriteSize_32x32, SpriteColorFormat_256Color, charGfx[i], -1, false, false, flip, false, false);
+		oamSet(&oamMain, oamStart+i, x, y, 2, 2, SpriteSize_64x64, SpriteColorFormat_256Color, charGfx[i], -1, false, false, flip, false, false);
 		charGfxVisible[i] = true;
 	}
 
@@ -337,19 +344,19 @@ void Character::update()
 	for (int i=0; i<gfxInUse; i++)
 	{
 		int x = ((flip) ?
-			((gfxInUse-i-1) % frameInfo.realW)*32 + 256-(frameInfo.realW*32)-frameInfo.offsetX :
-			(i%frameInfo.realW)*32 + frameInfo.offsetX)
+			((gfxInUse-i-1) % frameInfo.realW)*64 + 256-(frameInfo.realW*64)-frameInfo.offsetX :
+			(i%frameInfo.realW)*64 + frameInfo.offsetX)
 			+ shakeX + offsetX;
 
-		int y = (i/frameInfo.realW)*32 + frameInfo.offsetY + shakeY + offsetY;
+		int y = (i/frameInfo.realW)*64 + frameInfo.offsetY + shakeY + offsetY;
 
-		if (y <= -32 || y >= 192)
+		if (y <= -64 || y >= 192)
 		{
-			oamSetHidden(&oamMain, 50+i, true);
+			oamSetHidden(&oamMain, oamStart+i, true);
 			continue;
 		}
 
-		oamSetXY(&oamMain, 50+i, x, y);
+		oamSetXY(&oamMain, oamStart+i, x, y);
 	}
 
 	if (!loop && currFrame >= frameInfo.frameCount)
@@ -400,15 +407,15 @@ void Character::update()
 		if (!frameInfo.streaming)
 		{
 			int frameOffset = frameInfo.frameIndexes[currFrame]*gfxInUse;
-			ptr = charData + frameOffset*32*32;
+			ptr = charData + frameOffset*64*64;
 		}
 		else
 			ptr = stream.getFrame(frameInfo.frameIndexes[currFrame]);
 
 		for (int i=0; i<gfxInUse; i++)
 		{
-			u8* offset = ptr + i*32*32;
-			dmaCopy(offset, charGfx[i], 32*32);
+			u8* offset = ptr + i*64*64;
+			dmaCopy(offset, charGfx[i], 64*64);
 			mp3_fill_buffer();
 		}
 
