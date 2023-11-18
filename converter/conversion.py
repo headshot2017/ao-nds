@@ -346,7 +346,8 @@ def convertEmoteGIF(sourceFile, targetFile, ogTarget, core, extra):
     for f in range(img.n_frames):
         img.seek(f)
         img.load()
-        frames.append([img.convert("RGBA"), img.info["duration"]])
+        duration = img.info["duration"] if "duration" in img.info else 0
+        frames.append([img.convert("RGBA"), duration])
     convertEmoteFrames(frames, targetFile, ogTarget, core, extra)
 
 def recursiveCharacter(source, target, ogTarget, core, extra=""):
