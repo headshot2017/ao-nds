@@ -376,9 +376,14 @@ void Chatbox::update()
 
 		if (currTextGfxInd >= 8*3)
 		{
-			currTextGfxInd = 0;
-			for (int i=0; i<8*3; i++)
-				dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
+			// scroll lines upwards, clear 3rd line and start from there.
+			currTextGfxInd = 8*2;
+			for (int i=0; i<8; i++)
+			{
+				dmaCopy(textGfx[8*1+i], textGfx[i], 32*16);
+				dmaCopy(textGfx[8*2+i], textGfx[8*1+i], 32*16);
+				dmaFillHalfWords(0, textGfx[8*2+i], 32*16);
+			}
 		}
 
 		bool lastBox = (currTextGfxInd % 8 == 7);
