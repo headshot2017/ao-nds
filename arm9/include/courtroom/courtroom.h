@@ -80,7 +80,7 @@ class Courtroom
 
 	Background* background;
 	Chatbox* chatbox;
-	Character* character;
+	Character* character[2];
 	Shout* shout;
 	Evidence* evidence;
 
@@ -92,7 +92,7 @@ public:
 
 	Background* getBackground() {return background;}
 	Chatbox* getChatbox() {return chatbox;}
-	Character* getCharacter() {return character;}
+	Character* getCharacter(int pair) {return character[pair];}
 	Shout* getShout() {return shout;}
 	Evidence* getEvidence() {return evidence;}
 

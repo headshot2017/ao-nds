@@ -45,6 +45,7 @@ class Character
 	bool charGfxVisible[4*3];
 	int gfxInUse;
 
+	int pair;
 	u8* charData;
 	animStream stream;
 
@@ -82,7 +83,7 @@ class Character
 	void clearFrameData();
 
 public:
-	Character(Courtroom* pCourt, int start);
+	Character(Courtroom* pCourt, int start, int isPair);
 	~Character();
 
 	const std::string& getCurrCharacter() {return currCharacter;}
@@ -97,6 +98,7 @@ public:
 	void setFrameFlash(const std::string& data);
 	void setFrameShake(const std::string& data);
 	void setVisible(bool on);
+	void unload();
 
 	void setOnAnimFinishedCallback(voidCallback newCB, void* userdata) {onAnimFinished = newCB; pUserData = userdata;}
 

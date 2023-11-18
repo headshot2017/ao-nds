@@ -24,7 +24,8 @@ Courtroom::Courtroom()
 
 	background = new Background;
 	chatbox = new Chatbox(this);
-	character = new Character(this, 50);
+	character[0] = new Character(this, 50, 0);
+	character[1] = new Character(this, 62, 1);
 	shout = new Shout(this);
 	evidence = new Evidence;
 
@@ -36,7 +37,8 @@ Courtroom::~Courtroom()
 {
 	delete background;
 	delete chatbox;
-	delete character;
+	delete character[0];
+	delete character[1];
 	delete shout;
 	delete evidence;
 
@@ -50,7 +52,8 @@ void Courtroom::setVisible(bool on)
 	visible = on;
 	background->setVisible(on);
 	chatbox->setVisible(on);
-	character->setVisible(on);
+	character[0]->setVisible(on);
+	character[1]->setVisible(on);
 	shout->setVisible(on);
 	evidence->setVisible(on);
 }
@@ -60,7 +63,7 @@ void Courtroom::setTalkingAnim(bool on)
 	if (onPreAnim) return;
 
 	std::string prefix = (on) ? "(b)" : "(a)";
-	character->setCharImage(currIC.charname, prefix + currIC.emote);
+	character[0]->setCharImage(currIC.charname, prefix + currIC.emote);
 }
 
 void Courtroom::MSchat(const MSchatStruct& data)
@@ -85,7 +88,7 @@ void Courtroom::handleChat()
 
 	if (currIC.shoutMod)
 	{
-		character->setOnAnimFinishedCallback(0, 0);
+		character[0]->setOnAnimFinishedCallback(0, 0);
 		shout->setShout(currIC.charname, currIC.shoutMod, currIC.customShout);
 		return;
 	}
@@ -114,17 +117,49 @@ void Courtroom::handleChat()
 	else
 		offsetX = std::stoi(offsetStr);
 
-	character->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
-	character->setFlip(currIC.flip);
-	character->setOnAnimFinishedCallback(onAnimFinished, this);
+	character[0]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
+	character[0]->setFlip(currIC.flip);
+	character[0]->setOnAnimFinishedCallback(onAnimFinished, this);
 
 	if (currIC.emoteMod == 5)
+	{
 		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
+		character[1]->unload();
+	}
 	else
+	{
 		background->setBgSide(currIC.side);
 
+		if (currIC.otherCharID >= 0)
+		{
+			// display pair
+			offsetStr = currIC.otherOffset;
+			offsetX = 0;
+			offsetY = 0;
+
+			if (offsetStr.find("&"))
+			{
+				offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
+				offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
+			}
+			else
+				offsetX = std::stoi(offsetStr);
+
+			character[1]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
+			character[1]->setFlip(currIC.otherFlip);
+
+			bool isAnim = fileExists("/data/ao-nds/characters/" + currIC.otherName + "/(a)" + currIC.otherEmote + ".img.bin");
+			std::string prefix;
+			if (isAnim) prefix = "(a)";
+
+			character[1]->setCharImage(currIC.otherName, prefix + currIC.otherEmote);
+		}
+		else
+			character[1]->unload();
+	}
+
 	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
-		character->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
+		character[0]->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
 
 	if (currIC.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
 	{
@@ -135,13 +170,13 @@ void Courtroom::handleChat()
 		std::string prefix;
 		if (!isPng) prefix = (playIdle ? "(a)" : "(b)");
 
-		character->setCharImage(currIC.charname, prefix + currIC.emote);
+		character[0]->setCharImage(currIC.charname, prefix + currIC.emote);
 		if (!isPng)
 		{
 			int index = (playIdle) ? 2 : 1;
-			if (!currIC.frameSFX.empty()) character->setFrameSFX(argumentAt(currIC.frameSFX, index, '^'));
-			if (!currIC.frameShake.empty()) character->setFrameShake(argumentAt(currIC.frameShake, index, '^'));
-			if (!currIC.frameFlash.empty()) character->setFrameFlash(argumentAt(currIC.frameFlash, index, '^'));
+			if (!currIC.frameSFX.empty()) character[0]->setFrameSFX(argumentAt(currIC.frameSFX, index, '^'));
+			if (!currIC.frameShake.empty()) character[0]->setFrameShake(argumentAt(currIC.frameShake, index, '^'));
+			if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, index, '^'));
 		}
 		chatbox->setVisible(true);
 		chatbox->setName(chatname);
@@ -176,10 +211,10 @@ void Courtroom::handleChat()
 				chatbox->setText(currIC.chatmsg, color, currIC.blip);
 			lastIC = currIC;
 		}
-		character->setCharImage(currIC.charname, currIC.preanim, false);
-		if (!currIC.frameSFX.empty()) character->setFrameSFX(argumentAt(currIC.frameSFX, 0, '^'));
-		if (!currIC.frameShake.empty()) character->setFrameShake(argumentAt(currIC.frameShake, 0, '^'));
-		if (!currIC.frameFlash.empty()) character->setFrameFlash(argumentAt(currIC.frameFlash, 0, '^'));
+		character[0]->setCharImage(currIC.charname, currIC.preanim, false);
+		if (!currIC.frameSFX.empty()) character[0]->setFrameSFX(argumentAt(currIC.frameSFX, 0, '^'));
+		if (!currIC.frameShake.empty()) character[0]->setFrameShake(argumentAt(currIC.frameShake, 0, '^'));
+		if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, 0, '^'));
 	}
 }
 
@@ -220,7 +255,8 @@ void Courtroom::update()
 	if (shakeTicks > 0) shakeTicks--;
 
 	// chatbox and shouts get their own offsets
-	character->setShakes((background->isZoom()) ? 0 : xOffset, yOffset);
+	character[0]->setShakes((background->isZoom()) ? 0 : xOffset, yOffset);
+	character[1]->setShakes((background->isZoom()) ? 0 : xOffset, yOffset);
 	background->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
 	evidence->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
 	chatbox->setOffsets(
@@ -228,7 +264,8 @@ void Courtroom::update()
 		(shakeTicks > 0 && !background->isZoom()) ? -shakeForce + rand()%(shakeForce*2) : 0
 	);
 
-	character->update();
+	character[0]->update();
+	character[1]->update();
 	chatbox->update();
 	background->update();
 	shout->update();
@@ -262,12 +299,12 @@ void Courtroom::onChatboxFinished(void* pUserData)
 		std::string prefix;
 		if (!isPng) prefix = "(a)";
 
-		pSelf->character->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
+		pSelf->character[0]->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
 		if (!isPng)
 		{
-			if (!pSelf->currIC.frameSFX.empty()) pSelf->character->setFrameSFX(argumentAt(pSelf->currIC.frameSFX, 2, '^'));
-			if (!pSelf->currIC.frameShake.empty()) pSelf->character->setFrameShake(argumentAt(pSelf->currIC.frameShake, 2, '^'));
-			if (!pSelf->currIC.frameFlash.empty()) pSelf->character->setFrameFlash(argumentAt(pSelf->currIC.frameFlash, 2, '^'));
+			if (!pSelf->currIC.frameSFX.empty()) pSelf->character[0]->setFrameSFX(argumentAt(pSelf->currIC.frameSFX, 2, '^'));
+			if (!pSelf->currIC.frameShake.empty()) pSelf->character[0]->setFrameShake(argumentAt(pSelf->currIC.frameShake, 2, '^'));
+			if (!pSelf->currIC.frameFlash.empty()) pSelf->character[0]->setFrameFlash(argumentAt(pSelf->currIC.frameFlash, 2, '^'));
 		}
 	}
 }
@@ -288,16 +325,16 @@ void Courtroom::onAnimFinished(void* pUserData)
 	std::string prefix;
 	if (!isPng) prefix = ((useIdleAnim) ? "(a)" : "(b)");
 
-	pSelf->character->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
+	pSelf->character[0]->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
 	if (!isPng)
 	{
 		int index = (useIdleAnim) ? 2 : 1;
-		if (!pSelf->currIC.frameSFX.empty()) pSelf->character->setFrameSFX(argumentAt(pSelf->currIC.frameSFX, index, '^'));
-		if (!pSelf->currIC.frameShake.empty()) pSelf->character->setFrameShake(argumentAt(pSelf->currIC.frameShake, index, '^'));
-		if (!pSelf->currIC.frameFlash.empty()) pSelf->character->setFrameFlash(argumentAt(pSelf->currIC.frameFlash, index, '^'));
+		if (!pSelf->currIC.frameSFX.empty()) pSelf->character[0]->setFrameSFX(argumentAt(pSelf->currIC.frameSFX, index, '^'));
+		if (!pSelf->currIC.frameShake.empty()) pSelf->character[0]->setFrameShake(argumentAt(pSelf->currIC.frameShake, index, '^'));
+		if (!pSelf->currIC.frameFlash.empty()) pSelf->character[0]->setFrameFlash(argumentAt(pSelf->currIC.frameFlash, index, '^'));
 	}
 
-	if (useIdleAnim) pSelf->character->setOnAnimFinishedCallback(0, 0);
+	if (useIdleAnim) pSelf->character[0]->setOnAnimFinishedCallback(0, 0);
 
 	if (!pSelf->currIC.noInterrupt)
 	{

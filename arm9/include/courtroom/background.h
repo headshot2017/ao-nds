@@ -26,6 +26,7 @@ class Background
 
 	u16* deskGfx[4*6];
 	bool deskGfxVisible[4*6];
+	int currVertTiles;
 
 	int xOffset;
 	int yOffset;

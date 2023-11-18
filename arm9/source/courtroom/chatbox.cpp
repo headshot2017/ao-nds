@@ -118,8 +118,8 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	u8* chatboxArrowPal = readFile("/data/ao-nds/ui/spr_chatboxArrow.pal.bin");
 	spr_arrowGfx = oamAllocateGfx(&oamMain, SpriteSize_16x16, SpriteColorFormat_256Color);
 	dmaCopy(chatboxArrowImg, spr_arrowGfx, 16*16);
-	memcpy(&VRAM_F_EXT_SPR_PALETTE[3], chatboxArrowPal, 512);
-	oamSet(&oamMain, 127, arrowX, 174, 0, 3, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowGfx, -1, false, false, false, false, false);
+	memcpy(&VRAM_F_EXT_SPR_PALETTE[5], chatboxArrowPal, 512);
+	oamSet(&oamMain, 127, arrowX, 174, 0, 5, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowGfx, -1, false, false, false, false, false);
 	delete[] chatboxArrowImg;
 	delete[] chatboxArrowPal;
 
@@ -184,9 +184,10 @@ void Chatbox::setVisible(bool on)
 
 	if (on)
 	{
+		u16 oldPal = BG_PALETTE[0];
 		dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
 		memcpy(BG_PALETTE, bgPal, 512);
-		BG_PALETTE[0] = 0;
+		BG_PALETTE[0] = oldPal;
 		bgShow(bgIndex);
 	}
 	else

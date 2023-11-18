@@ -71,10 +71,11 @@ void readFrameIndexes(const std::string& value, std::vector<u16>& output)
 }
 
 
-Character::Character(Courtroom* pCourt, int start)
+Character::Character(Courtroom* pCourt, int start, int isPair)
 {
 	m_pCourt = pCourt;
 	oamStart = start;
+	pair = isPair;
 
 	charTicks = 0;
 	sfxTicks = 0;
@@ -94,9 +95,9 @@ Character::Character(Courtroom* pCourt, int start)
 		int x = (i%4) * 64;
 		int y = (i/4) * 64;
 
-		charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_256Color);
+		charGfx[i] = 0;
 		charGfxVisible[i] = false;
-		oamSet(&oamMain, oamStart+i, x, y, 2, 2, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamSet(&oamMain, oamStart+i, x, y, 2, 2+pair, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
 
 	setShakes(0, 0);
@@ -112,14 +113,14 @@ Character::~Character()
 	for (int i=0; i<4*3; i++)
 	{
 		oamSet(&oamMain, oamStart+i, 0, 0, 0, 0, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
-		oamFreeGfx(&oamMain, charGfx[i]);
+		if (charGfx[i]) oamFreeGfx(&oamMain, charGfx[i]);
 	}
 
 	if (charData) delete[] charData;
 	if (sfx) wav_free_handle(sfx);
 	clearFrameData();
 
-	timerStop(0);
+	timerStop(pair);
 }
 
 void Character::clearFrameData()
@@ -150,7 +151,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 			return;
 	}
 
-	timerStop(0);
+	timerStop(pair);
 
 	if (charData)
 	{
@@ -226,7 +227,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	clearFrameData();
 
 	vramSetBankF(VRAM_F_LCD);
-	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2], palSize);
+	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2+pair], palSize);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	delete[] charPalette;
 
@@ -236,10 +237,34 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		charGfxVisible[i] = false;
 	}
 
+	int oldGfxInUse = gfxInUse;
 	gfxInUse = frameInfo.realW*frameInfo.realH;
+	int maxGfx = std::max(oldGfxInUse, gfxInUse);
+	int minGfx = std::min(oldGfxInUse, gfxInUse);
 
-	for (int i=0; i<gfxInUse; i++)
+	for (int i=0; i<maxGfx; i++)
 	{
+		if (i >= minGfx)
+		{
+			if (!charGfx[i])
+			{
+				charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_256Color);
+				if (!charGfx[i])
+				{
+					// out of VRAM - don't show this tile
+					oamSetHidden(&oamMain, oamStart+i, true);
+					continue;
+				}
+			}
+			else
+			{
+				oamFreeGfx(&oamMain, charGfx[i]);
+				oamSetHidden(&oamMain, oamStart+i, true);
+				charGfx[i] = 0;
+				continue;
+			}
+		}
+
 		int x = ((flip) ?
 			((gfxInUse-i-1) % frameInfo.realW)*64 + 256-(frameInfo.realW*64)-frameInfo.offsetX :
 			(i%frameInfo.realW)*64 + frameInfo.offsetX)
@@ -258,7 +283,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		dmaCopy(offset, charGfx[i], 64*64);
 		mp3_fill_buffer();
 
-		oamSet(&oamMain, oamStart+i, x, y, 2, 2, SpriteSize_64x64, SpriteColorFormat_256Color, charGfx[i], -1, false, false, flip, false, false);
+		oamSet(&oamMain, oamStart+i, x, y, 2, 2+pair, SpriteSize_64x64, SpriteColorFormat_256Color, charGfx[i], -1, false, false, flip, false, false);
 		charGfxVisible[i] = true;
 	}
 
@@ -329,6 +354,34 @@ void Character::setVisible(bool on)
 	visible = on;
 }
 
+void Character::unload()
+{
+	if (charData)
+	{
+		delete[] charData;
+		charData = 0;
+	}
+	if (sfx)
+	{
+		wav_free_handle(sfx);
+		sfx = 0;
+	}
+	frameInfo.frameDurations.clear();
+	frameInfo.frameIndexes.clear();
+	stream.unload();
+
+	for (int i=0; i<gfxInUse; i++)
+	{
+		oamSetHidden(&oamMain, oamStart+i, true);
+		if (charGfx[i])
+		{
+			oamFreeGfx(&oamMain, charGfx[i]);
+			charGfx[i] = 0;
+		}
+	}
+	gfxInUse = 0;
+}
+
 void Character::triggerFrameData()
 {
 	if (frameSFX.count(currFrame))
@@ -362,10 +415,10 @@ void Character::update()
 	if (!loop && currFrame >= frameInfo.frameCount)
 		return;
 
-	if (!(TIMER_CR(0) & TIMER_ENABLE))
-		timerStart(0, ClockDivider_1024, 0, NULL);
+	if (!(TIMER_CR(pair) & TIMER_ENABLE))
+		timerStart(pair, ClockDivider_1024, 0, NULL);
 
-	u32 elapsed = timerElapsed(0);
+	u32 elapsed = timerElapsed(pair);
 
 	if (!sfxPlayed && sfx)
 	{
@@ -385,7 +438,7 @@ void Character::update()
 	if (frameInfo.frameCount && ms >= frameInfo.frameDurations[currFrame])
 	{
 		charTicks = 0;
-		timerPause(0);
+		timerPause(pair);
 
 		if (loop)
 			currFrame = (currFrame+1) % (frameInfo.frameCount);
@@ -419,6 +472,6 @@ void Character::update()
 			mp3_fill_buffer();
 		}
 
-		timerUnpause(0);
+		timerUnpause(pair);
 	}
 }

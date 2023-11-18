@@ -85,21 +85,16 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 
 	if (bgGfx && bgMap && bgPal)
 	{
+		u16 oldPal = BG_PALETTE[0];
 		dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
 		memcpy(bgGetMapPtr(bgIndex), bgMap, bgMapLen);
 		memcpy(BG_PALETTE, bgPal, bgPalLen);
-		BG_PALETTE[0] = 0;
+		BG_PALETTE[0] = oldPal;
+	}
 
-		delete[] bgGfx;
-		delete[] bgMap;
-		delete[] bgPal;
-	}
-	else
-	{
-		if (bgGfx) delete[] bgGfx;
-		if (bgMap) delete[] bgMap;
-		if (bgPal) delete[] bgPal;
-	}
+	if (bgGfx) delete[] bgGfx;
+	if (bgMap) delete[] bgMap;
+	if (bgPal) delete[] bgPal;
 
 	mp3_fill_buffer();
 }
