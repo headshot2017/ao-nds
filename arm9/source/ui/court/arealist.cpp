@@ -1,7 +1,6 @@
 #include "ui/court/arealist.h"
 
 #include <math.h>
-#include <string.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/input.h>

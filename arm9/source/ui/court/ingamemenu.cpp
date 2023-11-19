@@ -1,7 +1,5 @@
 #include "ui/court/ingamemenu.h"
 
-#include <string.h>
-
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>

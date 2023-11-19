@@ -1,7 +1,5 @@
 #include "ui/court/loading.h"
 
-#include <string.h>
-
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
@@ -42,7 +40,7 @@ void UICourtLoading::init()
 	oamSet(&oamSub, 0, 256-24, 192-36, 0, 0, SpriteSize_16x16, SpriteColorFormat_256Color, sprLoading, -1, false, false, false, false, false);
 
 	vramSetBankI(VRAM_I_LCD);
-	memcpy(&VRAM_I_EXT_SPR_PALETTE[0], sprLoadingPal, 512);
+	dmaCopy(sprLoadingPal, &VRAM_I_EXT_SPR_PALETTE[0], 512);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
 	delete[] sprLoadingPal;

@@ -1,7 +1,5 @@
 #include "ui/uimainmenu.h"
 
-#include <string.h>
-
 #include <nds/arm9/input.h>
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
@@ -44,11 +42,11 @@ void UIScreenMainMenu::init()
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	memcpy(BG_PALETTE, bgPal, 512);
+	dmaCopy(bgPal, BG_PALETTE, 512);
 
 	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
-	memcpy(BG_PALETTE_SUB, bgSubPal, 512);
+	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 
 	delete[] bgTiles;
 	delete[] bgMap;

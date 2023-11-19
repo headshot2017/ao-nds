@@ -1,7 +1,5 @@
 #include "courtroom/evidence.h"
 
-#include "string.h"
-
 #include <nds/dma.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
@@ -73,7 +71,7 @@ void Evidence::showEvidence(const std::string& image, bool rightSide)
 	dmaCopy(gfx, spriteGfx, 64*64);
 
 	vramSetBankF(VRAM_F_LCD);
-	memcpy(&VRAM_F_EXT_SPR_PALETTE[4], pal, 512);
+	dmaCopy(pal, &VRAM_F_EXT_SPR_PALETTE[4], 512);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
 	delete[] gfx;

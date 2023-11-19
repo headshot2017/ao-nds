@@ -1,7 +1,6 @@
 #include "ui/court/ic.h"
 
 #include <math.h>
-#include <string.h>
 
 #include <nds/dma.h>
 #include <nds/arm9/background.h>
@@ -125,7 +124,7 @@ void UICourtIC::init()
 	lbl_color->setText("Message");
 
 	kb_input = new AOkeyboard(4, lbl_color->nextOamInd(), 14);
-	memcpy(BG_PALETTE_SUB, bg_icPal, 512);
+	dmaCopy(bg_icPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 	isWritingChat = false;
 
@@ -269,7 +268,7 @@ void UICourtIC::updateInput()
 					pCourtUI->showname = kb_input->getValue();
 			}
 
-			memcpy(BG_PALETTE_SUB, (displayingOptions) ? bg_icExtPal : bg_icPal, 512);
+			dmaCopy((displayingOptions) ? bg_icExtPal : bg_icPal, BG_PALETTE_SUB, 512);
 			if (displayingOptions)
 			{
 				btn_additive->setVisible(true);

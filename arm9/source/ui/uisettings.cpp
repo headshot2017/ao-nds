@@ -1,7 +1,5 @@
 #include "ui/uisettings.h"
 
-#include <string.h>
-
 #include <nds/dma.h>
 #include <nds/arm9/background.h>
 
@@ -59,7 +57,7 @@ void UIScreenSettings::init()
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	memcpy(BG_PALETTE, bgPal, 512);
+	dmaCopy(bgPal, BG_PALETTE, 512);
 
 	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
@@ -91,7 +89,7 @@ void UIScreenSettings::init()
 	lbl_logInfo = new UILabel(&oamSub, lbl_logPreview->nextOamInd(), 6, 2, RGB15(31,31,31), 3, 0);
 
 	kb_input = new AOkeyboard(2, lbl_logInfo->nextOamInd(), 3);
-	memcpy(BG_PALETTE_SUB, bgSubPal, 512);
+	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 
 	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav");
 	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav");
@@ -136,7 +134,7 @@ void UIScreenSettings::updateInput()
 		int result = kb_input->updateInput();
 		if (result != 0)
 		{
-			memcpy(BG_PALETTE_SUB, bgSubPal, 512);
+			dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 			bgShow(subBgIndex);
 
 			btn_generalTab->setVisible(true);

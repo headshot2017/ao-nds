@@ -1,7 +1,5 @@
 #include "ui/court/judge.h"
 
-#include <string.h>
-
 #include <nds/dma.h>
 #include <nds/arm9/background.h>
 #include <nds/arm9/sound.h>
@@ -41,7 +39,7 @@ void UICourtJudge::init()
 
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	memcpy(BG_PALETTE_SUB, bgPal, 512);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	delete[] bgTiles;
 	delete[] bgMap;

@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <string.h>
 #include <algorithm>
 
 #include <nds/arm9/background.h>

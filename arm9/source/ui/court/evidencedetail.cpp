@@ -1,7 +1,5 @@
 #include "ui/court/evidencedetail.h"
 
-#include <string.h>
-
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
@@ -56,7 +54,7 @@ void UICourtEvidenceDetail::init()
 	spr_evidence = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 21, 40, 68, 68, 64, 64, 11);
 
 	kb_input = new AOkeyboard(4, spr_evidence->nextOamInd(), 12);
-	memcpy(BG_PALETTE_SUB, bgPal, 512);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 
 	inputting = 0;
@@ -108,7 +106,7 @@ void UICourtEvidenceDetail::updateInput()
 		int result = kb_input->updateInput();
 		if (result != 0)
 		{
-			memcpy(BG_PALETTE_SUB, bgPal, 512);
+			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 			showEverything();
 
 			if (result > 0)

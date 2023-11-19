@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <dirent.h>
 
+#include <nds/arm9/cache.h>
 #include <nds/arm9/decompress.h>
 #include <nds/arm9/input.h>
 #include <nds/interrupts.h>
@@ -163,6 +164,8 @@ u8* readFile(const std::string& filename, u32* outLen, const char* mode)
 
 	fread(data, len, 1, f);
 	fclose(f);
+
+	DC_FlushRange(data, len);
 
 	mp3_fill_buffer();
 

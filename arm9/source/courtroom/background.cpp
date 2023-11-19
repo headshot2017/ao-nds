@@ -2,7 +2,6 @@
 
 #include <dirent.h>
 #include <stdio.h>
-#include <string.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
@@ -122,10 +121,10 @@ void Background::setBgSide(const std::string& side, bool force)
 
 	// copy main background
 	dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
-	memcpy(bgGetMapPtr(bgIndex), bgMap, bgMapLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), bgMapLen);
 
 	vramSetBankE(VRAM_E_LCD);
-	memcpy(&VRAM_E_EXT_PALETTE[bgIndex][0], bgPal, bgPalLen);
+	dmaCopy(bgPal, &VRAM_E_EXT_PALETTE[bgIndex][0], bgPalLen);
 	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 
 	BG_PALETTE[0] = ((u16*)bgPal)[0];
@@ -162,7 +161,7 @@ void Background::setBgSide(const std::string& side, bool force)
 	if (deskPal)
 	{
 		vramSetBankF(VRAM_F_LCD);
-		memcpy(&VRAM_F_EXT_SPR_PALETTE[1], deskPal, deskPalLen); // copy palette
+		dmaCopy(deskPal, &VRAM_F_EXT_SPR_PALETTE[1], deskPalLen); // copy palette
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 		delete[] deskPal;
 	}
@@ -233,10 +232,10 @@ void Background::setZoom(bool scrollLeft, bool force)
 
 	// copy main background
 	dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
-	memcpy(bgGetMapPtr(bgIndex), bgMap, bgMapLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), bgMapLen);
 
 	vramSetBankE(VRAM_E_LCD);
-	memcpy(&VRAM_E_EXT_PALETTE[bgIndex][0], bgPal, bgPalLen);
+	dmaCopy(bgPal, &VRAM_E_EXT_PALETTE[bgIndex][0], bgPalLen);
 	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 
 	BG_PALETTE[0] = ((u16*)bgPal)[0];

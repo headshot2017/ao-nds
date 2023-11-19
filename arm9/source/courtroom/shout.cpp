@@ -1,7 +1,5 @@
 #include "courtroom/shout.h"
 
-#include <string.h>
-
 #include <nds/arm9/background.h>
 
 #include "courtroom/courtroom.h"
@@ -87,8 +85,8 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 	{
 		u16 oldPal = BG_PALETTE[0];
 		dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
-		memcpy(bgGetMapPtr(bgIndex), bgMap, bgMapLen);
-		memcpy(BG_PALETTE, bgPal, bgPalLen);
+		dmaCopy(bgMap, bgGetMapPtr(bgIndex), bgMapLen);
+		dmaCopy(bgPal, BG_PALETTE, bgPalLen);
 		BG_PALETTE[0] = oldPal;
 	}
 

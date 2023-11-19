@@ -1,7 +1,5 @@
 #include "ui/selectcross.h"
 
-#include <string.h>
-
 #include <nds/dma.h>
 
 #include "mp3_shared.h"
@@ -28,13 +26,13 @@ UISelectCross::UISelectCross(OamState* chosenOam, int oamStartInd, int palSlot)
 	if (oam == &oamMain)
 	{
 		vramSetBankF(VRAM_F_LCD);
-		memcpy(&VRAM_F_EXT_SPR_PALETTE[palSlot], pal, 512);
+		dmaCopy(pal, &VRAM_F_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	}
 	else
 	{
 		vramSetBankI(VRAM_I_LCD);
-		memcpy(&VRAM_I_EXT_SPR_PALETTE[palSlot], pal, 512);
+		dmaCopy(pal, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
 	mp3_fill_buffer();

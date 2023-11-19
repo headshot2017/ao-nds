@@ -1,7 +1,5 @@
 #include "ui/court/pair.h"
 
-#include <string.h>
-
 #include <nds/dma.h>
 #include <nds/arm9/background.h>
 #include <nds/arm9/sound.h>

@@ -1,7 +1,6 @@
 #include "ui/court/musiclist.h"
 
 #include <algorithm>
-#include <string.h>
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/input.h>
@@ -59,7 +58,7 @@ void UICourtMusicList::init()
 	btn_sliderHandle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_sliderHandle", btn_musicBtn[6]->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 12);
 
 	kb_search = new AOkeyboard(1, btn_sliderHandle->nextOamInd(), 13);
-	memcpy(BG_PALETTE_SUB, bgPal, 512);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	btn_back->assignKey(KEY_B);
 	btn_listToggle->assignKey(KEY_R);
@@ -88,7 +87,7 @@ void UICourtMusicList::updateInput()
 		int result = kb_search->updateInput();
 		if (result != 0)
 		{
-			memcpy(BG_PALETTE_SUB, bgPal, 512);
+			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 			bgShow(bgIndex);
 
 			btn_back->setVisible(true);
