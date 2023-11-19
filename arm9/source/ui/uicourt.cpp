@@ -62,6 +62,7 @@ void UIScreenCourt::init()
 	bgExtPaletteEnable();
 	currChar = -1;
 	sendTicks = 0;
+	receiveTicks = 0;
 	memset(bars, 0, sizeof(bars));
 
 	showname = gEngine->getShowname();
@@ -121,6 +122,18 @@ void UIScreenCourt::update()
 		subScreen->init();
 		nextScreen = nullptr;
 	}
+
+	if (receiveTicks <= 0)
+	{
+		if (!icReceiveQueue.empty())
+		{
+			court->MSchat(icReceiveQueue.front());
+			icReceiveQueue.pop_front();
+			receiveTicks = 5;
+		}
+	}
+	else
+		receiveTicks--;
 
 	court->update();
 	subScreen->update();
@@ -384,7 +397,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.blip = gEngine->getCharBlip(lowerCharname);
 	if (data.blip.empty()) data.blip = pSelf->charList[charID].blip;
 
-	pSelf->court->MSchat(data);
+	pSelf->icReceiveQueue.push_back(data);
 }
 
 void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)

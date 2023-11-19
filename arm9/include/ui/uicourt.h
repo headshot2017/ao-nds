@@ -94,6 +94,9 @@ class UIScreenCourt : public UIScreen
 	int sendTicks;
 	std::deque<std::string> icSendQueue;
 
+	int receiveTicks;
+	std::deque<MSchatStruct> icReceiveQueue;
+
 public:
 	UIScreenCourt();
 	~UIScreenCourt();
