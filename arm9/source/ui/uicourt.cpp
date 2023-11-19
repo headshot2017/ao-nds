@@ -16,6 +16,7 @@
 #include "ui/uidisconnected.h"
 #include "ui/court/loading.h"
 #include "ui/court/console.h"
+#include "ui/court/message.h"
 
 const char* indToSide[6] = {
 	"def",
@@ -410,10 +411,32 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 	std::string chatmsg = argumentAt(msg, 2);
 	AOdecode(chatmsg);
 
+	bool isServer = (argumentAt(msg, 3) == "1");
+
 	// insert to chatlog
 	std::string logMsg = name+": "+chatmsg;
 	separateLines(0, logMsg.c_str(), 7, false, pSelf->oocLog);
 	while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
+
+	if (isServer)
+	{
+		const char* errors[] = {
+			"Blankposting",
+			"a muted area",
+			"custom emotes",
+			"a repeat",
+		};
+
+		for (int i=0; i<4; i++)
+		{
+			if (chatmsg.find(errors[i]) != std::string::npos)
+			{
+				pSelf->icSendQueue.clear();
+				pSelf->changeScreen(new UICourtMessage(pSelf, chatmsg));
+				break;
+			}
+		}
+	}
 }
 
 void UIScreenCourt::onMessageCharsCheck(void* pUserData, std::string msg)

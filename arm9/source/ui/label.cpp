@@ -64,7 +64,7 @@ void UILabel::setVisible(bool on)
 
 void UILabel::setPos(int x, int y, bool center)
 {
-	int w = getTextWidth(fontID, currText.c_str());
+	int w = getTextWidth(fontID, currText.c_str(), gfxPerLine*32);
 
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
