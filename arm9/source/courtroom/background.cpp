@@ -60,9 +60,7 @@ Background::Background()
 		int x = (i%4) * 64;
 		int y = (i/4) * 32;
 
-		//deskGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x32, SpriteColorFormat_256Color);
 		deskGfx[i] = 0;
-		deskGfxVisible[i] = false;
 		oamSet(&oamMain, i, x, y, 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
 }
@@ -146,18 +144,6 @@ void Background::setBgSide(const std::string& side, bool force)
 
 	// handle desk sprite
 
-	int horTiles, verTiles;
-	int horTilesOld, verTilesOld;
-
-	readDeskTiles(deskTiles.get(sideToDesk[currentSide]), &horTilesOld, &verTilesOld);
-	readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
-
-	int gfxInUseOld = horTilesOld * verTilesOld;
-	int gfxInUse = horTiles * verTiles;
-	int maxHorTiles = std::max(horTilesOld, horTiles);
-	int maxVerTiles = std::max(verTilesOld, verTiles);
-	int minGfx = std::min(gfxInUseOld, gfxInUse);
-
 	if (deskPal)
 	{
 		vramSetBankF(VRAM_F_LCD);
@@ -166,36 +152,34 @@ void Background::setBgSide(const std::string& side, bool force)
 		delete[] deskPal;
 	}
 
-	for (int y=0; y<maxVerTiles; y++)
+	int horTiles, verTiles;
+	readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
+
+	for (int i=0; i<4*6; i++)
 	{
-		for (int x=0; x<maxHorTiles; x++)
+		if (deskGfx[i]) oamFreeGfx(&oamMain, deskGfx[i]);
+		oamSetHidden(&oamMain, i, true);
+		deskGfx[i] = 0;
+	}
+
+	for (int y=0; y<verTiles; y++)
+	{
+		for (int x=0; x<horTiles; x++)
 		{
 			mp3_fill_buffer();
 
 			int i = y*4+x;
 
-			if (i >= minGfx)
+			deskGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x32, SpriteColorFormat_256Color);
+			if (!deskGfx[i])
 			{
-				if (!deskGfx[i] && deskGfxImg)
-				{
-					deskGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x32, SpriteColorFormat_256Color);
-				}
-				else
-				{
-					if (deskGfx[i])
-					{
-						oamFreeGfx(&oamMain, deskGfx[i]);
-						oamSetHidden(&oamMain, i, true);
-						deskGfx[i] = 0;
-					}
-					continue;
-				}
+				oamSetHidden(&oamMain, i, true);
+				continue;
 			}
 
 			// copy specific 64x32 tile from image data
 			u8* offset = deskGfxImg + i * 64*32;
 			dmaCopy(offset, deskGfx[i], 64*32);
-			deskGfxVisible[i] = true;
 
 			oamSet(&oamMain, i, x*64+xOffset, y*32+yOffset + 192 - (verTiles*32), 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfx[i] || !visible, false, false, false);
 		}

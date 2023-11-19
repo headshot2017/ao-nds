@@ -120,11 +120,10 @@ void Courtroom::handleChat()
 	character[0]->setFlip(currIC.flip);
 	character[0]->setOnAnimFinishedCallback(onAnimFinished, this);
 
+	character[1]->unload();
+
 	if (currIC.emoteMod == 5)
-	{
 		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
-		character[1]->unload();
-	}
 	else
 	{
 		background->setBgSide(currIC.side);
@@ -153,8 +152,6 @@ void Courtroom::handleChat()
 
 			character[1]->setCharImage(currIC.otherName, prefix + currIC.otherEmote);
 		}
-		else
-			character[1]->unload();
 	}
 
 	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)

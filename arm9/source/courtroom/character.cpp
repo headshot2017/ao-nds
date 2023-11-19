@@ -96,7 +96,6 @@ Character::Character(Courtroom* pCourt, int start, int isPair)
 		int y = (i/4) * 64;
 
 		charGfx[i] = 0;
-		charGfxVisible[i] = false;
 		oamSet(&oamMain, oamStart+i, x, y, 2, 2+pair, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
 
@@ -231,38 +230,25 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	delete[] charPalette;
 
-	for (int i=0; i<gfxInUse; i++)
+	for (int i=0; i<4*3; i++)
 	{
 		oamSet(&oamMain, oamStart+i, 0, 0, 0, 0, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
-		charGfxVisible[i] = false;
+		if (charGfx[i])
+		{
+			oamFreeGfx(&oamMain, charGfx[i]);
+			charGfx[i] = 0;
+		}
 	}
 
-	int oldGfxInUse = gfxInUse;
 	gfxInUse = frameInfo.realW*frameInfo.realH;
-	int maxGfx = std::max(oldGfxInUse, gfxInUse);
-	int minGfx = std::min(oldGfxInUse, gfxInUse);
 
-	for (int i=0; i<maxGfx; i++)
+	for (int i=0; i<gfxInUse; i++)
 	{
-		if (i >= minGfx)
+		charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_256Color);
+		if (!charGfx[i])
 		{
-			if (!charGfx[i])
-			{
-				charGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x64, SpriteColorFormat_256Color);
-				if (!charGfx[i])
-				{
-					// out of VRAM - don't show this tile
-					oamSetHidden(&oamMain, oamStart+i, true);
-					continue;
-				}
-			}
-			else
-			{
-				oamFreeGfx(&oamMain, charGfx[i]);
-				oamSetHidden(&oamMain, oamStart+i, true);
-				charGfx[i] = 0;
-				continue;
-			}
+			oamSetHidden(&oamMain, oamStart+i, true);
+			continue;
 		}
 
 		int x = ((flip) ?
@@ -284,7 +270,6 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		mp3_fill_buffer();
 
 		oamSet(&oamMain, oamStart+i, x, y, 2, 2+pair, SpriteSize_64x64, SpriteColorFormat_256Color, charGfx[i], -1, false, false, flip, false, false);
-		charGfxVisible[i] = true;
 	}
 
 	oamUpdate(&oamMain);
