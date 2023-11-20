@@ -64,6 +64,8 @@ void UIScreenCourt::init()
 	currChar = -1;
 	sendTicks = 0;
 	receiveTicks = 0;
+	loggedIn = false;
+	guard = false;
 	memset(bars, 0, sizeof(bars));
 
 	showname = gEngine->getShowname();
@@ -104,6 +106,8 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("KK", onMessageKK, this);
 	sock->addMessageCallback("KB", onMessageKB, this);
 	sock->addMessageCallback("BD", onMessageBD, this);
+	sock->addMessageCallback("AUTH", onMessageAUTH, this);
+	sock->addMessageCallback("ZZ", onMessageZZ, this);
 
 	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%";
 	gEngine->getSocket()->sendData(hdid);
@@ -436,6 +440,16 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 				break;
 			}
 		}
+
+		if (chatmsg.find("Logged in as") != std::string::npos)
+		{
+			pSelf->loggedIn = true;
+			std::string logMsg = "You can now enable Guard Mode in the main menu. This will allow you to receive modcalls.";
+			separateLines(0, logMsg.c_str(), 7, false, pSelf->oocLog);
+			while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
+		}
+		else if (chatmsg.find("no longer a mod") != std::string::npos)
+			pSelf->loggedIn = false;
 	}
 }
 
@@ -646,4 +660,31 @@ void UIScreenCourt::onMessageKB(void* pUserData, std::string msg)
 void UIScreenCourt::onMessageBD(void* pUserData, std::string msg)
 {
 	gEngine->changeScreen(new UIScreenDisconnected("You are banned from this server", argumentAt(msg, 1), false));
+}
+
+void UIScreenCourt::onMessageAUTH(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	std::string auth = argumentAt(msg, 1);
+	pSelf->loggedIn = (auth == "1");
+	if (pSelf->loggedIn)
+	{
+		std::string logMsg = "You can now enable Guard Mode in the main menu. This will allow you to receive modcalls.";
+		separateLines(0, logMsg.c_str(), 7, false, pSelf->oocLog);
+		while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
+	}
+}
+
+void UIScreenCourt::onMessageZZ(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	if (!pSelf->guard) return;
+
+	std::string modcall = "[MOD CALL] " + argumentAt(msg, 1);
+	separateLines(0, modcall.c_str(), 7, false, pSelf->oocLog);
+	while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
+
+	pSelf->changeScreen(new UICourtMessage(pSelf, modcall));
 }

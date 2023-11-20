@@ -97,6 +97,8 @@ class UIScreenCourt : public UIScreen
 	int receiveTicks;
 	std::deque<MSchatStruct> icReceiveQueue;
 
+	bool loggedIn;
+
 public:
 	UIScreenCourt();
 	~UIScreenCourt();
@@ -117,6 +119,7 @@ public:
 	int getCurrCharID() {return currChar;}
 	charInfo& getCurrChar() {return charList[currChar];}
 	const std::vector<emoteInfo>& getCharEmotes() {return charEmotes;}
+	bool isMod() {return loggedIn;}
 
 	static void onMessageID(void* pUserData, std::string msg);
 	static void onMessagePN(void* pUserData, std::string msg);
@@ -136,6 +139,8 @@ public:
 	static void onMessageKK(void* pUserData, std::string msg);
 	static void onMessageKB(void* pUserData, std::string msg);
 	static void onMessageBD(void* pUserData, std::string msg);
+	static void onMessageAUTH(void* pUserData, std::string msg);
+	static void onMessageZZ(void* pUserData, std::string msg);
 
 	wav_handle* sndSelect;
 	wav_handle* sndCancel;
@@ -147,6 +152,7 @@ public:
 	std::string showname;
 	std::string oocName;
 
+	bool guard;
 	int bars[2];
 
 	struct ICControls
