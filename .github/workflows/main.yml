@@ -54,7 +54,7 @@ jobs:
       shell: cmd
       run: |
         cd converter
-        copy libstdc++-6.dll dist
+        copy "libstdc++-6.dll" dist
         copy libgcc_s_sjlj-1.dll dist
         copy FreeImage.dll dist
         copy grit.exe dist
