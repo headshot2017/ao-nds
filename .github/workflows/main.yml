@@ -52,11 +52,13 @@ jobs:
 
     - name: Copy files to dist
       shell: cmd
-      run: copy libstdc++-6.dll libgcc_s_sjlj-1.dll FreeImage.dll grit.exe dist
+      run: |
+        cd converter
+        copy libstdc++-6.dll libgcc_s_sjlj-1.dll FreeImage.dll grit.exe dist
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: Converter tool
-        path: ./dist
+        path: ./converter/dist
         
