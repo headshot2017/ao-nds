@@ -53,6 +53,7 @@ jobs:
     - name: Copy files to dist
       shell: cmd
       run: |
+        cd
         cd converter
         copy libstdc++-6.dll libgcc_s_sjlj-1.dll FreeImage.dll grit.exe dist
 
