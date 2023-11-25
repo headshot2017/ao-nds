@@ -37,6 +37,7 @@
 		<Unit filename="arm9/include/courtroom/courtroom.h" />
 		<Unit filename="arm9/include/courtroom/evidence.h" />
 		<Unit filename="arm9/include/courtroom/shout.h" />
+		<Unit filename="arm9/include/courtroom/wtce.h" />
 		<Unit filename="arm9/include/engine.h" />
 		<Unit filename="arm9/include/fonts.h" />
 		<Unit filename="arm9/include/global.h" />
@@ -125,6 +126,7 @@
 		<Unit filename="arm9/source/courtroom/courtroom.cpp" />
 		<Unit filename="arm9/source/courtroom/evidence.cpp" />
 		<Unit filename="arm9/source/courtroom/shout.cpp" />
+		<Unit filename="arm9/source/courtroom/wtce.cpp" />
 		<Unit filename="arm9/source/engine.cpp" />
 		<Unit filename="arm9/source/fonts.cpp" />
 		<Unit filename="arm9/source/global.cpp" />

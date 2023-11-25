@@ -130,6 +130,7 @@ public:
 	static void onMessageMC(void* pUserData, std::string msg);
 	static void onMessageMS(void* pUserData, std::string msg);
 	static void onMessageCT(void* pUserData, std::string msg);
+	static void onMessageRT(void* pUserData, std::string msg);
 	static void onMessageCharsCheck(void* pUserData, std::string msg);
 	static void onMessagePV(void* pUserData, std::string msg);
 	static void onMessageFA(void* pUserData, std::string msg);

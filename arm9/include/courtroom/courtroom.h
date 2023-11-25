@@ -9,6 +9,7 @@
 #include "courtroom/character.h"
 #include "courtroom/shout.h"
 #include "courtroom/evidence.h"
+#include "courtroom/wtce.h"
 #include "mp3_shared.h"
 
 struct MSchatStruct
@@ -83,6 +84,7 @@ class Courtroom
 	Character* character[2];
 	Shout* shout;
 	Evidence* evidence;
+	WTCE* wtce;
 
 	void handleChat();
 
@@ -95,6 +97,7 @@ public:
 	Character* getCharacter(int pair) {return character[pair];}
 	Shout* getShout() {return shout;}
 	Evidence* getEvidence() {return evidence;}
+	WTCE* getWTCE() {return wtce;}
 
 	void setVisible(bool on);
 	void setTalkingAnim(bool on);

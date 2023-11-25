@@ -27,6 +27,7 @@ Courtroom::Courtroom()
 	character[1] = new Character(this, 62, 1);
 	shout = new Shout(this);
 	evidence = new Evidence;
+	wtce = new WTCE;
 
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
 	shout->setOnShoutFinishedCallback(onShoutFinished, this);
@@ -40,6 +41,7 @@ Courtroom::~Courtroom()
 	delete character[1];
 	delete shout;
 	delete evidence;
+	delete wtce;
 
 	wav_free_handle(sndRealization);
 
@@ -55,6 +57,7 @@ void Courtroom::setVisible(bool on)
 	character[1]->setVisible(on);
 	shout->setVisible(on);
 	evidence->setVisible(on);
+	wtce->setVisible(on);
 }
 
 void Courtroom::setTalkingAnim(bool on)
@@ -255,6 +258,7 @@ void Courtroom::update()
 	character[1]->setShakes((background->isZoom()) ? 0 : xOffset, yOffset);
 	background->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
 	evidence->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
+	wtce->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
 	chatbox->setOffsets(
 		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0,
 		(shakeTicks > 0 && !background->isZoom()) ? -shakeForce + rand()%(shakeForce*2) : 0
@@ -266,6 +270,7 @@ void Courtroom::update()
 	background->update();
 	shout->update();
 	evidence->update();
+	wtce->update();
 
 	if (flashTicks)
 	{

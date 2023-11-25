@@ -97,6 +97,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("MC", onMessageMC, this);
 	sock->addMessageCallback("MS", onMessageMS, this);
 	sock->addMessageCallback("CT", onMessageCT, this);
+	sock->addMessageCallback("RT", onMessageRT, this);
 	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 	sock->addMessageCallback("PV", onMessagePV, this);
 	sock->addMessageCallback("FA", onMessageFA, this);
@@ -451,6 +452,13 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 		else if (chatmsg.find("no longer a mod") != std::string::npos)
 			pSelf->loggedIn = false;
 	}
+}
+
+void UIScreenCourt::onMessageRT(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	pSelf->court->getWTCE()->play(msg);
 }
 
 void UIScreenCourt::onMessageCharsCheck(void* pUserData, std::string msg)
