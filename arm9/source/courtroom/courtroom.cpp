@@ -27,7 +27,7 @@ Courtroom::Courtroom()
 	character[1] = new Character(this, 62, 1);
 	shout = new Shout(this);
 	evidence = new Evidence;
-	wtce = new WTCE(74);
+	wtce = new WTCE(this, 74);
 
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
 	shout->setOnShoutFinishedCallback(onShoutFinished, this);

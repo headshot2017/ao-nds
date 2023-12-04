@@ -176,6 +176,11 @@ void Engine::updateInput()
 
 void Engine::update()
 {
+	if (aosocket)
+	{
+		aosocket->update();
+	}
+
 	if (screen)
 	{
 		screen->update();
@@ -219,11 +224,6 @@ void Engine::update()
 
 		REG_BLDCNT = BLEND_FADE_BLACK | BLEND_SRC_BACKDROP | BLEND_SRC_BG0 | BLEND_SRC_BG1 | BLEND_SRC_BG2 | BLEND_SRC_BG3 | BLEND_SRC_SPRITE;
 		REG_BLDCNT_SUB = BLEND_FADE_BLACK | BLEND_SRC_BACKDROP | BLEND_SRC_BG0 | BLEND_SRC_BG1 | BLEND_SRC_BG2 | BLEND_SRC_BG3 | BLEND_SRC_SPRITE;
-	}
-
-	if (aosocket)
-	{
-		aosocket->update();
 	}
 }
 
