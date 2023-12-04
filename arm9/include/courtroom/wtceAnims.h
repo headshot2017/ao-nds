@@ -70,6 +70,7 @@ struct keyFrame
 		struct
 		{
 			int oamIndex;
+			vec2 spriteSize;
 			int from;
 			int to;
 			int tickLength;

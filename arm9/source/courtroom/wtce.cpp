@@ -360,6 +360,7 @@ void WTCE::update()
 					tickLerp.ticks = 0;
 					tickLerp.affineIndex = frame.scale.affineIndex;
 					tickLerp.oamIndex = frame.scale.oamIndex;
+					tickLerp.spriteSize = frame.scale.spriteSize;
 					tickLerp.maxTicks = frame.scale.tickLength;
 					tickLerp.from.x = inttof32(frame.scale.from);
 					tickLerp.to.x = inttof32(frame.scale.to);
@@ -439,6 +440,14 @@ void WTCE::update()
 		tickLerp.ticks++;
 		if (tickLerp.ticks > tickLerp.maxTicks)
 		{
+			if (tickLerp.affineIndex > -1 && x >= 256)
+			{
+				int xPos = oamMain.oamMemory[oamStart + tickLerp.oamIndex].x;
+				int yPos = oamMain.oamMemory[oamStart + tickLerp.oamIndex].y;
+
+				oamSetAffineIndex(&oamMain, oamStart + tickLerp.oamIndex, -1, false);
+				oamSetXY(&oamMain, oamStart + tickLerp.oamIndex, xPos + (tickLerp.spriteSize.x>>1), yPos + (tickLerp.spriteSize.y>>1));
+			}
 			allLerps.erase(allLerps.begin() + i);
 			i--;
 		}

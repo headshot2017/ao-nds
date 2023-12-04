@@ -175,9 +175,9 @@ keyFrameMap anim_notGuilty = {
 		{KEYFRAME_MOVE, {.move={0, {64,64}, {1,1}, {NOTGUILTY_X1,NOTGUILTY_Y1}, {NOTGUILTY_X1,NOTGUILTY_Y1}, 1, linearLerp }}},
 		{KEYFRAME_MOVE, {.move={1, {64,64}, {1,1}, {NOTGUILTY_X1+33,NOTGUILTY_Y1+1}, {NOTGUILTY_X1+33,NOTGUILTY_Y1+1}, 1, linearLerp }}},
 		{KEYFRAME_MOVE, {.move={2, {64,64}, {1,1}, {NOTGUILTY_X1+58,NOTGUILTY_Y1}, {NOTGUILTY_X1+58,NOTGUILTY_Y1}, 1, linearLerp }}},
-		{KEYFRAME_SCALE, {.scale={0, 140, 256, 10, 1, linearLerp}}},
-		{KEYFRAME_SCALE, {.scale={1, 140, 256, 10, 1, linearLerp}}},
-		{KEYFRAME_SCALE, {.scale={2, 140, 256, 10, 1, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={0, {64,64}, 140, 256, 10, 1, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={1, {64,64}, 140, 256, 10, 1, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={2, {64,64}, 140, 256, 10, 1, linearLerp}}},
 	}},
 
 	{10, {
@@ -193,12 +193,12 @@ keyFrameMap anim_notGuilty = {
 		{KEYFRAME_MOVE, {.move={6, {64,64}, {1,1}, {NOTGUILTY_X2+76,NOTGUILTY_Y2}, {NOTGUILTY_X2+76,NOTGUILTY_Y2}, 1, linearLerp }}},
 		{KEYFRAME_MOVE, {.move={7, {64,64}, {1,1}, {NOTGUILTY_X2+95,NOTGUILTY_Y2}, {NOTGUILTY_X2+95,NOTGUILTY_Y2}, 1, linearLerp }}},
 		{KEYFRAME_MOVE, {.move={8, {64,64}, {1,1}, {NOTGUILTY_X2+122,NOTGUILTY_Y2+11}, {NOTGUILTY_X2+122,NOTGUILTY_Y2+11}, 1, linearLerp }}},
-		{KEYFRAME_SCALE, {.scale={3, 140, 256, 10, 2, linearLerp}}},
-		{KEYFRAME_SCALE, {.scale={4, 140, 256, 10, 2, linearLerp}}},
-		{KEYFRAME_SCALE, {.scale={5, 140, 256, 10, 2, linearLerp}}},
-		{KEYFRAME_SCALE, {.scale={6, 140, 256, 10, 2, linearLerp}}},
-		{KEYFRAME_SCALE, {.scale={7, 140, 256, 10, 2, linearLerp}}},
-		{KEYFRAME_SCALE, {.scale={8, 140, 256, 10, 2, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={3, {64,64}, 140, 256, 10, 2, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={4, {64,64}, 140, 256, 10, 2, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={5, {64,64}, 140, 256, 10, 2, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={6, {64,64}, 140, 256, 10, 2, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={7, {64,64}, 140, 256, 10, 2, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={8, {64,64}, 140, 256, 10, 2, linearLerp}}},
 	}},
 
 	{70, {
@@ -215,7 +215,7 @@ keyFrameMap anim_guilty = {
 	{0, {
 		{KEYFRAME_VISIBLE, {.visible={1, 5, false}}}, // hide "uilty" and move "G"
 		{KEYFRAME_MOVE, {.move={0, {64,64}, {1,1}, {GUILTY_X,GUILTY_Y}, {GUILTY_X,GUILTY_Y}, 1, linearLerp }}},
-		{KEYFRAME_SCALE, {.scale={0, 160, 256, 8, 1, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={0, {64,64}, 160, 256, 8, 1, linearLerp}}},
 	}},
 	{8, {
 		{KEYFRAME_SFX},
@@ -225,7 +225,7 @@ keyFrameMap anim_guilty = {
 	{10, {
 		{KEYFRAME_VISIBLE, {.visible={1, 1, true}}}, // show "u"
 		{KEYFRAME_MOVE, {.move={1, {64,64}, {1,1}, {GUILTY_X+33,GUILTY_Y}, {GUILTY_X+33,GUILTY_Y}, 1, linearLerp }}},
-		{KEYFRAME_SCALE, {.scale={1, 160, 256, 8, 2, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={1, {64,64}, 160, 256, 8, 2, linearLerp}}},
 	}},
 	{18, {
 		{KEYFRAME_SFX},
@@ -235,7 +235,7 @@ keyFrameMap anim_guilty = {
 	{20, {
 		{KEYFRAME_VISIBLE, {.visible={2, 1, true}}}, // show "i"
 		{KEYFRAME_MOVE, {.move={2, {64,64}, {1,1}, {GUILTY_X+58,GUILTY_Y}, {GUILTY_X+58,GUILTY_Y}, 1, linearLerp }}},
-		{KEYFRAME_SCALE, {.scale={2, 160, 256, 8, 3, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={2, {64,64}, 160, 256, 8, 3, linearLerp}}},
 	}},
 	{28, {
 		{KEYFRAME_SFX},
@@ -245,7 +245,7 @@ keyFrameMap anim_guilty = {
 	{30, {
 		{KEYFRAME_VISIBLE, {.visible={3, 1, true}}}, // show "l"
 		{KEYFRAME_MOVE, {.move={3, {64,64}, {1,1}, {GUILTY_X+76,GUILTY_Y}, {GUILTY_X+76,GUILTY_Y}, 1, linearLerp }}},
-		{KEYFRAME_SCALE, {.scale={3, 160, 256, 8, 4, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={3, {64,64}, 160, 256, 8, 4, linearLerp}}},
 	}},
 	{38, {
 		{KEYFRAME_SFX},
@@ -255,7 +255,7 @@ keyFrameMap anim_guilty = {
 	{40, {
 		{KEYFRAME_VISIBLE, {.visible={4, 1, true}}}, // show "t"
 		{KEYFRAME_MOVE, {.move={4, {64,64}, {1,1}, {GUILTY_X+95,GUILTY_Y}, {GUILTY_X+95,GUILTY_Y}, 1, linearLerp }}},
-		{KEYFRAME_SCALE, {.scale={4, 160, 256, 8, 5, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={4, {64,64}, 160, 256, 8, 5, linearLerp}}},
 	}},
 	{48, {
 		{KEYFRAME_SFX},
@@ -265,7 +265,7 @@ keyFrameMap anim_guilty = {
 	{50, {
 		{KEYFRAME_VISIBLE, {.visible={5, 1, true}}}, // show "y"
 		{KEYFRAME_MOVE, {.move={5, {64,64}, {1,1}, {GUILTY_X+122,GUILTY_Y+11}, {GUILTY_X+122,GUILTY_Y+11}, 1, linearLerp }}},
-		{KEYFRAME_SCALE, {.scale={5, 160, 256, 8, 6, linearLerp}}},
+		{KEYFRAME_SCALE, {.scale={5, {64,64}, 160, 256, 8, 6, linearLerp}}},
 	}},
 	{58, {
 		{KEYFRAME_SFX},
