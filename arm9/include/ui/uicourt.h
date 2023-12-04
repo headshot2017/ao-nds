@@ -96,6 +96,7 @@ class UIScreenCourt : public UIScreen
 
 	int receiveTicks;
 	std::deque<MSchatStruct> icReceiveQueue;
+	std::deque<std::string> rtReceiveQueue;
 
 	bool loggedIn;
 

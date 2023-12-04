@@ -137,6 +137,12 @@ void UIScreenCourt::update()
 			icReceiveQueue.pop_front();
 			receiveTicks = 5;
 		}
+		else if (!rtReceiveQueue.empty())
+		{
+			court->getWTCE()->play(rtReceiveQueue.front());
+			rtReceiveQueue.pop_front();
+			receiveTicks = 5;
+		}
 	}
 	else
 		receiveTicks--;
@@ -458,7 +464,7 @@ void UIScreenCourt::onMessageRT(void* pUserData, std::string msg)
 {
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
-	pSelf->court->getWTCE()->play(msg);
+	pSelf->rtReceiveQueue.push_back(msg);
 }
 
 void UIScreenCourt::onMessageCharsCheck(void* pUserData, std::string msg)
