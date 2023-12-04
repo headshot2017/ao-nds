@@ -9,20 +9,15 @@ Made with devkitARM & libnds by Headshotnoby<br/>
 Additional code by stonedDiscord<br/>
 UI design by Samevi
 
-**STILL UNDER DEVELOPMENT!**
-I still have to finish writing code that handles these:
-- [x] Backgrounds
-- [x] Desk sprites
-- [x] Character sprites
-- [x] Chatbox
-- [x] Evidence sprites
-- [x] Music
-- [x] Sound effects
-- [x] Main menu UI
-- [x] Server browser UI
-- [x] Courtroom UI (bottom screen)
-- [ ] All IC chat effects
-
-
 Before you can use this, you need to use the AO NDS converter tool
 to convert the contents of the base folder from the PC version to formats that are compatible with the NDS.
+
+**This is still under development!**
+
+## Assets and libraries used
+* "Igiari" font by [Caveras](https://caveras.net)
+* "AceName" font by unknown (found on webAO)
+* [libnds](http://github.com/devkitPro/libnds)
+* [dswifi](http://github.com/devkitPro/dswifi)
+* [stb_truetype](https://github.com/nothings/stb/blob/master/stb_truetype.h)
+* MP3 player from this [blogspot](http://adshomebrewersdiary.blogspot.com/2012/06/mp3-streaming-on-arm7.html) site, but with several bug fixes
