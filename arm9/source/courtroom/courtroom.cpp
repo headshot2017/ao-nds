@@ -258,7 +258,6 @@ void Courtroom::update()
 	character[1]->setShakes((background->isZoom()) ? 0 : xOffset, yOffset);
 	background->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
 	evidence->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
-	wtce->setOffsets((background->isZoom()) ? 0 : xOffset, yOffset);
 	chatbox->setOffsets(
 		(shakeTicks > 0) ? -shakeForce + rand()%(shakeForce*2) : 0,
 		(shakeTicks > 0 && !background->isZoom()) ? -shakeForce + rand()%(shakeForce*2) : 0

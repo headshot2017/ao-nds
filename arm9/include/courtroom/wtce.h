@@ -24,9 +24,6 @@ class WTCE
 	u8* imgGfx[2];
 	u8* imgPal[2];
 
-	int offsetX;
-	int offsetY;
-
 	int currFrame;
 	std::string currAnim;
 
@@ -48,7 +45,6 @@ public:
 	WTCE(Courtroom* pCourt, int start);
 	~WTCE();
 
-	void setOffsets(int x, int y) {offsetX = x; offsetY = y;}
 	void setVisible(bool on);
 
 	void clear(bool keepIndicator=false);

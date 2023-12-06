@@ -11,7 +11,6 @@
 #include <dswifi9.h>
 
 #include "engine.h"
-#include "fonts.h"
 #include "ui/uimainmenu.h"
 
 const char* assocStatusDetails[] = {
@@ -26,16 +25,11 @@ const char* assocStatusDetails[] = {
 
 UIScreenWifi::~UIScreenWifi()
 {
-	delete[] textCanvas;
+	delete lbl_loading;
 	delete[] sprLoadingImg;
 
 	oamFreeGfx(&oamSub, sprLoading);
 	oamClearSprite(&oamSub, 0);
-	for (int i=0; i<8; i++)
-	{
-		oamFreeGfx(&oamSub, textGfx[i]);
-		oamClearSprite(&oamSub, 1+i);
-	}
 
 	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
@@ -51,7 +45,6 @@ void UIScreenWifi::init()
 	currAssocStatus = -1;
 	ticks = 0;
 	frame = 0;
-	textCanvas = new u8[32*16];
 
 	u8* bgTiles = readFile("/data/ao-nds/ui/bg_logo.img.bin", &bgTilesLen);
 	u8* bgMap = readFile("/data/ao-nds/ui/bg_logo.map.bin");
@@ -78,13 +71,9 @@ void UIScreenWifi::init()
 	delete[] bgSubMap;
 	delete[] bgSubPal;
 
-	sprLoading = oamAllocateGfx(&oamSub, SpriteSize_16x16, SpriteColorFormat_256Color);
-	for (int i=0; i<8; i++)
-	{
-		textGfx[i] = oamAllocateGfx(&oamSub, SpriteSize_32x16, SpriteColorFormat_256Color);
-		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
-	}
+	lbl_loading = new UILabel(&oamSub, 1, 8, 1, RGB15(31,31,31), 0, 0);
 
+	sprLoading = oamAllocateGfx(&oamSub, SpriteSize_16x16, SpriteColorFormat_256Color);
 	sprLoadingImg = readFile("/data/ao-nds/ui/spr_loading.img.bin");
 	u8* sprLoadingPal = readFile("/data/ao-nds/ui/spr_loading.pal.bin");
 
@@ -93,7 +82,6 @@ void UIScreenWifi::init()
 	oamSet(&oamSub, 0, 256-24, 192-24, 0, 1, SpriteSize_16x16, SpriteColorFormat_256Color, sprLoading, -1, false, false, false, false, false);
 
 	vramSetBankI(VRAM_I_LCD);
-	VRAM_I_EXT_SPR_PALETTE[0][2] = RGB15(31,31,31);
 	dmaCopy(sprLoadingPal, &VRAM_I_EXT_SPR_PALETTE[1], 512);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
@@ -117,16 +105,9 @@ void UIScreenWifi::init()
 
 void UIScreenWifi::setText(const char* text)
 {
-	for (int i=0; i<8; i++)
-		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
-	memset(textCanvas, 0, 32*16);
-
-	int textWidth = getTextWidth(0, text);
-	for (int i=0; i<8; i++)
-		oamSet(&oamSub, i+1, 128-(textWidth/2)+(i*32), 96-6, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, textGfx[i], -1, false, false, false, false, false);
-
+	lbl_loading->setText(text);
+	lbl_loading->setPos(128, 96-4, true);
 	oamUpdate(&oamSub);
-	renderText(0, text, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, 8);
 }
 
 void UIScreenWifi::updateInput()

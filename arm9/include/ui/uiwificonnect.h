@@ -5,6 +5,8 @@
 
 #include <nds/ndstypes.h>
 
+#include "label.h"
+
 class UIScreenWifi : public UIScreen
 {
 	int bgIndex;
@@ -15,8 +17,7 @@ class UIScreenWifi : public UIScreen
 	u8* sprLoadingImg;
 	u16* sprLoading;
 
-	u16* textGfx[8];
-	u8* textCanvas;
+	UILabel* lbl_loading;
 
 	int ticks;
 	int frame;

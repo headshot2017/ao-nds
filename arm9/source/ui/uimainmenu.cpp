@@ -19,11 +19,13 @@ UIScreenMainMenu::~UIScreenMainMenu()
 	dmaFillHalfWords(0, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
+
 	wav_free_handle(sndGavel);
+
 	delete btn_viewServerList;
 	delete btn_directConnect;
 	delete btn_settings;
-	delete lbl_dsi;
+	if (lbl_dsi) delete lbl_dsi;
 }
 
 void UIScreenMainMenu::init()
@@ -58,13 +60,15 @@ void UIScreenMainMenu::init()
 	btn_viewServerList = new UIButton(&oamSub, "/data/ao-nds/ui/spr_viewServerList", 0, 3, 1, SpriteSize_64x64, 128-88, 32, 176, 58, 64, 64, 0);
 	btn_directConnect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_directConnect", btn_viewServerList->nextOamInd(), 7, 1, SpriteSize_32x32, 128-111, 104, 223, 26, 32, 32, 1);
 	btn_settings = new UIButton(&oamSub, "/data/ao-nds/ui/spr_settings", btn_directConnect->nextOamInd(), 3, 1, SpriteSize_32x32, 128-(76/2), 144, 76, 26, 32, 32, 2);
-	lbl_dsi = new UILabel(&oamMain, 0, 6, 1, RGB15(31,31,31), 0, 1);
 
 	if (isDSiMode())
 	{
+		lbl_dsi = new UILabel(&oamMain, 0, 6, 1, RGB15(31,31,31), 0, 1);
 		lbl_dsi->setText("Running on DSi Mode");
 		lbl_dsi->setPos(128, 192-32, true);
 	}
+	else
+		lbl_dsi = 0;
 
 	btn_viewServerList->connect(onViewServerList, this);
 	btn_directConnect->connect(onDirectConnect, this);

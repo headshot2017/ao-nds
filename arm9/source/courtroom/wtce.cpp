@@ -32,8 +32,6 @@ WTCE::WTCE(Courtroom* pCourt, int start)
 	spr_testimonyIndicator = 0;
 	indicatorTicks = 0;
 
-	offsetX = 0;
-	offsetY = 0;
 	currFrame = 0;
 }
 

@@ -302,7 +302,7 @@ void wav_free_handle(wav_handle* handle)
 	delete[] handle->data;
 	handle->data = 0;
 
-	delete[] handle;
+	delete handle;
 }
 
 int wav_play(wav_handle* handle)
