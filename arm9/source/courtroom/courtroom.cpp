@@ -164,7 +164,8 @@ void Courtroom::handleChat()
 	{
 		onPreAnim = false;
 
-		bool isPng = (currIC.preanim != currIC.emote && fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.emote + ".img.bin"));
+		//bool isPng = (currIC.preanim != currIC.emote && fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.emote + ".img.bin"));
+		bool isPng = !fileExists("/data/ao-nds/characters/" + currIC.charname + "/(a)" + currIC.emote + ".img.bin");
 		bool playIdle = (currIC.chatmsg.empty() || color == COLOR_BLUE);
 		std::string prefix;
 		if (!isPng) prefix = (playIdle ? "(a)" : "(b)");
@@ -295,7 +296,8 @@ void Courtroom::onChatboxFinished(void* pUserData)
 	int color = AOcolorToPalette[pSelf->currIC.textColor];
 	if (color != COLOR_BLUE && (!pSelf->currIC.noInterrupt || !pSelf->onPreAnim))
 	{
-		bool isPng = (pSelf->currIC.preanim != pSelf->currIC.emote && fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin"));
+		//bool isPng = (pSelf->currIC.preanim != pSelf->currIC.emote && fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin"));
+		bool isPng = !fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/(a)" + pSelf->currIC.emote + ".img.bin");
 		std::string prefix;
 		if (!isPng) prefix = "(a)";
 
