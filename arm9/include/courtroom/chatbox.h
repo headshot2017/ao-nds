@@ -55,7 +55,7 @@ class Chatbox
 	int currTextLine;
 	std::string currText;
 	int textX;
-	int textTicks;
+	int textTimer;
 	int textSpeed;
 	int blipTicks;
 	bool center;

@@ -6,13 +6,18 @@
 #include <nds/arm9/decompress.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
+#include <nds/arm9/math.h>
 #include <nds/interrupts.h>
+#include <nds/timers.h>
 
 #include "courtroom/courtroom.h"
 #include "global.h"
 #include "fonts.h"
 
 #define MAX_COLOR_SWITCHES 5
+
+//the speed of the timer when using ClockDivider_1024
+#define TIMER_SPEED (BUS_CLOCK/1024)
 
 colorSwitchChar colorSwitches[MAX_COLOR_SWITCHES] = {
 	{COLOR_GREEN, '`', '`', true, false, false},
@@ -21,6 +26,7 @@ colorSwitchChar colorSwitches[MAX_COLOR_SWITCHES] = {
 	{COLOR_BLUE, '(', ')', false, true, false},
 	{COLOR_GRAY, '[', ']', true, true, false}
 };
+int textSpeedsMS[7] = {10, 20, 30, 40, 60, 75, 100};
 
 std::string filterChatMsg(std::string& msg)
 {
@@ -176,6 +182,7 @@ Chatbox::~Chatbox()
 	}
 
 	oamFreeGfx(&oamMain, spr_arrowGfx);
+	timerStop(2);
 }
 
 void Chatbox::setVisible(bool on)
@@ -229,8 +236,8 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 	currTextGfxInd = 0;
 	currTextLine = -1;
 	textX = 0;
-	textTicks = 0;
-	textSpeed = 2;
+	textTimer = 0;
+	textSpeed = 3;
 	blipTicks = 0;
 	center = (text.size() >= 2 && text.at(0) == '~' && text.at(1) == '~');
 	currText = (center) ? text.substr(2) : text;
@@ -256,6 +263,9 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<8*3; i++)
 		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
+
+	timerStop(2);
+	timerStart(2, ClockDivider_1024, 0, NULL);
 }
 
 void Chatbox::additiveText(std::string text, int color)
@@ -269,8 +279,8 @@ void Chatbox::additiveText(std::string text, int color)
 	currTextInd = 0;
 	currTextLine = -1;
 	textX = 0;
-	textTicks = 0;
-	textSpeed = 2;
+	textTimer = 0;
+	textSpeed = 3;
 	blipTicks = 0;
 	center = (text.size() >= 2 && text.at(0) == '~' && text.at(1) == '~');
 	currText = (center) ? text.substr(2) : text;
@@ -295,6 +305,9 @@ void Chatbox::additiveText(std::string text, int color)
 		for (int i=0; i<8*3; i++)
 			dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
 	}
+
+	timerStop(2);
+	timerStart(2, ClockDivider_1024, 0, NULL);
 }
 
 void Chatbox::update()
@@ -332,12 +345,14 @@ void Chatbox::update()
 		return;
 	}
 
-	textTicks++;
 	if (blipTicks > 0) blipTicks--;
 
-	if (textTicks > textSpeed)
+	u32 elapsed = timerElapsed(2);
+	textTimer += f32toint(mulf32(divf32(inttof32(elapsed), inttof32(TIMER_SPEED)), inttof32(1000)));
+
+	if (textTimer > textSpeedsMS[textSpeed])
 	{
-		textTicks = 0;
+		textTimer -= textSpeedsMS[textSpeed];
 
 		char currChar = currText.at(currTextInd);
 
@@ -352,6 +367,7 @@ void Chatbox::update()
 			{
 				oamSetHidden(&oamMain, 127, false);
 				onChatboxFinished(pUserData);
+				timerStop(2);
 				return;
 			}
 
@@ -363,6 +379,7 @@ void Chatbox::update()
 				{
 					oamSetHidden(&oamMain, 127, false);
 					onChatboxFinished(pUserData);
+					timerStop(2);
 				}
 				return;
 			}
@@ -371,7 +388,7 @@ void Chatbox::update()
 		if (blipSnd && currChar != ' ' && blipTicks <= 0)
 		{
 			wav_play(blipSnd);
-			blipTicks = 6-textSpeed;
+			blipTicks = 5;
 		}
 
 		if (currTextGfxInd >= 8*3)
@@ -441,6 +458,7 @@ void Chatbox::update()
 		{
 			oamSetHidden(&oamMain, 127, false);
 			onChatboxFinished(pUserData);
+			timerStop(2);
 		}
 	}
 }
@@ -485,7 +503,7 @@ bool Chatbox::handleControlChars()
 		{
 			case '{':
 				// slow down
-				if (textSpeed < 5) textSpeed++;
+				if (textSpeed < 6) textSpeed++;
 				break;
 
 			case '}':

@@ -9,6 +9,7 @@
 #include <nds/interrupts.h>
 #include <nds/arm9/input.h>
 #include <nds/arm9/decompress.h>
+#include <nds/arm9/math.h>
 
 #include "courtroom/courtroom.h"
 #include "global.h"
@@ -404,26 +405,24 @@ void Character::update()
 		timerStart(pair, ClockDivider_1024, 0, NULL);
 
 	u32 elapsed = timerElapsed(pair);
+	u32 ms = f32toint(mulf32(divf32(inttof32(elapsed), inttof32(TIMER_SPEED)), inttof32(1000)));
 
 	if (!sfxPlayed && sfx)
 	{
-		sfxTicks += elapsed;
-		u32 ms = (float)sfxTicks/TIMER_SPEED*1000;
-		if (ms >= sfxDelay)
+		sfxTicks += ms;
+		if (sfxTicks >= sfxDelay)
 		{
 			wav_play(sfx);
 			sfxPlayed = true;
 		}
 	}
 
-	charTicks += elapsed;
+	charTicks += ms;
 
-	u32 ms = (float)charTicks/TIMER_SPEED*1000;
-
-	if (frameInfo.frameCount && ms >= frameInfo.frameDurations[currFrame])
+	if (frameInfo.frameCount && charTicks >= frameInfo.frameDurations[currFrame])
 	{
-		charTicks = 0;
 		timerPause(pair);
+		charTicks -= frameInfo.frameDurations[currFrame];
 
 		if (loop)
 			currFrame = (currFrame+1) % (frameInfo.frameCount);
