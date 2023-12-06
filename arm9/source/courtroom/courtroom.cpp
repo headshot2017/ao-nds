@@ -323,7 +323,8 @@ void Courtroom::onAnimFinished(void* pUserData)
 
 	pSelf->onPreAnim = false;
 
-	bool isPng = (pSelf->currIC.preanim != pSelf->currIC.emote && fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin"));
+	//bool isPng = (pSelf->currIC.preanim != pSelf->currIC.emote && fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin"));
+	bool isPng = !fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/(a)" + pSelf->currIC.emote + ".img.bin");
 	std::string prefix;
 	if (!isPng) prefix = ((useIdleAnim) ? "(a)" : "(b)");
 
