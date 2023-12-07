@@ -88,6 +88,7 @@
 		<Unit filename="arm9/include/sockets/aotcpsocket.h" />
 		<Unit filename="arm9/include/sockets/aowebsocket.h" />
 		<Unit filename="arm9/include/stb_truetype.h" />
+		<Unit filename="arm9/include/stb_truetype_fixed.h" />
 		<Unit filename="arm9/include/ui/button.h" />
 		<Unit filename="arm9/include/ui/court/arealist.h" />
 		<Unit filename="arm9/include/ui/court/charselect.h" />

@@ -1,12 +1,18 @@
 #include "fonts.h"
 
+#include <stdio.h>
+
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
 
-#include <stdio.h>
-
 #include "mp3_shared.h"
 #include "global.h"
+
+/*fix32 roundf32(fix32 num)
+{
+	fix32 ceiled = ceilf32(num);
+	return (num >= ceiled-2048) ? ceiled : inttof32(f32toint(num));
+}*/
 
 struct LoadedFont
 {
