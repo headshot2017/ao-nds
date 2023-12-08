@@ -424,6 +424,7 @@ int main(int arg, char **argv)
    // NDS stuff
    #include <math.h>
    #include <nds/arm9/math.h>
+   #include <nds/arm9/sassert.h>
 
    typedef int fix32;
 
@@ -431,7 +432,9 @@ int main(int arg, char **argv)
    #define STBTT_iceil(x)    (ceilf32(x))
    #define STBTT_sqrt(x)      sqrtf32(x)
    #define STBTT_pow(x,y)     pow(x,y)
-   #define STBTT_fabs(x)      ((x < 0) ? -x : x)
+   #define STBTT_fabs(x)      abs(x)
+   #define STBTT_assert(x)    sassert(x, "STBTT assert failed")
+   #define STBTT_assert2(x, ...)    sassert(x, __VA_ARGS__)
 
    fix32 ceilf32(fix32 x)
 	{
@@ -1819,8 +1822,8 @@ static int stbtt__GetGlyphShapeTT(const stbtt_fontinfo *info, int glyph_index, s
          }
 
          // Find transformation scales.
-         m = f32toint(STBTT_sqrt(mulf32(mtx[0],mtx[0]) + mulf32(mtx[1],mtx[1])));
-         n = f32toint(STBTT_sqrt(mulf32(mtx[2],mtx[2]) + mulf32(mtx[3],mtx[3])));
+         m = STBTT_sqrt(mulf32(mtx[0],mtx[0]) + mulf32(mtx[1],mtx[1]));
+         n = STBTT_sqrt(mulf32(mtx[2],mtx[2]) + mulf32(mtx[3],mtx[3]));
 
          // Get indexed glyph.
          comp_num_verts = stbtt_GetGlyphShape(info, gidx, &comp_verts);
@@ -1830,11 +1833,11 @@ static int stbtt__GetGlyphShapeTT(const stbtt_fontinfo *info, int glyph_index, s
                stbtt_vertex* v = &comp_verts[i];
                stbtt_vertex_type x,y;
                x=v->x; y=v->y;
-               v->x = (stbtt_vertex_type)(m * f32toint(mulf32(mtx[0], inttof32(x)) + mulf32(mtx[2],inttof32(y)) + mtx[4]));
-               v->y = (stbtt_vertex_type)(n * f32toint(mulf32(mtx[1], inttof32(x)) + mulf32(mtx[3],inttof32(y)) + mtx[5]));
+               v->x = (stbtt_vertex_type)f32toint( mulf32(m, (mulf32(mtx[0],inttof32(x)) + mulf32(mtx[2],inttof32(y)) + mtx[4])) );
+               v->y = (stbtt_vertex_type)f32toint( mulf32(n, (mulf32(mtx[1],inttof32(x)) + mulf32(mtx[3],inttof32(y)) + mtx[5])) );
                x=v->cx; y=v->cy;
-               v->cx = (stbtt_vertex_type)(m * f32toint(mulf32(mtx[0], inttof32(x)) + mulf32(mtx[2],inttof32(y)) + mtx[4]));
-               v->cy = (stbtt_vertex_type)(n * f32toint(mulf32(mtx[1], inttof32(x)) + mulf32(mtx[3],inttof32(y)) + mtx[5]));
+               v->cx = (stbtt_vertex_type)f32toint( mulf32(m, (mulf32(mtx[0],inttof32(x)) + mulf32(mtx[2],inttof32(y)) + mtx[4])) );
+               v->cy = (stbtt_vertex_type)f32toint( mulf32(n, (mulf32(mtx[1],inttof32(x)) + mulf32(mtx[3],inttof32(y)) + mtx[5])) );
             }
             // Append vertices.
             tmp = (stbtt_vertex*)STBTT_malloc((num_vertices+comp_num_verts)*sizeof(stbtt_vertex), info->userdata);
@@ -1906,7 +1909,7 @@ static void stbtt__csctx_v(stbtt__csctx *c, stbtt_uint8 type, stbtt_int32 x, stb
 static void stbtt__csctx_close_shape(stbtt__csctx *ctx)
 {
    if (ctx->first_x != ctx->x || ctx->first_y != ctx->y)
-      stbtt__csctx_v(ctx, STBTT_vline, (int)ctx->first_x, (int)ctx->first_y, 0, 0, 0, 0);
+      stbtt__csctx_v(ctx, STBTT_vline, f32toint(ctx->first_x), f32toint(ctx->first_y), 0, 0, 0, 0);
 }
 
 static void stbtt__csctx_rmove_to(stbtt__csctx *ctx, fix32 dx, fix32 dy)
@@ -1914,14 +1917,14 @@ static void stbtt__csctx_rmove_to(stbtt__csctx *ctx, fix32 dx, fix32 dy)
    stbtt__csctx_close_shape(ctx);
    ctx->first_x = ctx->x = ctx->x + dx;
    ctx->first_y = ctx->y = ctx->y + dy;
-   stbtt__csctx_v(ctx, STBTT_vmove, (int)ctx->x, (int)ctx->y, 0, 0, 0, 0);
+   stbtt__csctx_v(ctx, STBTT_vmove, f32toint(ctx->x), f32toint(ctx->y), 0, 0, 0, 0);
 }
 
 static void stbtt__csctx_rline_to(stbtt__csctx *ctx, fix32 dx, fix32 dy)
 {
    ctx->x += dx;
    ctx->y += dy;
-   stbtt__csctx_v(ctx, STBTT_vline, (int)ctx->x, (int)ctx->y, 0, 0, 0, 0);
+   stbtt__csctx_v(ctx, STBTT_vline, f32toint(ctx->x), f32toint(ctx->y), 0, 0, 0, 0);
 }
 
 static void stbtt__csctx_rccurve_to(stbtt__csctx *ctx, fix32 dx1, fix32 dy1, fix32 dx2, fix32 dy2, fix32 dx3, fix32 dy3)
@@ -1932,7 +1935,7 @@ static void stbtt__csctx_rccurve_to(stbtt__csctx *ctx, fix32 dx1, fix32 dy1, fix
    fix32 cy2 = cy1 + dy2;
    ctx->x = cx2 + dx3;
    ctx->y = cy2 + dy3;
-   stbtt__csctx_v(ctx, STBTT_vcubic, (int)ctx->x, (int)ctx->y, (int)cx1, (int)cy1, (int)cx2, (int)cy2);
+   stbtt__csctx_v(ctx, STBTT_vcubic, f32toint(ctx->x), f32toint(ctx->y), f32toint(cx1), f32toint(cy1), f32toint(cx2), f32toint(cy2));
 }
 
 static stbtt__buf stbtt__get_subr(stbtt__buf idx, int n)
@@ -2058,11 +2061,11 @@ static int stbtt__run_charstring(const stbtt_fontinfo *info, int glyph_index, st
          if (sp < 4) return STBTT__CSERR("vhcurveto stack");
          for (;;) {
             if (i + 3 >= sp) break;
-            stbtt__csctx_rccurve_to(c, 0, s[i], s[i+1], s[i+2], s[i+3], (sp - i == 5) ? s[i + 4] : 0.0f);
+            stbtt__csctx_rccurve_to(c, 0, s[i], s[i+1], s[i+2], s[i+3], (sp - i == 5) ? s[i + 4] : 0);
             i += 4;
       hvcurveto:
             if (i + 3 >= sp) break;
-            stbtt__csctx_rccurve_to(c, s[i], 0, s[i+1], s[i+2], (sp - i == 5) ? s[i+4] : 0.0f, s[i+3]);
+            stbtt__csctx_rccurve_to(c, s[i], 0, s[i+1], s[i+2], (sp - i == 5) ? s[i+4] : 0, s[i+3]);
             i += 4;
          }
          break;
@@ -2092,14 +2095,14 @@ static int stbtt__run_charstring(const stbtt_fontinfo *info, int glyph_index, st
       case 0x1A: // vvcurveto
       case 0x1B: // hhcurveto
          if (sp < 4) return STBTT__CSERR("(vv|hh)curveto stack");
-         f = 0.0;
+         f = 0;
          if (sp & 1) { f = s[i]; i++; }
          for (; i + 3 < sp; i += 4) {
             if (b0 == 0x1B)
-               stbtt__csctx_rccurve_to(c, s[i], f, s[i+1], s[i+2], s[i+3], 0.0);
+               stbtt__csctx_rccurve_to(c, s[i], f, s[i+1], s[i+2], s[i+3], 0);
             else
-               stbtt__csctx_rccurve_to(c, f, s[i], s[i+1], s[i+2], 0.0, s[i+3]);
-            f = 0.0;
+               stbtt__csctx_rccurve_to(c, f, s[i], s[i+1], s[i+2], 0, s[i+3]);
+            f = 0;
          }
          break;
 
@@ -2112,7 +2115,7 @@ static int stbtt__run_charstring(const stbtt_fontinfo *info, int glyph_index, st
          // fallthrough
       case 0x1D: // callgsubr
          if (sp < 1) return STBTT__CSERR("call(g|)subr stack");
-         v = (int) s[--sp];
+         v = f32toint(s[--sp]);
          if (subr_stack_height >= 10) return STBTT__CSERR("recursion limit");
          subr_stack[subr_stack_height++] = b;
          b = stbtt__get_subr(b0 == 0x0A ? subrs : info->gsubrs, v);
@@ -2637,10 +2640,10 @@ STBTT_DEF void stbtt_GetGlyphBitmapBoxSubpixel(const stbtt_fontinfo *font, int g
       if (iy1) *iy1 = 0;
    } else {
       // move to integral bboxes (treating pixels as little squares, what pixels get touched)?
-      if (ix0) *ix0 = STBTT_ifloor( x0 * scale_x + shift_x);
-      if (iy0) *iy0 = STBTT_ifloor(-y1 * scale_y + shift_y);
-      if (ix1) *ix1 = STBTT_iceil ( x1 * scale_x + shift_x);
-      if (iy1) *iy1 = STBTT_iceil (-y0 * scale_y + shift_y);
+      if (ix0) *ix0 = f32toint(STBTT_ifloor( mulf32(inttof32(x0), scale_x) + shift_x));
+      if (iy0) *iy0 = f32toint(STBTT_ifloor( mulf32(inttof32(-y1), scale_y) + shift_y));
+      if (ix1) *ix1 = f32toint(STBTT_iceil ( mulf32(inttof32(x1), scale_x) + shift_x));
+      if (iy1) *iy1 = f32toint(STBTT_iceil ( mulf32(inttof32(-y0), scale_y) + shift_y));
    }
 }
 
@@ -2772,7 +2775,7 @@ static stbtt__active_edge *stbtt__new_active(stbtt__hheap *hh, stbtt__edge *e, i
    z->fdx = dxdy;
    z->fdy = dxdy != 0 ? divf32(inttof32(1), dxdy) : 0;
    z->fx = e->x0 + mulf32(dxdy, start_point - e->y0);
-   z->fx -= off_x;
+   z->fx -= inttof32(off_x);
    z->direction = e->invert ? inttof32(1) : inttof32(-1);
    z->sy = e->y0;
    z->ey = e->y1;
@@ -2941,11 +2944,13 @@ static void stbtt__handle_clipped_edge(fix32 *scanline, int x, stbtt__active_edg
    if (y0 > e->ey) return;
    if (y1 < e->sy) return;
    if (y0 < e->sy) {
-      x0 += divf32(mulf32(x1-x0, e->sy - y0), y1-y0);
+      //x0 += divf32(mulf32(x1-x0, e->sy - y0), y1-y0);
+        x0 += mulf32((x1-x0), divf32((e->sy - y0), (y1-y0)));
       y0 = e->sy;
    }
    if (y1 > e->ey) {
-      x1 += divf32(mulf32(x1-x0, e->ey - y1), y1-y0);
+      //x1 += divf32(mulf32(x1-x0, e->ey - y1), y1-y0);
+        x1 += mulf32((x1-x0), divf32((e->ey - y1), (y1-y0)));
       y1 = e->ey;
    }
 
@@ -3027,7 +3032,7 @@ static void stbtt__fill_active_edges_new(fix32 *scanline, fix32 *scanline_fill, 
                int x = f32toint(x_top);
                height = sy1 - sy0;
                STBTT_assert(x >= 0 && x < len);
-                 scanline[x] += mulf32(mulf32(e->direction, divf32(inttof32(1)-((x_top - inttof32(x)) + (x_bottom-inttof32(x))), 2)),  height);
+                 scanline[x] += mulf32(mulf32(e->direction, divf32(inttof32(1)-((x_top - inttof32(x)) + (x_bottom-inttof32(x))), inttof32(2) )),  height);
                //scanline[x] += e->direction * (1-((x_top - x) + (x_bottom-x))/2)  * height;
                scanline_fill[x] += mulf32(e->direction, height); // everything right of this pixel is filled
             } else {
@@ -3049,13 +3054,13 @@ static void stbtt__fill_active_edges_new(fix32 *scanline, fix32 *scanline_fill, 
                x1 = f32toint(x_top);
                x2 = f32toint(x_bottom);
                // compute intersection with y axis at x1+1
-               y_crossing = mulf32(inttof32(x1) + inttof32(1) - inttof32(x0), dy) + y_top;
+               y_crossing = mulf32(inttof32(x1+1) - x0, dy) + y_top;
 
                sign = e->direction;
                // area of the rectangle covered from y0..y_crossing
                area = mulf32(sign, y_crossing-sy0);
                // area of the triangle (x_top,y0), (x+1,y0), (x+1,y_crossing)
-                 scanline[x1] += mulf32(area, divf32(inttof32(1)-((x_top - inttof32(x1))+inttof32(x1+1-x1)), inttof32(2)) );
+                 scanline[x1] += mulf32(area, divf32(4096-((x_top - inttof32(x1) ) + (inttof32(x1+1-x1)) ), inttof32(2) ) );
                //scanline[x1] += area * (1-((x_top - x1)+(x1+1-x1))/2);
 
                step = mulf32(sign, dy);
@@ -3065,9 +3070,9 @@ static void stbtt__fill_active_edges_new(fix32 *scanline, fix32 *scanline_fill, 
                }
                y_crossing += mulf32(dy, inttof32(x2 - (x1+1)));
 
-               STBTT_assert(STBTT_fabs(area) <= 4136); // 1.01f == 4136.96. try 4137?
+               STBTT_assert(STBTT_fabs(area) <= 4136); // floattof32(1.01f) == 4136.96. try 4137?
 
-                 scanline[x2] += area + mulf32(mulf32(sign, divf32(inttof32(1)-(inttof32(x2-x2)+(x_bottom-inttof32(x2))), inttof32(2)) ), (sy1-y_crossing));
+                 scanline[x2] += area + mulf32(sign, mulf32( divf32(4096-(( inttof32(x2-x2) ) + (x_bottom - inttof32(x2) )), inttof32(2)), (sy1-y_crossing) ) );
                //scanline[x2] += area + sign * (1-((x2-x2)+(x_bottom-x2))/2) * (sy1-y_crossing);
 
                scanline_fill[x2] += mulf32(sign, (sy1-sy0));
@@ -3102,8 +3107,8 @@ static void stbtt__fill_active_edges_new(fix32 *scanline, fix32 *scanline_fill, 
                // x = e->x + e->dx * (y-y_top)
                // (y-y_top) = (x - e->x) / e->dx
                // y = (x - e->x) / e->dx + y_top
-               fix32 y1 = divf32(x - x0, dx) + y_top;
-               fix32 y2 = divf32(x+inttof32(1) - x0, dx) + y_top;
+               fix32 y1 = divf32(inttof32(x) - x0, dx) + y_top;
+               fix32 y2 = divf32(inttof32(x+1) - x0, dx) + y_top;
 
                if (x0 < x1 && x3 > x2) {         // three segments descending down-right
                   stbtt__handle_clipped_edge(scanline,x,e, x0,y0, x1,y1);
@@ -3153,7 +3158,7 @@ static void stbtt__rasterize_sorted_edges(stbtt__bitmap *result, stbtt__edge *e,
    scanline2 = scanline + result->w;
 
    y = off_y;
-   e[n].y0 = inttof32(off_y) + inttof32(result->h) + inttof32(1);
+   e[n].y0 = inttof32(off_y + result->h + 1);
 
    while (j < result->h) {
       // find center of pixel for this scanline
@@ -3369,9 +3374,9 @@ static void stbtt__rasterize(stbtt__bitmap *result, stbtt__point *pts, int *wcou
             a=j,b=k;
          }
          e[n].x0 = mulf32(p[a].x, scale_x) + shift_x;
-         e[n].y0 = mulf32(mulf32(p[a].y, y_scale_inv) + shift_y, vsubsample);
+         e[n].y0 = mulf32(mulf32(p[a].y, y_scale_inv) + shift_y, inttof32(vsubsample));
          e[n].x1 = mulf32(p[b].x, scale_x) + shift_x;
-         e[n].y1 = mulf32(mulf32(p[b].y, y_scale_inv) + shift_y, vsubsample);
+         e[n].y1 = mulf32(mulf32(p[b].y, y_scale_inv) + shift_y, inttof32(vsubsample));
          ++n;
       }
    }
@@ -3499,24 +3504,24 @@ static stbtt__point *stbtt_FlattenCurves(stbtt_vertex *vertices, int num_verts, 
                start = num_points;
 
                x = vertices[i].x, y = vertices[i].y;
-               stbtt__add_point(points, num_points++, x,y);
+               stbtt__add_point(points, num_points++, inttof32(x), inttof32(y));
                break;
             case STBTT_vline:
                x = vertices[i].x, y = vertices[i].y;
-               stbtt__add_point(points, num_points++, x, y);
+               stbtt__add_point(points, num_points++, inttof32(x), inttof32(y));
                break;
             case STBTT_vcurve:
-               stbtt__tesselate_curve(points, &num_points, x,y,
-                                        vertices[i].cx, vertices[i].cy,
-                                        vertices[i].x,  vertices[i].y,
+               stbtt__tesselate_curve(points, &num_points, inttof32(x),inttof32(y),
+                                        inttof32(vertices[i].cx), inttof32(vertices[i].cy),
+                                        inttof32(vertices[i].x),  inttof32(vertices[i].y),
                                         objspace_flatness_squared, 0);
                x = vertices[i].x, y = vertices[i].y;
                break;
             case STBTT_vcubic:
-               stbtt__tesselate_cubic(points, &num_points, x,y,
-                                        vertices[i].cx, vertices[i].cy,
-                                        vertices[i].cx1, vertices[i].cy1,
-                                        vertices[i].x,  vertices[i].y,
+               stbtt__tesselate_cubic(points, &num_points, inttof32(x),inttof32(y),
+                                        inttof32(vertices[i].cx), inttof32(vertices[i].cy),
+                                        inttof32(vertices[i].cx1), inttof32(vertices[i].cy1),
+                                        inttof32(vertices[i].x),  inttof32(vertices[i].y),
                                         objspace_flatness_squared, 0);
                x = vertices[i].x, y = vertices[i].y;
                break;

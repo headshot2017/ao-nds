@@ -2,23 +2,25 @@
 
 #include <stdio.h>
 
+#include <nds/arm9/math.h>
+
 #define STB_TRUETYPE_IMPLEMENTATION
-#include "stb_truetype.h"
+#include "stb_truetype_fixed.h"
 
 #include "mp3_shared.h"
 #include "global.h"
 
-/*fix32 roundf32(fix32 num)
+fix32 roundf32(fix32 num)
 {
 	fix32 ceiled = ceilf32(num);
 	return (num >= ceiled-2048) ? ceiled : inttof32(f32toint(num));
-}*/
+}
 
 struct LoadedFont
 {
 	stbtt_fontinfo info;
 	int line_height;
-	float scale;
+	fix32 scale;
 	int ascent;
 };
 
@@ -34,12 +36,16 @@ int initFont(const u8* data, int line_height)
 		return -1;
 
 	font.line_height = line_height;
-	font.scale = stbtt_ScaleForPixelHeight(&font.info, line_height);
+	//font.scale = floattof32(stbtt_ScaleForPixelHeight(&font.info, line_height));
+	font.scale = stbtt_ScaleForPixelHeight(&font.info, inttof32(line_height));
+
 
 	int descent, lineGap;
 	stbtt_GetFontVMetrics(&font.info, &font.ascent, &descent, &lineGap);
 
-	font.ascent = roundf(font.ascent * font.scale);
+	//font.ascent = roundf(font.ascent * f32tofloat(font.scale));
+	font.ascent = f32toint(roundf32(mulf32(inttof32(font.ascent), font.scale)));
+	printf("%d - %d (%f) %d\n", line_height, font.scale, f32tofloat(font.scale), font.ascent);
 
 	return loadedCount-1;
 }
@@ -99,6 +105,8 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	// get bounding box for character (may be offset to account for chars that dip above or below the line)
 	int c_x1, c_y1, c_x2, c_y2;
 	stbtt_GetCodepointBitmapBox(&font.info, text[0], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
+	iprintf("%d: %d %d %d %d\n", fontID, c_x1, c_y1, c_x2, c_y2);
+	//stbtt_GetCodepointBitmapBox(&font.info, text[0], f32tofloat(font.scale), f32tofloat(font.scale), &c_x1, &c_y1, &c_x2, &c_y2);
 
 	if (outWidth) *outWidth = 0;
 	int out_x = c_x2 - c_x1+1;
@@ -119,7 +127,9 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	int y = font.ascent + c_y1;
 
 	// render character (stride and offset is important here)
-	int byteOffset = 0 + roundf(lsb * font.scale) + (y * spriteW);
+	//int byteOffset = 0 + roundf(lsb * f32tofloat(font.scale)) + (y * spriteW);
+	int byteOffset = 0 + f32toint(roundf32(mulf32(inttof32(lsb), font.scale))) + (y * spriteW);
+	//stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, f32tofloat(font.scale), f32tofloat(font.scale), text[0]);
 	stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, font.scale, font.scale, text[0]);
 	mp3_fill_buffer();
 
@@ -154,12 +164,14 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	}
 
 	// advance x
-	x += roundf(ax * font.scale);
+	x += f32toint(roundf32(mulf32(inttof32(ax), font.scale)));
+	//x += roundf(ax * f32tofloat(font.scale));
 
 	// add kerning
 	int kern;
 	kern = stbtt_GetCodepointKernAdvance(&font.info, text[0], text[1]);
-	x += roundf(kern * font.scale);
+	x += f32toint(roundf32(mulf32(inttof32(kern), font.scale)));
+	//x += roundf(kern * f32tofloat(font.scale));
 
 	mp3_fill_buffer();
 
@@ -245,6 +257,7 @@ int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int*
 	// get bounding box for character (may be offset to account for chars that dip above or below the line)
 	int c_x1, c_y1, c_x2, c_y2;
 	stbtt_GetCodepointBitmapBox(&font.info, text[0], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
+	//stbtt_GetCodepointBitmapBox(&font.info, text[0], f32tofloat(font.scale), f32tofloat(font.scale), &c_x1, &c_y1, &c_x2, &c_y2);
 
 	if (outWidth) *outWidth = 0;
 	int out_x = c_x2 - c_x1+1;
@@ -267,12 +280,14 @@ int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int*
 	}
 
 	// advance x
-	x += roundf(ax * font.scale);
+	x += f32toint(roundf32(mulf32(inttof32(ax), font.scale)));
+	//x += roundf(ax * f32tofloat(font.scale));
 
 	// add kerning
 	int kern;
 	kern = stbtt_GetCodepointKernAdvance(&font.info, text[0], text[1]);
-	x += roundf(kern * font.scale);
+	x += f32toint(roundf32(mulf32(inttof32(kern), font.scale)));
+	//x += roundf(kern * f32tofloat(font.scale));
 
 	mp3_fill_buffer();
 
@@ -393,7 +408,8 @@ int getTextWidth(int fontID, const char* text, int maxWidth)
 		//stbtt_GetCodepointBitmapBox(&font.info, text[i], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
 		// advance x
-		textWidth[line] += roundf(ax * font.scale);
+		textWidth[line] += f32toint(roundf32(mulf32(inttof32(ax), font.scale)));
+		//textWidth[line] += roundf(ax * f32tofloat(font.scale));
 
 		if (maxWidth && textWidth[line] >= maxWidth)
 			return maxWidth;
