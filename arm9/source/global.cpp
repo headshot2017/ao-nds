@@ -7,6 +7,7 @@
 #include <nds/arm9/cache.h>
 #include <nds/arm9/decompress.h>
 #include <nds/arm9/input.h>
+#include <nds/arm9/math.h>
 #include <nds/interrupts.h>
 
 #include "mp3_shared.h"
@@ -183,14 +184,14 @@ u32 bmpIndexTo256SpriteIndex(int x, int y, int w, int h, SpriteSize size, bool* 
 		return 0;
 	}
 
-	int tilePixelX = swiRemainder(x, 8);
-	int tilePixelY = swiRemainder(y, 8);
-	int metaTileX = swiDivide(x, 8);
-	int metaTileY = swiDivide(y, 8);
+	int tilePixelX = mod32(x, 8);
+	int tilePixelY = mod32(y, 8);
+	int metaTileX = div32(x, 8);
+	int metaTileY = div32(y, 8);
 
 	if (oobFlag) *oobFlag = false;
 
-	return swiDivide((tilePixelY*8) + (metaTileX*64) + (metaTileY*64 * (swiDivide(w, 8))) + tilePixelX, 2);
+	return div32((tilePixelY*8) + (metaTileX*64) + (metaTileY*64 * (swiDivide(w, 8))) + tilePixelX, 2);
 	//gfx[targetInd] = (leftOrRight) ?
 	//	(gfx[targetInd] & 0xf) | (1<<8) : // assign palette index right
 	//	1 | ((gfx[targetInd] >> 8) << 8); // assign palette index left
