@@ -9,8 +9,8 @@
 #include <nds/interrupts.h>
 #include <nds/arm9/input.h>
 #include <nds/arm9/decompress.h>
-#include <nds/arm9/math.h>
 
+#include "arm9_math_alt.h"
 #include "courtroom/courtroom.h"
 #include "global.h"
 

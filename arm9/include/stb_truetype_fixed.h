@@ -423,8 +423,8 @@ int main(int arg, char **argv)
 
    // NDS stuff
    #include <math.h>
-   #include <nds/arm9/math.h>
    #include <nds/arm9/sassert.h>
+   #include "arm9_math_alt.h"
 
    typedef int fix32;
 

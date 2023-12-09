@@ -1,6 +1,6 @@
 #include "courtroom/wtceAnims.h"
 
-#include <nds/arm9/math.h>
+#include "arm9_math_alt.h"
 
 #define GUILTY_X 6
 #define GUILTY_Y 29

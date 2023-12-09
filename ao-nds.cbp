@@ -29,6 +29,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="arm9/include/animStream.h" />
+		<Unit filename="arm9/include/arm9_math_alt.h" />
 		<Unit filename="arm9/include/cfgFile.h" />
 		<Unit filename="arm9/include/colors.h" />
 		<Unit filename="arm9/include/courtroom/background.h" />

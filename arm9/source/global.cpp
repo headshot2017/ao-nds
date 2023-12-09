@@ -7,9 +7,9 @@
 #include <nds/arm9/cache.h>
 #include <nds/arm9/decompress.h>
 #include <nds/arm9/input.h>
-#include <nds/arm9/math.h>
 #include <nds/interrupts.h>
 
+#include "arm9_math_alt.h"
 #include "mp3_shared.h"
 #include "ui/label.h"
 

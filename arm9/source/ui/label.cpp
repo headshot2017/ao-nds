@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include <nds/dma.h>
-#include <nds/arm9/math.h>
 
+#include "arm9_math_alt.h"
 #include "fonts.h"
 #include "mp3_shared.h"
 

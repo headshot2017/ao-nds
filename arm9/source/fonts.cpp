@@ -3,11 +3,11 @@
 #include <vector>
 #include <stdio.h>
 
-#include <nds/arm9/math.h>
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype_fixed.h"
 
+#include "arm9_math_alt.h"
 #include "mp3_shared.h"
 #include "global.h"
 
