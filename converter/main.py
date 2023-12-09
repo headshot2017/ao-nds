@@ -82,7 +82,7 @@ if __name__ == "__main__":
             for f in os.listdir("converted/data/ao-nds/characters"):
                 shutil.rmtree("converted/data/ao-nds/characters/" + f)
 
-            Parallel(n_jobs=-1)(delayed(conversion.convertCharacters)(folder+"/characters", "converted/data/ao-nds/characters", i) for i in range(cpu_count()))
+            Parallel(backend='threading', n_jobs=-1)(delayed(conversion.convertCharacters)(folder+"/characters", "converted/data/ao-nds/characters", i) for i in range(cpu_count()))
 
             print("\nConverting evidence images...")
             conversion.convertEvidenceImages(folder)
@@ -144,7 +144,7 @@ if __name__ == "__main__":
             else:
                 for f in os.listdir("converted/data/ao-nds/characters"):
                     shutil.rmtree("converted/data/ao-nds/characters/" + f)
-                Parallel(n_jobs=-1)(delayed(conversion.convertCharacters)(folder+"/characters", "converted/data/ao-nds/characters", i) for i in range(cpu_count()))
+                Parallel(backend='threading', n_jobs=-1)(delayed(conversion.convertCharacters)(folder+"/characters", "converted/data/ao-nds/characters", i) for i in range(cpu_count()))
 
             for i in range(cpu_count()):
                 if os.path.exists("temp%d.png" % i): os.remove("temp%d.png" % i)
