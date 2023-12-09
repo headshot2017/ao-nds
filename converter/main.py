@@ -1,6 +1,8 @@
 import os
 import subprocess
 import shutil
+import multiprocessing
+multiprocessing.freeze_support()
 
 import requests
 from joblib import Parallel, delayed, cpu_count
