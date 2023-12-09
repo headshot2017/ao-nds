@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include <nds/dma.h>
+#include <nds/arm9/math.h>
 
 #include "fonts.h"
 #include "mp3_shared.h"
@@ -68,8 +69,8 @@ void UILabel::setPos(int x, int y, bool center)
 
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
-		int xPos = x + ((i % gfxPerLine) * 32) - ((center) ? w/2 : 0);
-		int yPos = y + ((i / gfxPerLine) * lineOffset);
+		int xPos = x + (mod32(i, gfxPerLine) * 32) - ((center) ? div32(w,2) : 0);
+		int yPos = y + (div32(i, gfxPerLine) * lineOffset);
 
 		oamSetXY(oam, oamStart+i, xPos, yPos);
 	}

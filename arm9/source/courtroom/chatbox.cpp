@@ -17,7 +17,7 @@
 #define MAX_COLOR_SWITCHES 5
 
 //the speed of the timer when using ClockDivider_1024
-#define TIMER_SPEED (BUS_CLOCK/1024)
+#define TIMER_SPEED div32(BUS_CLOCK,1024)
 
 colorSwitchChar colorSwitches[MAX_COLOR_SWITCHES] = {
 	{COLOR_GREEN, '`', '`', true, false, false},
@@ -224,7 +224,7 @@ void Chatbox::setName(std::string name)
 	renderText(0, name.c_str(), COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
-		oamSet(&oamMain, 24+i, 1+(i*32) + 36-(nameWidth/2), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
+		oamSet(&oamMain, 24+i, 1+(i*32) + 36-(div32(nameWidth,2)), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
 }
 
 void Chatbox::setText(std::string text, int color, std::string blip)
@@ -249,7 +249,7 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 		std::string filtered = filterChatMsg(currText);
 		separateLines(1, filtered.c_str(), 8, true, lines);
 		for (u32 i=0; i<lines.size(); i++)
-			linesHalfWidth.push_back(getTextWidth(1, lines[i].c_str())/2);
+			linesHalfWidth.push_back(div32(getTextWidth(1, lines[i].c_str()), 2));
 	}
 	handleNewLine();
 
@@ -270,7 +270,7 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 
 void Chatbox::additiveText(std::string text, int color)
 {
-	int line = currTextGfxInd/8;
+	int line = div32(currTextGfxInd, 8);
 	currTextGfxInd = (line+1) * 8;
 
 	colorStack = {};
@@ -292,7 +292,7 @@ void Chatbox::additiveText(std::string text, int color)
 		std::string filtered = filterChatMsg(currText);
 		separateLines(1, filtered.c_str(), 8, true, lines);
 		for (u32 i=0; i<lines.size(); i++)
-			linesHalfWidth.push_back(getTextWidth(1, lines[i].c_str())/2);
+			linesHalfWidth.push_back(div32(getTextWidth(1, lines[i].c_str()), 2));
 	}
 	handleNewLine();
 
@@ -326,7 +326,7 @@ void Chatbox::update()
 	bgSetScroll(bgIndex, -xOffset, -192+80-yOffset);
 
 	for (int i=0; i<2; i++)
-		oamSetXY(&oamMain, 24+i, 1+(i*32) + 36-(nameWidth/2) + xOffset, 115+yOffset);
+		oamSetXY(&oamMain, 24+i, 1+(i*32) + 36-(div32(nameWidth, 2)) + xOffset, 115+yOffset);
 
 	arrowTicks++;
 	if (arrowTicks >= 3)
@@ -403,7 +403,7 @@ void Chatbox::update()
 			}
 		}
 
-		bool lastBox = (currTextGfxInd % 8 == 7);
+		bool lastBox = (mod32(currTextGfxInd, 8) == 7);
 		int boxWidth = lastBox ? 20 : 32;
 		int oobFlag;
 		int outWidth;
@@ -414,7 +414,7 @@ void Chatbox::update()
 			currTextGfxInd++;
 			memset(textCanvas, 0, 32*16);
 
-			if (currTextGfxInd % 8 == 0)
+			if (mod32(currTextGfxInd, 8) == 0)
 			{
 				// entered a new line
 				textX = 0;
@@ -434,7 +434,7 @@ void Chatbox::update()
 			if (textX > boxWidth)
 			{
 				currTextGfxInd++;
-				if (currTextGfxInd % 8 == 0)
+				if (mod32(currTextGfxInd, 8) == 0)
 				{
 					textX = 0;
 					handleNewLine();
@@ -471,7 +471,7 @@ bool Chatbox::handleEscape()
 	switch(escape)
 	{
 		case 'n':
-			currTextGfxInd = (currTextGfxInd/8+1) * 8;
+			currTextGfxInd = (div32(currTextGfxInd, 8)+1) * 8;
 			textX = 0;
 			handleNewLine();
 			break;
@@ -571,8 +571,8 @@ void Chatbox::handleNewLine()
 
 	for (int i=start; i<start+8; i++)
 	{
-		int x = (center) ? (128 + (i%8)*32 - linesHalfWidth[currTextLine]) : (8 + (i%8)*32);
-		int y = 132 + (i/8)*16;
+		int x = (center) ? (128 + (mod32(i,8))*32 - linesHalfWidth[currTextLine]) : (8 + (mod32(i,8))*32);
+		int y = 132 + (div32(i,8))*16;
 		oamSetXY(&oamMain, 26+i, x, y);
 	}
 }

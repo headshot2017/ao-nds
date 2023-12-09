@@ -15,7 +15,7 @@
 #include "global.h"
 
 //the speed of the timer when using ClockDivider_1024
-#define TIMER_SPEED (BUS_CLOCK/1024)
+#define TIMER_SPEED div32(BUS_CLOCK,1024)
 
 void readTwoValues(const std::string& value, int* w, int* h)
 {

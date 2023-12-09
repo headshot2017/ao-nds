@@ -45,7 +45,6 @@ int initFont(const u8* data, int line_height)
 
 	//font.ascent = roundf(font.ascent * f32tofloat(font.scale));
 	font.ascent = f32toint(roundf32(mulf32(inttof32(font.ascent), font.scale)));
-	printf("%d - %d (%f) %d\n", line_height, font.scale, f32tofloat(font.scale), font.ascent);
 
 	return loadedCount-1;
 }
@@ -105,7 +104,6 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	// get bounding box for character (may be offset to account for chars that dip above or below the line)
 	int c_x1, c_y1, c_x2, c_y2;
 	stbtt_GetCodepointBitmapBox(&font.info, text[0], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
-	iprintf("%d: %d %d %d %d\n", fontID, c_x1, c_y1, c_x2, c_y2);
 	//stbtt_GetCodepointBitmapBox(&font.info, text[0], f32tofloat(font.scale), f32tofloat(font.scale), &c_x1, &c_y1, &c_x2, &c_y2);
 
 	if (outWidth) *outWidth = 0;
@@ -188,7 +186,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 	{
 		while (text[i] == '\n')
 		{
-			int line = currTextGfxInd/gfxPerLine;
+			int line = div32(currTextGfxInd, gfxPerLine);
 			currTextGfxInd = (line+1) * gfxPerLine;
 			mp3_fill_buffer();
 
@@ -202,7 +200,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 		if (currTextGfxInd >= gfxPerLine*maxLines)
 			return;
 
-		bool lastBox = (currTextGfxInd % gfxPerLine == gfxPerLine-1);
+		bool lastBox = (mod32(currTextGfxInd, gfxPerLine) == gfxPerLine-1);
 		int oobFlag = 0;
 		int outWidth;
 		int new_x = renderChar(fontID, text+i, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
@@ -212,7 +210,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 		{
 			currTextGfxInd++;
 
-			if (currTextGfxInd % gfxPerLine == 0)
+			if (mod32(currTextGfxInd, gfxPerLine) == 0)
 			{
 				// entered a new line
 				textX = 0;
@@ -232,7 +230,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 			if (textX > 32)
 			{
 				currTextGfxInd++;
-				if (currTextGfxInd % gfxPerLine == 0)
+				if (mod32(currTextGfxInd, gfxPerLine) == 0)
 					textX = 0;
 				else
 					textX -= 32;
@@ -305,7 +303,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 	{
 		while (text[i] == '\n')
 		{
-			int line = currTextGfxInd/gfxPerLine;
+			int line = div32(currTextGfxInd, gfxPerLine);
 			currTextGfxInd = (line+1) * gfxPerLine;
 			out.push_back(thisLine);
 			thisLine.clear();
@@ -318,7 +316,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 			textX = 0;
 		}
 
-		bool lastBox = (currTextGfxInd % gfxPerLine == gfxPerLine-1);
+		bool lastBox = (mod32(currTextGfxInd, gfxPerLine) == gfxPerLine-1);
 		int oobFlag = 0;
 		int outWidth;
 
@@ -329,7 +327,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 		{
 			currTextGfxInd++;
 
-			if (currTextGfxInd % gfxPerLine == 0)
+			if (mod32(currTextGfxInd, gfxPerLine) == 0)
 			{
 				// entered a new line
 				textX = 0;
@@ -352,7 +350,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 			if (textX > 32)
 			{
 				currTextGfxInd++;
-				if (currTextGfxInd % gfxPerLine == 0)
+				if (mod32(currTextGfxInd, gfxPerLine) == 0)
 				{
 					textX = 0;
 					out.push_back(thisLine);
