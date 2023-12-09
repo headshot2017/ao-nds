@@ -1,5 +1,6 @@
 #include "fonts.h"
 
+#include <vector>
 #include <stdio.h>
 
 #include <nds/arm9/math.h>
@@ -24,14 +25,11 @@ struct LoadedFont
 	int ascent;
 };
 
-LoadedFont* fonts = nullptr;
-int loadedCount = 0;
+std::vector<LoadedFont> fonts;
 
 int initFont(const u8* data, int line_height)
 {
-	fonts = (LoadedFont*)realloc(fonts, sizeof(LoadedFont) * (++loadedCount));
-
-	LoadedFont& font = fonts[loadedCount-1];
+	LoadedFont font = {0};
 	if (!stbtt_InitFont(&font.info, data, 0))
 		return -1;
 
@@ -46,7 +44,8 @@ int initFont(const u8* data, int line_height)
 	//font.ascent = roundf(font.ascent * f32tofloat(font.scale));
 	font.ascent = f32toint(roundf32(mulf32(inttof32(font.ascent), font.scale)));
 
-	return loadedCount-1;
+	fonts.push_back(font);
+	return (int)fonts.size()-1;
 }
 
 // renders font on 256-color sprite gfx. returns text width with chosen font
@@ -56,7 +55,7 @@ int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmp
 	int x = 0;
 	int textWidth = 0;
 
-	if (fontID < 0 || fontID >= loadedCount)
+	if (fontID < 0 || fontID >= (int)fonts.size())
 		return 0;
 
 	for (u32 i=0; i<strlen(text); i++)
@@ -90,7 +89,7 @@ int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmp
 
 int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16* spriteGfxTarget, bool skipOnOob, int* oobFlag, int* outWidth)
 {
-	if (fontID < 0 || fontID >= loadedCount)
+	if (fontID < 0 || fontID >= (int)fonts.size())
 		return 0;
 
 	LoadedFont& font = fonts[fontID];
@@ -241,7 +240,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 
 int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int* oobFlag, int* outWidth)
 {
-	if (fontID < 0 || fontID >= loadedCount)
+	if (fontID < 0 || fontID >= (int)fonts.size())
 		return 0;
 
 	LoadedFont& font = fonts[fontID];
@@ -372,7 +371,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 
 int getTextWidth(int fontID, const char* text, int maxWidth)
 {
-	if (fontID < 0 || fontID >= loadedCount)
+	if (fontID < 0 || fontID >= (int)fonts.size())
 		return 0;
 
 	LoadedFont& font = fonts[fontID];
