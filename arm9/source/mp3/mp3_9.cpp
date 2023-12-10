@@ -167,6 +167,8 @@ int mp3_pause() {
         return (int)fifoGetValue32(FIFO_USER_01);
 }
 int mp3_stop() {
+		if (!mp3_is_playing()) return 1;
+
 		mp3_msg msg;
 		int ret;
 
@@ -229,6 +231,7 @@ bool mp3_is_playing()
 }
 
 int mp3_init() {
+	mp3_file = 0;
 	mp3 = (mp3_player *)uncached_malloc(sizeof(mp3_player));
 	mp3_buffer = (u8 *)uncached_malloc(MP3_FILE_BUFFER_SIZE*2);
 	mp3_audioLeft = (u16 *)malloc(MP3_AUDIO_BUFFER_SIZE);
