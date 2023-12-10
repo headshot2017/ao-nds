@@ -139,5 +139,8 @@ void UIScreenWifi::update()
 	oamSetHidden(&oamSub, 0, (assocStatus == ASSOCSTATUS_CANNOTCONNECT));
 
 	if (Wifi_AssocStatus() == ASSOCSTATUS_ASSOCIATED && !gEngine->isFading())
+	{
+		gEngine->resetWifiSwitch();
 		gEngine->changeScreen(new UIScreenMainMenu);
+	}
 }

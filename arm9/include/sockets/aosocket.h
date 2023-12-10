@@ -39,6 +39,8 @@ public:
 		callbacks[headerName].erase(callbacks[headerName].begin() + id);
 	}
 
+	bool isConnected() {return connected;}
+
 protected:
 	std::unordered_map<std::string, std::vector<NetCBInfo> > callbacks;
 	bool connected;

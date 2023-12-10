@@ -129,6 +129,11 @@ void UIScreenCourt::update()
 		nextScreen = nullptr;
 	}
 
+	if (!gEngine->getSocket()->isConnected() && !gEngine->isFading())
+	{
+		gEngine->changeScreen(new UIScreenDisconnected("Disconnected", "Connection to server lost.", false));
+	}
+
 	if (receiveTicks <= 0)
 	{
 		if (!icReceiveQueue.empty())

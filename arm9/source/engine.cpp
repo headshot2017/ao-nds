@@ -6,7 +6,9 @@
 
 #include <nds/ndstypes.h>
 #include <nds/interrupts.h>
+#include <dswifi9.h>
 
+#include "ui/uidisconnected.h"
 #include "ui/label.h"
 #include "cfgFile.h"
 #include "mini/ini.h"
@@ -19,6 +21,7 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 	alpha = 16;
 	fading = false;
 	running = true;
+	wifiSwitch = false;
 
 	UILabel* lbl_loading = new UILabel(&oamSub, 0, 8, 1, RGB15(31,31,31), 0, 1);
 
@@ -179,6 +182,12 @@ void Engine::update()
 	if (aosocket)
 	{
 		aosocket->update();
+	}
+
+	if (!nextScreen && wifiSwitch && Wifi_AssocStatus() != ASSOCSTATUS_ASSOCIATED)
+	{
+		wifiSwitch = false;
+		gEngine->changeScreen(new UIScreenDisconnected("Disconnected from Wi-Fi", "Connection to Wi-Fi lost.\nPress OK to reconnect.", true));
 	}
 
 	if (screen)

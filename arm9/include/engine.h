@@ -33,6 +33,7 @@ class Engine
 	int alpha;
 	bool fading;
 	bool running;
+	bool wifiSwitch;
 
 	void cacheMusic(const std::string& folder, std::string extra="");
 	void cacheEvidence(const std::string& folder);
@@ -64,6 +65,7 @@ public:
 	void setOOCname(std::string val) {defaultOOCname = val;}
 	void setChatlogIniswaps(bool val) {chatlogIniswaps = val;}
 	void setChatlogShownames(bool val) {chatlogShownames = val;}
+	void resetWifiSwitch() {wifiSwitch = true;}
 
 	void updateInput();
 	void update();
