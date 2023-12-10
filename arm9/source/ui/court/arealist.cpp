@@ -35,6 +35,7 @@ UICourtAreaList::~UICourtAreaList()
 	delete sel_btn;
 
 	gEngine->getSocket()->removeMessageCallback("ARUP", cbARUP);
+	gEngine->getSocket()->removeMessageCallback("FA", cbFA);
 }
 
 void UICourtAreaList::init()
@@ -86,6 +87,7 @@ void UICourtAreaList::init()
 	btn_nextPage->connect(onPageBtnRelease, this, UIButton::RELEASED);
 
 	cbARUP = gEngine->getSocket()->addMessageCallback("ARUP", onMessageARUP, this);
+	cbFA = gEngine->getSocket()->addMessageCallback("FA", onMessageFA, this);
 
 	reloadPage();
 }
@@ -271,4 +273,12 @@ void UICourtAreaList::onMessageARUP(void* pUserData, std::string msg)
 	if (pSelf->currAreaSelected == -1) return;
 
 	pSelf->updateAreaInfo();
+}
+
+void UICourtAreaList::onMessageFA(void* pUserData, std::string msg)
+{
+	UICourtAreaList* pSelf = (UICourtAreaList*)pUserData;
+
+	pSelf->currPage = 0;
+	pSelf->reloadPage();
 }

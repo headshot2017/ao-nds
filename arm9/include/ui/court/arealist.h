@@ -27,6 +27,7 @@ class UICourtAreaList : public UISubScreen
 	int holdWait;
 	int pageAdd;
 	int cbARUP;
+	int cbFA;
 
 public:
 	UICourtAreaList(UIScreenCourt* courtUI) : UISubScreen(courtUI) {}
@@ -49,6 +50,7 @@ public:
 	static void onAreaClicked(void* pUserData);
 
 	static void onMessageARUP(void* pUserData, std::string msg);
+	static void onMessageFA(void* pUserData, std::string msg);
 };
 
 #endif // AREALIST_H_INCLUDED
