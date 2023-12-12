@@ -81,7 +81,7 @@ AOkeyboard::~AOkeyboard()
 
 void AOkeyboard::show16(const char* plsWrite, std::u16string startValue)
 {
-	if (startValue == u"\0") startValue = value;
+	if (startValue.size() == 1 && startValue.at(0) == u'\0') startValue = value;
 	valueOld = value = startValue;
 
 	lbl_plswrite->setVisible(true);
