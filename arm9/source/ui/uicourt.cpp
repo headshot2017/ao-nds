@@ -9,6 +9,7 @@
 #include <nds/arm9/input.h>
 #include <nds/interrupts.h>
 
+#include "utf8.h"
 #include "fonts.h"
 #include "global.h"
 #include "mini/ini.h"
@@ -225,7 +226,7 @@ void UIScreenCourt::onMessageSC(void* pUserData, std::string msg)
 			side = ini["options"]["side"];
 		}
 
-		pSelf->charList.push_back({name, showname, blip, side, false, false});
+		pSelf->charList.push_back({name, utf8::utf8to16(showname), blip, side, false, false});
 
 		lastPos = delimiterPos;
 		delimiterPos = msg.find("#", delimiterPos+1);
@@ -249,9 +250,10 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 	{
 		std::string value = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
 
-		// remove file extension
 		std::string mp3Music = value;
 		AOdecode(mp3Music);
+
+		// remove file extension
 		size_t newPos = 0;
 		size_t pos = 0;
 		while (newPos != std::string::npos)
@@ -269,14 +271,29 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 		std::string mp3Lower = mp3Music+".mp3";
 		std::transform(mp3Lower.begin(), mp3Lower.end(), mp3Lower.begin(), [](char c){return std::tolower(c);});
 
+		// remove category
+		newPos = 0;
+		pos = 0;
+		while (newPos != std::string::npos)
+		{
+			pos = newPos;
+			newPos = mp3Music.find("/", pos+1);
+			mp3_fill_buffer();
+		}
+		if (pos)
+		{
+			mp3Music = mp3Music.substr(pos+1);
+			mp3_fill_buffer();
+		}
+
 		if (musics_time)
-			pSelf->musicList.push_back({value, mp3Music, mp3Lower});
+			pSelf->musicList.push_back({value, utf8::utf8to16(mp3Music), mp3Lower});
 		else if (value.find(".mp3") != std::string::npos || value.find(".ogg") != std::string::npos || value.find(".opus") != std::string::npos || value.find(".wav") != std::string::npos)
 		{
 			musics_time = true;
-			pSelf->musicList.push_back({pSelf->areaList.back().name, pSelf->areaList.back().name, pSelf->areaList.back().name});
+			pSelf->musicList.push_back({pSelf->areaList.back().name, utf8::utf8to16(pSelf->areaList.back().name), pSelf->areaList.back().name});
 			pSelf->areaList.pop_back();
-			pSelf->musicList.push_back({value, mp3Music, mp3Lower});
+			pSelf->musicList.push_back({value, utf8::utf8to16(mp3Music), mp3Lower});
 		}
 		else
 			pSelf->areaList.push_back({value, 0, "", "", ""});
@@ -315,8 +332,8 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 	else if (charID >= 0) logName = (pSelf->charList.empty()) ? ("char " + std::to_string(charID)) : pSelf->charList[charID].name;
 	else logName = "Server";
 
-	std::string logMsg = logName+" played music "+trackname;
-	separateLines(0, logMsg.c_str(), 7, false, pSelf->icLog);
+	std::u16string logMsg = utf8::utf8to16(logName+" played music "+trackname);
+	separateLines(0, logMsg, 7, false, pSelf->icLog);
 	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
 
 	pSelf->court->playMusic("/data/ao-nds/sounds/music/"+trackname);
@@ -339,7 +356,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	AOdecode(charname);
 	AOdecode(showname);
 
-	std::string chatmsg = argumentAt(msg,5);
+	std::u16string chatmsg = utf8::utf8to16(argumentAt(msg,5));
 	AOdecode(chatmsg);
 
 	std::string shoutModStr = argumentAt(msg, 11);
@@ -367,8 +384,8 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	if (gEngine->showChatlogShownames() && !showname.empty())
 		name += " [" + showname + "]";
 
-	std::string logMsg = name+": "+chatmsg;
-	separateLines(0, logMsg.c_str(), 7, false, pSelf->icLog);
+	std::u16string logMsg = utf8::utf8to16(name+": ") + chatmsg;
+	separateLines(0, logMsg, 7, false, pSelf->icLog);
 	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
 
 
@@ -397,7 +414,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.flip = argumentAt(msg, 13) == "1";
 	data.realization = std::stoi(argumentAt(msg, 14));
 	data.textColor = std::stoi(argumentAt(msg, 15));
-	data.showname = showname;
+	data.showname = utf8::utf8to16(showname);
 	data.otherCharID = std::stoi(argumentAt(msg, 17));
 	data.otherName = argumentAt(msg, 18);
 	data.otherEmote = argumentAt(msg, 19);
@@ -430,8 +447,8 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 	bool isServer = (argumentAt(msg, 3) == "1");
 
 	// insert to chatlog
-	std::string logMsg = name+": "+chatmsg;
-	separateLines(0, logMsg.c_str(), 7, false, pSelf->oocLog);
+	std::u16string logMsg = utf8::utf8to16(name+": "+chatmsg);
+	separateLines(0, logMsg, 7, false, pSelf->oocLog);
 	while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 
 	if (isServer)
@@ -448,7 +465,7 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 			if (chatmsg.find(errors[i]) != std::string::npos)
 			{
 				pSelf->icSendQueue.clear();
-				pSelf->changeScreen(new UICourtMessage(pSelf, chatmsg));
+				pSelf->changeScreen(new UICourtMessage(pSelf, utf8::utf8to16(chatmsg)));
 				break;
 			}
 		}
@@ -456,8 +473,8 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 		if (chatmsg.find("Logged in as") != std::string::npos)
 		{
 			pSelf->loggedIn = true;
-			std::string logMsg = "You can now enable Guard Mode in the main menu. This will allow you to receive modcalls.";
-			separateLines(0, logMsg.c_str(), 7, false, pSelf->oocLog);
+			std::u16string logMsg = u"You can now enable Guard Mode in the main menu. This will allow you to receive modcalls.";
+			separateLines(0, logMsg, 7, false, pSelf->oocLog);
 			while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 		}
 		else if (chatmsg.find("no longer a mod") != std::string::npos)
@@ -624,8 +641,8 @@ void UIScreenCourt::onMessageLE(void* pUserData, std::string msg)
 		std::string info = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
 		if (info.empty() || info.at(0) == '%') break;
 
-		std::string name = argumentAt(info, 0, '&');
-		std::string desc = argumentAt(info, 1, '&');
+		std::u16string name = utf8::utf8to16(argumentAt(info, 0, '&'));
+		std::u16string desc = utf8::utf8to16(argumentAt(info, 1, '&'));
 		std::string image = argumentAt(info, 2, '&');
 		AOdecode(name);
 		AOdecode(desc);
@@ -689,8 +706,8 @@ void UIScreenCourt::onMessageAUTH(void* pUserData, std::string msg)
 	pSelf->loggedIn = (auth == "1");
 	if (pSelf->loggedIn)
 	{
-		std::string logMsg = "You can now enable Guard Mode in the main menu. This will allow you to receive modcalls.";
-		separateLines(0, logMsg.c_str(), 7, false, pSelf->oocLog);
+		std::u16string logMsg = u"You can now enable Guard Mode in the main menu. This will allow you to receive modcalls.";
+		separateLines(0, logMsg, 7, false, pSelf->oocLog);
 		while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 	}
 }
@@ -701,8 +718,8 @@ void UIScreenCourt::onMessageZZ(void* pUserData, std::string msg)
 
 	if (!pSelf->guard) return;
 
-	std::string modcall = "[MOD CALL] " + argumentAt(msg, 1);
-	separateLines(0, modcall.c_str(), 7, false, pSelf->oocLog);
+	std::u16string modcall = u"[MOD CALL] " + utf8::utf8to16(argumentAt(msg, 1));
+	separateLines(0, modcall, 7, false, pSelf->oocLog);
 	while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 
 	pSelf->changeScreen(new UICourtMessage(pSelf, modcall));

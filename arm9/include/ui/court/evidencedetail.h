@@ -31,15 +31,15 @@ class UICourtEvidenceDetail : public UISubScreen
 	UILabel* inputting;
 
 	u32 scrollPos;
-	std::string currName;
-	std::string currDesc;
+	std::u16string currName;
+	std::u16string currDesc;
 	std::string currImage;
-	std::vector<std::string> renderDesc;
+	std::vector<std::u16string> renderDesc;
 
 	int cbLE;
 
 public:
-	UICourtEvidenceDetail(UIScreenCourt* courtUI, u32 ind, bool isPriv, std::string name="", std::string desc="", std::string img="") :
+	UICourtEvidenceDetail(UIScreenCourt* courtUI, u32 ind, bool isPriv, std::u16string name=u"", std::u16string desc=u"", std::string img="") :
 		UISubScreen(courtUI), currEvidence(ind), isPrivate(isPriv), currName(name), currDesc(desc), currImage(img) {}
 
 	~UICourtEvidenceDetail();

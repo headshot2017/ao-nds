@@ -4,6 +4,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
 #include "fonts.h"
@@ -120,7 +121,7 @@ void UICourtEvidenceDetail::updateInput()
 				{
 					// editing evidence
 					if (!isPrivate)
-						gEngine->getSocket()->sendData("EE#" + std::to_string(currEvidence) + "#" + currName + "#" + currDesc + "#" + currImage + ".png#%");
+						gEngine->getSocket()->sendData("EE#" + std::to_string(currEvidence) + "#" + utf8::utf16to8(currName) + "#" + utf8::utf16to8(currDesc) + "#" + currImage + ".png#%");
 					else
 					{
 						gEngine->getPrivateEvidence()[currEvidence].name = currName;
@@ -157,14 +158,14 @@ void UICourtEvidenceDetail::updateInput()
 			wav_play(pCourtUI->sndCrtRcrd);
 			inputting = lbl_name;
 			hideEverything();
-			kb_input->show("Enter evidence name", currName.c_str());
+			kb_input->show16("Enter evidence name", currName);
 		}
 		else if (pos.px >= 9 && pos.py >= 114 && pos.px < 9+223 && pos.py < 114+45)
 		{
 			wav_play(pCourtUI->sndCrtRcrd);
 			inputting = lbl_desc;
 			hideEverything();
-			kb_input->show("Enter evidence description", currDesc.c_str());
+			kb_input->show16("Enter evidence description", currDesc);
 		}
 	}
 }
@@ -237,12 +238,12 @@ void UICourtEvidenceDetail::reloadPage()
 		btn_transfer->setVisible(false);
 	}
 
-	lbl_name->setText(currName.c_str());
+	lbl_name->setText(currName);
 	lbl_name->setPos(163, 41, true);
 
 	scrollPos = 0;
 	renderDesc.clear();
-	separateLines(0, currDesc.c_str(), 7, false, renderDesc);
+	separateLines(0, currDesc, 7, false, renderDesc);
 	reloadDesc();
 
 	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 11);
@@ -250,18 +251,18 @@ void UICourtEvidenceDetail::reloadPage()
 
 void UICourtEvidenceDetail::reloadDesc()
 {
-	std::string updateText;
+	std::u16string updateText;
 
 	for (u32 i=0; i<4; i++)
 	{
 		if (scrollPos+i >= renderDesc.size())
 			break;
-		updateText += renderDesc[scrollPos+i]+"\n";
+		updateText += renderDesc[scrollPos+i]+u"\n";
 
 		mp3_fill_buffer();
 	}
 
-	lbl_desc->setText(updateText.c_str());
+	lbl_desc->setText(updateText);
 }
 
 void UICourtEvidenceDetail::onBackClicked(void* pUserData)
@@ -309,7 +310,7 @@ void UICourtEvidenceDetail::onTopButtonClicked(void* pUserData)
 	else
 	{
 		if (!pSelf->isPrivate)
-			gEngine->getSocket()->sendData("PE#" + pSelf->currName + "#" + pSelf->currDesc + "#" + pSelf->currImage + ".png#%");
+			gEngine->getSocket()->sendData("PE#" + utf8::utf16to8(pSelf->currName) + "#" + utf8::utf16to8(pSelf->currDesc) + "#" + pSelf->currImage + ".png#%");
 		else
 		{
 			gEngine->getPrivateEvidence().push_back({pSelf->currName, pSelf->currDesc, pSelf->currImage});
@@ -347,7 +348,7 @@ void UICourtEvidenceDetail::onTransferClicked(void* pUserData)
 	if (pSelf->isPrivate)
 	{
 		// copy to public
-		gEngine->getSocket()->sendData("PE#" + info.name + "#" + info.description + "#" + info.image + ".png#%");
+		gEngine->getSocket()->sendData("PE#" + utf8::utf16to8(info.name) + "#" + utf8::utf16to8(info.description) + "#" + info.image + ".png#%");
 	}
 	else
 	{

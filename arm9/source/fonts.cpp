@@ -49,7 +49,7 @@ int initFont(const u8* data, int line_height)
 }
 
 // renders font on 256-color sprite gfx. returns text width with chosen font
-int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16** spriteGfxTargets, int spriteGfxCount)
+int renderText(int fontID, std::u16string& text, int palIndex, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16** spriteGfxTargets, int spriteGfxCount)
 {
 	int currGfx = 0;
 	int x = 0;
@@ -58,11 +58,11 @@ int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmp
 	if (fontID < 0 || fontID >= (int)fonts.size())
 		return 0;
 
-	for (u32 i=0; i<strlen(text); i++)
+	for (u32 i=0; i<text.size(); i++)
 	{
 		int oobFlag;
 		int outWidth;
-		int new_x = renderChar(fontID, text+i, palIndex, x, w, w, h, bmpTarget, spritesize, spriteGfxTargets[currGfx], false, &oobFlag, &outWidth);
+		int new_x = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, x, w, w, h, bmpTarget, spritesize, spriteGfxTargets[currGfx], false, &oobFlag, &outWidth);
 		mp3_fill_buffer();
 
 		if (!oobFlag)
@@ -87,7 +87,7 @@ int renderText(int fontID, const char* text, int palIndex, int w, int h, u8* bmp
 	return textWidth;
 }
 
-int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16* spriteGfxTarget, bool skipOnOob, int* oobFlag, int* outWidth)
+int renderChar(int fontID, int codepoint, int nextChar, int palIndex, int x, int spriteW, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16* spriteGfxTarget, bool skipOnOob, int* oobFlag, int* outWidth)
 {
 	if (fontID < 0 || fontID >= (int)fonts.size())
 		return 0;
@@ -97,13 +97,12 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	// how wide is this character
 	int ax;
 	int lsb;
-	stbtt_GetCodepointHMetrics(&font.info, text[0], &ax, &lsb);
+	stbtt_GetCodepointHMetrics(&font.info, codepoint, &ax, &lsb);
 	// (Note that each Codepoint call has an alternative Glyph version which caches the work required to lookup the character word[i].)
 
 	// get bounding box for character (may be offset to account for chars that dip above or below the line)
 	int c_x1, c_y1, c_x2, c_y2;
-	stbtt_GetCodepointBitmapBox(&font.info, text[0], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
-	//stbtt_GetCodepointBitmapBox(&font.info, text[0], f32tofloat(font.scale), f32tofloat(font.scale), &c_x1, &c_y1, &c_x2, &c_y2);
+	stbtt_GetCodepointBitmapBox(&font.info, codepoint, font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
 	if (outWidth) *outWidth = 0;
 	int out_x = c_x2 - c_x1+1;
@@ -124,10 +123,8 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	int y = font.ascent + c_y1;
 
 	// render character (stride and offset is important here)
-	//int byteOffset = 0 + roundf(lsb * f32tofloat(font.scale)) + (y * spriteW);
 	int byteOffset = 0 + f32toint(roundf32(mulf32(inttof32(lsb), font.scale))) + (y * spriteW);
-	//stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, f32tofloat(font.scale), f32tofloat(font.scale), text[0]);
-	stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, font.scale, font.scale, text[0]);
+	stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, font.scale, font.scale, codepoint);
 	mp3_fill_buffer();
 
 	// focus around the bounding box of the rendered character...
@@ -162,13 +159,11 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 
 	// advance x
 	x += f32toint(roundf32(mulf32(inttof32(ax), font.scale)));
-	//x += roundf(ax * f32tofloat(font.scale));
 
 	// add kerning
 	int kern;
-	kern = stbtt_GetCodepointKernAdvance(&font.info, text[0], text[1]);
+	kern = stbtt_GetCodepointKernAdvance(&font.info, codepoint, nextChar);
 	x += f32toint(roundf32(mulf32(inttof32(kern), font.scale)));
-	//x += roundf(kern * f32tofloat(font.scale));
 
 	mp3_fill_buffer();
 
@@ -176,21 +171,22 @@ int renderChar(int fontID, const char* text, int palIndex, int x, int spriteW, i
 	return x;
 }
 
-void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16** spriteGfxTargets, int gfxPerLine, int maxLines)
+
+void renderMultiLine(int fontID, std::u16string& text, int palIndex, int w, int h, u8* bmpTarget, SpriteSize spritesize, u16** spriteGfxTargets, int gfxPerLine, int maxLines)
 {
 	int textX = 0;
 	int currTextGfxInd = 0;
 
-	for (u32 i=0; i<strlen(text); i++)
+	for (u32 i=0; i<text.size(); i++)
 	{
-		while (text[i] == '\n')
+		while (text.at(i) == '\n')
 		{
 			int line = div32(currTextGfxInd, gfxPerLine);
 			currTextGfxInd = (line+1) * gfxPerLine;
 			mp3_fill_buffer();
 
 			i++;
-			if (i >= strlen(text))
+			if (i >= text.size())
 				return;
 
 			textX = 0;
@@ -202,7 +198,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 		bool lastBox = (mod32(currTextGfxInd, gfxPerLine) == gfxPerLine-1);
 		int oobFlag = 0;
 		int outWidth;
-		int new_x = renderChar(fontID, text+i, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+		int new_x = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
 		mp3_fill_buffer();
 
 		if (oobFlag)
@@ -219,7 +215,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 			else
 			{
 				textX -= 32;
-				textX = renderChar(fontID, text+i, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+				textX = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
 				mp3_fill_buffer();
 			}
 		}
@@ -238,7 +234,7 @@ void renderMultiLine(int fontID, const char* text, int palIndex, int w, int h, u
 	}
 }
 
-int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int* oobFlag, int* outWidth)
+int advanceXPos(int fontID, int codepoint, int nextChar, int x, int w, bool skipOnOob, int* oobFlag, int* outWidth)
 {
 	if (fontID < 0 || fontID >= (int)fonts.size())
 		return 0;
@@ -248,13 +244,12 @@ int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int*
 	// how wide is this character
 	int ax;
 	int lsb;
-	stbtt_GetCodepointHMetrics(&font.info, text[0], &ax, &lsb);
+	stbtt_GetCodepointHMetrics(&font.info, codepoint, &ax, &lsb);
 	// (Note that each Codepoint call has an alternative Glyph version which caches the work required to lookup the character word[i].)
 
 	// get bounding box for character (may be offset to account for chars that dip above or below the line)
 	int c_x1, c_y1, c_x2, c_y2;
-	stbtt_GetCodepointBitmapBox(&font.info, text[0], font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
-	//stbtt_GetCodepointBitmapBox(&font.info, text[0], f32tofloat(font.scale), f32tofloat(font.scale), &c_x1, &c_y1, &c_x2, &c_y2);
+	stbtt_GetCodepointBitmapBox(&font.info, codepoint, font.scale, font.scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
 	if (outWidth) *outWidth = 0;
 	int out_x = c_x2 - c_x1+1;
@@ -278,13 +273,11 @@ int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int*
 
 	// advance x
 	x += f32toint(roundf32(mulf32(inttof32(ax), font.scale)));
-	//x += roundf(ax * f32tofloat(font.scale));
 
 	// add kerning
 	int kern;
-	kern = stbtt_GetCodepointKernAdvance(&font.info, text[0], text[1]);
+	kern = stbtt_GetCodepointKernAdvance(&font.info, codepoint, nextChar);
 	x += f32toint(roundf32(mulf32(inttof32(kern), font.scale)));
-	//x += roundf(kern * f32tofloat(font.scale));
 
 	mp3_fill_buffer();
 
@@ -292,15 +285,15 @@ int advanceXPos(int fontID, const char* text, int x, int w, bool skipOnOob, int*
 	return x;
 }
 
-void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, std::vector<std::string>& out)
+void separateLines(int fontID, std::u16string& text, int gfxPerLine, bool chatbox, std::vector<std::u16string>& out)
 {
-	std::string thisLine;
+	std::u16string thisLine;
 	int textX = 0;
 	int currTextGfxInd = 0;
 
-	for (u32 i=0; i<strlen(text); i++)
+	for (u32 i=0; i<text.size(); i++)
 	{
-		while (text[i] == '\n')
+		while (text.at(i) == '\n')
 		{
 			int line = div32(currTextGfxInd, gfxPerLine);
 			currTextGfxInd = (line+1) * gfxPerLine;
@@ -309,7 +302,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 			mp3_fill_buffer();
 
 			i++;
-			if (i >= strlen(text))
+			if (i >= text.at(i))
 				return;
 
 			textX = 0;
@@ -319,7 +312,7 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 		int oobFlag = 0;
 		int outWidth;
 
-		int new_x = advanceXPos(fontID, text+i, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
+		int new_x = advanceXPos(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
 		mp3_fill_buffer();
 
 		if (oobFlag)
@@ -337,9 +330,9 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 			}
 			else
 			{
-				thisLine += text[i];
+				thisLine += text.at(i);
 				textX -= 32;
-				textX = advanceXPos(fontID, text+i, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
+				textX = advanceXPos(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
 				mp3_fill_buffer();
 			}
 		}
@@ -357,19 +350,19 @@ void separateLines(int fontID, const char* text, int gfxPerLine, bool chatbox, s
 				}
 				else
 				{
-					thisLine += text[i];
+					thisLine += text.at(i);
 					textX -= 32;
 				}
 			}
 			else
-				thisLine += text[i];
+				thisLine += text.at(i);
 		}
 	}
 
 	out.push_back(thisLine);
 }
 
-int getTextWidth(int fontID, const char* text, int maxWidth)
+int getTextWidth(int fontID, std::u16string& text, int maxWidth)
 {
 	if (fontID < 0 || fontID >= (int)fonts.size())
 		return 0;
@@ -377,18 +370,18 @@ int getTextWidth(int fontID, const char* text, int maxWidth)
 	LoadedFont& font = fonts[fontID];
 
 	int lines = 1;
-	for (u32 i=0; i<strlen(text); i++)
+	for (u32 i=0; i<text.size(); i++)
 	{
-		if (text[i] == '\n') lines++;
+		if (text.at(i) == '\n') lines++;
 	}
 
 	int* textWidth = new int[lines];
 	for (int i=0; i<lines; i++) textWidth[i] = 0;
 
 	int line = 0;
-	for (u32 i=0; i<strlen(text); i++)
+	for (u32 i=0; i<text.size(); i++)
 	{
-		if (text[i] == '\n')
+		if (text.at(i) == '\n')
 		{
 			line++;
 			continue;
@@ -397,7 +390,7 @@ int getTextWidth(int fontID, const char* text, int maxWidth)
 		// how wide is this character
 		int ax;
 		int lsb;
-		stbtt_GetCodepointHMetrics(&font.info, text[i], &ax, &lsb);
+		stbtt_GetCodepointHMetrics(&font.info, text.at(i), &ax, &lsb);
 		// (Note that each Codepoint call has an alternative Glyph version which caches the work required to lookup the character word[i].)
 
 		// get bounding box for character (may be offset to account for chars that dip above or below the line)

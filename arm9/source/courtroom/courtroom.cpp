@@ -8,6 +8,7 @@
 #include <nds/arm9/input.h>
 #include <nds/arm9/video.h>
 
+#include "utf8.h"
 #include "colors.h"
 
 Courtroom::Courtroom()
@@ -100,7 +101,7 @@ void Courtroom::handleChat()
 	if (!currIC.evidence.empty())
 		evidence->showEvidence(currIC.evidence, currIC.side == "def" || currIC.side == "hlp");
 
-	std::string chatname = (currIC.showname.empty()) ? currIC.charname : currIC.showname;
+	std::u16string chatname = (currIC.showname.empty()) ? utf8::utf8to16(currIC.charname) : currIC.showname;
 	int color = AOcolorToPalette[currIC.textColor];
 
 	if (currIC.shake)
@@ -341,7 +342,7 @@ void Courtroom::onAnimFinished(void* pUserData)
 
 	if (!pSelf->currIC.noInterrupt)
 	{
-		std::string chatname = (pSelf->currIC.showname.empty()) ? pSelf->currIC.charname : pSelf->currIC.showname;
+		std::u16string chatname = (pSelf->currIC.showname.empty()) ? utf8::utf8to16(pSelf->currIC.charname) : pSelf->currIC.showname;
 		pSelf->chatbox->setVisible(true);
 		pSelf->chatbox->setName(chatname);
 

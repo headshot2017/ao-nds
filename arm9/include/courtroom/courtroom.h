@@ -35,7 +35,7 @@ struct MSchatStruct
 	std::string preanim;
 	std::string charname;
 	std::string emote;
-	std::string chatmsg;
+	std::u16string chatmsg;
 	std::string side;
 	std::string sfx;
 	int emoteMod;
@@ -47,7 +47,7 @@ struct MSchatStruct
 	bool flip;
 	int realization;
 	int textColor;
-	std::string showname;
+	std::u16string showname;
 	int otherCharID;
 	std::string otherName;
 	std::string otherEmote;

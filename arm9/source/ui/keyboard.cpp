@@ -3,6 +3,7 @@
 #include <nds/dma.h>
 #include <nds/interrupts.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 
 void keyboardShowAlt(Keyboard* kb)
@@ -78,9 +79,9 @@ AOkeyboard::~AOkeyboard()
 	delete lbl_written;
 }
 
-void AOkeyboard::show(const char* plsWrite, const char* startValue)
+void AOkeyboard::show16(const char* plsWrite, std::u16string startValue)
 {
-	if (!startValue) startValue = value.c_str();
+	if (startValue == u"\0") startValue = value;
 	valueOld = value = startValue;
 
 	lbl_plswrite->setVisible(true);
@@ -91,6 +92,11 @@ void AOkeyboard::show(const char* plsWrite, const char* startValue)
 
 	dmaCopy(m_kb.palette, BG_PALETTE_SUB, m_kb.paletteLen);
 	keyboardShowAlt(&m_kb);
+}
+
+void AOkeyboard::show(const char* plsWrite, std::string startValue)
+{
+	show16(plsWrite, utf8::utf8to16(startValue));
 }
 
 int AOkeyboard::updateInput()
@@ -117,20 +123,30 @@ int AOkeyboard::updateInput()
 		if (!value.empty())
 		{
 			value = value.substr(0, value.size()-1);
-			lbl_written->setText(value.c_str());
+			lbl_written->setText(value);
 		}
 	}
 	else if (c > 0)
 	{
 		value += c;
-		lbl_written->setText(value.c_str());
+		lbl_written->setText(value);
 	}
 
 	return 0;
 }
 
-void AOkeyboard::setValue(std::string newValue)
+void AOkeyboard::setValue(std::u16string newValue)
 {
 	value = newValue;
-	lbl_written->setText(newValue.c_str());
+	lbl_written->setText(newValue);
+}
+
+std::u16string& AOkeyboard::getValue()
+{
+	return value;
+}
+
+std::string AOkeyboard::getValueUTF8()
+{
+	return utf8::utf16to8(value);
 }

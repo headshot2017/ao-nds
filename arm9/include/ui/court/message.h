@@ -11,10 +11,10 @@ class UICourtMessage : public UISubScreen
 	UIButton* btn_ok;
 	UILabel* lbl_msg;
 
-	std::string msg;
+	std::u16string msg;
 
 public:
-	UICourtMessage(UIScreenCourt* courtUI, std::string MSG) : UISubScreen(courtUI), msg(MSG) {}
+	UICourtMessage(UIScreenCourt* courtUI, std::u16string MSG) : UISubScreen(courtUI), msg(MSG) {}
 	~UICourtMessage();
 
 	void init();

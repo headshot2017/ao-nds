@@ -66,7 +66,7 @@ void UIScreenDirectConn::updateInput()
 		gEngine->changeScreen(new UIScreenMainMenu);
 	else if (result == 1)
 	{
-		std::string ip = kb_ipInput->getValue();
+		std::string ip = kb_ipInput->getValueUTF8();
 		if (useWS)
 		{
 			AOwebSocket* sock = new AOwebSocket;

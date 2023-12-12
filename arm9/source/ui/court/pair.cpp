@@ -53,7 +53,7 @@ void UICourtPair::init()
 
 	btn_disable->setVisible(pCourtUI->icControls.pairID != -1);
 
-	lbl_pairName->setText((pCourtUI->icControls.pairID != -1) ? pCourtUI->getCharList()[pCourtUI->icControls.pairID].name.c_str() : "No pair");
+	lbl_pairName->setText((pCourtUI->icControls.pairID != -1) ? pCourtUI->getCharList()[pCourtUI->icControls.pairID].name : "No pair");
 	lbl_pairName->setPos(128, 156, true);
 
 	btn_back->assignKey(KEY_B);
@@ -154,9 +154,9 @@ void UICourtPair::updateOffset()
 {
 	std::string xOffset = std::to_string(pCourtUI->icControls.xOffset) + "%";
 	std::string yOffset = std::to_string(pCourtUI->icControls.yOffset) + "%";
-	lbl_xValue->setText(xOffset.c_str());
+	lbl_xValue->setText(xOffset);
 	lbl_xValue->setPos(220, 143, false);
-	lbl_yValue->setText(yOffset.c_str());
+	lbl_yValue->setText(yOffset);
 	lbl_yValue->setPos(235, 134, true);
 
 	int xPos = 87 + (pCourtUI->icControls.xOffset / 100.f * 160);

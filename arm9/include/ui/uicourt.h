@@ -15,7 +15,7 @@ extern const char* indToSide[6];
 struct charInfo
 {
 	std::string name;
-	std::string showname;
+	std::u16string showname;
 	std::string blip;
 	std::string side;
 	bool taken;
@@ -25,7 +25,7 @@ struct charInfo
 struct musicInfo
 {
 	std::string name;
-	std::string nameDecoded;
+	std::u16string nameDecoded;
 	std::string nameLower;
 };
 
@@ -85,8 +85,8 @@ class UIScreenCourt : public UIScreen
 	std::vector<areaInfo> areaList;
 	std::vector<evidenceInfo> evidenceList;
 
-	std::vector<std::string> icLog;
-	std::vector<std::string> oocLog;
+	std::vector<std::u16string> icLog;
+	std::vector<std::u16string> oocLog;
 
 	int currChar;
 	std::vector<emoteInfo> charEmotes;
@@ -115,8 +115,8 @@ public:
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	std::vector<evidenceInfo>& getEvidenceList(bool priv) {return (priv) ? gEngine->getPrivateEvidence() : evidenceList;}
-	const std::vector<std::string>& getICLog() {return icLog;}
-	const std::vector<std::string>& getOOCLog() {return oocLog;}
+	const std::vector<std::u16string>& getICLog() {return icLog;}
+	const std::vector<std::u16string>& getOOCLog() {return oocLog;}
 	int getCurrCharID() {return currChar;}
 	charInfo& getCurrChar() {return charList[currChar];}
 	const std::vector<emoteInfo>& getCharEmotes() {return charEmotes;}
@@ -151,8 +151,8 @@ public:
 	wav_handle* sndEvShow;
 	wav_handle* sndCrtRcrd;
 
-	std::string showname;
-	std::string oocName;
+	std::u16string showname;
+	std::u16string oocName;
 
 	bool guard;
 	int bars[2];

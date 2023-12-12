@@ -23,7 +23,7 @@ void UICourtMessage::init()
 
 	btn_ok->assignKey(KEY_A);
 	btn_ok->connect(onOKClicked, this);
-	lbl_msg->setText(msg.c_str());
+	lbl_msg->setText(msg);
 	lbl_msg->setPos(128, 36, true);
 }
 

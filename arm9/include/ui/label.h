@@ -18,7 +18,7 @@ class UILabel
 	int oamStart;
 	int paletteSlot;
 
-	std::string currText;
+	std::u16string currText;
 	int fontID;
 
 public:
@@ -27,7 +27,8 @@ public:
 
 	void setVisible(bool on);
 	void setPos(int x, int y, bool center=false);
-	void setText(const char* text);
+	void setText(const std::string& text);
+	void setText(const std::u16string& text);
 	void setColor(u32 textColor);
 	void setLineOffset(int offset) {lineOffset = offset;}
 

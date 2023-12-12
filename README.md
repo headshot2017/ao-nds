@@ -26,3 +26,4 @@ to convert the contents of the base folder from the PC version to formats that a
 * [rapidjson](https://github.com/Tencent/rapidjson), used when parsing the public server list
 * [mINI](https://github.com/metayeti/mINI) for parsing .ini files
 * [mongoose](https://github.com/cesanta/mongoose) for WebSocket support
+* [utfcpp](https://github.com/nemtrif/utfcpp) for UTF8/16/32 strings

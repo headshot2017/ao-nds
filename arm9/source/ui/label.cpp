@@ -4,6 +4,7 @@
 
 #include <nds/dma.h>
 
+#include "utf8.h"
 #include "arm9_math_alt.h"
 #include "fonts.h"
 #include "mp3_shared.h"
@@ -65,7 +66,7 @@ void UILabel::setVisible(bool on)
 
 void UILabel::setPos(int x, int y, bool center)
 {
-	int w = getTextWidth(fontID, currText.c_str(), gfxPerLine*32);
+	int w = getTextWidth(fontID, currText, gfxPerLine*32);
 
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
@@ -76,7 +77,12 @@ void UILabel::setPos(int x, int y, bool center)
 	}
 }
 
-void UILabel::setText(const char* text)
+void UILabel::setText(const std::string& text)
+{
+	setText(utf8::utf8to16(text));
+}
+
+void UILabel::setText(const std::u16string& text)
 {
 	for (int i=0; i<gfxPerLine*maxLines; i++)
 	{
@@ -84,7 +90,7 @@ void UILabel::setText(const char* text)
 	}
 
 	currText = text;
-	renderMultiLine(fontID, text, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, gfxPerLine, maxLines);
+	renderMultiLine(fontID, currText, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, gfxPerLine, maxLines);
 }
 
 void UILabel::setColor(u32 textColor)

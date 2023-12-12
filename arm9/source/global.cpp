@@ -9,6 +9,7 @@
 #include <nds/arm9/input.h>
 #include <nds/interrupts.h>
 
+#include "utf8.h"
 #include "arm9_math_alt.h"
 #include "mp3_shared.h"
 #include "ui/label.h"
@@ -43,10 +44,11 @@ void debugLabelPressA(const char* msg)
 	delete dbg;
 }
 
+
+std::string escapes[] = {"<and>", "<percent>", "<num>", "<dollar>"};
+std::string unescapes[] = {"&", "%", "#", "$"};
 void AOdecode(std::string& s)
 {
-	std::string escapes[] = {"<and>", "<percent>", "<num>", "<dollar>"};
-	std::string unescapes[] = {"&", "%", "#", "$"};
 	for (int i=0; i<4; i++)
 	{
 		size_t pos = 0;
@@ -54,6 +56,22 @@ void AOdecode(std::string& s)
 		{
 			mp3_fill_buffer();
 			s.replace(pos, escapes[i].length(), unescapes[i]);
+			pos += unescapes[i].length();
+		}
+		mp3_fill_buffer();
+	}
+}
+
+void AOdecode(std::u16string& s)
+{
+	for (int i=0; i<4; i++)
+	{
+		std::u16string escape16 = utf8::utf8to16(escapes[i]);
+		size_t pos = 0;
+		while((pos = s.find(escape16, pos)) != std::u16string::npos)
+		{
+			mp3_fill_buffer();
+			s.replace(pos, escape16.length(), utf8::utf8to16(unescapes[i]));
 			pos += unescapes[i].length();
 		}
 		mp3_fill_buffer();

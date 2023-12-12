@@ -6,6 +6,7 @@
 #include <nds/arm9/background.h>
 #include <nds/arm9/sound.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
 #include "colors.h"
@@ -119,7 +120,7 @@ void UICourtIC::init()
 	lbl_showname = new UILabel(&oamSub, spr_arrowRight->nextOamInd(), 2, 1, RGB15(31,31,31), 14, 0);
 	lbl_color = new UILabel(&oamSub, lbl_showname->nextOamInd(), 2, 1, RGB15(31,31,31), 15, 0);
 	lbl_showname->setPos(77, 163);
-	lbl_showname->setText((pCourtUI->showname.empty()) ? pCourtUI->getCurrChar().name.c_str() : pCourtUI->showname.c_str());
+	lbl_showname->setText((pCourtUI->showname.empty()) ? utf8::utf8to16(pCourtUI->getCurrChar().name) : pCourtUI->showname);
 	lbl_color->setPos(84, 178);
 	lbl_color->setText("Message");
 
@@ -228,8 +229,8 @@ void UICourtIC::updateInput()
 					else
 						emoteMod = (emote.emoteModifier <= 1) ? pCourtUI->icControls.preanim : emote.emoteModifier;
 
-					std::string chatmsg = kb_input->getValue();
-					std::string showname = pCourtUI->showname;
+					std::string chatmsg = kb_input->getValueUTF8();
+					std::string showname = utf8::utf16to8(pCourtUI->showname);
 					AOencode(chatmsg);
 					AOencode(showname);
 
@@ -298,7 +299,7 @@ void UICourtIC::updateInput()
 			for (int i=0; i<2; i++) spr_bars[i]->setVisible(true);
 			reloadPage();
 
-			lbl_showname->setText((pCourtUI->showname.empty()) ? pCourtUI->getCurrChar().name.c_str() : pCourtUI->showname.c_str());
+			lbl_showname->setText((pCourtUI->showname.empty()) ? utf8::utf8to16(pCourtUI->getCurrChar().name) : pCourtUI->showname);
 		}
 		return;
 	}
@@ -320,7 +321,7 @@ void UICourtIC::updateInput()
 			wav_play(pCourtUI->sndCrtRcrd);
 			isWritingChat = false;
 			hideEverything();
-			kb_input->show("Enter a showname", pCourtUI->showname.c_str());
+			kb_input->show16("Enter a showname", pCourtUI->showname);
 		}
 		else if (pos.px >= 79 && pos.py >= 177 && pos.px < 79+163 && pos.py < 177+15)
 		{
@@ -654,7 +655,7 @@ void UICourtIC::onMessagePV(void* pUserData, std::string msg)
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
 
 	if (pSelf->pCourtUI->showname.empty())
-		pSelf->lbl_showname->setText(pSelf->pCourtUI->getCurrChar().name.c_str());
+		pSelf->lbl_showname->setText(pSelf->pCourtUI->getCurrChar().name);
 	pSelf->currPage = 0;
 	pSelf->reloadPage();
 }

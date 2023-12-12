@@ -51,7 +51,7 @@ void UICourtIngameMenu::init()
 	btn_guard->connect(onGuardToggled, this);
 
 	lbl_currChar->setPos(4, 2);
-	lbl_currChar->setText((pCourtUI->getCurrCharID() >= 0) ? pCourtUI->getCurrChar().name.c_str() : "Spectator");
+	lbl_currChar->setText((pCourtUI->getCurrCharID() >= 0) ? pCourtUI->getCurrChar().name : "Spectator");
 	lbl_guard->setPos(btn_guard->getX()+btn_guard->getW()+2, btn_guard->getY()+2);
 	lbl_guard->setText("Guard Mode");
 
@@ -138,7 +138,7 @@ void UICourtIngameMenu::onMessagePV(void* pUserData, std::string msg)
 {
 	UICourtIngameMenu* pSelf = (UICourtIngameMenu*)pUserData;
 
-	pSelf->lbl_currChar->setText((pSelf->pCourtUI->getCurrCharID() >= 0) ? pSelf->pCourtUI->getCurrChar().name.c_str() : "Spectator");
+	pSelf->lbl_currChar->setText((pSelf->pCourtUI->getCurrCharID() >= 0) ? pSelf->pCourtUI->getCurrChar().name : "Spectator");
 }
 
 void UICourtIngameMenu::onMessageAUTH(void* pUserData, std::string msg)

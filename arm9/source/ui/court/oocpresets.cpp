@@ -6,6 +6,7 @@
 #include <nds/arm9/background.h>
 #include <nds/arm9/sound.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
 #include "global.h"
@@ -102,9 +103,9 @@ void UICourtOOCPresets::updateInput()
 			if (result > 0)
 			{
 				if (currPreset == -1)
-					m_presets.push_back(kb_input->getValue());
+					m_presets.push_back(kb_input->getValueUTF8());
 				else
-					m_presets[currPage*4 + currPreset] = kb_input->getValue();
+					m_presets[currPage*4 + currPreset] = kb_input->getValueUTF8();
 
 				savePresets();
 			}
@@ -156,7 +157,7 @@ void UICourtOOCPresets::reloadPage()
 
 		btn_preset[i]->setVisible(true);
 		lbl_preset[i]->setVisible(true);
-		lbl_preset[i]->setText(m_presets[ind].c_str());
+		lbl_preset[i]->setText(m_presets[ind]);
 		lbl_preset[i]->setPos(128, 42+(i*32), true);
 	}
 
@@ -218,7 +219,7 @@ void UICourtOOCPresets::onAddOrConfirm(void* pUserData)
 	{
 		wav_play(pSelf->pCourtUI->sndSelect);
 		std::string preset = pSelf->m_presets[pSelf->currPage*4 + pSelf->currPreset];
-		gEngine->getSocket()->sendData("CT#" + pSelf->pCourtUI->oocName + "#" + preset + "#%");
+		gEngine->getSocket()->sendData("CT#" + utf8::utf16to8(pSelf->pCourtUI->oocName) + "#" + preset + "#%");
 		pSelf->pCourtUI->changeScreen(new UICourtOOC(pSelf->pCourtUI));
 	}
 }
@@ -242,7 +243,7 @@ void UICourtOOCPresets::onEditClicked(void* pUserData)
 
 	if (pSelf->currPreset == -1) return;
 	pSelf->hideEverything();
-	pSelf->kb_input->show("Enter an OOC preset", pSelf->m_presets[pSelf->currPage*4 + pSelf->currPreset].c_str());
+	pSelf->kb_input->show("Enter an OOC preset", pSelf->m_presets[pSelf->currPage*4 + pSelf->currPreset]);
 }
 
 void UICourtOOCPresets::onPrevPage(void* pUserData)

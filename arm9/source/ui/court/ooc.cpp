@@ -4,6 +4,7 @@
 #include <nds/arm9/background.h>
 #include <nds/arm9/sound.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
@@ -45,7 +46,7 @@ void UICourtOOC::init()
 
 	lbl_log->setPos(9, 17);
 	lbl_oocName->setPos(80, 163);
-	lbl_oocName->setText((pCourtUI->oocName.empty()) ? "Enter an OOC name..." : pCourtUI->oocName.c_str());
+	lbl_oocName->setText((pCourtUI->oocName.empty()) ? u"Enter an OOC name..." : pCourtUI->oocName);
 
 	btn_back->assignKey(KEY_B);
 	btn_presets->assignKey(KEY_R);
@@ -76,7 +77,7 @@ void UICourtOOC::updateInput()
 		if (result != 0)
 		{
 			if (isWritingChat)
-				gEngine->getSocket()->sendData("CT#" + pCourtUI->oocName + "#" + kb_input->getValue() + "#%");
+				gEngine->getSocket()->sendData("CT#" + utf8::utf16to8(pCourtUI->oocName) + "#" + kb_input->getValueUTF8() + "#%");
 			else
 				pCourtUI->oocName = kb_input->getValue();
 
@@ -90,7 +91,7 @@ void UICourtOOC::updateInput()
 			btn_sliderHandle->setVisible(true);
 			lbl_log->setVisible(true);
 			lbl_oocName->setVisible(true);
-			lbl_oocName->setText((pCourtUI->oocName.empty()) ? "Enter an OOC name..." : pCourtUI->oocName.c_str());
+			lbl_oocName->setText((pCourtUI->oocName.empty()) ? u"Enter an OOC name..." : pCourtUI->oocName);
 		}
 		return;
 	}
@@ -112,7 +113,7 @@ void UICourtOOC::updateInput()
 
 			hideEverything();
 			isWritingChat = false;
-			kb_input->show("Enter your OOC name", pCourtUI->oocName.c_str());
+			kb_input->show16("Enter your OOC name", pCourtUI->oocName);
 		}
 		else if (pos.px >= 79 && pos.py >= 177 && pos.px < 79+177 && pos.py < 177+15)
 		{
@@ -173,18 +174,18 @@ void UICourtOOC::hideEverything()
 
 void UICourtOOC::reloadScroll()
 {
-	std::string updateText;
+	std::u16string updateText;
 
 	for (u32 i=0; i<12; i++)
 	{
 		if (scrollPos+i >= pCourtUI->getOOCLog().size())
 			break;
-		updateText += pCourtUI->getOOCLog()[scrollPos+i]+"\n";
+		updateText += pCourtUI->getOOCLog()[scrollPos+i]+u"\n";
 
 		mp3_fill_buffer();
 	}
 
-	lbl_log->setText(updateText.c_str());
+	lbl_log->setText(updateText);
 
 	setSliderHandle();
 	atBottom = (pCourtUI->getOOCLog().size() <= 12 || scrollPos == pCourtUI->getOOCLog().size()-12);

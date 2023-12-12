@@ -7,6 +7,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
@@ -148,7 +149,7 @@ void UICourtAreaList::reloadPage()
 
 		btn_area[i]->setVisible(true);
 		lbl_area[i]->setVisible(true);
-		lbl_area[i]->setText(pCourtUI->getAreaList()[ind].name.c_str());
+		lbl_area[i]->setText(pCourtUI->getAreaList()[ind].name);
 		lbl_area[i]->setPos(108+(142/2), 34+(i*31)+6, true);
 		mp3_fill_buffer();
 	}
@@ -191,7 +192,7 @@ void UICourtAreaList::updateAreaInfo()
 
 	std::string info = area.name + "\n" + area.status + " | " + area.lock + "\n" + std::to_string(area.players) + " player" + (area.players!=1 ? "s" : "") + "\n\nCM: " + area.cm;
 	lbl_areaInfo->setVisible(true);
-	lbl_areaInfo->setText(info.c_str());
+	lbl_areaInfo->setText(info);
 }
 
 void UICourtAreaList::onBackClicked(void* pUserData)
@@ -216,7 +217,7 @@ void UICourtAreaList::onConfirmClicked(void* pUserData)
 	wav_play(pSelf->pCourtUI->sndSelect);
 
 	u32 ind = pSelf->currPage*4 + pSelf->currAreaSelected;
-	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getAreaList()[ind].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "#" + pSelf->pCourtUI->showname + "#%");
+	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getAreaList()[ind].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "#" + utf8::utf16to8(pSelf->pCourtUI->showname) + "#%");
 
 	pSelf->btn_confirm->setVisible(false);
 }

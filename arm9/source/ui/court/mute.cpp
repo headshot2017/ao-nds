@@ -124,7 +124,7 @@ void UICourtMute::updateInput()
 
 			btn_back->setVisible(true);
 
-			filter = kb_search->getValue();
+			filter = kb_search->getValueUTF8();
 			if (result > 0) updateFilter();
 			reloadPage();
 		}
@@ -158,7 +158,7 @@ void UICourtMute::updateInput()
 			for (int i=0; i<8; i++)
 				btn_chars[i]->setVisible(false);
 
-			kb_search->show("Enter search terms", filter.c_str());
+			kb_search->show("Enter search terms", filter);
 		}
 	}
 }
@@ -322,7 +322,7 @@ void UICourtMute::onCharClicked(void* pUserData)
 	const charInfo& info = pSelf->pCourtUI->getCharList()[pSelf->filteredChars[ind]];
 
 	pSelf->lbl_charname->setVisible(true);
-	pSelf->lbl_charname->setText(info.name.c_str());
+	pSelf->lbl_charname->setText(info.name);
 	pSelf->lbl_charname->setPos(128, 36+2, true);
 
 	pSelf->sel_btn->selectButton(pSelf->btn_chars[pData->btnInd], 2);

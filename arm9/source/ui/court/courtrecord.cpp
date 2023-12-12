@@ -234,7 +234,7 @@ void UICourtEvidence::onEvidenceClicked(void* pUserData)
 	bool addButton = (ind == pSelf->pCourtUI->getEvidenceList(pSelf->isPrivate).size());
 
 	pSelf->lbl_evidence->setVisible(true);
-	pSelf->lbl_evidence->setText((addButton) ? "Add evidence..." : pSelf->pCourtUI->getEvidenceList(pSelf->isPrivate)[ind].name.c_str());
+	pSelf->lbl_evidence->setText((addButton) ? u"Add evidence..." : pSelf->pCourtUI->getEvidenceList(pSelf->isPrivate)[ind].name);
 	pSelf->lbl_evidence->setPos(128, 36+2, true);
 
 	pSelf->sel_btn->selectButton(pSelf->btn_evidence[pData->btnInd], 2);

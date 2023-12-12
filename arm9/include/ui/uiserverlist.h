@@ -16,8 +16,8 @@ struct serverInfo
 	u16 port;
 	u16 ws_port;
 	u32 players;
-	std::string name;
-	std::string description;
+	std::u16string name;
+	std::u16string description;
 };
 
 class UIScreenServerList : public UIScreen

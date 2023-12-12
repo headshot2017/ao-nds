@@ -103,18 +103,18 @@ void UICourtICChatLog::update()
 
 void UICourtICChatLog::reloadScroll()
 {
-	std::string updateText;
+	std::u16string updateText;
 
 	for (u32 i=0; i<10; i++)
 	{
 		if (scrollPos+i >= pCourtUI->getICLog().size())
 			break;
-		updateText += pCourtUI->getICLog()[scrollPos+i]+"\n";
+		updateText += pCourtUI->getICLog()[scrollPos+i]+u"\n";
 
 		mp3_fill_buffer();
 	}
 
-	lbl_log->setText(updateText.c_str());
+	lbl_log->setText(updateText);
 
 	setSliderHandle();
 	atBottom = (pCourtUI->getICLog().size() <= 10 || scrollPos == pCourtUI->getICLog().size()-10);

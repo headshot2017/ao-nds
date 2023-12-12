@@ -28,14 +28,14 @@ colorSwitchChar colorSwitches[MAX_COLOR_SWITCHES] = {
 };
 int textSpeedsMS[7] = {10, 20, 30, 40, 60, 75, 100};
 
-std::string filterChatMsg(std::string& msg)
+std::u16string filterChatMsg(std::u16string& msg)
 {
-	std::string result;
+	std::u16string result;
 
 	for (u32 i=0; i<msg.size(); i++)
 	{
 		bool add = true;
-		char currChar = msg.at(i);
+		char16_t currChar = msg.at(i);
 
 		switch(currChar)
 		{
@@ -214,20 +214,20 @@ void Chatbox::setVisible(bool on)
 	oamSetHidden(&oamMain, 127, !on);
 }
 
-void Chatbox::setName(std::string name)
+void Chatbox::setName(std::u16string name)
 {
 	// clear old text
 	memset(textCanvas, 0, 32*16);
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
-	nameWidth = getTextWidth(0, name.c_str(), 64);
-	renderText(0, name.c_str(), COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+	nameWidth = getTextWidth(0, name, 64);
+	renderText(0, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
 		oamSet(&oamMain, 24+i, 1+(i*32) + 36-(div32(nameWidth,2)), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
 }
 
-void Chatbox::setText(std::string text, int color, std::string blip)
+void Chatbox::setText(std::u16string text, int color, std::string blip)
 {
 	colorStack = {};
 	colorStack.push({color, ' ', ' ', (color != COLOR_BLUE)});
@@ -246,10 +246,10 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 		lines.clear();
 		linesHalfWidth.clear();
 
-		std::string filtered = filterChatMsg(currText);
-		separateLines(1, filtered.c_str(), 8, true, lines);
+		std::u16string filtered = filterChatMsg(currText);
+		separateLines(1, filtered, 8, true, lines);
 		for (u32 i=0; i<lines.size(); i++)
-			linesHalfWidth.push_back(div32(getTextWidth(1, lines[i].c_str()), 2));
+			linesHalfWidth.push_back(div32(getTextWidth(1, lines[i]), 2));
 	}
 	handleNewLine();
 
@@ -268,7 +268,7 @@ void Chatbox::setText(std::string text, int color, std::string blip)
 	timerStart(2, ClockDivider_1024, 0, NULL);
 }
 
-void Chatbox::additiveText(std::string text, int color)
+void Chatbox::additiveText(std::u16string text, int color)
 {
 	int line = div32(currTextGfxInd, 8);
 	currTextGfxInd = (line+1) * 8;
@@ -289,10 +289,10 @@ void Chatbox::additiveText(std::string text, int color)
 		lines.clear();
 		linesHalfWidth.clear();
 
-		std::string filtered = filterChatMsg(currText);
-		separateLines(1, filtered.c_str(), 8, true, lines);
+		std::u16string filtered = filterChatMsg(currText);
+		separateLines(1, filtered, 8, true, lines);
 		for (u32 i=0; i<lines.size(); i++)
-			linesHalfWidth.push_back(div32(getTextWidth(1, lines[i].c_str()), 2));
+			linesHalfWidth.push_back(div32(getTextWidth(1, lines[i]), 2));
 	}
 	handleNewLine();
 
@@ -354,12 +354,10 @@ void Chatbox::update()
 	{
 		textTimer -= textSpeedsMS[textSpeed];
 
-		char currChar = currText.at(currTextInd);
-
 		bool stop = handleControlChars();
 		if (stop) return;
 
-		currChar = currText.at(currTextInd);
+		char16_t currChar = currText.at(currTextInd);
 		if (currChar == '\\')
 		{
 			currTextInd++;
@@ -407,7 +405,7 @@ void Chatbox::update()
 		int boxWidth = lastBox ? 20 : 32;
 		int oobFlag;
 		int outWidth;
-		int new_x = renderChar(1, currText.c_str()+currTextInd, colorStack.top().color, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+		int new_x = renderChar(1, currText.at(currTextInd), (currTextInd != currText.size()-1) ? currText.at(currTextInd+1) : 0, colorStack.top().color, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
 
 		if (oobFlag)
 		{
@@ -425,7 +423,7 @@ void Chatbox::update()
 			else
 			{
 				textX -= boxWidth;
-				textX = renderChar(1, currText.c_str()+currTextInd, colorStack.top().color, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
+				textX = renderChar(1, currText.at(currTextInd), (currTextInd != currText.size()-1) ? currText.at(currTextInd+1) : 0, colorStack.top().color, textX, 32, boxWidth, 16, textCanvas, SpriteSize_32x16, textGfx[currTextGfxInd], lastBox, &oobFlag, &outWidth);
 			}
 		}
 		else
@@ -467,7 +465,7 @@ bool Chatbox::handleEscape()
 {
 	bool skip = true;
 
-	char escape = currText.at(currTextInd);
+	char16_t escape = currText.at(currTextInd);
 	switch(escape)
 	{
 		case 'n':
@@ -497,7 +495,7 @@ bool Chatbox::handleControlChars()
 	bool keepSearching = true;
 	while (keepSearching)
 	{
-		char currChar = currText.at(currTextInd);
+		char16_t currChar = currText.at(currTextInd);
 
 		switch(currChar)
 		{

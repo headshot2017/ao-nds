@@ -53,14 +53,14 @@ class Chatbox
 	u32 currTextInd;
 	int currTextGfxInd;
 	int currTextLine;
-	std::string currText;
+	std::u16string currText;
 	int textX;
 	int textTimer;
 	int textSpeed;
 	int blipTicks;
 	bool center;
 	std::stack<colorSwitchChar> colorStack;
-	std::vector<std::string> lines;
+	std::vector<std::u16string> lines;
 	std::vector<int> linesHalfWidth;
 
 	int xOffset;
@@ -83,9 +83,9 @@ public:
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
 	void setIgnoreBlend(bool on) {ignoreBlend = on;}
 	void setVisible(bool on);
-	void setName(std::string name);
-	void setText(std::string text, int color, std::string blip="male");
-	void additiveText(std::string text, int color);
+	void setName(std::u16string name);
+	void setText(std::u16string text, int color, std::string blip="male");
+	void additiveText(std::u16string text, int color);
 
 	bool isFinished() {return currTextInd >= currText.size();}
 	int getColor() {return (colorStack.empty()) ? COLOR_WHITE : colorStack.top().color;}

@@ -8,6 +8,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
 #include "ui/court/evidencedetail.h"
@@ -154,7 +155,7 @@ void UICourtEvidenceImage::onConfirmClicked(void* pUserData)
 	if (!pSelf->adding)
 	{
 		if (!pSelf->isPrivate)
-			gEngine->getSocket()->sendData("EE#" + std::to_string(pSelf->editingEvidence) + "#" + pSelf->currName + "#" + pSelf->currDesc + "#" + gEngine->getEvidence()[ind] + ".png#%");
+			gEngine->getSocket()->sendData("EE#" + std::to_string(pSelf->editingEvidence) + "#" + utf8::utf16to8(pSelf->currName) + "#" + utf8::utf16to8(pSelf->currDesc) + "#" + gEngine->getEvidence()[ind] + ".png#%");
 		else
 		{
 			gEngine->getPrivateEvidence()[pSelf->editingEvidence].name = pSelf->currName;
@@ -178,7 +179,7 @@ void UICourtEvidenceImage::onEvidenceClicked(void* pUserData)
 	wav_play(pSelf->pCourtUI->sndEvTap);
 
 	pSelf->lbl_evidence->setVisible(true);
-	pSelf->lbl_evidence->setText(gEngine->getEvidence()[ind].c_str());
+	pSelf->lbl_evidence->setText(gEngine->getEvidence()[ind]);
 	pSelf->lbl_evidence->setPos(128, 36+2, true);
 
 	pSelf->sel_btn->selectButton(pSelf->btn_evidence[pData->btnInd], 2);

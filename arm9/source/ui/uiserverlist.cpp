@@ -14,6 +14,7 @@
 #include "rapidjson/error/en.h"
 #include "mini/ini.h"
 
+#include "utf8.h"
 #include "engine.h"
 #include "ui/uimainmenu.h"
 #include "ui/uicourt.h"
@@ -133,7 +134,7 @@ void UIScreenServerList::init()
 	lbl_pages = new UILabel(&oamSub, lbl_server[3]->nextOamInd(), 1, 1, RGB15(13, 2, 0), 12, 0);
 	lbl_plswait = new UILabel(&oamSub, lbl_pages->nextOamInd(), 8, 2, RGB15(31,31,31), 13, 0);
 	publicListMsg = "Getting server list...";
-	lbl_plswait->setText(publicListMsg.c_str());
+	lbl_plswait->setText(publicListMsg);
 	lbl_plswait->setPos(128, 96-6, true);
 	btn_prevPage->setVisible(false);
 	btn_nextPage->setVisible(false);
@@ -257,7 +258,7 @@ void UIScreenServerList::reloadPage()
 
 		btn_server[i]->setVisible(true);
 		lbl_server[i]->setVisible(true);
-		lbl_server[i]->setText(m_servers[isFavorites][ind].name.c_str());
+		lbl_server[i]->setText(m_servers[isFavorites][ind].name);
 		lbl_server[i]->setPos(128, 42+(i*32), true);
 	}
 
@@ -282,7 +283,7 @@ void UIScreenServerList::reloadPage()
 	{
 		lbl_pages->setVisible(false);
 		lbl_plswait->setVisible(true);
-		lbl_plswait->setText(isFavorites ? "Favorites list is empty" : publicListMsg.c_str());
+		lbl_plswait->setText(isFavorites ? "Favorites list is empty" : publicListMsg);
 		lbl_plswait->setPos(128, 96-6, publicListMsg.find("JSON parse error") == std::string::npos);
 	}
 }
@@ -294,8 +295,8 @@ void UIScreenServerList::saveFavorites()
 
 	for (u32 i=0; i<m_servers[1].size(); i++)
 	{
-		ini[std::to_string(i)]["name"] = m_servers[1][i].name;
-		ini[std::to_string(i)]["desc"] = m_servers[1][i].description;
+		ini[std::to_string(i)]["name"] = utf8::utf16to8(m_servers[1][i].name);
+		ini[std::to_string(i)]["desc"] = utf8::utf16to8(m_servers[1][i].description);
 		ini[std::to_string(i)]["address"] = m_servers[1][i].ip;
 		ini[std::to_string(i)]["port"] = std::to_string((m_servers[1][i].ws_port) ? m_servers[1][i].ws_port : m_servers[1][i].port);
 		ini[std::to_string(i)]["protocol"] = (m_servers[1][i].ws_port) ? "ws" : "tcp";
@@ -444,7 +445,7 @@ void UIScreenServerList::onServerClicked(void* pUserData)
 	}
 
 	pSelf->lbl_desc->setVisible(true);
-	pSelf->lbl_desc->setText(server.description.c_str());
+	pSelf->lbl_desc->setText(server.description);
 
 	if (!pSelf->isFavorites)
 	{
@@ -467,7 +468,7 @@ void UIScreenServerList::parsePublicList(const std::string& data)
 		publicListMsg = "JSON parse error at offset " + std::to_string(ok.Offset()) + ":\n" + rapidjson::GetParseError_En(ok.Code());
 		if (!isFavorites)
 		{
-			lbl_plswait->setText(publicListMsg.c_str());
+			lbl_plswait->setText(publicListMsg);
 			lbl_plswait->setPos(0, 96-6, false);
 		}
 		return;
@@ -481,8 +482,8 @@ void UIScreenServerList::parsePublicList(const std::string& data)
 		const rapidjson::Value& server = doc[i];
 
 		serverInfo info;
-		info.name = server["name"].GetString();
-		info.description = server["description"].GetString();
+		info.name = utf8::utf8to16(std::string(server["name"].GetString()));
+		info.description = utf8::utf8to16(std::string(server["description"].GetString()));
 		info.ip = server["ip"].GetString();
 		info.players = server["players"].GetUint();
 		info.port = server["port"].GetUint();
@@ -512,8 +513,8 @@ void UIScreenServerList::parseFavoritesList()
 	for (u32 i=0; i<serverCount; i++)
 	{
 		serverInfo info;
-		info.name = ini[std::to_string(i)]["name"];
-		info.description = ini[std::to_string(i)]["desc"];
+		info.name = utf8::utf8to16(ini[std::to_string(i)]["name"]);
+		info.description = utf8::utf8to16(ini[std::to_string(i)]["desc"]);
 		info.ip = ini[std::to_string(i)]["address"];
 		info.players = 0;
 		if (ini[std::to_string(i)]["protocol"] == "tcp")

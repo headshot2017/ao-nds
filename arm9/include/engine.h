@@ -2,6 +2,7 @@
 #define ENGINE_H_INCLUDED
 
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "ui/uiscreen.h"
@@ -9,8 +10,8 @@
 
 struct evidenceInfo
 {
-	std::string name;
-	std::string description;
+	std::u16string name;
+	std::u16string description;
 	std::string image;
 };
 
@@ -20,13 +21,13 @@ class Engine
 	UIScreen* nextScreen;
 	AOsocket* aosocket;
 	std::string macAddr;
-	std::unordered_map<std::string, bool> cachedMusic;
+	std::unordered_set<std::string> cachedMusic;
 	std::vector<std::string> cachedEvidence;
 	std::unordered_map<std::string, std::string> cachedCharBlips;
 	std::vector<evidenceInfo> privateEvidence;
 
-	std::string defaultShowname;
-	std::string defaultOOCname;
+	std::u16string defaultShowname;
+	std::u16string defaultOOCname;
 	bool chatlogIniswaps;
 	bool chatlogShownames;
 
@@ -47,8 +48,8 @@ public:
 	UIScreen* getScreen() {return screen;}
 	AOsocket* getSocket() {return aosocket;}
 	const std::string& getMacAddr() {return macAddr;}
-	const std::string& getShowname() {return defaultShowname;}
-	const std::string& getOOCname() {return defaultOOCname;}
+	const std::u16string& getShowname() {return defaultShowname;}
+	const std::u16string& getOOCname() {return defaultOOCname;}
 	const bool showChatlogIniswaps() {return chatlogIniswaps;}
 	const bool showChatlogShownames() {return chatlogShownames;}
 	const std::vector<std::string>& getEvidence() {return cachedEvidence;}
@@ -61,8 +62,8 @@ public:
 	void changeScreen(UIScreen* next);
 	void setSocket(AOsocket* sock);
 	void setMacAddr(std::string addr) {macAddr = addr;}
-	void setShowname(std::string val) {defaultShowname = val;}
-	void setOOCname(std::string val) {defaultOOCname = val;}
+	void setShowname(std::u16string val) {defaultShowname = val;}
+	void setOOCname(std::u16string val) {defaultOOCname = val;}
 	void setChatlogIniswaps(bool val) {chatlogIniswaps = val;}
 	void setChatlogShownames(bool val) {chatlogShownames = val;}
 	void resetWifiSwitch() {wifiSwitch = true;}

@@ -3,6 +3,7 @@
 #include <nds/dma.h>
 #include <nds/arm9/background.h>
 
+#include "utf8.h"
 #include "engine.h"
 #include "cfgFile.h"
 #include "ui/uimainmenu.h"
@@ -100,9 +101,9 @@ void UIScreenSettings::init()
 	lbl_oocnameValue->setPos(btn_oocname->getX()+3, btn_oocname->getY()+1);
 
 	lbl_showname->setText("Default showname");
-	lbl_shownameValue->setText(gEngine->getShowname().c_str());
+	lbl_shownameValue->setText(gEngine->getShowname());
 	lbl_oocname->setText("Default OOC name");
-	lbl_oocnameValue->setText(gEngine->getOOCname().c_str());
+	lbl_oocnameValue->setText(gEngine->getOOCname());
 
 	lbl_iniswaps->setText("Ini-swaps");
 	lbl_iniswaps->setPos(btn_iniswaps->getX()+btn_iniswaps->getW()+2, btn_iniswaps->getY()+2, false);
@@ -147,12 +148,12 @@ void UIScreenSettings::updateInput()
 				if (currEditing == btn_showname)
 				{
 					gEngine->setShowname(kb_input->getValue());
-					lbl_shownameValue->setText(kb_input->getValue().c_str());
+					lbl_shownameValue->setText(kb_input->getValue());
 				}
 				else if (currEditing == btn_oocname)
 				{
 					gEngine->setOOCname(kb_input->getValue());
-					lbl_oocnameValue->setText(kb_input->getValue().c_str());
+					lbl_oocnameValue->setText(kb_input->getValue());
 				}
 
 				saveSettings();
@@ -231,15 +232,15 @@ void UIScreenSettings::refreshChatlogPreview()
 		name += " [Headshotnoby]";
 	name += ": Test message";
 
-	lbl_logPreview->setText(name.c_str());
+	lbl_logPreview->setText(name);
 	lbl_logPreview->setPos(128, 96+32, true);
 }
 
 void UIScreenSettings::saveSettings()
 {
 	cfgFile f;
-	f.set("showname", gEngine->getShowname());
-	f.set("oocname", gEngine->getOOCname());
+	f.set("showname", utf8::utf16to8(gEngine->getShowname()));
+	f.set("oocname", utf8::utf16to8(gEngine->getOOCname()));
 	f.set("chatlog_iniswaps", gEngine->showChatlogIniswaps() ? "1" : "0");
 	f.set("chatlog_shownames", gEngine->showChatlogShownames() ? "1" : "0");
 	f.save("/data/ao-nds/settings_nds.cfg");
@@ -268,7 +269,7 @@ void UIScreenSettings::onShownameClicked(void* pUserData)
 
 	pSelf->hideEverything();
 	pSelf->currEditing = pSelf->btn_showname;
-	pSelf->kb_input->show("Enter default showname", gEngine->getShowname().c_str());
+	pSelf->kb_input->show16("Enter default showname", gEngine->getShowname());
 }
 
 void UIScreenSettings::onOOCnameClicked(void* pUserData)
@@ -278,7 +279,7 @@ void UIScreenSettings::onOOCnameClicked(void* pUserData)
 
 	pSelf->hideEverything();
 	pSelf->currEditing = pSelf->btn_oocname;
-	pSelf->kb_input->show("Enter default OOC name", gEngine->getOOCname().c_str());
+	pSelf->kb_input->show16("Enter default OOC name", gEngine->getOOCname());
 }
 
 void UIScreenSettings::onIniswapsToggled(void* pUserData)

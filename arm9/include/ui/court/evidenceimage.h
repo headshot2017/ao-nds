@@ -14,8 +14,8 @@ class UICourtEvidenceImage : public UISubScreen
 	int currEviSelected;
 
 	u32 editingEvidence;
-	std::string currName;
-	std::string currDesc;
+	std::u16string currName;
+	std::u16string currDesc;
 	std::string lastImage;
 	bool isPrivate;
 	bool adding;
@@ -30,7 +30,7 @@ class UICourtEvidenceImage : public UISubScreen
 	UIButton* btn_evidence[8];
 
 public:
-	UICourtEvidenceImage(UIScreenCourt* courtUI, u32 ind, bool priv, std::string name, std::string desc, std::string img) :
+	UICourtEvidenceImage(UIScreenCourt* courtUI, u32 ind, bool priv, std::u16string name, std::u16string desc, std::string img) :
 		UISubScreen(courtUI), editingEvidence(ind), currName(name), currDesc(desc), lastImage(img), isPrivate(priv) {}
 	~UICourtEvidenceImage();
 

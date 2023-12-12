@@ -7,6 +7,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "global.h"
 #include "engine.h"
@@ -96,7 +97,7 @@ void UICourtMusicList::updateInput()
 			btn_scrollDown->setVisible(true);
 			btn_sliderHandle->setVisible(true);
 
-			filter = kb_search->getValue();
+			filter = kb_search->getValueUTF8();
 			if (result > 0) updateFilter();
 			reloadScroll();
 		}
@@ -132,7 +133,7 @@ void UICourtMusicList::updateInput()
 			}
 			btn_sliderHandle->setVisible(false);
 
-			kb_search->show("Enter search terms", filter.c_str());
+			kb_search->show("Enter search terms", filter);
 		}
 	}
 }
@@ -211,29 +212,11 @@ void UICourtMusicList::reloadScroll()
 		}
 
 		const musicInfo& mp3Music = pCourtUI->getMusicList()[filteredMusic[ind]];
-		std::string mp3Str = mp3Music.nameDecoded;
-
-		// remove category
-		size_t newPos = 0;
-		size_t pos = 0;
-		while (newPos != std::string::npos)
-		{
-			mp3_fill_buffer();
-			pos = newPos;
-			newPos = mp3Str.find("/", pos+1);
-			mp3_fill_buffer();
-		}
-		if (pos)
-		{
-			mp3_fill_buffer();
-			mp3Str = mp3Str.substr(pos+1);
-			mp3_fill_buffer();
-		}
 
 		btn_musicBtn[i]->setVisible(true);
 		btn_musicBtn[i]->setFrame( (gEngine->musicExists(mp3Music.nameLower)) ? 0 : 1 );
 		lbl_musicBtn[i]->setVisible(true);
-		lbl_musicBtn[i]->setText(mp3Str.c_str());
+		lbl_musicBtn[i]->setText(mp3Music.nameDecoded);
 		mp3_fill_buffer();
 	}
 
@@ -320,5 +303,5 @@ void UICourtMusicList::onMusicClicked(void* pUserData)
 	UICourtMusicList* pSelf = pData->pObj;
 	int ind = pSelf->scrollPos + pData->btnInd;
 
-	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getMusicList()[pSelf->filteredMusic[ind]].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "#" + pSelf->pCourtUI->showname + "#%");
+	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getMusicList()[pSelf->filteredMusic[ind]].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "#" + utf8::utf16to8(pSelf->pCourtUI->showname) + "#%");
 }

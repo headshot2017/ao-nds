@@ -8,6 +8,7 @@
 #include <nds/interrupts.h>
 #include <dswifi9.h>
 
+#include "utf8.h"
 #include "ui/uidisconnected.h"
 #include "ui/label.h"
 #include "cfgFile.h"
@@ -41,8 +42,8 @@ Engine::Engine() : screen(nullptr), nextScreen(nullptr), aosocket(nullptr)
 	cacheCharBlips("/data/ao-nds/characters");
 
 	cfgFile settings("/data/ao-nds/settings_nds.cfg");
-	defaultShowname = settings.get("showname", "");
-	defaultOOCname = settings.get("oocname", "");
+	defaultShowname = utf8::utf8to16(settings.get("showname", ""));
+	defaultOOCname = utf8::utf8to16(settings.get("oocname", ""));
 	chatlogIniswaps = settings.get("chatlog_iniswaps", "") == "1";
 	chatlogShownames = settings.get("chatlog_shownames", "") == "1";
 
@@ -73,7 +74,7 @@ void Engine::cacheMusic(const std::string& folder, std::string extra)
 		if (dent->d_type == DT_DIR)
 			cacheMusic(folder, value);
 		else
-			cachedMusic[value] = true;
+			cachedMusic.insert(value);
 	}
 
 	closedir(dir);
@@ -139,8 +140,8 @@ void Engine::loadPrivateEvidence()
 		if (!ini.has(I))
 			return;
 
-		std::string name = ini[I]["name"];
-		std::string desc = ini[I]["description"];
+		std::u16string name = utf8::utf8to16(ini[I]["name"]);
+		std::u16string desc = utf8::utf8to16(ini[I]["description"]);
 		std::string image = ini[I]["image"];
 
 		// remove file extension from image
@@ -246,8 +247,8 @@ void Engine::savePrivateEvidence()
 	{
 		std::string I = std::to_string(i);
 
-		ini[I]["name"] = privateEvidence[i].name;
-		ini[I]["description"] = privateEvidence[i].description;
+		ini[I]["name"] = utf8::utf16to8(privateEvidence[i].name);
+		ini[I]["description"] = utf8::utf16to8(privateEvidence[i].description);
 		ini[I]["image"] = privateEvidence[i].image + ".png";
 		mp3_fill_buffer();
 	}
