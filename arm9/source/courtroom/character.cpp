@@ -417,11 +417,11 @@ void Character::update()
 		}
 	}
 
+	if (!frameInfo.frameCount) return;
 	charTicks += ms;
 
-	if (frameInfo.frameCount && charTicks >= frameInfo.frameDurations[currFrame])
+	while (charTicks >= frameInfo.frameDurations[currFrame])
 	{
-		timerPause(pair);
 		charTicks -= frameInfo.frameDurations[currFrame];
 
 		if (loop)
@@ -455,7 +455,5 @@ void Character::update()
 			dmaCopy(offset, charGfx[i], 64*64);
 			mp3_fill_buffer();
 		}
-
-		timerUnpause(pair);
 	}
 }
