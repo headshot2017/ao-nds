@@ -302,7 +302,7 @@ void separateLines(int fontID, std::u16string& text, int gfxPerLine, bool chatbo
 			mp3_fill_buffer();
 
 			i++;
-			if (i >= text.at(i))
+			if (i >= text.size())
 				return;
 
 			textX = 0;
