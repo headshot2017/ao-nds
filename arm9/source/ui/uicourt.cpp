@@ -249,6 +249,7 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 	while (lastPos != std::string::npos)
 	{
 		std::string value = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
+		if (value.empty() || value.at(0) == '%') break;
 
 		std::string mp3Music = value;
 		AOdecode(mp3Music);
@@ -301,7 +302,6 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 		lastPos = delimiterPos;
 		delimiterPos = msg.find("#", delimiterPos+1);
 	}
-	pSelf->musicList.pop_back(); // remove "%"
 
 	gEngine->getSocket()->sendData("RD#%");
 }
@@ -668,8 +668,6 @@ void UIScreenCourt::onMessageLE(void* pUserData, std::string msg)
 		lastPos = delimiterPos;
 		delimiterPos = msg.find("#", delimiterPos+1);
 	}
-
-	//pSelf->evidenceList.pop_back(); // remove "%"
 }
 
 void UIScreenCourt::onMessageHP(void* pUserData, std::string msg)
