@@ -605,6 +605,8 @@ void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)
 	for (u32 i=0; i<pSelf->areaList.size(); i++)
 	{
 		std::string value = argumentAt(msg, 2+i);
+		if (!value.empty() && value.at(0) == '%') break;
+
 		switch(type)
 		{
 			case 0:
