@@ -179,7 +179,7 @@ void UIScreenCourt::sendIC(const std::string& msg)
 
 void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
 {
-	gEngine->getSocket()->sendData("ID#AO-NDS#0.0.1#%");
+	gEngine->getSocket()->sendData("ID#AO-NDS#2.10.0#%");
 }
 
 void UIScreenCourt::onMessagePN(void* pUserData, std::string msg)
