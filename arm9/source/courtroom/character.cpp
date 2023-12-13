@@ -196,6 +196,10 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	readFrameIndexes(animInfos.get(relativeFile + "_indexes"), frameInfo.frameIndexes);
 	frameInfo.frameCount = frameInfo.frameIndexes.size();
 	u32 gfxCount = std::stoi(animInfos.get(relativeFile + "_frameGfxCount"));
+
+	if (frameInfo.frameCount == 1 && !frameInfo.frameDurations[0])
+		frameInfo.frameDurations[0] = 100;
+
 	mp3_fill_buffer();
 
 	frameInfo.realW = ceil(frameInfo.frameW/64.f);
