@@ -33,8 +33,6 @@ def load_apng(file):
 
     for frame, frame_info in img.frames:
         i = img.frames.index((frame, frame_info))
-        if not frame_info:
-            print(file)
 
         if prev_frame_info and prev_frame_info.depose_op == APNG_DISPOSE_OP_BACKGROUND:
             draw = ImageDraw.Draw(outputbuf)
