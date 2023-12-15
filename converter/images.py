@@ -36,7 +36,7 @@ def load_apng(file):
 
         if prev_frame_info and prev_frame_info.depose_op == APNG_DISPOSE_OP_BACKGROUND:
             draw = ImageDraw.Draw(outputbuf)
-            draw.rectangle((prev_frame_info.x_offset, prev_frame_info.y_offset, prev_frame_info.x_offset+prev_frame_info.width, prev_frame_info.y_offset+prev_frame_info.height), fill=(0, 0, 0, 0))
+            draw.rectangle((prev_frame_info.x_offset, prev_frame_info.y_offset, prev_frame_info.x_offset+prev_frame_info.width-1, prev_frame_info.y_offset+prev_frame_info.height-1), fill=(0, 0, 0, 0))
         elif prev_frame_info and prev_frame_info.depose_op == APNG_DISPOSE_OP_PREVIOUS:
             outputbuf.paste(prev_frame, (prev_frame_info.x_offset, prev_frame_info.y_offset))
 
@@ -45,10 +45,10 @@ def load_apng(file):
 
         if frame_info:
             if frame_info.depose_op == APNG_DISPOSE_OP_PREVIOUS:
-                prev_frame = outputbuf.crop((frame_info.x_offset, frame_info.y_offset, frame_info.x_offset+frame_info.width, frame_info.y_offset+frame_info.height))
+                prev_frame = outputbuf.crop((frame_info.x_offset, frame_info.y_offset, frame_info.x_offset+frame_info.width+1, frame_info.y_offset+frame_info.height+1))
             if frame_info.blend_op == APNG_BLEND_OP_SOURCE:
                 draw = ImageDraw.Draw(outputbuf)
-                draw.rectangle((frame_info.x_offset, frame_info.y_offset, frame_info.x_offset+frame_info.width, frame_info.y_offset+frame_info.height), fill=(0, 0, 0, 0))
+                draw.rectangle((frame_info.x_offset, frame_info.y_offset, frame_info.x_offset+frame_info.width-1, frame_info.y_offset+frame_info.height-1), fill=(0, 0, 0, 0))
         
         outputbuf.paste(pilframe, (frame_info.x_offset, frame_info.y_offset) if frame_info else (0,0), pilframe)
 
