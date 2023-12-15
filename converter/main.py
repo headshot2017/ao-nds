@@ -40,18 +40,6 @@ if __name__ == "__main__":
             print("AO data does not exist there.")
             folder = ""
 
-    try:
-        os.makedirs("converted/data/ao-nds")
-        os.makedirs("converted/data/ao-nds/background")
-        os.makedirs("converted/data/ao-nds/characters")
-        os.makedirs("converted/data/ao-nds/evidence")
-        os.makedirs("converted/data/ao-nds/sounds/general")
-        os.makedirs("converted/data/ao-nds/sounds/music")
-        os.makedirs("converted/data/ao-nds/sounds/blips")
-        os.makedirs("converted/data/ao-nds/misc")
-    except:
-        pass
-
 
     while 1:
         os.system("cls||clear")
@@ -73,6 +61,17 @@ if __name__ == "__main__":
         if not option.isdigit(): continue
         option = int(option)
         if option < 1 or option > 8: continue
+
+        try:
+            os.makedirs("converted/data/ao-nds/background")
+            os.makedirs("converted/data/ao-nds/characters")
+            os.makedirs("converted/data/ao-nds/evidence")
+            os.makedirs("converted/data/ao-nds/sounds/general")
+            os.makedirs("converted/data/ao-nds/sounds/music")
+            os.makedirs("converted/data/ao-nds/sounds/blips")
+            os.makedirs("converted/data/ao-nds/misc")
+        except:
+            pass
 
         if option == 1:
             print("Converting backgrounds...")
