@@ -62,16 +62,9 @@ if __name__ == "__main__":
         option = int(option)
         if option < 1 or option > 8: continue
 
-        try:
-            os.makedirs("converted/data/ao-nds/background")
-            os.makedirs("converted/data/ao-nds/characters")
-            os.makedirs("converted/data/ao-nds/evidence")
-            os.makedirs("converted/data/ao-nds/sounds/general")
-            os.makedirs("converted/data/ao-nds/sounds/music")
-            os.makedirs("converted/data/ao-nds/sounds/blips")
-            os.makedirs("converted/data/ao-nds/misc")
-        except:
-            pass
+        for path in ["background", "characters", "evidence", "sounds/general", "sounds/music", "sounds/blips", "misc"]:
+            if not os.path.exists("converted/data/ao-nds/" + path):
+                os.makedirs("converted/data/ao-nds/" + path)
 
         if option == 1:
             print("Converting backgrounds...")
