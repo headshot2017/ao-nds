@@ -80,8 +80,6 @@ void AOdecode(std::u16string& s)
 
 void AOencode(std::string& s)
 {
-	std::string escapes[] = {"<and>", "<percent>", "<num>", "<dollar>"};
-	std::string unescapes[] = {"&", "%", "#", "$"};
 	for (int i=0; i<4; i++)
 	{
 		size_t pos = 0;

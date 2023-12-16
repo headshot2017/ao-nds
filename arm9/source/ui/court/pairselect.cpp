@@ -294,7 +294,7 @@ void UICourtPairSelect::onPairClicked(void* pUserData)
 	wav_play(pSelf->pCourtUI->sndSelect);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currCharSelected;
-	pSelf->pCourtUI->icControls.pairID = ind;
+	pSelf->pCourtUI->icControls.pairID = pSelf->filteredChars[ind];
 
 	pSelf->pCourtUI->changeScreen(new UICourtPair(pSelf->pCourtUI));
 }
