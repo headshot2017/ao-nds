@@ -9,6 +9,23 @@ from joblib import Parallel, delayed, cpu_count
 
 import conversion
 
+def askBasePath():
+    folder = ""
+    while not folder:
+        print("Drag the AO base folder to this console window then press ENTER:")
+        folder = input("> ")
+        if not os.path.exists(folder+"/characters"):
+            print("AO data does not exist there.")
+            folder = ""
+
+    print("The selected base folder '%s' will be saved in aopath.txt" % folder)
+    print("To bring up this dialog again, delete that text file.")
+    print("Press enter to continue")
+    input("")
+
+    open("aopath.txt", "w").write(folder)
+    return folder
+
 if __name__ == "__main__":
     if os.name == "nt" and not os.path.exists("ffmpeg.exe"):
         print("Downloading 7zr...")
@@ -32,20 +49,21 @@ if __name__ == "__main__":
         os.remove("ffmpeg.7z")
         os.remove("7zr.exe")
 
-    folder = ""
-    while folder == "":
-        print("Drag the AO base folder to this console window then press ENTER:")
-        folder = input("> ")
-        if not os.path.exists(folder+"/characters"):
-            print("AO data does not exist there.")
-            folder = ""
+    folder = open("aopath.txt", "r").read() if os.path.exists("aopath.txt") else ""
+    if folder and not os.path.exists(folder):
+        print("The AO base folder '%s' no longer exists." % folder)
+        folder = ""
+
+    if not folder:
+        folder = askBasePath()
 
 
     while 1:
         os.system("cls||clear")
 
         print("AO NDS converter tool")
-        print("This tool will convert your AO 'base' folder to formats that will work with the Nintendo DS.\n")
+        print("This tool will convert your AO 'base' folder to formats that will work with the Nintendo DS.")
+        print("Current AO base path: '%s'\n" % folder)
 
         print("Make a decision:")
         print("  1. Convert everything")

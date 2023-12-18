@@ -1,5 +1,6 @@
 __pycache__/
 converted/
+aopath.txt
 *.pyc
 *.img.bin
 *.map.bin
