@@ -333,7 +333,7 @@ def convertEmoteAPNG(sourceFile, targetFile, ogTarget, core, extra):
     convertEmoteFrames(frames, targetFile, ogTarget, core, extra)
 
 def convertEmoteWEBP(sourceFile, targetFile, ogTarget, core, extra):
-    frames = images.load_webp(sourceFile)[0]
+    frames = images.load_webp(sourceFile)
     convertEmoteFrames(frames, targetFile, ogTarget, core, extra)
 
 def convertEmotePNG(sourceFile, targetFile, ogTarget, core, extra):
