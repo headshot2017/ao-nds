@@ -308,7 +308,12 @@ void UICourtCharSelect::onCharClicked(void* pUserData)
 	charBtnData* pData = (charBtnData*)pUserData;
 	UICourtCharSelect* pSelf = pData->pObj;
 
-	if (pSelf->currCharSelected == pData->btnInd) return;
+	if (pSelf->currCharSelected == pData->btnInd)
+	{
+		pSelf->onConfirmClicked(pSelf);
+		return;
+	}
+
 	pSelf->currCharSelected = pData->btnInd;
 	wav_play(pSelf->pCourtUI->sndEvTap);
 

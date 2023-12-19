@@ -259,7 +259,12 @@ void UICourtAreaList::onAreaClicked(void* pUserData)
 	areaBtnData* pData = (areaBtnData*)pUserData;
 	UICourtAreaList* pSelf = pData->pObj;
 
-	if (pSelf->currAreaSelected == pData->btnInd) return;
+	if (pSelf->currAreaSelected == pData->btnInd)
+	{
+		pSelf->onConfirmClicked(pSelf);
+		return;
+	}
+
 	pSelf->currAreaSelected = pData->btnInd;
 	wav_play(pSelf->pCourtUI->sndEvTap);
 

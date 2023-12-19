@@ -50,6 +50,8 @@ void UICourtOOC::init()
 
 	btn_back->assignKey(KEY_B);
 	btn_presets->assignKey(KEY_R);
+	btn_scrollUp->assignKey(KEY_UP);
+	btn_scrollDown->assignKey(KEY_DOWN);
 
 	btn_back->connect(onBackClicked, this);
 	btn_presets->connect(onPresetsClicked, this);

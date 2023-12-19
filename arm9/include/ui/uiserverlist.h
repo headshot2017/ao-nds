@@ -44,6 +44,8 @@ class UIScreenServerList : public UIScreen
 
 	wav_handle* sndSelect;
 	wav_handle* sndCancel;
+	wav_handle* sndEvPage;
+	wav_handle* sndCrtRcrd;
 
 	int sockfd;
 	std::string tempData;

@@ -63,6 +63,8 @@ void UICourtMusicList::init()
 
 	btn_back->assignKey(KEY_B);
 	btn_listToggle->assignKey(KEY_R);
+	btn_scrollUp->assignKey(KEY_UP);
+	btn_scrollDown->assignKey(KEY_DOWN);
 
 	btn_back->connect(onBackClicked, this);
 	btn_listToggle->connect(onToggleList, this);

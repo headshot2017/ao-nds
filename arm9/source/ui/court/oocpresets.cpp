@@ -270,7 +270,10 @@ void UICourtOOCPresets::onPresetClicked(void* pUserData)
 	UICourtOOCPresets* pSelf = pData->pObj;
 
 	if (pSelf->currPreset == pData->btnInd) // already selected
+	{
+		pSelf->onAddOrConfirm(pSelf);
 		return;
+	}
 
 	wav_play(pSelf->pCourtUI->sndSelect);
 

@@ -40,6 +40,8 @@ void UICourtICChatLog::init()
 
 	btn_back->assignKey(KEY_B);
 	btn_courtRecord->assignKey(KEY_R);
+	btn_scrollUp->assignKey(KEY_UP);
+	btn_scrollDown->assignKey(KEY_DOWN);
 
 	btn_back->connect(onBackClicked, this);
 	btn_courtRecord->connect(onCourtRecord, this);

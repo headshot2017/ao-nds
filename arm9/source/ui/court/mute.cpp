@@ -314,7 +314,12 @@ void UICourtMute::onCharClicked(void* pUserData)
 	charMuteBtnData* pData = (charMuteBtnData*)pUserData;
 	UICourtMute* pSelf = pData->pObj;
 
-	if (pSelf->currCharSelected == pData->btnInd) return;
+	if (pSelf->currCharSelected == pData->btnInd)
+	{
+		pSelf->onMuteToggled(pSelf);
+		return;
+	}
+
 	pSelf->currCharSelected = pData->btnInd;
 	wav_play(pSelf->pCourtUI->sndEvTap);
 

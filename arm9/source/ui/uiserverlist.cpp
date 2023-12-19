@@ -60,6 +60,8 @@ UIScreenServerList::~UIScreenServerList()
 
 	wav_free_handle(sndSelect);
 	wav_free_handle(sndCancel);
+	wav_free_handle(sndEvPage);
+	wav_free_handle(sndCrtRcrd);
 
 	shutdown(sockfd, 0);
 	closesocket(sockfd);
@@ -163,6 +165,8 @@ void UIScreenServerList::init()
 
 	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav");
 	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav");
+	sndEvPage = wav_load_handle("/data/ao-nds/sounds/general/sfx-blink.wav");
+	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav");
 
 	arrowY = 0;
 	arrowYadd = 1;
@@ -331,7 +335,7 @@ void UIScreenServerList::onManageFavorite(void* pUserData)
 void UIScreenServerList::onToggleList(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	wav_play(pSelf->sndSelect);
+	wav_play(pSelf->sndCrtRcrd);
 
 	pSelf->isFavorites = -pSelf->isFavorites+1;
 	if (pSelf->isFavorites)
@@ -385,7 +389,7 @@ void UIScreenServerList::onConnect(void* pUserData)
 void UIScreenServerList::onPrevPage(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	wav_play(pSelf->sndSelect);
+	wav_play(pSelf->sndEvPage);
 
 	if (!pSelf->loaded && !pSelf->isFavorites) return;
 
@@ -396,7 +400,7 @@ void UIScreenServerList::onPrevPage(void* pUserData)
 void UIScreenServerList::onNextPage(void* pUserData)
 {
 	UIScreenServerList* pSelf = (UIScreenServerList*)pUserData;
-	wav_play(pSelf->sndSelect);
+	wav_play(pSelf->sndEvPage);
 
 	if (!pSelf->loaded && !pSelf->isFavorites) return;
 
@@ -410,7 +414,10 @@ void UIScreenServerList::onServerClicked(void* pUserData)
 	UIScreenServerList* pSelf = pData->pObj;
 
 	if (pSelf->currServer == pData->btnInd) // already selected
+	{
+		pSelf->onConnect(pSelf);
 		return;
+	}
 
 	wav_play(pSelf->sndSelect);
 
