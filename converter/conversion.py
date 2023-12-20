@@ -51,6 +51,13 @@ def convertBackground(source, target):
         no_ext_file = os.path.splitext(imgfile)[0]
 
         img = Image.open(full_filename).convert("RGBA")
+
+        # if aspect ratio is not 4:3, crop
+        ratioW = 256/192.
+        if math.floor(img.size[0] / img.size[1] * 1000) != 1333:
+            w = ratioW * img.size[1]
+            img = img.crop(((img.size[0]-w)/2, 0, (img.size[0]+w)/2, img.size[1]))
+
         if img.size[0] != 256 or img.size[1] != 192:
             img = img.resize((256, 192), Image.BICUBIC)
 
