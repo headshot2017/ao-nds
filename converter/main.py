@@ -95,7 +95,7 @@ if __name__ == "__main__":
             Parallel(backend='threading', n_jobs=-1)(delayed(conversion.convertCharacters)(folder+"/characters", "converted/data/ao-nds/characters", i) for i in range(cpu_count()))
 
             print("\nConverting evidence images...")
-            conversion.convertEvidenceImages(folder)
+            conversion.convertEvidenceImages(folder+"/evidence", "converted/data/ao-nds/evidence")
 
             print("\nConverting sounds...")
             conversion.convertSounds(folder+"/sounds/blips", "converted/data/ao-nds/sounds/blips")
