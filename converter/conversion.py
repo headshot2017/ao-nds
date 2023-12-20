@@ -506,7 +506,7 @@ def convertShout(source, target, core=0):
     if source.lower().endswith(".apng"):
         frames = images.load_apng(source)
     elif source.lower().endswith(".webp"):
-        frames = images.load_webp(source)[0]
+        frames = images.load_webp(source)
     elif source.lower().endswith(".png"):
         frames = [[Image.open(source).convert("RGBA"), 0]]
     elif source.lower().endswith(".gif"):
