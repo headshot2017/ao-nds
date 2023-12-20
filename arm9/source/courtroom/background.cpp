@@ -15,14 +15,17 @@ std::unordered_map<std::string, std::string> sideToBg = {
     {"wit", "witnessempty"},
     {"jud", "judgestand"},
     {"hld", "helperstand"},
-    {"hlp", "prohelperstand"}
+    {"hlp", "prohelperstand"},
+    {"jur", "jurystand"},
+    {"sea", "seancestand"},
 };
 
 std::unordered_map<std::string, std::string> sideToDesk = {
     {"def", "defensedesk"},
     {"pro", "prosecutiondesk"},
     {"wit", "stand"},
-    {"jud", "judgedesk"}
+    {"jud", "judgedesk"},
+    {"jur", "jurydesk"},
 };
 
 void readDeskTiles(const std::string& value, int* horizontal, int* vertical)

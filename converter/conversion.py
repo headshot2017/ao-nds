@@ -16,7 +16,7 @@ def convertBackground(source, target):
         os.remove(target+"/desk_tiles.cfg")
 
     # convert background first
-    for imgfile in ["defenseempty.png", "prosecutorempty.png", "witnessempty.png", "helperstand.png", "prohelperstand.png", "judgestand.png"]:
+    for imgfile in ["defenseempty.png", "prosecutorempty.png", "witnessempty.png", "helperstand.png", "prohelperstand.png", "judgestand.png", "jurystand.png", "seancestand.png"]:
         full_filename = source+"/"+imgfile
         if not os.path.exists(full_filename):
             continue
@@ -43,7 +43,7 @@ def convertBackground(source, target):
         os.rename("temp.pal.bin", target+"/"+no_ext_file+".pal.bin")
 
     # then convert desks. we won't bother with helper desks since these are mostly only used for special effects (source: GS4Night background)
-    for imgfile, imgindex in [["defensedesk.png", 0], ["prosecutiondesk.png", 1], ["stand.png", 2], ["judgedesk.png", 3]]:
+    for imgfile, imgindex in [["defensedesk.png", 0], ["prosecutiondesk.png", 1], ["stand.png", 2], ["judgedesk.png", 3], ["jurydesk.png", 4]]:
         full_filename = source+"/"+imgfile
         if not os.path.exists(full_filename):
             continue
