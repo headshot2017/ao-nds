@@ -391,7 +391,8 @@ def recursiveCharacter(source, target, ogTarget, core, extra=""):
             convertEmoteGIF(filename, target+"/"+emote, ogTarget, core, extra)
 
     if not extra:
-        convertEmoteButtons(source+"/emotions", target+"/emotions", core)
+        if os.path.exists(source+"/emotions"):
+            convertEmoteButtons(source+"/emotions", target+"/emotions", core)
 
         for snd in ["holdit.wav", "holdit.opus", "objection.wav", "objection.opus", "takethat.wav", "takethat.opus", "custom.wav", "custom.opus"]:
             if not os.path.exists(source+"/"+snd): continue
