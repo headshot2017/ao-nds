@@ -9,11 +9,6 @@ Made with devkitARM & libnds by Headshotnoby<br/>
 Additional code by stonedDiscord<br/>
 UI design by Samevi
 
-Before you can use this, you need to use the AO NDS converter tool
-to convert the contents of the base folder from the PC version to formats that are compatible with the NDS.
-
-**This is still under development!**
-
 ## Assets and libraries used
 * "Igiari" font by [Caveras](https://caveras.net)
 * "AceName" font by unknown (found on [webAO](https://github.com/AttorneyOnline/webAO))
