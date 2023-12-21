@@ -372,7 +372,7 @@ def recursiveCharacter(source, target, ogTarget, core, extra=""):
     if os.path.exists(target+"/nds.cfg"):
         os.remove(target+"/nds.cfg")
 
-    if not extra:
+    if not extra and os.path.exists(source+"/char.ini"):
         open(target+"/char.ini", "w").write(open(source+"/char.ini").read())
 
     for emote in os.listdir(source):
