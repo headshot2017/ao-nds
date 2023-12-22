@@ -118,23 +118,27 @@ void Background::setBgSide(const std::string& side, bool force)
 	u8* bgGfx = readFile(currentBg + "/" + sideToBg[side] + ".img.bin", &bgGfxLen);
 	u8* bgMap = readFile(currentBg + "/" + sideToBg[side] + ".map.bin", &bgMapLen);
 	u8* bgPal = readFile(currentBg + "/" + sideToBg[side] + ".pal.bin", &bgPalLen);
-	currBgGfxLen = bgGfxLen;
 
-	// copy main background
-	dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
-	dmaCopy(bgMap, bgGetMapPtr(bgIndex), bgMapLen);
+	if (bgGfx && bgMap && bgPal)
+	{
+		currBgGfxLen = bgGfxLen;
 
-	vramSetBankE(VRAM_E_LCD);
-	dmaCopy(bgPal, &VRAM_E_EXT_PALETTE[bgIndex][0], bgPalLen);
-	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
+		// copy main background
+		dmaCopy(bgGfx, bgGetGfxPtr(bgIndex), bgGfxLen);
+		dmaCopy(bgMap, bgGetMapPtr(bgIndex), bgMapLen);
 
-	BG_PALETTE[0] = ((u16*)bgPal)[0];
+		vramSetBankE(VRAM_E_LCD);
+		dmaCopy(bgPal, &VRAM_E_EXT_PALETTE[bgIndex][0], bgPalLen);
+		vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 
-	mp3_fill_buffer();
+		BG_PALETTE[0] = ((u16*)bgPal)[0];
 
-	delete[] bgGfx;
-	delete[] bgMap;
-	delete[] bgPal;
+		mp3_fill_buffer();
+	}
+
+	if (bgGfx) delete[] bgGfx;
+	if (bgMap) delete[] bgMap;
+	if (bgPal) delete[] bgPal;
 	mp3_fill_buffer();
 
 	u8* deskGfxImg = 0;
