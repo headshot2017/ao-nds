@@ -489,11 +489,11 @@ void UIScreenServerList::parsePublicList(const std::string& data)
 		const rapidjson::Value& server = doc[i];
 
 		serverInfo info;
-		info.name = utf8::utf8to16(std::string(server["name"].GetString()));
-		info.description = utf8::utf8to16(std::string(server["description"].GetString()));
+		if (server.HasMember("name")) info.name = utf8::utf8to16(std::string(server["name"].GetString()));
+		if (server.HasMember("description")) info.description = utf8::utf8to16(std::string(server["description"].GetString()));
 		info.ip = server["ip"].GetString();
-		info.players = server["players"].GetUint();
-		info.port = server["port"].GetUint();
+		info.players = (server.HasMember("players")) ? server["players"].GetUint() : 0;
+		info.port = (server.HasMember("port")) ? server["port"].GetUint() : 0;
 		info.ws_port = (server.HasMember("ws_port")) ? server["ws_port"].GetUint() : 0;
 
 		m_servers[0].push_back(info);
