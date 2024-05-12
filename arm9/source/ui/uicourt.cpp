@@ -232,8 +232,6 @@ void UIScreenCourt::onMessageSC(void* pUserData, std::string msg)
 		delimiterPos = msg.find("#", delimiterPos+1);
 	}
 
-	pSelf->charList.pop_back(); // remove "%"
-
 	gEngine->getSocket()->sendData("RM#%");
 }
 
@@ -593,8 +591,6 @@ void UIScreenCourt::onMessageFA(void* pUserData, std::string msg)
 		lastPos = delimiterPos;
 		delimiterPos = msg.find("#", delimiterPos+1);
 	}
-
-	pSelf->areaList.pop_back(); // remove "%"
 }
 
 void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)

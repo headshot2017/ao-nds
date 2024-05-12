@@ -16,7 +16,6 @@ AOwebSocket::~AOwebSocket()
 
 void AOwebSocket::wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	AOwebSocket* pSelf = (AOwebSocket*)fn_data;
-	std::string header;
 
 	switch(ev)
 	{
@@ -32,14 +31,27 @@ void AOwebSocket::wsHandler(struct mg_connection *c, int ev, void *ev_data, void
 
 		case MG_EV_WS_MSG:
 			struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
-			header = argumentAt(wm->data.ptr, 0);
 			iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
 
-			if (pSelf->callbacks.count(header))
+			// loop through every percent %
+			std::string tempData(wm->data.ptr);
+			std::size_t lastPos = 0;
+			std::size_t delimiterPos = tempData.find("%");
+
+			while (delimiterPos != std::string::npos)
 			{
-				for (const NetCBInfo& cbInfo : pSelf->callbacks[header])
-					cbInfo.cb(cbInfo.pUserData, wm->data.ptr);
+				const std::string& data = tempData.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
+				std::string header = argumentAt(data, 0);
+				if (pSelf->callbacks.count(header))
+				{
+					for (const NetCBInfo& cbInfo : pSelf->callbacks[header])
+						cbInfo.cb(cbInfo.pUserData, data);
+				}
+
+				lastPos = delimiterPos;
+				delimiterPos = tempData.find("%", delimiterPos+1);
 			}
+
 			break;
 	}
 }
