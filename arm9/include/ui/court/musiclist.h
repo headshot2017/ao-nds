@@ -10,6 +10,7 @@
 class UICourtMusicList : public UISubScreen
 {
 	u32 scrollPos;
+	u32 scrollPosOld;
 
 	UIButton* btn_back;
 	UIButton* btn_listToggle;
@@ -36,7 +37,8 @@ public:
 	void update();
 
 	void updateFilter();
-	void reloadScroll();
+	void setScroll(u32 i);
+	void reloadScroll(bool all=false);
 
 	static void onBackClicked(void* pUserData);
 	static void onToggleList(void* pUserData);

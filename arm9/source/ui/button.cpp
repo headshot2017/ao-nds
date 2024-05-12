@@ -21,6 +21,7 @@ UIButton::UIButton(OamState* chosenOam, std::string file, int oamStartInd, int h
 	h = height;
 	sprW = sprWidth;
 	sprH = sprHeight;
+	currFrame = 0;
 	visible = true;
 	pressing = false;
 	hflip = false;
@@ -140,10 +141,14 @@ void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSl
 		else dmaFillHalfWords(0, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
+
+	currFrame = 0;
 }
 
 void UIButton::setFrame(int frame)
 {
+	currFrame = frame;
+
 	for (int vert=0; vert<spriteVertTiles; vert++)
 	{
 		for (int hor=0; hor<spriteHorTiles; hor++)

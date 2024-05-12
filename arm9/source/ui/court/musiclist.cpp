@@ -38,6 +38,7 @@ UICourtMusicList::~UICourtMusicList()
 void UICourtMusicList::init()
 {
 	scrollPos = 0;
+	scrollPosOld = 0;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	loadBg("/data/ao-nds/ui/bg_musicList");
@@ -80,7 +81,7 @@ void UICourtMusicList::init()
 	draggingHandle = false;
 
 	updateFilter();
-	reloadScroll();
+	reloadScroll(true);
 }
 
 void UICourtMusicList::updateInput()
@@ -101,7 +102,7 @@ void UICourtMusicList::updateInput()
 
 			filter = kb_search->getValueUTF8();
 			if (result > 0) updateFilter();
-			reloadScroll();
+			reloadScroll(true);
 		}
 		return;
 	}
@@ -147,8 +148,7 @@ void UICourtMusicList::update()
 		holdWait--;
 		if (holdWait <= 0)
 		{
-			scrollPos += pageAdd;
-			reloadScroll();
+			setScroll(scrollPos+pageAdd);
 
 			if (scrollPos == 0 || scrollPos+7 >= filteredMusic.size())
 			{
@@ -175,7 +175,6 @@ void UICourtMusicList::update()
 void UICourtMusicList::updateFilter()
 {
 	filteredMusic.clear();
-	scrollPos = 0;
 	for (u32 i=0; i<pCourtUI->getMusicList().size(); i++)
 	{
 		mp3_fill_buffer();
@@ -199,9 +198,54 @@ void UICourtMusicList::updateFilter()
 	}
 }
 
-void UICourtMusicList::reloadScroll()
+void UICourtMusicList::setScroll(u32 i)
 {
-	for (u32 i=0; i<7; i++)
+	scrollPos = i;
+	reloadScroll();
+}
+
+void UICourtMusicList::reloadScroll(bool all)
+{
+	int diff = scrollPos - scrollPosOld;
+	if (!all && !diff) return;
+
+	u32 diffAbs = abs(scrollPos - scrollPosOld);
+	int diffSign = (diff>0) ? 1 : (diff<0) ? -1 : 0;
+
+	u32 start, end;
+	int add;
+
+	if (all || diffAbs >= 7)
+	{
+		start = 0;
+		end = 7;
+		add = 1;
+	}
+	else
+	{
+		// method for faster scrolling
+
+		// first, move old ones
+		start = (diffSign==1) ? 0 : 7-1;
+		end = (diffSign==1) ? 7-diffAbs : diffAbs-1;
+		add = diffSign;
+
+		for (u32 i=start; i!=end; i+=add)
+		{
+			mp3_fill_buffer();
+
+			btn_musicBtn[i]->setFrame(btn_musicBtn[i+diffSign]->getFrame());
+			dmaCopy(*lbl_musicBtn[i+diffSign]->getGfx(), *lbl_musicBtn[i]->getGfx(), 32*16*7);
+
+			mp3_fill_buffer();
+		}
+
+		// then generate new text
+		start = end;
+		end = (diffSign==1) ? 7 : -1;
+	}
+
+	for (u32 i=start; i!=end; i+=add)
 	{
 		mp3_fill_buffer();
 
@@ -221,6 +265,8 @@ void UICourtMusicList::reloadScroll()
 		lbl_musicBtn[i]->setText(mp3Music.nameDecoded);
 		mp3_fill_buffer();
 	}
+
+	scrollPosOld = scrollPos;
 
 	int handleEdges[2] = {btn_scrollUp->getY()+btn_scrollUp->getH(), btn_scrollDown->getY()-btn_scrollDown->getH()};
 	int yPos = handleEdges[0];
@@ -250,8 +296,7 @@ void UICourtMusicList::onScrollUpPressed(void* pUserData)
 	UICourtMusicList* pSelf = (UICourtMusicList*)pUserData;
 
 	if (!pSelf->scrollPos) return;
-	pSelf->scrollPos--;
-	pSelf->reloadScroll();
+	pSelf->setScroll(pSelf->scrollPos-1);
 
 	pSelf->holdWait = 20;
 	pSelf->pageAdd = -1;
@@ -262,8 +307,7 @@ void UICourtMusicList::onScrollDownPressed(void* pUserData)
 	UICourtMusicList* pSelf = (UICourtMusicList*)pUserData;
 
 	if (pSelf->scrollPos+7 >= pSelf->filteredMusic.size()) return;
-	pSelf->scrollPos++;
-	pSelf->reloadScroll();
+	pSelf->setScroll(pSelf->scrollPos+1);
 
 	pSelf->holdWait = 20;
 	pSelf->pageAdd = 1;
@@ -295,8 +339,7 @@ void UICourtMusicList::onSliderReleased(void* pUserData)
 	{
 		yPos = (pSelf->btn_sliderHandle->getY() - handleEdges[0]) / (float)(handleEdges[1]-handleEdges[0]) * (pSelf->filteredMusic.size()-7);
 	}
-	pSelf->scrollPos = yPos;
-	pSelf->reloadScroll();
+	pSelf->setScroll(yPos);
 }
 
 void UICourtMusicList::onMusicClicked(void* pUserData)

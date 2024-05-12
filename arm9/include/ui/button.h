@@ -26,6 +26,7 @@ class UIButton
 	int h;
 	int sprW;
 	int sprH;
+	int currFrame;
 	bool visible;
 	bool pressing;
 	bool hflip;
@@ -66,6 +67,9 @@ public:
 	int getW() {return w;}
 	int getH() {return h;}
 	bool isHeld() {return pressing;}
+	u16** getGfx() {return spriteGfx;}
+	int getFrame() {return currFrame;}
+	int getOamInd() {return oamStart;}
 	int nextOamInd() {return oamStart + (spriteHorTiles*spriteVertTiles);}
 
 	void updateInput();

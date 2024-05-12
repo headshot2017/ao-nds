@@ -32,6 +32,8 @@ public:
 	void setColor(u32 textColor);
 	void setLineOffset(int offset) {lineOffset = offset;}
 
+	u16** getGfx() {return textGfx;}
+	int getOamInd() {return oamStart;}
 	int nextOamInd() {return oamStart+(gfxPerLine*maxLines);}
 };
 
