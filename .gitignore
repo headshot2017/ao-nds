@@ -6,3 +6,6 @@ build
 *.img.bin
 *.map.bin
 *.pal.bin
+*.zip
+*.7z
+*.png
