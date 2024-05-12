@@ -209,7 +209,7 @@ void UICourtMusicList::reloadScroll(bool all)
 	int diff = scrollPos - scrollPosOld;
 	if (!all && !diff) return;
 
-	u32 diffAbs = abs(scrollPos - scrollPosOld);
+	u32 diffAbs = abs(diff);
 	int diffSign = (diff>0) ? 1 : (diff<0) ? -1 : 0;
 
 	u32 start, end;
@@ -234,8 +234,8 @@ void UICourtMusicList::reloadScroll(bool all)
 		{
 			mp3_fill_buffer();
 
-			btn_musicBtn[i]->setFrame(btn_musicBtn[i+diffSign]->getFrame());
-			dmaCopy(*lbl_musicBtn[i+diffSign]->getGfx(), *lbl_musicBtn[i]->getGfx(), 32*16*7);
+			btn_musicBtn[i]->setFrame(btn_musicBtn[i+diff]->getFrame());
+			dmaCopy(*lbl_musicBtn[i+diff]->getGfx(), *lbl_musicBtn[i]->getGfx(), 32*16*7);
 
 			mp3_fill_buffer();
 		}
