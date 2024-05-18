@@ -25,6 +25,7 @@ UICourtICChatLog::~UICourtICChatLog()
 void UICourtICChatLog::init()
 {
 	scrollPos = (pCourtUI->getICLog().size() > 10) ? pCourtUI->getICLog().size()-10 : 0;
+	scrollPosOld = scrollPos;
 	atBottom = true;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
@@ -59,7 +60,7 @@ void UICourtICChatLog::init()
 	cbMS = gEngine->getSocket()->addMessageCallback("MS", onMessageMS, this);
 	cbMC = gEngine->getSocket()->addMessageCallback("MC", onMessageMC, this);
 
-	reloadScroll();
+	reloadScroll(true);
 }
 
 void UICourtICChatLog::updateInput()
@@ -78,8 +79,7 @@ void UICourtICChatLog::update()
 		holdWait--;
 		if (holdWait <= 0)
 		{
-			scrollPos += pageAdd;
-			reloadScroll();
+			setScroll(scrollPos + pageAdd);
 
 			if (scrollPos == 0 || scrollPos+10 >= pCourtUI->getICLog().size())
 			{
@@ -103,20 +103,66 @@ void UICourtICChatLog::update()
 	}
 }
 
-void UICourtICChatLog::reloadScroll()
+void UICourtICChatLog::setScroll(u32 i)
 {
-	std::u16string updateText;
+	scrollPos = i;
+	reloadScroll();
+}
 
-	for (u32 i=0; i<10; i++)
+void UICourtICChatLog::reloadScroll(bool all)
+{
+	int diff = scrollPos - scrollPosOld;
+	if (!all && !diff)
+	{
+		setSliderHandle();
+		return;
+	}
+
+	u32 diffAbs = abs(diff);
+	int diffSign = (diff>0) ? 1 : (diff<0) ? -1 : 0;
+
+	u32 start, end;
+	int add;
+
+	if (all || diffAbs >= 10)
+	{
+		start = 0;
+		end = 10;
+		add = 1;
+	}
+	else
+	{
+		// method for faster scrolling
+
+		// first, move old ones
+		start = (diffSign==1) ? 0 : 10-1;
+		end = (diffSign==1) ? 10-diffAbs : diffAbs-1;
+		add = diffSign;
+
+		for (u32 i=start; i!=end; i+=add)
+		{
+			mp3_fill_buffer();
+
+			dmaCopy(lbl_log->getGfx()[7*(i+diff)], lbl_log->getGfx()[7*i], 32*16*7);
+
+			mp3_fill_buffer();
+		}
+
+		// then generate new text
+		start = end;
+		end = (diffSign==1) ? 10 : -1;
+	}
+
+	for (u32 i=start; i!=end; i+=add)
 	{
 		if (scrollPos+i >= pCourtUI->getICLog().size())
 			break;
-		updateText += pCourtUI->getICLog()[scrollPos+i]+u"\n";
+		lbl_log->setTextOnLine(pCourtUI->getICLog()[scrollPos+i]+u"\n", i);
 
 		mp3_fill_buffer();
 	}
 
-	lbl_log->setText(updateText);
+	scrollPosOld = scrollPos;
 
 	setSliderHandle();
 	atBottom = (pCourtUI->getICLog().size() <= 10 || scrollPos == pCourtUI->getICLog().size()-10);
@@ -152,8 +198,7 @@ void UICourtICChatLog::onScrollUpPressed(void* pUserData)
 	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
 
 	if (!pSelf->scrollPos) return;
-	pSelf->scrollPos--;
-	pSelf->reloadScroll();
+	pSelf->setScroll(pSelf->scrollPos-1);
 
 	pSelf->holdWait = 20;
 	pSelf->pageAdd = -1;
@@ -164,8 +209,7 @@ void UICourtICChatLog::onScrollDownPressed(void* pUserData)
 	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
 
 	if (pSelf->scrollPos+10 >= pSelf->pCourtUI->getICLog().size()) return;
-	pSelf->scrollPos++;
-	pSelf->reloadScroll();
+	pSelf->setScroll(pSelf->scrollPos+1);
 
 	pSelf->holdWait = 20;
 	pSelf->pageAdd = 1;
@@ -195,8 +239,7 @@ void UICourtICChatLog::onSliderReleased(void* pUserData)
 	u32 yPos = 0;
 	if (pSelf->pCourtUI->getICLog().size() > 10)
 		yPos = (pSelf->btn_sliderHandle->getY() - handleEdges[0]) / (float)(handleEdges[1]-handleEdges[0]) * (pSelf->pCourtUI->getICLog().size()-10);
-	pSelf->scrollPos = yPos;
-	pSelf->reloadScroll();
+	pSelf->setScroll(yPos);
 }
 
 void UICourtICChatLog::onMessageMS(void* pUserData, std::string msg)
@@ -204,10 +247,7 @@ void UICourtICChatLog::onMessageMS(void* pUserData, std::string msg)
 	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
 
 	if (pSelf->atBottom)
-	{
-		pSelf->scrollPos = (pSelf->pCourtUI->getICLog().size() > 10) ? pSelf->pCourtUI->getICLog().size()-10 : 0;
-		pSelf->reloadScroll();
-	}
+		pSelf->setScroll((pSelf->pCourtUI->getICLog().size() > 10) ? pSelf->pCourtUI->getICLog().size()-10 : 0);
 	else
 		pSelf->setSliderHandle();
 }
@@ -217,10 +257,7 @@ void UICourtICChatLog::onMessageMC(void* pUserData, std::string msg)
 	UICourtICChatLog* pSelf = (UICourtICChatLog*)pUserData;
 
 	if (pSelf->atBottom)
-	{
-		pSelf->scrollPos = (pSelf->pCourtUI->getICLog().size() > 10) ? pSelf->pCourtUI->getICLog().size()-10 : 0;
-		pSelf->reloadScroll();
-	}
+		pSelf->setScroll((pSelf->pCourtUI->getICLog().size() > 10) ? pSelf->pCourtUI->getICLog().size()-10 : 0);
 	else
 		pSelf->setSliderHandle();
 }

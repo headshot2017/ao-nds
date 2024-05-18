@@ -29,6 +29,8 @@ public:
 	void setPos(int x, int y, bool center=false);
 	void setText(const std::string& text);
 	void setText(const std::u16string& text);
+	void setTextOnLine(const std::string& text, int line);
+	void setTextOnLine(const std::u16string& text, int line);
 	void setColor(u32 textColor);
 	void setLineOffset(int offset) {lineOffset = offset;}
 

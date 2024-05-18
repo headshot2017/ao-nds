@@ -27,6 +27,7 @@ UICourtOOC::~UICourtOOC()
 void UICourtOOC::init()
 {
 	scrollPos = (pCourtUI->getOOCLog().size() > 12) ? pCourtUI->getOOCLog().size()-12 : 0;
+	scrollPosOld = scrollPos;
 	atBottom = true;
 
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
@@ -68,7 +69,7 @@ void UICourtOOC::init()
 
 	cbCT = gEngine->getSocket()->addMessageCallback("CT", onMessageCT, this);
 
-	reloadScroll();
+	reloadScroll(true);
 }
 
 void UICourtOOC::updateInput()
@@ -136,8 +137,7 @@ void UICourtOOC::update()
 		holdWait--;
 		if (holdWait <= 0)
 		{
-			scrollPos += pageAdd;
-			reloadScroll();
+			setScroll(scrollPos + pageAdd);
 
 			if (scrollPos == 0 || scrollPos+12 >= pCourtUI->getOOCLog().size())
 			{
@@ -174,20 +174,66 @@ void UICourtOOC::hideEverything()
 	lbl_oocName->setVisible(false);
 }
 
-void UICourtOOC::reloadScroll()
+void UICourtOOC::setScroll(u32 i)
 {
-	std::u16string updateText;
+	scrollPos = i;
+	reloadScroll();
+}
 
-	for (u32 i=0; i<12; i++)
+void UICourtOOC::reloadScroll(bool all)
+{
+	int diff = scrollPos - scrollPosOld;
+	if (!all && !diff)
+	{
+		setSliderHandle();
+		return;
+	}
+
+	u32 diffAbs = abs(diff);
+	int diffSign = (diff>0) ? 1 : (diff<0) ? -1 : 0;
+
+	u32 start, end;
+	int add;
+
+	if (all || diffAbs >= 12)
+	{
+		start = 0;
+		end = 12;
+		add = 1;
+	}
+	else
+	{
+		// method for faster scrolling
+
+		// first, move old ones
+		start = (diffSign==1) ? 0 : 12-1;
+		end = (diffSign==1) ? 12-diffAbs : diffAbs-1;
+		add = diffSign;
+
+		for (u32 i=start; i!=end; i+=add)
+		{
+			mp3_fill_buffer();
+
+			dmaCopy(lbl_log->getGfx()[7*(i+diff)], lbl_log->getGfx()[7*i], 32*16*7);
+
+			mp3_fill_buffer();
+		}
+
+		// then generate new text
+		start = end;
+		end = (diffSign==1) ? 12 : -1;
+	}
+
+	for (u32 i=start; i!=end; i+=add)
 	{
 		if (scrollPos+i >= pCourtUI->getOOCLog().size())
 			break;
-		updateText += pCourtUI->getOOCLog()[scrollPos+i]+u"\n";
+		lbl_log->setTextOnLine(pCourtUI->getOOCLog()[scrollPos+i]+u"\n", i);
 
 		mp3_fill_buffer();
 	}
 
-	lbl_log->setText(updateText);
+	scrollPosOld = scrollPos;
 
 	setSliderHandle();
 	atBottom = (pCourtUI->getOOCLog().size() <= 12 || scrollPos == pCourtUI->getOOCLog().size()-12);
@@ -223,8 +269,7 @@ void UICourtOOC::onScrollUpPressed(void* pUserData)
 	UICourtOOC* pSelf = (UICourtOOC*)pUserData;
 
 	if (!pSelf->scrollPos) return;
-	pSelf->scrollPos--;
-	pSelf->reloadScroll();
+	pSelf->setScroll(pSelf->scrollPos-1);
 
 	pSelf->holdWait = 20;
 	pSelf->pageAdd = -1;
@@ -235,8 +280,7 @@ void UICourtOOC::onScrollDownPressed(void* pUserData)
 	UICourtOOC* pSelf = (UICourtOOC*)pUserData;
 
 	if (pSelf->scrollPos+12 >= pSelf->pCourtUI->getOOCLog().size()) return;
-	pSelf->scrollPos++;
-	pSelf->reloadScroll();
+	pSelf->setScroll(pSelf->scrollPos+1);
 
 	pSelf->holdWait = 20;
 	pSelf->pageAdd = 1;
@@ -266,8 +310,7 @@ void UICourtOOC::onSliderReleased(void* pUserData)
 	u32 yPos = 0;
 	if (pSelf->pCourtUI->getOOCLog().size() > 12)
 		yPos = (pSelf->btn_sliderHandle->getY() - handleEdges[0]) / (float)(handleEdges[1]-handleEdges[0]) * (pSelf->pCourtUI->getOOCLog().size()-12);
-	pSelf->scrollPos = yPos;
-	pSelf->reloadScroll();
+	pSelf->setScroll(yPos);
 }
 
 void UICourtOOC::onMessageCT(void* pUserData, std::string msg)
@@ -275,10 +318,7 @@ void UICourtOOC::onMessageCT(void* pUserData, std::string msg)
 	UICourtOOC* pSelf = (UICourtOOC*)pUserData;
 
 	if (pSelf->atBottom)
-	{
-		pSelf->scrollPos = (pSelf->pCourtUI->getOOCLog().size() > 12) ? pSelf->pCourtUI->getOOCLog().size()-12 : 0;
-		pSelf->reloadScroll();
-	}
+		pSelf->setScroll((pSelf->pCourtUI->getOOCLog().size() > 12) ? pSelf->pCourtUI->getOOCLog().size()-12 : 0);
 	else
 		pSelf->setSliderHandle();
 }

@@ -10,6 +10,7 @@
 class UICourtOOC : public UISubScreen
 {
 	u32 scrollPos;
+	u32 scrollPosOld;
 	bool atBottom;
 
 	UIButton* btn_back;
@@ -39,7 +40,8 @@ public:
 	void update();
 
 	void hideEverything();
-	void reloadScroll();
+	void setScroll(u32 i);
+	void reloadScroll(bool all=false);
 	void setSliderHandle();
 
 	static void onBackClicked(void* pUserData);

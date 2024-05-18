@@ -82,6 +82,11 @@ void UILabel::setText(const std::string& text)
 	setText(utf8::utf8to16(text));
 }
 
+void UILabel::setTextOnLine(const std::string& text, int line)
+{
+	setTextOnLine(utf8::utf8to16(text), line);
+}
+
 void UILabel::setText(const std::u16string& text)
 {
 	for (int i=0; i<gfxPerLine*maxLines; i++)
@@ -91,6 +96,19 @@ void UILabel::setText(const std::u16string& text)
 
 	currText = text;
 	renderMultiLine(fontID, currText, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, gfxPerLine, maxLines);
+}
+
+void UILabel::setTextOnLine(const std::u16string& text, int line)
+{
+	for (int i=gfxPerLine*line; i<gfxPerLine*(line+1); i++)
+	{
+		dmaFillHalfWords((0<<8)|0, textGfx[i], 32*16);
+	}
+
+	std::u16string newText(text);
+	//currText = text;
+	//renderMultiLine(fontID, currText, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx, gfxPerLine, maxLines);
+	renderText(fontID, newText, 2, 32, 16, textCanvas, SpriteSize_32x16, textGfx + (gfxPerLine*line), gfxPerLine);
 }
 
 void UILabel::setColor(u32 textColor)

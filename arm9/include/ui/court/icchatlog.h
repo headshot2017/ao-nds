@@ -9,6 +9,7 @@
 class UICourtICChatLog : public UISubScreen
 {
 	u32 scrollPos;
+	u32 scrollPosOld;
 	bool atBottom;
 
 	UIButton* btn_back;
@@ -33,7 +34,8 @@ public:
 	void updateInput();
 	void update();
 
-	void reloadScroll();
+	void setScroll(u32 i);
+	void reloadScroll(bool all=false);
 	void setSliderHandle();
 
 	static void onBackClicked(void* pUserData);
