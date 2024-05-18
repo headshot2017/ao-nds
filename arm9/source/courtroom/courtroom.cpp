@@ -126,38 +126,6 @@ void Courtroom::handleChat()
 
 	character[1]->unload();
 
-	if (currIC.emoteMod == 5)
-		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
-	else
-	{
-		background->setBgSide(currIC.side);
-
-		if (currIC.otherCharID >= 0)
-		{
-			// display pair
-			offsetStr = currIC.otherOffset;
-			offsetX = 0;
-			offsetY = 0;
-
-			if (offsetStr.find("&"))
-			{
-				offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
-				offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
-			}
-			else
-				offsetX = std::stoi(offsetStr);
-
-			character[1]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
-			character[1]->setFlip(currIC.otherFlip);
-
-			bool isAnim = fileExists("/data/ao-nds/characters/" + currIC.otherName + "/(a)" + currIC.otherEmote + ".img.bin");
-			std::string prefix;
-			if (isAnim) prefix = "(a)";
-
-			character[1]->setCharImage(currIC.otherName, prefix + currIC.otherEmote);
-		}
-	}
-
 	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
 		character[0]->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
 
@@ -216,6 +184,39 @@ void Courtroom::handleChat()
 		if (!currIC.frameSFX.empty()) character[0]->setFrameSFX(argumentAt(currIC.frameSFX, 0, '^'));
 		if (!currIC.frameShake.empty()) character[0]->setFrameShake(argumentAt(currIC.frameShake, 0, '^'));
 		if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, 0, '^'));
+	}
+
+	// set background side
+	if (currIC.emoteMod == 5)
+		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
+	else
+	{
+		background->setBgSide(currIC.side);
+
+		if (currIC.otherCharID >= 0)
+		{
+			// display pair
+			offsetStr = currIC.otherOffset;
+			offsetX = 0;
+			offsetY = 0;
+
+			if (offsetStr.find("&"))
+			{
+				offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
+				offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
+			}
+			else
+				offsetX = std::stoi(offsetStr);
+
+			character[1]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
+			character[1]->setFlip(currIC.otherFlip);
+
+			bool isAnim = fileExists("/data/ao-nds/characters/" + currIC.otherName + "/(a)" + currIC.otherEmote + ".img.bin");
+			std::string prefix;
+			if (isAnim) prefix = "(a)";
+
+			character[1]->setCharImage(currIC.otherName, prefix + currIC.otherEmote);
+		}
 	}
 }
 
