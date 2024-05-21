@@ -230,11 +230,6 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 	clearFrameData();
 
-	vramSetBankF(VRAM_F_LCD);
-	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2+pair], palSize);
-	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
-	delete[] charPalette;
-
 	for (int i=0; i<4*3; i++)
 	{
 		oamSet(&oamMain, oamStart+i, 0, 0, 0, 0, SpriteSize_64x64, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
@@ -246,6 +241,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	}
 
 	gfxInUse = frameInfo.realW*frameInfo.realH;
+	u8* ptr = (!frameInfo.streaming) ? charData : stream.getFrame(0);
 
 	for (int i=0; i<gfxInUse; i++)
 	{
@@ -269,13 +265,17 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 			continue;
 		}
 
-		u8* ptr = (!frameInfo.streaming) ? charData : stream.getFrame(0);
 		u8* offset = ptr + i*64*64;
 		dmaCopy(offset, charGfx[i], 64*64);
 		mp3_fill_buffer();
 
 		oamSet(&oamMain, oamStart+i, x, y, 2, 2+pair, SpriteSize_64x64, SpriteColorFormat_256Color, charGfx[i], -1, false, false, flip, false, false);
 	}
+
+	vramSetBankF(VRAM_F_LCD);
+	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2+pair], palSize);
+	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+	delete[] charPalette;
 
 	oamUpdate(&oamMain);
 	loop = doLoop;
