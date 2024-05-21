@@ -6,7 +6,7 @@
 #include "utf8.h"
 #include "mp3_shared.h"
 
-void keyboardShowAlt(Keyboard* kb)
+static void keyboardShowAlt(Keyboard* kb)
 {
 	int i;
 
@@ -33,7 +33,7 @@ void keyboardShowAlt(Keyboard* kb)
 	bgUpdate();
 }
 
-void keyboardHideAlt(Keyboard* kb)
+static void keyboardHideAlt(Keyboard* kb)
 {
 	int i;
 
