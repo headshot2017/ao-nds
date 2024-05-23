@@ -31,6 +31,7 @@ class UICourtEvidenceDetail : public UISubScreen
 	UILabel* inputting;
 
 	u32 scrollPos;
+	u32 scrollPosOld;
 	std::u16string currName;
 	std::u16string currDesc;
 	std::string currImage;
@@ -51,7 +52,9 @@ public:
 	void hideEverything();
 	void showEverything();
 	void reloadPage();
-	void reloadDesc();
+
+	void setScroll(u32 i);
+	void reloadDesc(bool all=false);
 
 	static void onBackClicked(void* pUserData);
 	static void onPrivatePublicClicked(void* pUserData);

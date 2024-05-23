@@ -242,11 +242,12 @@ void UICourtEvidenceDetail::reloadPage()
 	lbl_name->setPos(163, 41, true);
 
 	scrollPos = 0;
+	scrollPosOld = 0;
 	renderDesc.clear();
 	separateLines(0, currDesc, 7, false, renderDesc);
-	reloadDesc();
+	reloadDesc(true);
 
-	if (adding)
+	if (!adding)
 	{
 		btn_descUp->setVisible(false);
 		btn_descDown->setVisible(renderDesc.size() > 4);
@@ -255,20 +256,63 @@ void UICourtEvidenceDetail::reloadPage()
 	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 11);
 }
 
-void UICourtEvidenceDetail::reloadDesc()
+void UICourtEvidenceDetail::setScroll(u32 i)
 {
-	std::u16string updateText;
+	scrollPos = i;
+	reloadDesc();
+}
 
-	for (u32 i=0; i<4; i++)
+void UICourtEvidenceDetail::reloadDesc(bool all)
+{
+	int diff = scrollPos - scrollPosOld;
+	if (!all && !diff) return;
+
+	u32 diffAbs = abs(diff);
+	int diffSign = (diff>0) ? 1 : (diff<0) ? -1 : 0;
+
+	u32 start, end;
+	int add;
+
+	if (all || diffAbs >= 4)
+	{
+		lbl_desc->setText("");
+		start = 0;
+		end = 4;
+		add = 1;
+	}
+	else
+	{
+		// method for faster scrolling
+
+		// first, move old ones
+		start = (diffSign==1) ? 0 : 4-1;
+		end = (diffSign==1) ? 4-diffAbs : diffAbs-1;
+		add = diffSign;
+
+		for (u32 i=start; i!=end; i+=add)
+		{
+			mp3_fill_buffer();
+
+			dmaCopy(lbl_desc->getGfx()[7*(i+diff)], lbl_desc->getGfx()[7*i], 32*16*7);
+
+			mp3_fill_buffer();
+		}
+
+		// then generate new text
+		start = end;
+		end = (diffSign==1) ? 4 : -1;
+	}
+
+	for (u32 i=start; i!=end; i+=add)
 	{
 		if (scrollPos+i >= renderDesc.size())
 			break;
-		updateText += renderDesc[scrollPos+i]+u"\n";
+		lbl_desc->setTextOnLine(renderDesc[scrollPos+i]+u"\n", i);
 
 		mp3_fill_buffer();
 	}
 
-	lbl_desc->setText(updateText);
+	scrollPosOld = scrollPos;
 }
 
 void UICourtEvidenceDetail::onBackClicked(void* pUserData)
@@ -369,8 +413,7 @@ void UICourtEvidenceDetail::onDescUp(void* pUserData)
 	UICourtEvidenceDetail* pSelf = (UICourtEvidenceDetail*)pUserData;
 
 	if (!pSelf->scrollPos) return;
-	pSelf->scrollPos--;
-	pSelf->reloadDesc();
+	pSelf->setScroll(pSelf->scrollPos-1);
 
 	pSelf->btn_descDown->setVisible(true);
 	if (!pSelf->scrollPos)
@@ -382,8 +425,7 @@ void UICourtEvidenceDetail::onDescDown(void* pUserData)
 	UICourtEvidenceDetail* pSelf = (UICourtEvidenceDetail*)pUserData;
 
 	if (pSelf->scrollPos+4 >= pSelf->renderDesc.size()) return;
-	pSelf->scrollPos++;
-	pSelf->reloadDesc();
+	pSelf->setScroll(pSelf->scrollPos+1);
 
 	pSelf->btn_descUp->setVisible(true);
 	if (pSelf->scrollPos+4 >= pSelf->renderDesc.size())
