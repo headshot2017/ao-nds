@@ -422,18 +422,22 @@ def convertCharacters(source, target, core):
 
         recursiveCharacter(source+"/"+char, target+"/"+char, target+"/"+char, core)
 
-def convertEvidenceImages(source, target):
-    if not os.path.exists(target+"/small"): os.mkdir(target+"/small")
-    if not os.path.exists(target+"/large"): os.mkdir(target+"/large")
+def convertEvidenceSubdir(source, target, subdir):
+    if not os.path.exists(target+"/small/"+subdir): os.mkdir(target+"/small/"+subdir)
+    if not os.path.exists(target+"/large/"+subdir): os.mkdir(target+"/large/"+subdir)
 
-    for f in os.listdir(source):
+    for f in os.listdir(source+"/"+subdir):
+        if subdir and os.path.isdir(source+"/"+subdir+"/"+f):
+            convertEvidenceSubdir(source, target, subdir+"/"+f)
+            continue
+
         try:
-            imgOriginal = Image.open(source+"/"+f).convert("RGBA")
+            imgOriginal = Image.open(source+"/"+subdir+"/"+f).convert("RGBA")
         except:
             continue
 
         no_ext_file = os.path.splitext(f)[0]
-        print(no_ext_file)
+        print(subdir+"/"+no_ext_file)
         imgs = [[imgOriginal.resize((38, 38)).crop((0, 0, 64, 64)), "small"], [imgOriginal.crop((3, 3, 68, 68)), "large"]]
 
         for img, sizeStr in imgs:
@@ -451,11 +455,21 @@ def convertEvidenceImages(source, target):
             # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
             subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8").wait()
 
-            targetFile = target + "/" + sizeStr + "/" + no_ext_file
+            targetFile = target + "/" + sizeStr + "/" + subdir + "/" + no_ext_file
             if os.path.exists(targetFile + ".img.bin"): os.remove(targetFile + ".img.bin")
             if os.path.exists(targetFile + ".pal.bin"): os.remove(targetFile + ".pal.bin")
             os.rename("temp.img.bin", targetFile + ".img.bin")
             os.rename("temp.pal.bin", targetFile + ".pal.bin")
+
+def convertEvidenceImages(source, target):
+    if not os.path.exists(target+"/small"): os.mkdir(target+"/small")
+    if not os.path.exists(target+"/large"): os.mkdir(target+"/large")
+
+    for f in os.listdir(source):
+        if not os.path.isdir(source+"/"+f): continue
+        convertEvidenceSubdir(source, target, f)
+
+    convertEvidenceSubdir(source, target, "")
 
 def convertSound(source, target):
     targetFile = os.path.splitext(target)[0] + ".wav"
