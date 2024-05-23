@@ -101,7 +101,11 @@ void UICourtMusicList::updateInput()
 			btn_sliderHandle->setVisible(true);
 
 			filter = kb_search->getValueUTF8();
-			if (result > 0) updateFilter();
+			if (result > 0)
+			{
+				updateFilter();
+				scrollPos = 0;
+			}
 			reloadScroll(true);
 		}
 		return;
