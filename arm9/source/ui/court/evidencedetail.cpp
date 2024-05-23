@@ -246,6 +246,12 @@ void UICourtEvidenceDetail::reloadPage()
 	separateLines(0, currDesc, 7, false, renderDesc);
 	reloadDesc();
 
+	if (adding)
+	{
+		btn_descUp->setVisible(false);
+		btn_descDown->setVisible(renderDesc.size() > 4);
+	}
+
 	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 11);
 }
 
@@ -365,6 +371,10 @@ void UICourtEvidenceDetail::onDescUp(void* pUserData)
 	if (!pSelf->scrollPos) return;
 	pSelf->scrollPos--;
 	pSelf->reloadDesc();
+
+	pSelf->btn_descDown->setVisible(true);
+	if (!pSelf->scrollPos)
+		pSelf->btn_descUp->setVisible(false);
 }
 
 void UICourtEvidenceDetail::onDescDown(void* pUserData)
@@ -374,6 +384,10 @@ void UICourtEvidenceDetail::onDescDown(void* pUserData)
 	if (pSelf->scrollPos+4 >= pSelf->renderDesc.size()) return;
 	pSelf->scrollPos++;
 	pSelf->reloadDesc();
+
+	pSelf->btn_descUp->setVisible(true);
+	if (pSelf->scrollPos+4 >= pSelf->renderDesc.size())
+		pSelf->btn_descDown->setVisible(false);
 }
 
 void UICourtEvidenceDetail::onPrevPage(void* pUserData)
