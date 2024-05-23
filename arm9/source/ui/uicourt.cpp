@@ -332,7 +332,6 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 
 	std::u16string logMsg = utf8::utf8to16(logName+" played music "+trackname);
 	separateLines(0, logMsg, 7, false, pSelf->icLog);
-	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
 
 	pSelf->court->playMusic("/data/ao-nds/sounds/music/"+trackname);
 }
@@ -384,7 +383,6 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 
 	std::u16string logMsg = utf8::utf8to16(name+": ") + chatmsg;
 	separateLines(0, logMsg, 7, false, pSelf->icLog);
-	while (pSelf->icLog.size() > 100) pSelf->icLog.erase(pSelf->icLog.begin());
 
 
 	std::string lowerCharname = charname;
@@ -447,7 +445,6 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 	// insert to chatlog
 	std::u16string logMsg = utf8::utf8to16(name+": "+chatmsg);
 	separateLines(0, logMsg, 7, false, pSelf->oocLog);
-	while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 
 	if (isServer)
 	{
@@ -473,7 +470,6 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 			pSelf->loggedIn = true;
 			std::u16string logMsg = u"You can now enable Guard Mode in the main menu. This will allow you to receive modcalls.";
 			separateLines(0, logMsg, 7, false, pSelf->oocLog);
-			while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 		}
 		else if (chatmsg.find("no longer a mod") != std::string::npos)
 			pSelf->loggedIn = false;
@@ -704,7 +700,6 @@ void UIScreenCourt::onMessageAUTH(void* pUserData, std::string msg)
 	{
 		std::u16string logMsg = u"You can now enable Guard Mode in the main menu. This will allow you to receive modcalls.";
 		separateLines(0, logMsg, 7, false, pSelf->oocLog);
-		while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 	}
 }
 
@@ -716,7 +711,6 @@ void UIScreenCourt::onMessageZZ(void* pUserData, std::string msg)
 
 	std::u16string modcall = u"[MOD CALL] " + utf8::utf8to16(argumentAt(msg, 1));
 	separateLines(0, modcall, 7, false, pSelf->oocLog);
-	while (pSelf->oocLog.size() > 100) pSelf->oocLog.erase(pSelf->oocLog.begin());
 
 	pSelf->changeScreen(new UICourtMessage(pSelf, modcall));
 }
