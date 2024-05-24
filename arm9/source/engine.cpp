@@ -80,9 +80,10 @@ void Engine::cacheMusic(const std::string& folder, std::string extra)
 	closedir(dir);
 }
 
-void Engine::cacheEvidence(const std::string& folder)
+void Engine::cacheEvidence(const std::string& folder, std::string extra)
 {
-	DIR *dir = opendir(folder.c_str());
+	std::string dirStr = folder + "/" + extra;
+	DIR *dir = opendir(dirStr.c_str());
 	if (!dir) return;
 
 	struct dirent* dent;
@@ -91,9 +92,12 @@ void Engine::cacheEvidence(const std::string& folder)
 		if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, "..") || !strcmp(dent->d_name + strlen(dent->d_name) - 8, ".pal.bin")) continue;
 
 		std::string value = dent->d_name;
-		value = value.substr(0, value.size()-8);
+		std::string valueNoExt = value.substr(0, value.size()-8);
 
-		cachedEvidence.push_back(value);
+		if (dent->d_type == DT_DIR)
+			cacheEvidence(folder, value);
+		else
+			cachedEvidence.push_back({valueNoExt, extra});
 	}
 
 	closedir(dir);

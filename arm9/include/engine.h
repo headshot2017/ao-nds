@@ -15,6 +15,12 @@ struct evidenceInfo
 	std::string image;
 };
 
+struct evidenceCacheInfo
+{
+	std::string name;
+	std::string subdir;
+};
+
 class Engine
 {
 	UIScreen* screen;
@@ -22,7 +28,7 @@ class Engine
 	AOsocket* aosocket;
 	std::string macAddr;
 	std::unordered_set<std::string> cachedMusic;
-	std::vector<std::string> cachedEvidence;
+	std::vector<evidenceCacheInfo> cachedEvidence;
 	std::unordered_map<std::string, std::string> cachedCharBlips;
 	std::vector<evidenceInfo> privateEvidence;
 
@@ -37,7 +43,7 @@ class Engine
 	bool wifiSwitch;
 
 	void cacheMusic(const std::string& folder, std::string extra="");
-	void cacheEvidence(const std::string& folder);
+	void cacheEvidence(const std::string& folder, std::string extra="");
 	void cacheCharBlips(const std::string& folder);
 	void loadPrivateEvidence();
 
@@ -52,7 +58,7 @@ public:
 	const std::u16string& getOOCname() {return defaultOOCname;}
 	const bool showChatlogIniswaps() {return chatlogIniswaps;}
 	const bool showChatlogShownames() {return chatlogShownames;}
-	const std::vector<std::string>& getEvidence() {return cachedEvidence;}
+	const std::vector<evidenceCacheInfo>& getEvidence() {return cachedEvidence;}
 	const std::string getCharBlip(const std::string& charname) {return (cachedCharBlips.count(charname)) ? cachedCharBlips[charname] : "";}
 	std::vector<evidenceInfo>& getPrivateEvidence() {return privateEvidence;}
 	bool isFading() {return fading;}

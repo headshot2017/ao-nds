@@ -108,7 +108,8 @@ void UICourtEvidenceImage::reloadPage()
 		}
 		mp3_fill_buffer();
 
-		btn_evidence[i]->setImage("/data/ao-nds/evidence/small/" + gEngine->getEvidence()[ind], 64, 64, 7+i);
+		const evidenceCacheInfo& info = gEngine->getEvidence()[ind];
+		btn_evidence[i]->setImage("/data/ao-nds/evidence/small/" + info.subdir + "/" + info.name, 64, 64, 7+i);
 		btn_evidence[i]->setVisible(true);
 	}
 
@@ -152,19 +153,21 @@ void UICourtEvidenceImage::onConfirmClicked(void* pUserData)
 	wav_play(pSelf->pCourtUI->sndSelect);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currEviSelected;
+	const evidenceCacheInfo& info = gEngine->getEvidence()[ind];
+
 	if (!pSelf->adding)
 	{
 		if (!pSelf->isPrivate)
-			gEngine->getSocket()->sendData("EE#" + std::to_string(pSelf->editingEvidence) + "#" + utf8::utf16to8(pSelf->currName) + "#" + utf8::utf16to8(pSelf->currDesc) + "#" + gEngine->getEvidence()[ind] + ".png#%");
+			gEngine->getSocket()->sendData("EE#" + std::to_string(pSelf->editingEvidence) + "#" + utf8::utf16to8(pSelf->currName) + "#" + utf8::utf16to8(pSelf->currDesc) + "#" + info.subdir + "/" + info.name + ".png#%");
 		else
 		{
 			gEngine->getPrivateEvidence()[pSelf->editingEvidence].name = pSelf->currName;
 			gEngine->getPrivateEvidence()[pSelf->editingEvidence].description = pSelf->currDesc;
-			gEngine->getPrivateEvidence()[pSelf->editingEvidence].image = gEngine->getEvidence()[ind];
+			gEngine->getPrivateEvidence()[pSelf->editingEvidence].image = info.subdir + "/" + info.name;
 			gEngine->savePrivateEvidence();
 		}
 	}
-	pSelf->pCourtUI->changeScreen(new UICourtEvidenceDetail(pSelf->pCourtUI, pSelf->editingEvidence, pSelf->isPrivate, pSelf->currName, pSelf->currDesc, gEngine->getEvidence()[ind]));
+	pSelf->pCourtUI->changeScreen(new UICourtEvidenceDetail(pSelf->pCourtUI, pSelf->editingEvidence, pSelf->isPrivate, pSelf->currName, pSelf->currDesc, info.subdir + "/" + info.name));
 }
 
 void UICourtEvidenceImage::onEvidenceClicked(void* pUserData)
@@ -179,7 +182,7 @@ void UICourtEvidenceImage::onEvidenceClicked(void* pUserData)
 	wav_play(pSelf->pCourtUI->sndEvTap);
 
 	pSelf->lbl_evidence->setVisible(true);
-	pSelf->lbl_evidence->setText(gEngine->getEvidence()[ind]);
+	pSelf->lbl_evidence->setText(gEngine->getEvidence()[ind].name);
 	pSelf->lbl_evidence->setPos(128, 36+2, true);
 
 	pSelf->sel_btn->selectButton(pSelf->btn_evidence[pData->btnInd], 2);
