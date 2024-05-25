@@ -26,6 +26,8 @@ def askBasePath():
 
 if __name__ == "__main__":
     freeze_support()
+    if os.path.exists("log.txt"):
+        os.remove("log.txt")
 
     if os.name == "nt" and not os.path.exists("ffmpeg.exe"):
         print("Downloading 7zr...")
