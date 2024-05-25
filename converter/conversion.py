@@ -252,7 +252,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
     subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF %s -ftb -fh! -m! -Mh8 -Mw8" % (core, "" if streamFile else "-gzl")).wait()
     if not os.path.exists("temp%d.img.bin" % core):
         print("Failed to convert: %s" % (targetFile))
-        open("log.txt", "a").write("Failed to convert: %s" % (targetFile))
+        open("log.txt", "a").write("Failed to convert: %s\n" % (targetFile))
         return
 
     # move files

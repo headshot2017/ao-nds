@@ -1,0 +1,1 @@
+Failed to convert: converted/data/ao-nds/characters/Andistandhin/breakdown.gifFailed to convert: converted/data/ao-nds/characters/Amara/anim/Amara/mandala-break.gifFailed to convert: converted/data/ao-nds/characters/Amara/anim/Nayna/transform.gif
