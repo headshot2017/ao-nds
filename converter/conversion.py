@@ -16,107 +16,105 @@ def convertBackground(source, target):
         os.remove(target+"/desk_tiles.cfg")
 
     # convert background first
-    for imgfile in ["defenseempty.png", "prosecutorempty.png", "witnessempty.png", "helperstand.png", "prohelperstand.png", "judgestand.png", "jurystand.png", "seancestand.png"]:
-        full_filename = source+"/"+imgfile
-        if not os.path.exists(full_filename):
-            continue
+    for imgfile in ["defenseempty", "prosecutorempty", "witnessempty", "helperstand", "prohelperstand", "judgestand", "jurystand", "seancestand"]:
+        for ext in [".png", ".webp", ".gif", ".apng"]:
+            full_filename = source+"/"+imgfile+ext
+            if not os.path.exists(full_filename):
+                continue
 
-        no_ext_file = os.path.splitext(imgfile)[0]
+            img = Image.open(full_filename).convert("RGB")
 
-        img = Image.open(full_filename).convert("RGB")
+            # if aspect ratio is not 4:3, crop
+            ratioW = 256/192.
+            if math.floor(img.size[0] / img.size[1] * 1000) != 1333:
+                w = ratioW * img.size[1]
+                img = img.crop(((img.size[0]-w)/2, 0, (img.size[0]+w)/2, img.size[1]))
 
-        # if aspect ratio is not 4:3, crop
-        ratioW = 256/192.
-        if math.floor(img.size[0] / img.size[1] * 1000) != 1333:
-            w = ratioW * img.size[1]
-            img = img.crop(((img.size[0]-w)/2, 0, (img.size[0]+w)/2, img.size[1]))
+            if img.size[0] != 256 or img.size[1] != 192:
+                img = img.resize((256, 192), Image.BICUBIC)
 
-        if img.size[0] != 256 or img.size[1] != 192:
-            img = img.resize((256, 192), Image.BICUBIC)
+            img.save("temp.png")
+            img.close()
 
-        img.save("temp.png")
-        img.close()
+            # 8-bit tiles, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
+            subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!").wait()
 
-        # 8-bit tiles, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
-        subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!").wait()
-
-        if os.path.exists(target+"/"+no_ext_file+".img.bin"):
-            os.remove(target+"/"+no_ext_file+".img.bin")
-        if os.path.exists(target+"/"+no_ext_file+".map.bin"):
-            os.remove(target+"/"+no_ext_file+".map.bin")
-        if os.path.exists(target+"/"+no_ext_file+".pal.bin"):
-            os.remove(target+"/"+no_ext_file+".pal.bin")
-        os.rename("temp.img.bin", target+"/"+no_ext_file+".img.bin")
-        os.rename("temp.map.bin", target+"/"+no_ext_file+".map.bin")
-        os.rename("temp.pal.bin", target+"/"+no_ext_file+".pal.bin")
+            if os.path.exists(target+"/"+imgfile+".img.bin"):
+                os.remove(target+"/"+imgfile+".img.bin")
+            if os.path.exists(target+"/"+imgfile+".map.bin"):
+                os.remove(target+"/"+imgfile+".map.bin")
+            if os.path.exists(target+"/"+imgfile+".pal.bin"):
+                os.remove(target+"/"+imgfile+".pal.bin")
+            os.rename("temp.img.bin", target+"/"+imgfile+".img.bin")
+            os.rename("temp.map.bin", target+"/"+imgfile+".map.bin")
+            os.rename("temp.pal.bin", target+"/"+imgfile+".pal.bin")
 
     # then convert desks. we won't bother with helper desks since these are mostly only used for special effects (source: GS4Night background)
-    for imgfile, imgindex in [["defensedesk.png", 0], ["prosecutiondesk.png", 1], ["stand.png", 2], ["judgedesk.png", 3], ["jurydesk.png", 4]]:
-        full_filename = source+"/"+imgfile
-        if not os.path.exists(full_filename):
-            continue
+    for imgfile, imgindex in [["defensedesk", 0], ["prosecutiondesk", 1], ["stand", 2], ["judgedesk", 3], ["jurydesk", 4]]:
+        for ext in [".png", ".webp", ".gif", ".apng"]:
+            full_filename = source+"/"+imgfile+ext
+            if not os.path.exists(full_filename):
+                continue
 
-        no_ext_file = os.path.splitext(imgfile)[0]
+            img = Image.open(full_filename).convert("RGBA")
 
-        img = Image.open(full_filename).convert("RGBA")
+            # if aspect ratio is not 4:3, crop
+            ratioW = 256/192.
+            if math.floor(img.size[0] / img.size[1] * 1000) != 1333:
+                w = ratioW * img.size[1]
+                img = img.crop(((img.size[0]-w)/2, 0, (img.size[0]+w)/2, img.size[1]))
 
-        # if aspect ratio is not 4:3, crop
-        ratioW = 256/192.
-        if math.floor(img.size[0] / img.size[1] * 1000) != 1333:
-            w = ratioW * img.size[1]
-            img = img.crop(((img.size[0]-w)/2, 0, (img.size[0]+w)/2, img.size[1]))
+            if img.size[0] != 256 or img.size[1] != 192:
+                img = img.resize((256, 192), Image.BICUBIC)
 
-        if img.size[0] != 256 or img.size[1] != 192:
-            img = img.resize((256, 192), Image.BICUBIC)
+            pix = img.load()
 
-        pix = img.load()
+            # find top image corner from top to bottom til we hit a visible pixel
+            found = False
+            top = 0
+            for y in range(img.size[1]):
+                for x in range(img.size[0]):
+                    if pix[x, y][3] != 0:
+                        top = y
+                        found = True
+                        break
+                if found: break
 
-        # find top image corner from top to bottom til we hit a visible pixel
-        found = False
-        top = 0
-        for y in range(img.size[1]):
-            for x in range(img.size[0]):
-                if pix[x, y][3] != 0:
-                    top = y
-                    found = True
-                    break
-            if found: break
+            # crop corners
+            img = img.crop((0, top, img.size[0], img.size[1]))
 
-        # crop corners
-        img = img.crop((0, top, img.size[0], img.size[1]))
+            # in the AA games on DS, desks are loaded as sprites.
+            # the image width will be set to a size divisible by 64,
+            # and the height will be set to a size divisible by 32
+            # so that it can be loaded as 64x32 tiles
+            horizontalTiles = int(math.ceil(img.size[0]/64.))
+            verticalTiles = int(math.ceil(img.size[1]/32.))
+            img = img.crop((0, img.size[1]-(verticalTiles*32), horizontalTiles*64, img.size[1]))
 
-        # in the AA games on DS, desks are loaded as sprites.
-        # the image width will be set to a size divisible by 64,
-        # and the height will be set to a size divisible by 32
-        # so that it can be loaded as 64x32 tiles
-        horizontalTiles = int(math.ceil(img.size[0]/64.))
-        verticalTiles = int(math.ceil(img.size[1]/32.))
-        img = img.crop((0, img.size[1]-(verticalTiles*32), horizontalTiles*64, img.size[1]))
+            # set transparency
+            pix = img.load()
+            for y in range(img.size[1]):
+                for x in range(img.size[0]):
+                    if pix[x, y][3] < 224:
+                        pix[x, y] = (255, 0, 255, 255)
+                    else:
+                        pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
 
-        # set transparency
-        pix = img.load()
-        for y in range(img.size[1]):
-            for x in range(img.size[0]):
-                if pix[x, y][3] < 224:
-                    pix[x, y] = (255, 0, 255, 255)
-                else:
-                    pix[x, y] = (pix[x,y][0], pix[x,y][1], pix[x,y][2], 255)
+            img.save("temp.png")
+            img.close()
+            
+            with open(target+"/desk_tiles.cfg", "a") as f:
+                f.write("%s: %d,%d\n" % (imgfile, horizontalTiles, verticalTiles))
 
-        img.save("temp.png")
-        img.close()
-        
-        with open(target+"/desk_tiles.cfg", "a") as f:
-            f.write("%s: %d,%d\n" % (no_ext_file, horizontalTiles, verticalTiles))
-
-        # 8-bit tiles, transparency, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-        subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh4 -Mw8").wait()
-        
-        if os.path.exists(target+"/"+no_ext_file+".img.bin"):
-            os.remove(target+"/"+no_ext_file+".img.bin")
-        if os.path.exists(target+"/"+no_ext_file+".pal.bin"):
-            os.remove(target+"/"+no_ext_file+".pal.bin")
-        os.rename("temp.img.bin", target+"/"+no_ext_file+".img.bin")
-        os.rename("temp.pal.bin", target+"/"+no_ext_file+".pal.bin")
+            # 8-bit tiles, transparency, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
+            subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh4 -Mw8").wait()
+            
+            if os.path.exists(target+"/"+imgfile+".img.bin"):
+                os.remove(target+"/"+imgfile+".img.bin")
+            if os.path.exists(target+"/"+imgfile+".pal.bin"):
+                os.remove(target+"/"+imgfile+".pal.bin")
+            os.rename("temp.img.bin", target+"/"+imgfile+".img.bin")
+            os.rename("temp.pal.bin", target+"/"+imgfile+".pal.bin")
 
 def convertBackgrounds(folder):
     for bg in os.listdir(folder+"/background"):
