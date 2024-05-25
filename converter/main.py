@@ -1,11 +1,9 @@
 import os
 import subprocess
 import shutil
-import multiprocessing
-multiprocessing.freeze_support()
+from multiprocessing import Pool, cpu_count, freeze_support
 
 import requests
-from joblib import Parallel, delayed, cpu_count
 
 import conversion
 
@@ -27,6 +25,8 @@ def askBasePath():
     return folder
 
 if __name__ == "__main__":
+    freeze_support()
+
     if os.name == "nt" and not os.path.exists("ffmpeg.exe"):
         print("Downloading 7zr...")
         a = requests.get("https://www.7-zip.org/a/7zr.exe")
@@ -92,7 +92,12 @@ if __name__ == "__main__":
             for f in os.listdir("converted/data/ao-nds/characters"):
                 shutil.rmtree("converted/data/ao-nds/characters/" + f)
 
-            Parallel(backend='threading', n_jobs=-1)(delayed(conversion.convertCharacters)(folder+"/characters", "converted/data/ao-nds/characters", i) for i in range(cpu_count()))
+            pool = Pool(processes=(cpu_count()))
+            for i in range(cpu_count()):
+                pool.apply_async(conversion.convertCharacters, args=(folder+"/characters", "converted/data/ao-nds/characters", i))
+
+            pool.close()
+            pool.join()
 
             print("\nConverting evidence images...")
             conversion.convertEvidenceImages(folder+"/evidence", "converted/data/ao-nds/evidence")
@@ -154,7 +159,13 @@ if __name__ == "__main__":
             else:
                 for f in os.listdir("converted/data/ao-nds/characters"):
                     shutil.rmtree("converted/data/ao-nds/characters/" + f)
-                Parallel(backend='threading', n_jobs=-1)(delayed(conversion.convertCharacters)(folder+"/characters", "converted/data/ao-nds/characters", i) for i in range(cpu_count()))
+
+                pool = Pool(processes=(cpu_count()))
+                for i in range(cpu_count()):
+                    pool.apply_async(conversion.convertCharacters, args=(folder+"/characters", "converted/data/ao-nds/characters", i))
+
+                pool.close()
+                pool.join()
 
             for i in range(cpu_count()):
                 if os.path.exists("temp%d.png" % i): os.remove("temp%d.png" % i)
