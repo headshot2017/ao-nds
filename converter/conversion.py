@@ -376,18 +376,22 @@ def recursiveCharacter(source, target, ogTarget, core, extra=""):
 
     for emote in os.listdir(source):
         filename = source+"/"+emote
+        #print(filename)
+        
         if os.path.isdir(filename) and emote.lower() != "emotions" and emote.lower() != "custom_objections":
             recursiveCharacter(source+"/"+emote, target+"/"+emote, ogTarget, core, extra+emote+"/")
         elif emote.lower() == "char_icon.png":
             convertCharIcon(filename, target+"/"+emote, core)
-        elif emote.lower().endswith(".apng"):
-            convertEmoteAPNG(filename, target+"/"+emote, ogTarget, core, extra)
-        elif emote.lower().endswith(".webp"):
-            convertEmoteWEBP(filename, target+"/"+emote, ogTarget, core, extra)
-        elif emote.lower().endswith(".png"):
-            convertEmotePNG(filename, target+"/"+emote, ogTarget, core, extra)
-        elif emote.lower().endswith(".gif"):
-            convertEmoteGIF(filename, target+"/"+emote, ogTarget, core, extra)
+        elif not os.path.isdir(filename):
+            header = open(filename, "rb").read(16)
+            if header[:3] == b"GIF":
+                convertEmoteGIF(filename, target+"/"+emote, ogTarget, core, extra)
+            elif emote.lower().endswith(".apng"):
+                convertEmoteAPNG(filename, target+"/"+emote, ogTarget, core, extra)
+            elif header[8:12] == b"WEBP":
+                convertEmoteWEBP(filename, target+"/"+emote, ogTarget, core, extra)
+            elif emote.lower().endswith(".png"):
+                convertEmotePNG(filename, target+"/"+emote, ogTarget, core, extra)
 
     if not extra:
         if os.path.exists(source+"/emotions"):
