@@ -421,6 +421,8 @@ def convertCharacters(source, target, core):
 
         recursiveCharacter(source+"/"+char, target+"/"+char, target+"/"+char, core)
 
+    print("Core %d finished" % (core+1))
+
 def convertEvidenceSubdir(source, target, subdir):
     if not os.path.exists(target+"/small/"+subdir): os.mkdir(target+"/small/"+subdir)
     if not os.path.exists(target+"/large/"+subdir): os.mkdir(target+"/large/"+subdir)
