@@ -9,3 +9,4 @@ build
 *.zip
 *.7z
 *.png
+converter/log.txt
