@@ -375,11 +375,11 @@ def recursiveCharacter(source, target, ogTarget, core, extra=""):
         open(target+"/char.ini", "w").write(open(source+"/char.ini").read())
 
     for emote in os.listdir(source):
-        filename = source+"/"+emote
+        filename = source+"/"+emote.lower()
         #print(filename)
         
         if os.path.isdir(filename) and emote.lower() != "emotions" and emote.lower() != "custom_objections":
-            recursiveCharacter(source+"/"+emote, target+"/"+emote, ogTarget, core, extra+emote+"/")
+            recursiveCharacter(source+"/"+emote.lower(), target+"/"+emote.lower(), ogTarget, core, extra+emote.lower()+"/")
         elif emote.lower() == "char_icon.png":
             convertCharIcon(filename, target+"/"+emote, core)
         elif not os.path.isdir(filename):
