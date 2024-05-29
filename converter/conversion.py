@@ -565,6 +565,8 @@ def convertShout(source, target, core=0):
         print("Couldn't convert shout %s" % source)
         return
 
+    if img.size[0]//32 != 8 and img.size[1]//32 != 6:
+        img = img.resize((256, 192), Image.BICUBIC)
     center = [(img.size[0]-256)/2, (img.size[1]-192)/2]
     img = img.crop((center[0], center[1], img.size[0]-center[0], img.size[1]-center[1]))
 
