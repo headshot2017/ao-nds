@@ -46,7 +46,7 @@ CFLAGS		:= -g -Wall -O1 \
 		-march=armv5te -mtune=arm946e-s -fomit-frame-pointer\
 		-ffast-math \
 		$(ARCH) \
-		$(INCLUDE) -DARM9
+		$(INCLUDE) -DARM9 -DLZ77_STREAM
 CXXFLAGS	:=	$(CFLAGS)
 ASFLAGS		:=	-g $(ARCH) -march=armv5te -mtune=arm9tdmi
 LDFLAGS		=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)

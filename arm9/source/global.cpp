@@ -215,28 +215,10 @@ u32 bmpIndexTo256SpriteIndex(int x, int y, int w, int h, SpriteSize size, bool* 
 
 
 
-FILE* streamFile = 0;
-u8* streamData = 0;
-u32 streamPos = 0;
-u32 streamSize = 4096;
-
 static int getHeader(uint8 *source, uint16 *dest, uint32 arg) {
 	return *(uint32*)source;
 }
-
-static uint8 readByteFile(uint8 *source) {
-	/*source -= streamPos;
-	u8 thisByte = *source;
-	if ((u32)(source-streamData) >= streamSize-1)
-	{
-		streamPos += streamSize;
-		fread(streamData, streamSize, 1, streamFile);
-	}
-	return thisByte;*/
-	mp3_fill_buffer();
-	return *source;
-}
-
+static uint8 readByteFile(uint8 *source);
 TDecompressionStream decompressStreamCBs =
 {
 	getHeader,
@@ -244,16 +226,46 @@ TDecompressionStream decompressStreamCBs =
 	readByteFile
 };
 
+#ifdef LZ77_STREAM
+static FILE* streamFile = 0;
+static u8* streamData = 0;
+static u32 streamPos = 0;
+static u32 streamSize = 4096;
+
+static uint8 readByteFile(uint8 *source) {
+	source -= streamPos;
+	u8 thisByte = *source;
+	if ((u32)(source-streamData) >= streamSize-1)
+	{
+		streamPos += streamSize;
+		fread(streamData, streamSize, 1, streamFile);
+	}
+	mp3_fill_buffer();
+	return thisByte;
+}
+
 void readAndDecompressLZ77Stream(const char* filename, u8* dest)
 {
-	//streamPos = 0;
-	//streamFile = fopen(filename, "rb");
-	//streamData = new u8[streamSize];
-	streamData = readFile(filename);
+	streamPos = 0;
+	streamFile = fopen(filename, "rb");
+	streamData = new u8[streamSize];
 	fread(streamData, streamSize, 1, streamFile);
 
 	swiDecompressLZSSVram(streamData, dest, 0, &decompressStreamCBs);
 
-	//fclose(streamFile);
+	fclose(streamFile);
 	delete[] streamData;
 }
+#else
+static uint8 readByteFile(uint8 *source) {
+	mp3_fill_buffer();
+	return *source;
+}
+
+void readAndDecompressLZ77Stream(const char* filename, u8* dest)
+{
+	u8* streamData = readFile(filename);
+	swiDecompressLZSSVram(streamData, dest, 0, &decompressStreamCBs);
+	delete[] streamData;
+}
+#endif

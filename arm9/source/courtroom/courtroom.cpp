@@ -304,7 +304,7 @@ void Courtroom::onChatboxFinished(void* pUserData)
 		std::string prefix;
 		if (!isPng) prefix = "(a)";
 
-		pSelf->character[0]->unloadSound();
+		//pSelf->character[0]->unloadSound();
 		pSelf->character[0]->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
 		if (!isPng)
 		{
@@ -332,7 +332,7 @@ void Courtroom::onAnimFinished(void* pUserData)
 	std::string prefix;
 	if (!isPng) prefix = ((useIdleAnim) ? "(a)" : "(b)");
 
-	pSelf->character[0]->unloadSound();
+	//pSelf->character[0]->unloadSound();
 	pSelf->character[0]->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
 	if (!isPng)
 	{
