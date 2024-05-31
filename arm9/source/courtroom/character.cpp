@@ -286,9 +286,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 void Character::setSound(const std::string& filename, int delay)
 {
 	unloadSound();
-	debugLabelPressA("load sfx");
 	sfx = wav_load_handle(filename.c_str());
-	debugLabelPressA("loaded sfx");
 	sfxPlayed = false;
 	sfxTicks = 0;
 	sfxDelay = delay * TIME_MOD;
@@ -378,7 +376,6 @@ void Character::unloadSound()
 {
 	if (sfx)
 	{
-		debugLabelPressA("free sfx");
 		wav_free_handle(sfx);
 		sfx = 0;
 	}
