@@ -195,7 +195,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	readFrameDurations(animInfos.get(relativeFile + "_durations"), frameInfo.frameDurations);
 	readFrameIndexes(animInfos.get(relativeFile + "_indexes"), frameInfo.frameIndexes);
 	frameInfo.frameCount = frameInfo.frameIndexes.size();
-	u32 gfxCount = std::stoi(animInfos.get(relativeFile + "_frameGfxCount"));
+	u32 gfxCount = std::stoi(animInfos.get(relativeFile + "_framegfxcount"));
 
 	if (frameInfo.frameCount == 1 && !frameInfo.frameDurations[0])
 		frameInfo.frameDurations[0] = 100;

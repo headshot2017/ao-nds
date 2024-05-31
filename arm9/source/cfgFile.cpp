@@ -47,6 +47,8 @@ bool cfgFile::load(const std::string& filename)
         std::string key = line.substr(0, delimiterPos);
         std::string value = line.substr(delimiterPos + 2);
         while (value.at(value.size()-1) == '\r' || value.at(value.size()-1) == '\n') value.erase(value.size()-1);
+
+        std::transform(key.begin(), key.end(), key.begin(), [](char c){return std::tolower(c);});
         keys[key] = value;
     }
 
