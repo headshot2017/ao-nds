@@ -529,16 +529,21 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 		{
 			std::string I = std::to_string(i+1);
 
-			std::string name = argumentAt(ini["emotions"][I], 0);
 			std::string preanim = argumentAt(ini["emotions"][I], 1);
 			std::string anim = argumentAt(ini["emotions"][I], 2);
-			int emoteModifier = std::stoi(argumentAt(ini["emotions"][I], 3));
+			std::string emoteModStr = argumentAt(ini["emotions"][I], 3);
+			int emoteModifier = (!emoteModStr.empty()) ? std::stoi(emoteModStr) : 0;
 			std::string deskModStr = argumentAt(ini["emotions"][I], 4);
-			int deskMod = std::stoi(deskModStr.empty() ? "1" : "0");
+			int deskMod = (deskModStr.empty()) ? 1 : 0;
 
 			std::string sound = (ini["soundn"].has(I)) ? ini["soundn"][I] : "1";
 
-			int delay = std::stoi( (ini["soundt"].has(I)) ? ini["soundt"][I] : "0" );
+			int delay = 0;
+			if (ini["soundt"].has(I))
+			{
+				std::string delayStr = ini["soundT"][I];
+				delay = (!delayStr.empty()) ? std::stoi(delayStr) : 0;
+			}
 
 			// set up frameSFX, frameshake, frameflash
 			/// franziska-damage|1=sfx-stab^(b)franziska-mad^(a)franziska-mad|12=sfx-deskslam|16=sfx-deskslam|4=sfx-deskslam^
@@ -563,7 +568,7 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 				}
 			}
 
-			pSelf->charEmotes.push_back({name, preanim, anim, frameStrings[0], frameStrings[1], frameStrings[2], emoteModifier, deskMod, sound, delay});
+			pSelf->charEmotes.push_back({preanim, anim, frameStrings[0], frameStrings[1], frameStrings[2], emoteModifier, deskMod, sound, delay});
 		}
 	}
 }

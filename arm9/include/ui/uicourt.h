@@ -40,7 +40,6 @@ struct areaInfo
 
 struct emoteInfo
 {
-	std::string name;
 	std::string preanim;
 	std::string anim;
 	std::string frameSFX;
