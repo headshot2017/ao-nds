@@ -125,9 +125,7 @@ void Courtroom::handleChat()
 	character[0]->setOnAnimFinishedCallback(onAnimFinished, this);
 
 	character[1]->unload();
-
-	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
-		character[0]->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
+	character[0]->unloadSound();
 
 	if (currIC.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
 	{
@@ -185,6 +183,9 @@ void Courtroom::handleChat()
 		if (!currIC.frameShake.empty()) character[0]->setFrameShake(argumentAt(currIC.frameShake, 0, '^'));
 		if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, 0, '^'));
 	}
+
+	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
+		character[0]->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
 
 	// set background side
 	if (currIC.emoteMod == 5)

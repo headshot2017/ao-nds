@@ -99,6 +99,7 @@ public:
 	void setFrameShake(const std::string& data);
 	void setVisible(bool on);
 	void unload();
+	void unloadSound();
 
 	void setOnAnimFinishedCallback(voidCallback newCB, void* userdata) {onAnimFinished = newCB; pUserData = userdata;}
 
