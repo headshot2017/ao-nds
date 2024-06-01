@@ -52,6 +52,12 @@ struct emoteInfo
 	int delay;
 };
 
+struct shoutInfo
+{
+	std::string filename;
+	std::string displayname;
+};
+
 class UIScreenCourt;
 class UISubScreen
 {
@@ -89,6 +95,7 @@ class UIScreenCourt : public UIScreen
 
 	int currChar;
 	std::vector<emoteInfo> charEmotes;
+	std::vector<shoutInfo> charShouts;
 
 	int sendTicks;
 	std::deque<std::string> icSendQueue;
@@ -119,6 +126,7 @@ public:
 	int getCurrCharID() {return currChar;}
 	charInfo& getCurrChar() {return charList[currChar];}
 	const std::vector<emoteInfo>& getCharEmotes() {return charEmotes;}
+	const std::vector<shoutInfo>& getCharShouts() {return charShouts;}
 	bool isMod() {return loggedIn;}
 
 	static void onMessageID(void* pUserData, std::string msg);

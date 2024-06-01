@@ -56,6 +56,7 @@ UICourtIC::~UICourtIC()
 	delete spr_arrowRight;
 	delete lbl_showname;
 	delete lbl_color;
+	delete lbl_shout;
 	delete kb_input;
 
 	gEngine->getSocket()->removeMessageCallback("PV", cbPV);
@@ -119,12 +120,15 @@ void UICourtIC::init()
 
 	lbl_showname = new UILabel(&oamSub, spr_arrowRight->nextOamInd(), 2, 1, RGB15(31,31,31), 14, 0);
 	lbl_color = new UILabel(&oamSub, lbl_showname->nextOamInd(), 2, 1, RGB15(31,31,31), 15, 0);
+	lbl_shout = new UILabel(&oamSub, lbl_color->nextOamInd(), 6, 1, RGB15(31,31,31), 14, 0);
 	lbl_showname->setPos(77, 163);
 	lbl_showname->setText((pCourtUI->showname.empty()) ? utf8::utf8to16(pCourtUI->getCurrChar().name) : pCourtUI->showname);
 	lbl_color->setPos(84, 178);
 	lbl_color->setText("Message");
+	lbl_shout->setPos(btn_shouts->getX()+4, btn_shouts->getY()+btn_shouts->getH()-1, false);
+	lbl_shout->setVisible(false);
 
-	kb_input = new AOkeyboard(4, lbl_color->nextOamInd(), 14);
+	kb_input = new AOkeyboard(4, lbl_shout->nextOamInd(), 14);
 	dmaCopy(bg_icPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 	isWritingChat = false;
@@ -229,6 +233,12 @@ void UICourtIC::updateInput()
 					else
 						emoteMod = (emote.emoteModifier <= 1) ? pCourtUI->icControls.preanim : emote.emoteModifier;
 
+					bool shoutIsCustom = (currShout >= 4);
+					int shoutInd = (shoutIsCustom) ? 4 : currShout;
+					std::string shoutStr = std::to_string(shoutInd);
+					if (shoutIsCustom && !pCourtUI->getCharShouts()[currShout-4].filename.empty())
+						shoutStr += "&" + pCourtUI->getCharShouts()[currShout-4].filename;
+
 					std::string chatmsg = kb_input->getValueUTF8();
 					std::string showname = utf8::utf16to8(pCourtUI->showname);
 					AOencode(chatmsg);
@@ -244,7 +254,7 @@ void UICourtIC::updateInput()
 						std::to_string(emoteMod) + "#" +
 						std::to_string(pCourtUI->getCurrCharID()) + "#" +
 						std::to_string(emote.delay) + "#" +
-						std::to_string(currShout) + "#" +
+						shoutStr + "#" +
 						std::to_string(pCourtUI->icControls.evidence + 1) + "#" +
 						std::to_string(pCourtUI->icControls.flip) + "#" +
 						std::to_string(pCourtUI->icControls.flash) + "#" +
@@ -296,6 +306,7 @@ void UICourtIC::updateInput()
 			btn_sideSelect->setVisible(true);
 			btn_tools->setVisible(pCourtUI->icControls.side == 5);
 			lbl_color->setVisible(true);
+			lbl_shout->setVisible(currShout >= 4);
 			for (int i=0; i<2; i++) spr_bars[i]->setVisible(true);
 			reloadPage();
 
@@ -453,6 +464,7 @@ void UICourtIC::hideEverything()
 	spr_arrowRight->setVisible(false);
 	lbl_showname->setVisible(false);
 	lbl_color->setVisible(false);
+	lbl_shout->setVisible(false);
 }
 
 void UICourtIC::onBackClicked(void* pUserData)
@@ -476,9 +488,14 @@ void UICourtIC::onShoutsToggled(void* pUserData)
 	UICourtIC* pSelf = (UICourtIC*)pUserData;
 	wav_play(pSelf->pCourtUI->sndSelect);
 
-	pSelf->currShout = (pSelf->currShout+1) % 5;
+	pSelf->currShout = (pSelf->currShout+1) % (4 + pSelf->pCourtUI->getCharShouts().size());
 
-	pSelf->btn_shouts->setFrame(2 + pSelf->currShout);
+	bool isCustom = (pSelf->currShout >= 4);
+	int shoutFrame = (isCustom) ? 4 : pSelf->currShout;
+
+	pSelf->btn_shouts->setFrame(2 + shoutFrame);
+	pSelf->lbl_shout->setVisible(isCustom);
+	if (isCustom) pSelf->lbl_shout->setText(pSelf->pCourtUI->getCharShouts()[pSelf->currShout-4].displayname);
 }
 
 void UICourtIC::onPairClicked(void* pUserData)

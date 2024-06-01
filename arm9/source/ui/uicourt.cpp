@@ -507,6 +507,8 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 
 	pSelf->currChar = std::stoi(argumentAt(msg, 3));
 	pSelf->charEmotes.clear();
+	pSelf->charShouts.clear();
+
 	for (int i=0; i<6; i++)
 	{
 		if (pSelf->getCurrChar().side == indToSide[i])
@@ -523,6 +525,7 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 
 	if (file.read(ini))
 	{
+		// load emotes
 		u32 total = std::stoi(ini["emotions"]["number"]);
 
 		for (u32 i=0; i<total; i++)
@@ -569,6 +572,20 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 			}
 
 			pSelf->charEmotes.push_back({preanim, anim, frameStrings[0], frameStrings[1], frameStrings[2], emoteModifier, deskMod, sound, delay});
+		}
+
+		// load custom objections
+		if (ini.has("shouts"))
+		{
+			for (auto const& shoutKey : ini["shouts"])
+			{
+				std::string filename = argumentAt(shoutKey.first, 0, '_');
+				if (filename == "custom") filename.clear();
+				std::string type = argumentAt(shoutKey.first, 1, '_');
+				if (type != "name") continue;
+
+				pSelf->charShouts.push_back({filename, shoutKey.second});
+			}
 		}
 	}
 }
