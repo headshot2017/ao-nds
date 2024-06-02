@@ -186,6 +186,14 @@ void UICourtOOC::reloadScroll(bool all)
 	if (!all && !diff)
 	{
 		setSliderHandle();
+		if (pCourtUI->getOOCLog().size() <= 12)
+		{
+			for (u32 i=0; i<pCourtUI->getOOCLog().size(); i++)
+			{
+				lbl_log->setTextOnLine(pCourtUI->getOOCLog()[i]+u"\n", i);
+				mp3_fill_buffer();
+			}
+		}
 		return;
 	}
 

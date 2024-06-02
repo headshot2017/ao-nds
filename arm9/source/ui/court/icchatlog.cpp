@@ -115,6 +115,14 @@ void UICourtICChatLog::reloadScroll(bool all)
 	if (!all && !diff)
 	{
 		setSliderHandle();
+		if (pCourtUI->getICLog().size() <= 10)
+		{
+			for (u32 i=0; i<pCourtUI->getICLog().size(); i++)
+			{
+				lbl_log->setTextOnLine(pCourtUI->getICLog()[i]+u"\n", i);
+				mp3_fill_buffer();
+			}
+		}
 		return;
 	}
 
