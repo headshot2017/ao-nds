@@ -421,12 +421,9 @@ void UICourtIC::reloadPage()
 		mp3_fill_buffer();
 
 		u32 ind = currPage*4 + i;
-
 		std::string buttonFile = "/data/ao-nds/characters/" + pCourtUI->getCurrChar().name + "/emotions/button" + std::to_string(ind+1) + "_off";
-		bool exists = fileExists(buttonFile+".img.bin");
-		mp3_fill_buffer();
 
-		btn_emote[i]->setImage((exists) ? buttonFile : "", 64, 64, 7+i);
+		btn_emote[i]->setImage(buttonFile, 64, 64, 7+i);
 		btn_emote[i]->setVisible(true);
 		btn_emote[i]->unloadRAM(false);
 
