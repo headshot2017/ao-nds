@@ -308,7 +308,16 @@ void UICourtIC::updateInput()
 			lbl_color->setVisible(true);
 			lbl_shout->setVisible(currShout >= 4);
 			for (int i=0; i<2; i++) spr_bars[i]->setVisible(true);
-			reloadPage();
+			for (u32 i=0; i<4; i++)
+			{
+				u32 ind = currPage*4 + i;
+				btn_emote[i]->setVisible(ind < pCourtUI->getCharEmotes().size());
+			}
+			u32 maxPages = (u32)ceil(pCourtUI->getCharEmotes().size()/4.f);
+			btn_prevPage->setVisible(currPage > 0);
+			spr_arrowLeft->setVisible(currPage > 0);
+			btn_nextPage->setVisible(currPage+1 < maxPages);
+			spr_arrowRight->setVisible(currPage+1 < maxPages);
 
 			lbl_showname->setText((pCourtUI->showname.empty()) ? utf8::utf8to16(pCourtUI->getCurrChar().name) : pCourtUI->showname);
 		}
