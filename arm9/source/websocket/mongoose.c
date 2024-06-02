@@ -4502,6 +4502,7 @@ struct mg_connection *mg_sntp_connect(struct mg_mgr *mgr, const char *url,
 #if MG_ENABLE_SOCKET
 
 #ifndef closesocket
+#include <unistd.h>
 #define closesocket(x) close(x)
 #endif
 
