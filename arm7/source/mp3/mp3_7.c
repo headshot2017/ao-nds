@@ -130,7 +130,7 @@ int mp3_frame() {
         mp3_readPtr += offset;
         mp3_bytesleft -= offset;
 
-        err = MP3Decode(hMP3Decoder, (u8 **)&mp3_readPtr, (s32 *)&mp3_bytesleft, (s16*)outbuf, 0);
+        err = MP3Decode(hMP3Decoder, (u8 **)&mp3_readPtr, &mp3_bytesleft, (s16*)outbuf, 0);
         if (err) {
                 /* error occurred */
                 switch (err) {
