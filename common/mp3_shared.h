@@ -55,7 +55,7 @@ typedef struct {
 
 struct _wav_handle
 {
-	u32* data;
+	s16* data;
 	u32 size;
 	u32 samprate;
 };

@@ -267,7 +267,7 @@ wav_handle* wav_load_handle(const char *filename)
 		return 0;
 	}
 
-	u32* pSampleData = new u32[(u32)wavfp.totalPCMFrameCount * wavfp.channels];
+	s16* pSampleData = new s16[(u32)wavfp.totalPCMFrameCount * wavfp.channels];
 	if (pSampleData == 0)
 	{
 		drwav_uninit(&wavfp);
@@ -283,7 +283,7 @@ wav_handle* wav_load_handle(const char *filename)
 
 	if (wavfp.bitsPerSample == 8) // 8 bit
 	{
-		u32* _8bitdata = new u32[(u32)wavfp.totalPCMFrameCount * wavfp.channels];
+		s16* _8bitdata = new s16[(u32)wavfp.totalPCMFrameCount * wavfp.channels];
 		drwav_u8_to_s16((drwav_int16*)_8bitdata, (drwav_uint8*)pSampleData, wavfp.totalPCMFrameCount);
 		delete[] pSampleData;
 		pSampleData = _8bitdata;
