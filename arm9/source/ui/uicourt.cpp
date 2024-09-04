@@ -110,6 +110,8 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("BD", onMessageBD, this);
 	sock->addMessageCallback("AUTH", onMessageAUTH, this);
 	sock->addMessageCallback("ZZ", onMessageZZ, this);
+	sock->addMessageCallback("PR", onMessagePR, this);
+	sock->addMessageCallback("PU", onMessagePU, this);
 
 	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%";
 	gEngine->getSocket()->sendData(hdid);
@@ -621,7 +623,7 @@ void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)
 		std::string value = argumentAt(msg, 2+i);
 		if (!value.empty() && value.at(0) == '%') break;
 
-		switch(type)
+		switch (type)
 		{
 			case 0:
 				pSelf->areaList[i].players = std::stoi(value);
@@ -735,4 +737,55 @@ void UIScreenCourt::onMessageZZ(void* pUserData, std::string msg)
 	separateLines(0, modcall, 7, false, pSelf->oocLog);
 
 	pSelf->changeScreen(new UICourtMessage(pSelf, modcall));
+}
+
+void UIScreenCourt::onMessagePR(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	int id = std::stoi(argumentAt(msg, 1));
+	int action = std::stoi(argumentAt(msg, 2));
+
+	switch (action)
+	{
+		case 0: // Add
+			pSelf->playerList[id] = {};
+			pSelf->playerList[id].area = -1;
+			break;
+
+		case 1: // Remove
+			if (pSelf->playerList.count(id))
+				pSelf->playerList.erase(id);
+			break;
+	}
+}
+
+void UIScreenCourt::onMessagePU(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	int id = std::stoi(argumentAt(msg, 1));
+	int dataType = std::stoi(argumentAt(msg, 2));
+	std::string data = argumentAt(msg, 3);
+
+	if (!pSelf->playerList.count(id)) return;
+
+	switch (dataType)
+	{
+		case 0:
+			pSelf->playerList[id].oocName = utf8::utf8to16(data);
+			break;
+
+		case 1:
+			pSelf->playerList[id].character = data;
+			break;
+
+		case 2:
+			pSelf->playerList[id].showname = utf8::utf8to16(data);
+			break;
+
+		case 3:
+			pSelf->playerList[id].area = std::stoi(data);
+			break;
+	}
 }

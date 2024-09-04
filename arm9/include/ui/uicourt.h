@@ -58,6 +58,14 @@ struct shoutInfo
 	std::string displayname;
 };
 
+struct playerInfo
+{
+	std::u16string oocName;
+	std::string character;
+	std::u16string showname;
+	int area;
+};
+
 class UIScreenCourt;
 class UISubScreen
 {
@@ -89,6 +97,7 @@ class UIScreenCourt : public UIScreen
 	std::vector<musicInfo> musicList;
 	std::vector<areaInfo> areaList;
 	std::vector<evidenceInfo> evidenceList;
+	std::unordered_map<int, playerInfo> playerList;
 
 	std::vector<std::u16string> icLog;
 	std::vector<std::u16string> oocLog;
@@ -121,6 +130,8 @@ public:
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	std::vector<evidenceInfo>& getEvidenceList(bool priv) {return (priv) ? gEngine->getPrivateEvidence() : evidenceList;}
+	const std::unordered_map<int, playerInfo>& getPlayerList() {return playerList;}
+
 	const std::vector<std::u16string>& getICLog() {return icLog;}
 	const std::vector<std::u16string>& getOOCLog() {return oocLog;}
 	int getCurrCharID() {return currChar;}
@@ -150,6 +161,8 @@ public:
 	static void onMessageBD(void* pUserData, std::string msg);
 	static void onMessageAUTH(void* pUserData, std::string msg);
 	static void onMessageZZ(void* pUserData, std::string msg);
+	static void onMessagePR(void* pUserData, std::string msg);
+	static void onMessagePU(void* pUserData, std::string msg);
 
 	wav_handle* sndSelect;
 	wav_handle* sndCancel;
