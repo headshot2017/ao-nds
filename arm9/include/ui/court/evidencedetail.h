@@ -23,6 +23,7 @@ class UICourtEvidenceDetail : public UISubScreen
 	UIButton* btn_nextPage;
 
 	UILabel* lbl_name;
+	UILabel* lbl_imageName;
 	UILabel* lbl_desc;
 
 	UIButton* spr_evidence;

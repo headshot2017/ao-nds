@@ -23,6 +23,7 @@ UICourtEvidenceDetail::~UICourtEvidenceDetail()
 	delete btn_prevPage;
 	delete btn_nextPage;
 	delete lbl_name;
+	delete lbl_imageName;
 	delete lbl_desc;
 	delete spr_evidence;
 	delete kb_input;
@@ -48,13 +49,14 @@ void UICourtEvidenceDetail::init()
 	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_medium", btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 256-16, 40, 16, 63, 16, 32, 8);
 
 	lbl_name = new UILabel(&oamSub, btn_nextPage->nextOamInd(), 4, 1, RGB15(31, 16, 0), 9, 0);
-	lbl_desc = new UILabel(&oamSub, lbl_name->nextOamInd(), 7, 4, RGB15(31,31,31), 10, 0);
+	lbl_imageName = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 2, RGB15(4, 4, 4), 10, 0);
+	lbl_desc = new UILabel(&oamSub, lbl_imageName->nextOamInd(), 7, 4, RGB15(31,31,31), 11, 0);
 	lbl_desc->setLineOffset(11);
 	lbl_desc->setPos(10, 113);
 
-	spr_evidence = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 21, 40, 68, 68, 64, 64, 11);
+	spr_evidence = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 21, 40, 68, 68, 64, 64, 12);
 
-	kb_input = new AOkeyboard(4, spr_evidence->nextOamInd(), 12);
+	kb_input = new AOkeyboard(4, spr_evidence->nextOamInd(), 13);
 	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 
@@ -189,6 +191,7 @@ void UICourtEvidenceDetail::hideEverything()
 	btn_prevPage->setVisible(false);
 	btn_nextPage->setVisible(false);
 	lbl_name->setVisible(false);
+	lbl_imageName->setVisible(false);
 	lbl_desc->setVisible(false);
 	spr_evidence->setVisible(false);
 }
@@ -201,6 +204,7 @@ void UICourtEvidenceDetail::showEverything()
 	btn_descUp->setVisible(true);
 	btn_descDown->setVisible(true);
 	lbl_name->setVisible(true);
+	lbl_imageName->setVisible(true);
 	lbl_desc->setVisible(true);
 	spr_evidence->setVisible(true);
 
@@ -240,6 +244,8 @@ void UICourtEvidenceDetail::reloadPage()
 
 	lbl_name->setText(currName);
 	lbl_name->setPos(163, 41, true);
+	lbl_imageName->setText(currImage);
+	lbl_imageName->setPos(163, 57, true);
 
 	scrollPos = 0;
 	scrollPosOld = 0;
@@ -253,7 +259,7 @@ void UICourtEvidenceDetail::reloadPage()
 		btn_descDown->setVisible(renderDesc.size() > 4);
 	}
 
-	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 11);
+	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 12);
 }
 
 void UICourtEvidenceDetail::setScroll(u32 i)
