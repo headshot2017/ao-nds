@@ -8,5 +8,4 @@ build
 *.pal.bin
 *.zip
 *.7z
-*.png
 converter/log.txt
