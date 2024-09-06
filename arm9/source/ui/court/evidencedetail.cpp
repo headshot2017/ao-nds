@@ -10,11 +10,13 @@
 #include "fonts.h"
 #include "ui/court/courtrecord.h"
 #include "ui/court/evidenceimage.h"
+#include "ui/court/icchatlog.h"
 
 UICourtEvidenceDetail::~UICourtEvidenceDetail()
 {
 	delete btn_back;
 	delete btn_privatePublic;
+	delete btn_profilesEvidence;
 	delete btn_topButton;
 	delete btn_delete;
 	delete btn_transfer;
@@ -39,24 +41,25 @@ void UICourtEvidenceDetail::init()
 	loadBg("/data/ao-nds/ui/bg_evidenceDetails");
 
 	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_privatePublic = new UIButton(&oamSub, "/data/ao-nds/ui/spr_privatePublic", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
-	btn_topButton = new UIButton(&oamSub, (adding ? "/data/ao-nds/ui/spr_addTop" : "/data/ao-nds/ui/spr_present"), btn_privatePublic->nextOamInd(), 3, 1, SpriteSize_32x64, 86, 0, 85, 33, 32, 64, 2);
-	btn_delete = new UIButton(&oamSub, "/data/ao-nds/ui/spr_deleteEvidence", btn_topButton->nextOamInd(), 1, 1, SpriteSize_32x32, 91, 84, 20, 20, 32, 32, 3);
-	btn_transfer = new UIButton(&oamSub, "/data/ao-nds/ui/spr_transferEvidence", btn_delete->nextOamInd(), 1, 1, SpriteSize_32x32, 215, 84, 20, 20, 32, 32, 4);
-	btn_descUp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollUp", btn_transfer->nextOamInd(), 1, 1, SpriteSize_16x32, 233, 115, 14, 19, 16, 32, 5);
-	btn_descDown = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollDown", btn_descUp->nextOamInd(), 1, 1, SpriteSize_16x32, 233, 139, 14, 19, 16, 32, 6);
-	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_medium", btn_descDown->nextOamInd(), 1, 2, SpriteSize_16x32, 0, 40, 16, 63, 16, 32, 7);
-	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_medium", btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 256-16, 40, 16, 63, 16, 32, 8);
+	btn_privatePublic = new UIButton(&oamSub, "/data/ao-nds/ui/spr_privatePublic2", btn_back->nextOamInd(), 2, 1, SpriteSize_32x16, 128-(64/2), btn_back->getY()-2, 64, 15, 32, 16, 1);
+	btn_profilesEvidence = new UIButton(&oamSub, "/data/ao-nds/ui/spr_profilesEvidence", btn_privatePublic->nextOamInd(), 1, 1, SpriteSize_64x32, 256-55, 0, 55, 31, 64, 32, 2);
+	btn_topButton = new UIButton(&oamSub, (adding ? "/data/ao-nds/ui/spr_addTop" : "/data/ao-nds/ui/spr_present"), btn_profilesEvidence->nextOamInd(), 3, 1, SpriteSize_32x64, 86, 0, 85, 33, 32, 64, 3);
+	btn_delete = new UIButton(&oamSub, "/data/ao-nds/ui/spr_deleteEvidence", btn_topButton->nextOamInd(), 1, 1, SpriteSize_32x32, 91, 84, 20, 20, 32, 32, 4);
+	btn_transfer = new UIButton(&oamSub, "/data/ao-nds/ui/spr_transferEvidence", btn_delete->nextOamInd(), 1, 1, SpriteSize_32x32, 215, 84, 20, 20, 32, 32, 5);
+	btn_descUp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollUp", btn_transfer->nextOamInd(), 1, 1, SpriteSize_16x32, 233, 115, 14, 19, 16, 32, 6);
+	btn_descDown = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollDown", btn_descUp->nextOamInd(), 1, 1, SpriteSize_16x32, 233, 139, 14, 19, 16, 32, 7);
+	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_medium", btn_descDown->nextOamInd(), 1, 2, SpriteSize_16x32, 0, 40, 16, 63, 16, 32, 8);
+	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_medium", btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 256-16, 40, 16, 63, 16, 32, 9);
 
-	lbl_name = new UILabel(&oamSub, btn_nextPage->nextOamInd(), 4, 1, RGB15(31, 16, 0), 9, 0);
-	lbl_imageName = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 2, RGB15(4, 4, 4), 10, 0);
-	lbl_desc = new UILabel(&oamSub, lbl_imageName->nextOamInd(), 7, 4, RGB15(31,31,31), 11, 0);
+	lbl_name = new UILabel(&oamSub, btn_nextPage->nextOamInd(), 4, 1, RGB15(31, 16, 0), 10, 0);
+	lbl_imageName = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 2, RGB15(4, 4, 4), 11, 0);
+	lbl_desc = new UILabel(&oamSub, lbl_imageName->nextOamInd(), 7, 4, RGB15(31,31,31), 12, 0);
 	lbl_desc->setLineOffset(11);
 	lbl_desc->setPos(10, 113);
 
-	spr_evidence = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 21, 40, 68, 68, 64, 64, 12);
+	spr_evidence = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 21, 40, 68, 68, 64, 64, 13);
 
-	kb_input = new AOkeyboard(4, spr_evidence->nextOamInd(), 13);
+	kb_input = new AOkeyboard(4, spr_evidence->nextOamInd(), 14);
 	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 
@@ -79,7 +82,7 @@ void UICourtEvidenceDetail::init()
 		btn_privatePublic->setVisible(false);
 
 	btn_back->assignKey(KEY_B);
-	btn_privatePublic->assignKey(KEY_R);
+	btn_profilesEvidence->assignKey(KEY_R);
 	btn_topButton->assignKey(KEY_X);
 	btn_descUp->assignKey(KEY_UP);
 	btn_descDown->assignKey(KEY_DOWN);
@@ -88,6 +91,7 @@ void UICourtEvidenceDetail::init()
 
 	btn_back->connect(onBackClicked, this);
 	btn_privatePublic->connect(onPrivatePublicClicked, this);
+	btn_profilesEvidence->connect(onProfilesEvidenceClicked, this);
 	btn_topButton->connect(onTopButtonClicked, this);
 	btn_delete->connect(onDeleteClicked, this);
 	btn_transfer->connect(onTransferClicked, this);
@@ -141,6 +145,7 @@ void UICourtEvidenceDetail::updateInput()
 
 	btn_back->updateInput();
 	btn_privatePublic->updateInput();
+	btn_profilesEvidence->updateInput();
 	btn_topButton->updateInput();
 	btn_delete->updateInput();
 	btn_transfer->updateInput();
@@ -150,7 +155,14 @@ void UICourtEvidenceDetail::updateInput()
 	btn_nextPage->updateInput();
 	spr_evidence->updateInput();
 
-	if (keysDown() & KEY_TOUCH)
+	u32 key = keysDown();
+	if (key & KEY_Y)
+	{
+		wav_play(pCourtUI->sndCrtRcrd);
+		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
+	}
+
+	if (key & KEY_TOUCH)
 	{
 		touchPosition pos;
 		touchRead(&pos);
@@ -183,6 +195,7 @@ void UICourtEvidenceDetail::hideEverything()
 
 	btn_back->setVisible(false);
 	btn_privatePublic->setVisible(false);
+	btn_profilesEvidence->setVisible(false);
 	btn_topButton->setVisible(false);
 	btn_delete->setVisible(false);
 	btn_transfer->setVisible(false);
@@ -213,6 +226,7 @@ void UICourtEvidenceDetail::showEverything()
 		btn_prevPage->setVisible(true);
 		btn_nextPage->setVisible(true);
 		btn_privatePublic->setVisible(true);
+		btn_profilesEvidence->setVisible(true);
 		btn_delete->setVisible(true);
 		btn_transfer->setVisible(true);
 
@@ -259,7 +273,7 @@ void UICourtEvidenceDetail::reloadPage()
 		btn_descDown->setVisible(renderDesc.size() > 4);
 	}
 
-	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 12);
+	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 13);
 }
 
 void UICourtEvidenceDetail::setScroll(u32 i)
@@ -343,6 +357,15 @@ void UICourtEvidenceDetail::onPrivatePublicClicked(void* pUserData)
 
 	pSelf->currEvidence = 0;
 	pSelf->reloadPage();
+}
+
+void UICourtEvidenceDetail::onProfilesEvidenceClicked(void* pUserData)
+{
+	UICourtEvidenceDetail* pSelf = (UICourtEvidenceDetail*)pUserData;
+
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
+
+	// pSelf->pCourtUI->changeScreen(new UICourtPlayersDetail(pSelf->pCourtUI, 0));
 }
 
 void UICourtEvidenceDetail::onTopButtonClicked(void* pUserData)

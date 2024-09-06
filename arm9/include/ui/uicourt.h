@@ -98,6 +98,7 @@ class UIScreenCourt : public UIScreen
 	std::vector<areaInfo> areaList;
 	std::vector<evidenceInfo> evidenceList;
 	std::unordered_map<int, playerInfo> playerList;
+	std::vector<int> playerListIDs;
 
 	std::vector<std::u16string> icLog;
 	std::vector<std::u16string> oocLog;
@@ -130,7 +131,8 @@ public:
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	std::vector<evidenceInfo>& getEvidenceList(bool priv) {return (priv) ? gEngine->getPrivateEvidence() : evidenceList;}
-	const std::unordered_map<int, playerInfo>& getPlayerList() {return playerList;}
+	std::unordered_map<int, playerInfo>& getPlayerList() {return playerList;}
+	const std::vector<int>& getPlayerListIDs() {return playerListIDs;}
 
 	const std::vector<std::u16string>& getICLog() {return icLog;}
 	const std::vector<std::u16string>& getOOCLog() {return oocLog;}

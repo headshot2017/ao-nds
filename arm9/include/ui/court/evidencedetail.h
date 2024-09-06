@@ -14,6 +14,7 @@ class UICourtEvidenceDetail : public UISubScreen
 
 	UIButton* btn_back;
 	UIButton* btn_privatePublic;
+	UIButton* btn_profilesEvidence;
 	UIButton* btn_topButton;
 	UIButton* btn_delete;
 	UIButton* btn_transfer;
@@ -58,6 +59,7 @@ public:
 	void reloadDesc(bool all=false);
 
 	static void onBackClicked(void* pUserData);
+	static void onProfilesEvidenceClicked(void* pUserData);
 	static void onPrivatePublicClicked(void* pUserData);
 	static void onTopButtonClicked(void* pUserData);
 	static void onDeleteClicked(void* pUserData);

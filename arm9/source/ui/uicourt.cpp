@@ -751,11 +751,17 @@ void UIScreenCourt::onMessagePR(void* pUserData, std::string msg)
 		case 0: // Add
 			pSelf->playerList[id] = {};
 			pSelf->playerList[id].area = -1;
+			pSelf->playerListIDs.push_back(id);
 			break;
 
 		case 1: // Remove
-			if (pSelf->playerList.count(id))
-				pSelf->playerList.erase(id);
+			{
+				const auto& iter = std::find(pSelf->playerListIDs.begin(), pSelf->playerListIDs.end(), id);
+				if (pSelf->playerList.count(id))
+					pSelf->playerList.erase(id);
+				if (iter != pSelf->playerListIDs.end())
+					pSelf->playerListIDs.erase(iter);
+			}
 			break;
 	}
 }
