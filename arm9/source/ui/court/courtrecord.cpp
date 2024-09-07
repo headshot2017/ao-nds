@@ -108,6 +108,7 @@ void UICourtEvidence::init()
 	reloadPage();
 
 	cbLE = gEngine->getSocket()->addMessageCallback("LE", onMessageLE, this);
+	cbPR = gEngine->getSocket()->addMessageCallback("PR", onMessagePR, this);
 }
 
 void UICourtEvidence::updateInput()
