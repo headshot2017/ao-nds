@@ -450,8 +450,12 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 
 	if (isServer)
 	{
+		// UGLY!!! there should be an argument in the network msg to tell if it's an error or not
 		const char* errors[] = {
 			"Blankposting",
+			"disabled in",
+			"forbidden in",
+			"You are blocked",
 			"a muted area",
 			"custom emotes",
 			"a repeat",
