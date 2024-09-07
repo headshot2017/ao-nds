@@ -45,7 +45,7 @@ void UICourtJudge::init()
 	delete[] bgMap;
 	delete[] bgPal;
 
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
 	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_courtRecord", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);
 	btn_barDefenseMinus = new UIButton(&oamSub, "/data/ao-nds/ui/spr_barDefenseMinus", btn_courtRecord->nextOamInd(), 1, 1, SpriteSize_16x16, 15, 141, 12, 12, 16, 16, 2);
 	btn_barDefensePlus = new UIButton(&oamSub, "/data/ao-nds/ui/spr_barDefensePlus", btn_barDefenseMinus->nextOamInd(), 1, 1, SpriteSize_16x16, 15, 39, 12, 12, 16, 16, 3);

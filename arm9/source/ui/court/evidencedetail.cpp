@@ -40,10 +40,10 @@ void UICourtEvidenceDetail::init()
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	loadBg("/data/ao-nds/ui/bg_evidenceDetails");
 
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
 	btn_privatePublic = new UIButton(&oamSub, "/data/ao-nds/ui/spr_privatePublic2", btn_back->nextOamInd(), 2, 1, SpriteSize_32x16, 128-(64/2), btn_back->getY()-2, 64, 15, 32, 16, 1);
 	btn_profilesEvidence = new UIButton(&oamSub, "/data/ao-nds/ui/spr_profilesEvidence", btn_privatePublic->nextOamInd(), 1, 1, SpriteSize_64x32, 256-55, 0, 55, 31, 64, 32, 2);
-	btn_topButton = new UIButton(&oamSub, (adding ? "/data/ao-nds/ui/spr_addTop" : "/data/ao-nds/ui/spr_present"), btn_profilesEvidence->nextOamInd(), 3, 1, SpriteSize_32x64, 86, 0, 85, 33, 32, 64, 3);
+	btn_topButton = new UIButton(&oamSub, (adding ? "/data/ao-nds/ui/spr_addTop" : "/data/ao-nds/ui/spr_present"), btn_profilesEvidence->nextOamInd(), 3, 1, SpriteSize_32x32, 128-(85/2), 0, 85, 32, 32, 32, 3);
 	btn_delete = new UIButton(&oamSub, "/data/ao-nds/ui/spr_deleteEvidence", btn_topButton->nextOamInd(), 1, 1, SpriteSize_32x32, 91, 84, 20, 20, 32, 32, 4);
 	btn_transfer = new UIButton(&oamSub, "/data/ao-nds/ui/spr_transferEvidence", btn_delete->nextOamInd(), 1, 1, SpriteSize_32x32, 215, 84, 20, 20, 32, 32, 5);
 	btn_descUp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollUp", btn_transfer->nextOamInd(), 1, 1, SpriteSize_16x32, 233, 115, 14, 19, 16, 32, 6);

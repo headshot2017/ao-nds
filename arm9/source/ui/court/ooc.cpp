@@ -33,7 +33,7 @@ void UICourtOOC::init()
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	loadBg("/data/ao-nds/ui/bg_ooc");
 
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
 	btn_presets = new UIButton(&oamSub, "/data/ao-nds/ui/spr_presets", btn_back->nextOamInd(), 2, 1, SpriteSize_32x16, 256-59-1, 1, 59, 15, 32, 16, 1);
 	btn_scrollUp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollUp", btn_presets->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 19, 14, 19, 16, 32, 2);
 	btn_scrollDown = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
@@ -46,7 +46,7 @@ void UICourtOOC::init()
 	isWritingChat = false;
 
 	lbl_log->setPos(9, 17);
-	lbl_oocName->setPos(80, 163);
+	lbl_oocName->setPos(81, 162);
 	lbl_oocName->setText((pCourtUI->oocName.empty()) ? u"Enter an OOC name..." : pCourtUI->oocName);
 
 	btn_back->assignKey(KEY_B);
@@ -112,16 +112,16 @@ void UICourtOOC::updateInput()
 		if (pos.px >= 79 && pos.py >= 162 && pos.px < 79+162 && pos.py < 162+14)
 		{
 			// ooc name input
-			wav_play(pCourtUI->sndSelect);
+			wav_play(pCourtUI->sndCrtRcrd);
 
 			hideEverything();
 			isWritingChat = false;
 			kb_input->show16("Enter your OOC name", pCourtUI->oocName);
 		}
-		else if (pos.px >= 79 && pos.py >= 177 && pos.px < 79+177 && pos.py < 177+15)
+		else if (pos.px >= 81 && pos.py >= 177 && pos.px < 81+177 && pos.py < 177+15)
 		{
 			// chat message input
-			wav_play(pCourtUI->sndSelect);
+			wav_play(pCourtUI->sndCrtRcrd);
 
 			hideEverything();
 			isWritingChat = true;

@@ -45,7 +45,7 @@ void UICourtLoading::init()
 
 	delete[] sprLoadingPal;
 
-	btn_disconnect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_disconnect", 1, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 1);
+	btn_disconnect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_disconnect", 1, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 1);
 	lbl_loading = new UILabel(&oamSub, btn_disconnect->nextOamInd(), 8, 1, RGB15(31,31,31), 2, 0);
 	setText("Connecting...");
 

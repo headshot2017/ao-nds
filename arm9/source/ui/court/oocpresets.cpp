@@ -41,12 +41,12 @@ void UICourtOOCPresets::init()
 	bgSetPriority(bgIndex, 1);
 	loadBg("/data/ao-nds/ui/bg_oocPresets");
 
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_addOrConfirm = new UIButton(&oamSub, "/data/ao-nds/ui/spr_addConfirm", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 1);
-	btn_delete = new UIButton(&oamSub, "/data/ao-nds/ui/spr_delete", btn_addOrConfirm->nextOamInd(), 3, 1, SpriteSize_32x64, 0, 0, 80, 33, 32, 64, 2);
-	btn_edit = new UIButton(&oamSub, "/data/ao-nds/ui/spr_edit", btn_delete->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 3);
-	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft", btn_edit->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 4);
-	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 5);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
+	btn_addOrConfirm = new UIButton(&oamSub, "/data/ao-nds/ui/spr_addConfirm", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-82, 192-32, 82, 32, 32, 32, 1);
+	btn_delete = new UIButton(&oamSub, "/data/ao-nds/ui/spr_delete", btn_addOrConfirm->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 0, 80, 32, 32, 32, 2);
+	btn_edit = new UIButton(&oamSub, "/data/ao-nds/ui/spr_edit", btn_delete->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 3);
+	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft", btn_edit->nextOamInd(), 1, 1, SpriteSize_32x16, 80+2, 192-15, 19, 14, 32, 16, 4);
+	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-80-19-2, 192-15, 19, 14, 32, 16, 5);
 	for (int i=0; i<4; i++)
 	{
 		int nextOam = (i == 0) ? btn_nextPage->nextOamInd() : lbl_preset[i-1]->nextOamInd();

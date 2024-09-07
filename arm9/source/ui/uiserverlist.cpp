@@ -119,12 +119,12 @@ void UIScreenServerList::init()
 	lbl_players->setVisible(false);
 	lbl_playercount->setVisible(false);
 
-	btn_manageFav = new UIButton(&oamSub, "/data/ao-nds/ui/spr_addFav", 2, 3, 1, SpriteSize_32x64, 0, 0, 80, 33, 32, 64, 1);
-	btn_listToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_favoritesPublic", btn_manageFav->nextOamInd(), 3, 1, SpriteSize_32x64, 256-80, 0, 80, 33, 32, 64, 2);
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 3);
-	btn_connect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_connect", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 4);
-	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft", btn_connect->nextOamInd(), 1, 1, SpriteSize_32x16, 79+2, 192-15, 19, 14, 32, 16, 5);
-	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-79-19-2, 192-15, 19, 14, 32, 16, 6);
+	btn_manageFav = new UIButton(&oamSub, "/data/ao-nds/ui/spr_addFav", 2, 3, 1, SpriteSize_32x32, 0, 0, 80, 32, 32, 32, 1);
+	btn_listToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_favoritesPublic", btn_manageFav->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 2);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_listToggle->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-32, 80, 30, 32, 32, 3);
+	btn_connect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_connect", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-82, 192-32, 82, 30, 32, 32, 4);
+	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft", btn_connect->nextOamInd(), 1, 1, SpriteSize_32x16, 80+2, 192-15, 19, 14, 32, 16, 5);
+	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 256-80-19-2, 192-15, 19, 14, 32, 16, 6);
 	for (int i=0; i<4; i++)
 	{
 		int nextOam = (i == 0) ? btn_nextPage->nextOamInd() : lbl_server[i-1]->nextOamInd();
@@ -340,12 +340,12 @@ void UIScreenServerList::onToggleList(void* pUserData)
 	pSelf->isFavorites = -pSelf->isFavorites+1;
 	if (pSelf->isFavorites)
 	{
-		pSelf->btn_manageFav->setImage("/data/ao-nds/ui/spr_delete", 32, 64, 1);
+		pSelf->btn_manageFav->setImage("/data/ao-nds/ui/spr_delete", 32, 32, 1);
 		pSelf->btn_listToggle->setFrame(1);
 	}
 	else
 	{
-		pSelf->btn_manageFav->setImage("/data/ao-nds/ui/spr_addFav", 32, 64, 1);
+		pSelf->btn_manageFav->setImage("/data/ao-nds/ui/spr_addFav", 32, 32, 1);
 		pSelf->btn_listToggle->setFrame(0);
 	}
 

@@ -71,7 +71,7 @@ void UIScreenSettings::init()
 
 	btn_generalTab = new UIButton(&oamSub, "/data/ao-nds/ui/spr_generalTab", 0, 2, 1, SpriteSize_32x16, 128-46-2, 16+1, 46, 14, 32, 16, 0);
 	btn_chatlogTab = new UIButton(&oamSub, "/data/ao-nds/ui/spr_chatlogTab", btn_generalTab->nextOamInd(), 2, 1, SpriteSize_32x16, 128+2, 16+1, 46, 14, 32, 16, 1);
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_chatlogTab->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 2);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_chatlogTab->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-32, 80, 30, 32, 32, 2);
 
 	// general tab
 	lbl_showname = new UILabel(&oamSub, btn_back->nextOamInd(), 4, 1, RGB15(31,31,31), 3, 0);

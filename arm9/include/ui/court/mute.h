@@ -20,10 +20,10 @@ class UICourtMute : public UISubScreen
 	std::string filter;
 	std::vector<int> filteredChars;
 
-	UIButton* btn_pageLeft;
-	UIButton* btn_pageRight;
 	UIButton* btn_back;
 	UIButton* btn_muteToggle;
+	UIButton* btn_pageLeft;
+	UIButton* btn_pageRight;
 	UILabel* lbl_charname;
 	UILabel* lbl_pages;
 	UISelectCross* sel_btn;

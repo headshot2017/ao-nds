@@ -64,10 +64,10 @@ void UICourtEvidence::init()
 	dmaCopy(bg_evidenceMap, bgGetMapPtr(bgIndex), 1536);
 	dmaCopy(bg_evidencePal, BG_PALETTE_SUB, 512);
 
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 2);
+	btn_present = new UIButton(&oamSub, "/data/ao-nds/ui/spr_present", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 128-(85/2), 0, 85, 32, 32, 32, 3);
 	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
 	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 2);
-	btn_present = new UIButton(&oamSub, "/data/ao-nds/ui/spr_present", btn_back->nextOamInd(), 3, 1, SpriteSize_32x64, 86, 0, 85, 33, 32, 64, 3);
 	btn_privatePublic = new UIButton(&oamSub, "/data/ao-nds/ui/spr_privatePublic2", btn_present->nextOamInd(), 2, 1, SpriteSize_32x16, 128-(64/2), btn_back->getY()-2, 64, 15, 32, 16, 4);
 	btn_profilesEvidence = new UIButton(&oamSub, "/data/ao-nds/ui/spr_profilesEvidence", btn_privatePublic->nextOamInd(), 1, 1, SpriteSize_64x32, 256-55, 0, 55, 31, 64, 32, 5);
 
@@ -92,16 +92,16 @@ void UICourtEvidence::init()
 	if (pCourtUI->icControls.evidence > -1)
 		btn_present->setFrame(1);
 
-	btn_pageLeft->assignKey(KEY_LEFT);
-	btn_pageRight->assignKey(KEY_RIGHT);
 	btn_back->assignKey(KEY_B);
 	btn_present->assignKey(KEY_X);
+	btn_pageLeft->assignKey(KEY_LEFT);
+	btn_pageRight->assignKey(KEY_RIGHT);
 	btn_profilesEvidence->assignKey(KEY_R);
 
-	btn_pageLeft->connect(onPrevPage, this);
-	btn_pageRight->connect(onNextPage, this);
 	btn_back->connect(onBackClicked, this);
 	btn_present->connect(onPresentClicked, this);
+	btn_pageLeft->connect(onPrevPage, this);
+	btn_pageRight->connect(onNextPage, this);
 	btn_privatePublic->connect(onPrivatePublicClicked, this);
 	btn_profilesEvidence->connect(onProfilesEvidenceClicked, this);
 
@@ -113,10 +113,10 @@ void UICourtEvidence::init()
 
 void UICourtEvidence::updateInput()
 {
-	btn_pageLeft->updateInput();
-	btn_pageRight->updateInput();
 	btn_back->updateInput();
 	btn_present->updateInput();
+	btn_pageLeft->updateInput();
+	btn_pageRight->updateInput();
 	btn_privatePublic->updateInput();
 	btn_profilesEvidence->updateInput();
 	for (int i=0; i<8; i++) btn_evidence[i]->updateInput();

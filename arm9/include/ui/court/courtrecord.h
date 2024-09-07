@@ -25,10 +25,10 @@ class UICourtEvidence : public UISubScreen
 	bool isPrivate;
 	bool isProfiles;
 
-	UIButton* btn_pageLeft;
-	UIButton* btn_pageRight;
 	UIButton* btn_back;
 	UIButton* btn_present;
+	UIButton* btn_pageLeft;
+	UIButton* btn_pageRight;
 	UIButton* btn_privatePublic;
 	UIButton* btn_profilesEvidence;
 	UILabel* lbl_name;

@@ -78,7 +78,7 @@ void UICourtIC::init()
 	dmaCopy(bg_icTiles, bgGetGfxPtr(bgIndex), bg_icTilesLen);
 	dmaCopy(bg_icMap, bgGetMapPtr(bgIndex), 1536);
 
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icCornerBtns", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icCornerBtns", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
 	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icCornerBtns", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 0);
 	btn_shouts = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icCornerBtns", btn_courtRecord->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 0, 80, 32, 32, 32, 0);
 	btn_pair = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pairMute", btn_shouts->nextOamInd(), 3, 1, SpriteSize_32x32, 36, 114, 68, 17, 32, 32, 1);
@@ -121,9 +121,9 @@ void UICourtIC::init()
 	lbl_showname = new UILabel(&oamSub, spr_arrowRight->nextOamInd(), 2, 1, RGB15(31,31,31), 14, 0);
 	lbl_color = new UILabel(&oamSub, lbl_showname->nextOamInd(), 2, 1, RGB15(31,31,31), 15, 0);
 	lbl_shout = new UILabel(&oamSub, lbl_color->nextOamInd(), 6, 1, RGB15(31,31,31), 14, 0);
-	lbl_showname->setPos(77, 163);
+	lbl_showname->setPos(80, 163);
 	lbl_showname->setText((pCourtUI->showname.empty()) ? utf8::utf8to16(pCourtUI->getCurrChar().name) : pCourtUI->showname);
-	lbl_color->setPos(84, 178);
+	lbl_color->setPos(86, 178);
 	lbl_color->setText("Message");
 	lbl_shout->setPos(btn_shouts->getX()+4, btn_shouts->getY()+btn_shouts->getH()-1, false);
 	lbl_shout->setVisible(false);

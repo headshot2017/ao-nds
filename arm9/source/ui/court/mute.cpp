@@ -20,10 +20,10 @@ struct charMuteBtnData
 
 UICourtMute::~UICourtMute()
 {
-	delete btn_pageLeft;
-	delete btn_pageRight;
 	delete btn_back;
 	delete btn_muteToggle;
+	delete btn_pageLeft;
+	delete btn_pageRight;
 	delete lbl_charname;
 	delete lbl_pages;
 	delete sel_btn;
@@ -43,10 +43,10 @@ void UICourtMute::init()
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	loadBg("/data/ao-nds/ui/bg_charSelect");
 
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 2);
+	btn_muteToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_muteToggle", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-82, 192-32, 82, 32, 32, 32, 3);
 	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
 	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 2);
-	btn_muteToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_muteToggle", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 192-30, 79, 30, 32, 32, 3);
 
 	lbl_charname = new UILabel(&oamSub, btn_muteToggle->nextOamInd(), 6, 1, RGB15(31, 16, 0), 4, 0);
 	lbl_pages = new UILabel(&oamSub, lbl_charname->nextOamInd(), 1, 1, RGB15(13, 2, 0), 5, 0);
@@ -76,13 +76,13 @@ void UICourtMute::init()
 	btn_pageLeft->assignKey(KEY_LEFT);
 	btn_pageRight->assignKey(KEY_RIGHT);
 
+	btn_back->connect(onBackClicked, this);
+	btn_muteToggle->connect(onMuteToggled, this);
 	btn_pageLeft->setVisible(false);
 	btn_pageLeft->connect(onPrevPage, this, UIButton::PRESSED);
 	btn_pageRight->connect(onNextPage, this, UIButton::PRESSED);
 	btn_pageLeft->connect(onPageBtnRelease, this, UIButton::RELEASED);
 	btn_pageRight->connect(onPageBtnRelease, this, UIButton::RELEASED);
-	btn_back->connect(onBackClicked, this);
-	btn_muteToggle->connect(onMuteToggled, this);
 
 	updateFilter();
 	reloadPage();
@@ -131,10 +131,10 @@ void UICourtMute::updateInput()
 		return;
 	}
 
-	btn_pageLeft->updateInput();
-	btn_pageRight->updateInput();
 	btn_back->updateInput();
 	btn_muteToggle->updateInput();
+	btn_pageLeft->updateInput();
+	btn_pageRight->updateInput();
 	for (int i=0; i<8; i++) btn_chars[i]->updateInput();
 
 	if (keysDown() & KEY_TOUCH)
@@ -148,10 +148,10 @@ void UICourtMute::updateInput()
 
 			bgHide(bgIndex);
 
-			btn_pageLeft->setVisible(false);
-			btn_pageRight->setVisible(false);
 			btn_back->setVisible(false);
 			btn_muteToggle->setVisible(false);
+			btn_pageLeft->setVisible(false);
+			btn_pageRight->setVisible(false);
 			lbl_charname->setVisible(false);
 			lbl_pages->setVisible(false);
 			sel_btn->setVisible(false);

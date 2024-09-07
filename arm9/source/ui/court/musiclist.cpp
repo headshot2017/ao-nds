@@ -44,9 +44,9 @@ void UICourtMusicList::init()
 	loadBg("/data/ao-nds/ui/bg_musicList");
 
 	static musicBtnData btnData[7];
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-30, 79, 30, 32, 32, 0);
-	btn_listToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_areas", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-79, 0, 79, 30, 32, 32, 1);
-	btn_scrollUp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollUp", btn_listToggle->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 31, 14, 19, 16, 32, 2);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
+	btn_listToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_areas", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);
+	btn_scrollUp = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollUp", btn_listToggle->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 33, 14, 19, 16, 32, 2);
 	btn_scrollDown = new UIButton(&oamSub, "/data/ao-nds/ui/spr_scrollDown", btn_scrollUp->nextOamInd(), 1, 1, SpriteSize_16x32, 242, 156, 14, 19, 16, 32, 3);
 	for (int i=0; i<7; i++)
 	{
