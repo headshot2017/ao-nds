@@ -79,7 +79,10 @@ void UICourtEvidenceDetail::init()
 			btn_topButton->setFrame(1);
 	}
 	else
+	{
 		btn_privatePublic->setVisible(false);
+		btn_profilesEvidence->setVisible(false);
+	}
 
 	btn_back->assignKey(KEY_B);
 	btn_profilesEvidence->assignKey(KEY_R);
