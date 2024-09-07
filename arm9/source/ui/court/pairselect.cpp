@@ -43,12 +43,12 @@ void UICourtPairSelect::init()
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	loadBg("/data/ao-nds/ui/bg_charSelect");
 
-	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
-	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 2);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 2);
 	btn_pair = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pairConfirm", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-82, 192-32, 82, 32, 32, 32, 3);
+	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", btn_pair->nextOamInd(), 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
+	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
 
-	lbl_charname = new UILabel(&oamSub, btn_pair->nextOamInd(), 6, 1, RGB15(31, 16, 0), 4, 0);
+	lbl_charname = new UILabel(&oamSub, btn_pageRight->nextOamInd(), 6, 1, RGB15(31, 16, 0), 4, 0);
 	lbl_pages = new UILabel(&oamSub, lbl_charname->nextOamInd(), 1, 1, RGB15(13, 2, 0), 5, 0);
 
 	sel_btn = new UISelectCross(&oamSub, lbl_pages->nextOamInd(), 6);

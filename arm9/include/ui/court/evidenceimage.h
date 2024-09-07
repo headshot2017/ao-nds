@@ -20,10 +20,10 @@ class UICourtEvidenceImage : public UISubScreen
 	bool isPrivate;
 	bool adding;
 
-	UIButton* btn_pageLeft;
-	UIButton* btn_pageRight;
 	UIButton* btn_back;
 	UIButton* btn_confirm;
+	UIButton* btn_pageLeft;
+	UIButton* btn_pageRight;
 	UILabel* lbl_evidence;
 	UISelectCross* sel_btn;
 

@@ -64,11 +64,11 @@ void UICourtEvidence::init()
 	dmaCopy(bg_evidenceMap, bgGetMapPtr(bgIndex), 1536);
 	dmaCopy(bg_evidencePal, BG_PALETTE_SUB, 512);
 
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", btn_pageRight->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 2);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 2);
 	btn_present = new UIButton(&oamSub, "/data/ao-nds/ui/spr_present", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 128-(85/2), 0, 85, 32, 32, 32, 3);
-	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", 0, 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
+	btn_pageLeft = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_tall", btn_present->nextOamInd(), 1, 3, SpriteSize_16x32, 4, 55, 16, 95, 16, 32, 0);
 	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 1);
-	btn_privatePublic = new UIButton(&oamSub, "/data/ao-nds/ui/spr_privatePublic2", btn_present->nextOamInd(), 2, 1, SpriteSize_32x16, 128-(64/2), btn_back->getY()-2, 64, 15, 32, 16, 4);
+	btn_privatePublic = new UIButton(&oamSub, "/data/ao-nds/ui/spr_privatePublic2", btn_pageRight->nextOamInd(), 2, 1, SpriteSize_32x16, 128-(64/2), btn_back->getY()-2, 64, 15, 32, 16, 4);
 	btn_profilesEvidence = new UIButton(&oamSub, "/data/ao-nds/ui/spr_profilesEvidence", btn_privatePublic->nextOamInd(), 1, 1, SpriteSize_64x32, 256-55, 0, 55, 31, 64, 32, 5);
 
 	lbl_name = new UILabel(&oamSub, btn_profilesEvidence->nextOamInd(), 6, 1, RGB15(31, 16, 0), 6, 0);
