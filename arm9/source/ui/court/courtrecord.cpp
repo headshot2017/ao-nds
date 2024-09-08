@@ -8,11 +8,13 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/icchatlog.h"
 #include "ui/court/evidencedetail.h"
+#include "ui/court/profiledetail.h"
 
 struct evidenceBtnData
 {
@@ -306,8 +308,8 @@ void UICourtEvidence::onEvidenceClicked(void* pUserData)
 		wav_play(pSelf->pCourtUI->sndEvShow);
 		if (!pSelf->isProfiles)
 			pSelf->pCourtUI->changeScreen(new UICourtEvidenceDetail(pSelf->pCourtUI, ind, pSelf->isPrivate));
-		//else
-			//pSelf->pCourtUI->changeScreen(new UICourtPlayersDetail(pSelf->pCourtUI, 0));
+		else
+			pSelf->pCourtUI->changeScreen(new UICourtProfileDetail(pSelf->pCourtUI, ind, pSelf->isPrivate));
 		return;
 	}
 
@@ -324,7 +326,16 @@ void UICourtEvidence::onEvidenceClicked(void* pUserData)
 		pSelf->btn_present->setVisible(!addButton && !pSelf->isPrivate);
 	}
 	else
-		pSelf->lbl_name->setText(pSelf->pCourtUI->getPlayerList()[pSelf->pCourtUI->getPlayerListIDs()[ind]].character);
+	{
+		const playerInfo& info = pSelf->pCourtUI->getPlayerList()[pSelf->pCourtUI->getPlayerListIDs()[ind]];
+
+		std::string name = info.character;
+		if (!info.showname.empty())
+			name += " (" + info.showname + ")";
+		if (!info.oocName.empty())
+			name += " (" + info.oocName + ")";
+		pSelf->lbl_name->setText(utf8::utf8to16(name));
+	}
 	pSelf->lbl_name->setPos(128, 36+2, true);
 }
 

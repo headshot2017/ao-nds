@@ -109,6 +109,7 @@
 		<Unit filename="arm9/include/ui/court/oocpresets.h" />
 		<Unit filename="arm9/include/ui/court/pair.h" />
 		<Unit filename="arm9/include/ui/court/pairselect.h" />
+		<Unit filename="arm9/include/ui/court/profiledetail.h" />
 		<Unit filename="arm9/include/ui/keyboard.h" />
 		<Unit filename="arm9/include/ui/label.h" />
 		<Unit filename="arm9/include/ui/selectcross.h" />
@@ -165,6 +166,7 @@
 		<Unit filename="arm9/source/ui/court/oocpresets.cpp" />
 		<Unit filename="arm9/source/ui/court/pair.cpp" />
 		<Unit filename="arm9/source/ui/court/pairselect.cpp" />
+		<Unit filename="arm9/source/ui/court/profiledetail.cpp" />
 		<Unit filename="arm9/source/ui/keyboard.cpp" />
 		<Unit filename="arm9/source/ui/label.cpp" />
 		<Unit filename="arm9/source/ui/selectcross.cpp" />

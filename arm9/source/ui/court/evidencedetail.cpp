@@ -11,6 +11,7 @@
 #include "ui/court/courtrecord.h"
 #include "ui/court/evidenceimage.h"
 #include "ui/court/icchatlog.h"
+#include "ui/court/profiledetail.h"
 
 UICourtEvidenceDetail::~UICourtEvidenceDetail()
 {
@@ -81,7 +82,6 @@ void UICourtEvidenceDetail::init()
 	else
 	{
 		btn_privatePublic->setVisible(false);
-		btn_profilesEvidence->setVisible(false);
 	}
 
 	btn_back->assignKey(KEY_B);
@@ -244,7 +244,7 @@ void UICourtEvidenceDetail::reloadPage()
 {
 	if (!adding)
 	{
-		const evidenceInfo& info = pCourtUI->getEvidenceList(isPrivate)[currEvidence];
+		const evidenceInfo& info = (currEvidence >= pCourtUI->getEvidenceList(isPrivate).size()) ? evidenceInfo() : pCourtUI->getEvidenceList(isPrivate)[currEvidence];
 		currName = info.name;
 		currDesc = info.description;
 		currImage = info.image;
@@ -368,7 +368,7 @@ void UICourtEvidenceDetail::onProfilesEvidenceClicked(void* pUserData)
 
 	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 
-	// pSelf->pCourtUI->changeScreen(new UICourtPlayersDetail(pSelf->pCourtUI, 0));
+	pSelf->pCourtUI->changeScreen(new UICourtProfileDetail(pSelf->pCourtUI, 0, pSelf->isPrivate));
 }
 
 void UICourtEvidenceDetail::onTopButtonClicked(void* pUserData)

@@ -60,9 +60,9 @@ struct shoutInfo
 
 struct playerInfo
 {
-	std::u16string oocName;
+	std::string oocName;
 	std::string character;
-	std::u16string showname;
+	std::string showname;
 	int area;
 };
 

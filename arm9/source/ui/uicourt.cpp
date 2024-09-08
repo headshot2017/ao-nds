@@ -459,6 +459,7 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 			"a muted area",
 			"custom emotes",
 			"a repeat",
+			"is too long",
 		};
 
 		for (int i=0; i<4; i++)
@@ -783,7 +784,7 @@ void UIScreenCourt::onMessagePU(void* pUserData, std::string msg)
 	switch (dataType)
 	{
 		case 0:
-			pSelf->playerList[id].oocName = utf8::utf8to16(data);
+			pSelf->playerList[id].oocName = data;
 			break;
 
 		case 1:
@@ -791,7 +792,7 @@ void UIScreenCourt::onMessagePU(void* pUserData, std::string msg)
 			break;
 
 		case 2:
-			pSelf->playerList[id].showname = utf8::utf8to16(data);
+			pSelf->playerList[id].showname = data;
 			break;
 
 		case 3:
