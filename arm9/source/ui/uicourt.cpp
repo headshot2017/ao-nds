@@ -462,7 +462,7 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 			"is too long",
 		};
 
-		for (int i=0; i<4; i++)
+		for (u32 i=0; i<sizeof(errors) / sizeof(const char*); i++)
 		{
 			if (chatmsg.find(errors[i]) != std::string::npos)
 			{
