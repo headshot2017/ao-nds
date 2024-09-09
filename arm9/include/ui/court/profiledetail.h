@@ -13,10 +13,9 @@ class UICourtProfileDetail : public UISubScreen
 
 	UIButton* btn_back;
 	UIButton* btn_profilesEvidence;
-	UIButton* btn_kick;
-	UIButton* btn_ban;
 	UIButton* btn_prevPage;
 	UIButton* btn_nextPage;
+	UIButton* btn_kickBan;
 
 	UILabel* lbl_name;
 	UILabel* lbl_desc;
@@ -42,6 +41,7 @@ public:
 	static void onProfilesEvidenceClicked(void* pUserData);
 	static void onPrevPage(void* pUserData);
 	static void onNextPage(void* pUserData);
+	static void onKickBan(void* pUserData);
 
 	static void onMessagePR(void* pUserData, std::string msg);
 	static void onMessagePU(void* pUserData, std::string msg);
