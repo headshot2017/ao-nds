@@ -37,7 +37,7 @@ void UICourtProfileDetail::init()
 	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_medium", btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 256-16, 64, 16, 63, 16, 32, 3);
 	btn_kickBan = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_nextPage->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 36, 64, 15, 32, 16, 4);
 
-	lbl_name = new UILabel(&oamSub, btn_nextPage->nextOamInd(), 4, 1, RGB15(31, 16, 0), 5, 0);
+	lbl_name = new UILabel(&oamSub, btn_kickBan->nextOamInd(), 4, 1, RGB15(31, 16, 0), 5, 0);
 	lbl_desc = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 4, RGB15(4, 4, 4), 6, 0);
 
 	spr_profile = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 23, 66, 60, 60, 64, 64, 7);
