@@ -330,6 +330,9 @@ void UICourtEvidence::onEvidenceClicked(void* pUserData)
 		const playerInfo& info = pSelf->pCourtUI->getPlayerList()[pSelf->pCourtUI->getPlayerListIDs()[ind]];
 
 		std::string name = info.character;
+		if (name.empty())
+			name = "Spectator";
+
 		if (!info.showname.empty())
 			name += " (" + info.showname + ")";
 		if (!info.oocName.empty())
