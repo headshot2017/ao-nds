@@ -21,6 +21,9 @@ class UILabel
 	std::u16string currText;
 	int fontID;
 
+	int mX;
+	int mY;
+
 public:
 	UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u32 textColor, int palSlot, int font);
 	~UILabel();
@@ -34,6 +37,8 @@ public:
 	void setColor(u32 textColor);
 	void setLineOffset(int offset) {lineOffset = offset;}
 
+	int getX() {return mX;}
+	int getY() {return mY;}
 	u16** getGfx() {return textGfx;}
 	int getOamInd() {return oamStart;}
 	int nextOamInd() {return oamStart+(gfxPerLine*maxLines);}

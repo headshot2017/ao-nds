@@ -10,6 +10,7 @@
 #include "ui/court/courtrecord.h"
 #include "ui/court/icchatlog.h"
 #include "ui/court/evidencedetail.h"
+#include "ui/court/moderatordialog.h"
 
 UICourtProfileDetail::~UICourtProfileDetail()
 {
@@ -17,7 +18,8 @@ UICourtProfileDetail::~UICourtProfileDetail()
 	delete btn_profilesEvidence;
 	delete btn_prevPage;
 	delete btn_nextPage;
-	delete btn_kickBan;
+	delete btn_kick;
+	delete btn_ban;
 	delete lbl_name;
 	delete lbl_desc;
 	delete spr_profile;
@@ -35,27 +37,29 @@ void UICourtProfileDetail::init()
 	btn_profilesEvidence = new UIButton(&oamSub, "/data/ao-nds/ui/spr_profilesEvidence", btn_back->nextOamInd(), 1, 1, SpriteSize_64x32, 256-55, 0, 55, 31, 64, 32, 1);
 	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_medium", btn_profilesEvidence->nextOamInd(), 1, 2, SpriteSize_16x32, 0, 64, 16, 63, 16, 32, 2);
 	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_medium", btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 256-16, 64, 16, 63, 16, 32, 3);
-	btn_kickBan = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_nextPage->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 36, 64, 15, 32, 16, 4);
+	btn_kick = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_nextPage->nextOamInd(), 2, 1, SpriteSize_32x16, 96-48, 36, 64, 15, 32, 16, 4);
+	btn_ban = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_kick->nextOamInd(), 2, 1, SpriteSize_32x16, 96+48, 36, 64, 15, 32, 16, 4);
 
-	lbl_name = new UILabel(&oamSub, btn_kickBan->nextOamInd(), 4, 1, RGB15(31, 16, 0), 5, 0);
+	lbl_name = new UILabel(&oamSub, btn_ban->nextOamInd(), 4, 1, RGB15(31, 16, 0), 5, 0);
 	lbl_desc = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 4, RGB15(4, 4, 4), 6, 0);
 
 	spr_profile = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 23, 66, 60, 60, 64, 64, 7);
 
 	btn_profilesEvidence->setFrame(1);
+	btn_ban->setFrame(1);
 	lbl_desc->setPos(99, 80);
 
 	btn_back->assignKey(KEY_B);
 	btn_profilesEvidence->assignKey(KEY_R);
 	btn_prevPage->assignKey(KEY_LEFT);
 	btn_nextPage->assignKey(KEY_RIGHT);
-	btn_kickBan->assignKey(KEY_X);
 
 	btn_back->connect(onBackClicked, this);
 	btn_profilesEvidence->connect(onProfilesEvidenceClicked, this);
 	btn_prevPage->connect(onPrevPage, this);
 	btn_nextPage->connect(onNextPage, this);
-	btn_kickBan->connect(onKickBan, this);
+	btn_kick->connect(onKick, this);
+	btn_ban->connect(onBan, this);
 
 	reloadPage();
 
@@ -69,7 +73,8 @@ void UICourtProfileDetail::updateInput()
 	btn_profilesEvidence->updateInput();
 	btn_prevPage->updateInput();
 	btn_nextPage->updateInput();
-	btn_kickBan->updateInput();
+	btn_kick->updateInput();
+	btn_ban->updateInput();
 
 	u32 key = keysDown();
 	if (key & KEY_Y)
@@ -93,7 +98,8 @@ void UICourtProfileDetail::reloadPage()
 		info = &pCourtUI->getPlayerList()[currProfileID];
 	u32 currAreaID = (info) ? (u32)info->area : 0;
 
-	btn_kickBan->setVisible(!!info && pCourtUI->isMod());
+	btn_kick->setVisible(!!info && pCourtUI->isMod());
+	btn_ban->setVisible(!!info && pCourtUI->isMod());
 
 	std::string character = (info) ? info->character : "";
 	if (info && character.empty())
@@ -161,11 +167,20 @@ void UICourtProfileDetail::onNextPage(void* pUserData)
 	pSelf->reloadPage();
 }
 
-void UICourtProfileDetail::onKickBan(void* pUserData)
+void UICourtProfileDetail::onKick(void* pUserData)
 {
 	UICourtProfileDetail* pSelf = (UICourtProfileDetail*)pUserData;
 
 	wav_play(pSelf->pCourtUI->sndCrtRcrd);
+	pSelf->pCourtUI->changeScreen(new UICourtModeratorDialog(pSelf->pCourtUI, pSelf->currProfile, pSelf->wasInPrivateEvidence, false));
+}
+
+void UICourtProfileDetail::onBan(void* pUserData)
+{
+	UICourtProfileDetail* pSelf = (UICourtProfileDetail*)pUserData;
+
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
+	pSelf->pCourtUI->changeScreen(new UICourtModeratorDialog(pSelf->pCourtUI, pSelf->currProfile, pSelf->wasInPrivateEvidence, true));
 }
 
 void UICourtProfileDetail::onMessagePR(void* pUserData, std::string msg)

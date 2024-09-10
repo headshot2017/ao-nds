@@ -18,6 +18,8 @@ UILabel::UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u
 	lineOffset = 12;
 	fontID = font;
 	paletteSlot = palSlot;
+	mX = 0;
+	mY = 0;
 
 	textCanvas = new u8[32*16];
 	memset(textCanvas, 0, 32*16);
@@ -66,6 +68,8 @@ void UILabel::setVisible(bool on)
 
 void UILabel::setPos(int x, int y, bool center)
 {
+	mX = x;
+	mY = y;
 	int w = getTextWidth(fontID, currText, gfxPerLine*32);
 
 	for (int i=0; i<gfxPerLine*maxLines; i++)

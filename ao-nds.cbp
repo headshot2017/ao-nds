@@ -103,6 +103,7 @@
 		<Unit filename="arm9/include/ui/court/judge.h" />
 		<Unit filename="arm9/include/ui/court/loading.h" />
 		<Unit filename="arm9/include/ui/court/message.h" />
+		<Unit filename="arm9/include/ui/court/moderatordialog.h" />
 		<Unit filename="arm9/include/ui/court/musiclist.h" />
 		<Unit filename="arm9/include/ui/court/mute.h" />
 		<Unit filename="arm9/include/ui/court/ooc.h" />
@@ -160,6 +161,7 @@
 		<Unit filename="arm9/source/ui/court/judge.cpp" />
 		<Unit filename="arm9/source/ui/court/loading.cpp" />
 		<Unit filename="arm9/source/ui/court/message.cpp" />
+		<Unit filename="arm9/source/ui/court/moderatordialog.cpp" />
 		<Unit filename="arm9/source/ui/court/musiclist.cpp" />
 		<Unit filename="arm9/source/ui/court/mute.cpp" />
 		<Unit filename="arm9/source/ui/court/ooc.cpp" />
