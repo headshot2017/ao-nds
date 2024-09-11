@@ -288,26 +288,35 @@ def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
 
 def convertCharIcon(sourceFile, targetFile, core):
     img = Image.open(sourceFile).convert("RGBA").resize((38, 38)).crop((0, 0, 64, 64))
+    imgbig = Image.open(sourceFile).convert("RGBA").crop((0, 0, 64, 64))
+
     pix = img.load()
     for x in range(img.size[0]):
         for y in range(img.size[1]):
             if pix[x, y][3] == 0:
                 pix[x, y] = (255, 0, 255, 255)
 
-    img.save("temp%d.png" % core)
-    img.close()
+    pix = imgbig.load()
+    for x in range(imgbig.size[0]):
+        for y in range(imgbig.size[1]):
+            if pix[x, y][3] == 0:
+                pix[x, y] = (255, 0, 255, 255)
 
     no_ext_file = os.path.splitext(targetFile)[0]
 
-    # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-    subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8" % core).wait()
+    for imgObj, suffix in ((img, ""), (imgbig, "_big")):
+        imgObj.save("temp%d.png" % core)
+        imgObj.close()
 
-    if os.path.exists(no_ext_file+".img.bin"):
-        os.remove(no_ext_file+".img.bin")
-    if os.path.exists(no_ext_file+".pal.bin"):
-        os.remove(no_ext_file+".pal.bin")
-    os.rename("temp%d.img.bin" % core, no_ext_file+".img.bin")
-    os.rename("temp%d.pal.bin" % core, no_ext_file+".pal.bin")
+        # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
+        subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8" % core).wait()
+
+        if os.path.exists(no_ext_file+suffix+".img.bin"):
+            os.remove(no_ext_file+suffix+".img.bin")
+        if os.path.exists(no_ext_file+suffix+".pal.bin"):
+            os.remove(no_ext_file+suffix+".pal.bin")
+        os.rename("temp%d.img.bin" % core, no_ext_file+suffix+".img.bin")
+        os.rename("temp%d.pal.bin" % core, no_ext_file+suffix+".pal.bin")
 
 def convertEmoteButtons(source, target, core):
     if not os.path.exists(target):
