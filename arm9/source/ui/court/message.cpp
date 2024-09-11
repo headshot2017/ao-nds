@@ -3,9 +3,13 @@
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
 
+#include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
+
+UICourtMessage::UICourtMessage(UIScreenCourt* courtUI, std::string MSG) : UISubScreen(courtUI), msg(utf8::utf8to16(MSG)) {}
+UICourtMessage::UICourtMessage(UIScreenCourt* courtUI, const char* MSG) : UISubScreen(courtUI), msg(utf8::utf8to16(std::string(MSG))) {}
 
 UICourtMessage::~UICourtMessage()
 {

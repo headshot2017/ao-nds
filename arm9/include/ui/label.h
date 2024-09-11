@@ -39,6 +39,8 @@ public:
 
 	int getX() {return mX;}
 	int getY() {return mY;}
+	std::u16string& getText() {return currText;}
+	std::string getText8();
 	u16** getGfx() {return textGfx;}
 	int getOamInd() {return oamStart;}
 	int nextOamInd() {return oamStart+(gfxPerLine*maxLines);}

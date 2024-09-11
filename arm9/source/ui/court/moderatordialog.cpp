@@ -9,6 +9,7 @@
 #include "engine.h"
 #include "ui/court/courtrecord.h"
 #include "ui/court/profiledetail.h"
+#include "ui/court/message.h"
 
 UICourtModeratorDialog::~UICourtModeratorDialog()
 {
@@ -272,6 +273,33 @@ void UICourtModeratorDialog::onConfirmClicked(void* pUserData)
 	UICourtModeratorDialog* pSelf = (UICourtModeratorDialog*)pUserData;
 
 	wav_play(pSelf->pCourtUI->sndSelect);
+
+	int duration;
+	if (pSelf->isBan)
+	{
+		if (pSelf->btn_perma->getFrame())
+			duration = -1;
+		else
+		{
+			try
+			{
+				int days = std::stoi(pSelf->lbl_daysValue->getText8());
+				int hours = std::stoi(pSelf->lbl_hoursValue->getText8());
+				int minutes = std::stoi(pSelf->lbl_minutesValue->getText8());
+				duration = (days*60*60) + (hours*60) + (minutes);
+			}
+			catch(...)
+			{
+				pSelf->pCourtUI->changeScreen(new UICourtMessage(pSelf->pCourtUI, "Invalid ban duration"));
+				return;
+			}
+		}
+	}
+	else
+		duration = 0;
+
+	gEngine->getSocket()->sendData("MA#" + std::to_string(pSelf->currProfileID) + "#" + std::to_string(duration) + "#" + pSelf->lbl_reasonValue->getText8() + "#%");
+
 	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 }
 

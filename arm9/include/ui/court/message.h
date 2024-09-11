@@ -15,6 +15,8 @@ class UICourtMessage : public UISubScreen
 
 public:
 	UICourtMessage(UIScreenCourt* courtUI, std::u16string MSG) : UISubScreen(courtUI), msg(MSG) {}
+	UICourtMessage(UIScreenCourt* courtUI, std::string MSG);
+	UICourtMessage(UIScreenCourt* courtUI, const char* MSG);
 	~UICourtMessage();
 
 	void init();

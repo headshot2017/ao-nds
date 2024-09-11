@@ -130,3 +130,8 @@ void UILabel::setColor(u32 textColor)
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
 }
+
+std::string UILabel::getText8()
+{
+	return utf8::utf16to8(currText);
+}

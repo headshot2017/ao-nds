@@ -451,7 +451,7 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 	if (isServer)
 	{
 		// UGLY!!! there should be an argument in the network msg to tell if it's an error or not
-		const char* errors[] = {
+		const char* messageList[] = {
 			"Blankposting",
 			"disabled in",
 			"forbidden in",
@@ -460,11 +460,12 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 			"custom emotes",
 			"a repeat",
 			"is too long",
+			"client(s) with ipid",
 		};
 
-		for (u32 i=0; i<sizeof(errors) / sizeof(const char*); i++)
+		for (u32 i=0; i<sizeof(messageList) / sizeof(const char*); i++)
 		{
-			if (chatmsg.find(errors[i]) != std::string::npos)
+			if (chatmsg.find(messageList[i]) != std::string::npos)
 			{
 				pSelf->icSendQueue.clear();
 				pSelf->changeScreen(new UICourtMessage(pSelf, utf8::utf8to16(chatmsg)));
