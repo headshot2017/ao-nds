@@ -37,6 +37,7 @@ class UICourtEvidence : public UISubScreen
 	UIButton* btn_evidence[8];
 	int cbLE;
 	int cbPR;
+	int cbPU;
 
 public:
 	UICourtEvidence(UIScreenCourt* courtUI) : UISubScreen(courtUI) {}
@@ -58,6 +59,7 @@ public:
 
 	static void onMessageLE(void* pUserData, std::string msg);
 	static void onMessagePR(void* pUserData, std::string msg);
+	static void onMessagePU(void* pUserData, std::string msg);
 };
 
 #endif // COURTRECORD_H_INCLUDED

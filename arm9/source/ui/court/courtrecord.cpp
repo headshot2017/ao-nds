@@ -45,6 +45,7 @@ UICourtEvidence::~UICourtEvidence()
 
 	gEngine->getSocket()->removeMessageCallback("LE", cbLE);
 	gEngine->getSocket()->removeMessageCallback("PR", cbPR);
+	gEngine->getSocket()->removeMessageCallback("PU", cbPU);
 }
 
 void UICourtEvidence::init()
@@ -111,6 +112,7 @@ void UICourtEvidence::init()
 
 	cbLE = gEngine->getSocket()->addMessageCallback("LE", onMessageLE, this);
 	cbPR = gEngine->getSocket()->addMessageCallback("PR", onMessagePR, this);
+	cbPU = gEngine->getSocket()->addMessageCallback("PU", onMessagePU, this);
 }
 
 void UICourtEvidence::updateInput()
@@ -362,6 +364,14 @@ void UICourtEvidence::onMessagePR(void* pUserData, std::string msg)
 	u32 maxPages = (u32)ceil((pSelf->pCourtUI->getPlayerList().size()+1)/8.f);
 	if (pSelf->currPage+1 > maxPages)
 		pSelf->currPage--;
+
+	pSelf->reloadPage();
+}
+
+void UICourtEvidence::onMessagePU(void* pUserData, std::string msg)
+{
+	UICourtEvidence* pSelf = (UICourtEvidence*)pUserData;
+	if (!pSelf->isProfiles) return;
 
 	pSelf->reloadPage();
 }
