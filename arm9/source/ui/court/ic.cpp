@@ -244,7 +244,8 @@ void UICourtIC::updateInput()
 					AOencode(chatmsg);
 					AOencode(showname);
 
-					std::string msg = "MS#chat#" +
+					std::string msg = "MS#" +
+						std::to_string(emote.deskMod) + "#" +
 						emote.preanim + "#" +
 						character.name + "#" +
 						emote.anim + "#" +
