@@ -108,6 +108,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("KK", onMessageKK, this);
 	sock->addMessageCallback("KB", onMessageKB, this);
 	sock->addMessageCallback("BD", onMessageBD, this);
+	sock->addMessageCallback("BB", onMessageBB, this);
 	sock->addMessageCallback("AUTH", onMessageAUTH, this);
 	sock->addMessageCallback("ZZ", onMessageZZ, this);
 	sock->addMessageCallback("PR", onMessagePR, this);
@@ -468,7 +469,7 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 			if (chatmsg.find(messageList[i]) != std::string::npos)
 			{
 				pSelf->icSendQueue.clear();
-				pSelf->changeScreen(new UICourtMessage(pSelf, utf8::utf8to16(chatmsg)));
+				pSelf->changeScreen(new UICourtMessage(pSelf, chatmsg));
 				break;
 			}
 		}
@@ -720,6 +721,12 @@ void UIScreenCourt::onMessageBD(void* pUserData, std::string msg)
 	gEngine->changeScreen(new UIScreenDisconnected("You are banned from this server", argumentAt(msg, 1), false));
 }
 
+void UIScreenCourt::onMessageBB(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+	pSelf->changeScreen(new UICourtMessage(pSelf, argumentAt(msg, 1)));
+}
+
 void UIScreenCourt::onMessageAUTH(void* pUserData, std::string msg)
 {
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
@@ -739,7 +746,7 @@ void UIScreenCourt::onMessageZZ(void* pUserData, std::string msg)
 
 	if (!pSelf->guard) return;
 
-	std::u16string modcall = u"[MOD CALL] " + utf8::utf8to16(argumentAt(msg, 1));
+	std::u16string modcall = utf8::utf8to16(argumentAt(msg, 1));
 	separateLines(0, modcall, 7, false, pSelf->oocLog);
 
 	pSelf->changeScreen(new UICourtMessage(pSelf, modcall));

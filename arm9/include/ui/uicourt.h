@@ -161,6 +161,7 @@ public:
 	static void onMessageKK(void* pUserData, std::string msg);
 	static void onMessageKB(void* pUserData, std::string msg);
 	static void onMessageBD(void* pUserData, std::string msg);
+	static void onMessageBB(void* pUserData, std::string msg);
 	static void onMessageAUTH(void* pUserData, std::string msg);
 	static void onMessageZZ(void* pUserData, std::string msg);
 	static void onMessagePR(void* pUserData, std::string msg);
