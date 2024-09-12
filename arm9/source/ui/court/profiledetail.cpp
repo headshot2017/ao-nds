@@ -11,6 +11,7 @@
 #include "ui/court/icchatlog.h"
 #include "ui/court/evidencedetail.h"
 #include "ui/court/moderatordialog.h"
+#include "ui/court/message.h"
 
 UICourtProfileDetail::~UICourtProfileDetail()
 {
@@ -18,11 +19,13 @@ UICourtProfileDetail::~UICourtProfileDetail()
 	delete btn_profilesEvidence;
 	delete btn_prevPage;
 	delete btn_nextPage;
+	delete btn_report;
 	delete btn_kick;
 	delete btn_ban;
 	delete lbl_name;
 	delete lbl_desc;
 	delete spr_profile;
+	delete kb_input;
 
 	gEngine->getSocket()->removeMessageCallback("PR", cbPR);
 	gEngine->getSocket()->removeMessageCallback("PU", cbPU);
@@ -37,13 +40,17 @@ void UICourtProfileDetail::init()
 	btn_profilesEvidence = new UIButton(&oamSub, "/data/ao-nds/ui/spr_profilesEvidence", btn_back->nextOamInd(), 1, 1, SpriteSize_64x32, 256-55, 0, 55, 31, 64, 32, 1);
 	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft_medium", btn_profilesEvidence->nextOamInd(), 1, 2, SpriteSize_16x32, 0, 64, 16, 63, 16, 32, 2);
 	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_medium", btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 256-16, 64, 16, 63, 16, 32, 3);
-	btn_kick = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_nextPage->nextOamInd(), 2, 1, SpriteSize_32x16, 96-48, 36, 64, 15, 32, 16, 4);
-	btn_ban = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_kick->nextOamInd(), 2, 1, SpriteSize_32x16, 96+48, 36, 64, 15, 32, 16, 4);
+	btn_report = new UIButton(&oamSub, "/data/ao-nds/ui/spr_report", btn_nextPage->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 36, 64, 15, 32, 16, 4);
+	btn_kick = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_report->nextOamInd(), 2, 1, SpriteSize_32x16, 96-68, 36, 64, 15, 32, 16, 5);
+	btn_ban = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_kick->nextOamInd(), 2, 1, SpriteSize_32x16, 96+68, 36, 64, 15, 32, 16, 5);
 
-	lbl_name = new UILabel(&oamSub, btn_ban->nextOamInd(), 4, 1, RGB15(31, 16, 0), 5, 0);
-	lbl_desc = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 4, RGB15(4, 4, 4), 6, 0);
+	lbl_name = new UILabel(&oamSub, btn_ban->nextOamInd(), 4, 1, RGB15(31, 16, 0), 6, 0);
+	lbl_desc = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 4, RGB15(4, 4, 4), 7, 0);
 
-	spr_profile = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 23, 66, 60, 60, 64, 64, 7);
+	spr_profile = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 23, 66, 60, 60, 64, 64, 8);
+
+	kb_input = new AOkeyboard(2, spr_profile->nextOamInd(), 9);
+	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	btn_profilesEvidence->setFrame(1);
 	btn_ban->setFrame(1);
@@ -58,6 +65,7 @@ void UICourtProfileDetail::init()
 	btn_profilesEvidence->connect(onProfilesEvidenceClicked, this);
 	btn_prevPage->connect(onPrevPage, this);
 	btn_nextPage->connect(onNextPage, this);
+	btn_report->connect(onReport, this);
 	btn_kick->connect(onKick, this);
 	btn_ban->connect(onBan, this);
 
@@ -69,10 +77,32 @@ void UICourtProfileDetail::init()
 
 void UICourtProfileDetail::updateInput()
 {
+	if (kb_input->isVisible())
+	{
+		int result = kb_input->updateInput();
+		if (result != 0)
+		{
+			dmaCopy(bgPal, BG_PALETTE_SUB, 512);
+			showEverything();
+
+			if (result > 0)
+			{
+				if (kb_input->getValue().empty())
+				{
+					pCourtUI->changeScreen(new UICourtMessage(pCourtUI, "Please enter a reason"));
+					return;
+				}
+				gEngine->getSocket()->sendData("ZZ#" + kb_input->getValueUTF8() + "#" + std::to_string(currProfileID) + "#%");
+			}
+		}
+		return;
+	}
+
 	btn_back->updateInput();
 	btn_profilesEvidence->updateInput();
 	btn_prevPage->updateInput();
 	btn_nextPage->updateInput();
+	btn_report->updateInput();
 	btn_kick->updateInput();
 	btn_ban->updateInput();
 
@@ -82,6 +112,39 @@ void UICourtProfileDetail::updateInput()
 		wav_play(pCourtUI->sndCrtRcrd);
 		pCourtUI->changeScreen(new UICourtICChatLog(pCourtUI));
 	}
+}
+
+void UICourtProfileDetail::hideEverything()
+{
+	bgHide(bgIndex);
+
+	btn_back->setVisible(false);
+	btn_profilesEvidence->setVisible(false);
+	btn_prevPage->setVisible(false);
+	btn_nextPage->setVisible(false);
+	btn_report->setVisible(false);
+	btn_kick->setVisible(false);
+	btn_ban->setVisible(false);
+	lbl_name->setVisible(false);
+	lbl_desc->setVisible(false);
+	spr_profile->setVisible(false);
+}
+
+void UICourtProfileDetail::showEverything()
+{
+	bgShow(bgIndex);
+
+	btn_back->setVisible(true);
+	btn_profilesEvidence->setVisible(true);
+	btn_prevPage->setVisible(true);
+	btn_nextPage->setVisible(true);
+	btn_report->setVisible(true);
+	lbl_name->setVisible(true);
+	lbl_desc->setVisible(true);
+	spr_profile->setVisible(true);
+
+	btn_kick->setVisible(pCourtUI->isMod());
+	btn_ban->setVisible(pCourtUI->isMod());
 }
 
 void UICourtProfileDetail::update()
@@ -98,6 +161,7 @@ void UICourtProfileDetail::reloadPage()
 		info = &pCourtUI->getPlayerList()[currProfileID];
 	u32 currAreaID = (info) ? (u32)info->area : 0;
 
+	btn_report->setVisible(!!info);
 	btn_kick->setVisible(!!info && pCourtUI->isMod());
 	btn_ban->setVisible(!!info && pCourtUI->isMod());
 
@@ -126,7 +190,7 @@ void UICourtProfileDetail::reloadPage()
 	std::u16string finalDesc = utf8::utf8to16(desc);
 	lbl_desc->setText(finalDesc);
 
-	spr_profile->setImage("/data/ao-nds/characters/" + (info ? info->character : "") + "/char_icon_big", 64, 64, 7);
+	spr_profile->setImage("/data/ao-nds/characters/" + (info ? info->character : "") + "/char_icon_big", 64, 64, 8);
 }
 
 void UICourtProfileDetail::onBackClicked(void* pUserData)
@@ -165,6 +229,15 @@ void UICourtProfileDetail::onNextPage(void* pUserData)
 	if (pSelf->currProfile >= pSelf->pCourtUI->getPlayerListIDs().size()) pSelf->currProfile = 0;
 
 	pSelf->reloadPage();
+}
+
+void UICourtProfileDetail::onReport(void* pUserData)
+{
+	UICourtProfileDetail* pSelf = (UICourtProfileDetail*)pUserData;
+
+	wav_play(pSelf->pCourtUI->sndCrtRcrd);
+	pSelf->hideEverything();
+	pSelf->kb_input->show16("Enter report reason");
 }
 
 void UICourtProfileDetail::onKick(void* pUserData)

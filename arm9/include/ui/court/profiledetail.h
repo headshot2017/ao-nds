@@ -4,6 +4,7 @@
 #include "ui/uicourt.h"
 #include "ui/button.h"
 #include "ui/label.h"
+#include "ui/keyboard.h"
 
 class UICourtProfileDetail : public UISubScreen
 {
@@ -15,6 +16,7 @@ class UICourtProfileDetail : public UISubScreen
 	UIButton* btn_profilesEvidence;
 	UIButton* btn_prevPage;
 	UIButton* btn_nextPage;
+	UIButton* btn_report;
 	UIButton* btn_kick;
 	UIButton* btn_ban;
 
@@ -22,6 +24,8 @@ class UICourtProfileDetail : public UISubScreen
 	UILabel* lbl_desc;
 
 	UIButton* spr_profile;
+
+	AOkeyboard* kb_input;
 
 	int cbPR;
 	int cbPU;
@@ -36,12 +40,15 @@ public:
 	void updateInput();
 	void update();
 
+	void hideEverything();
+	void showEverything();
 	void reloadPage();
 
 	static void onBackClicked(void* pUserData);
 	static void onProfilesEvidenceClicked(void* pUserData);
 	static void onPrevPage(void* pUserData);
 	static void onNextPage(void* pUserData);
+	static void onReport(void* pUserData);
 	static void onKick(void* pUserData);
 	static void onBan(void* pUserData);
 
