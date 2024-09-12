@@ -40,7 +40,7 @@ void UICourtIngameMenu::init()
 	btn_changeChar = new UIButton(&oamSub, "/data/ao-nds/ui/spr_changeChar", btn_music->nextOamInd(), 2, 1, SpriteSize_64x32, 136, 110, 112, 28, 64, 32, 3);
 	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_courtRecord", btn_changeChar->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 4);
 	btn_guard = new UIButton(&oamSub, "/data/ao-nds/ui/spr_checkBox", btn_courtRecord->nextOamInd(), 1, 1, SpriteSize_16x16, 4, 192-16, 16, 16, 16, 16, 5);
-	btn_callMod = new UIButton(&oamSub, "/data/ao-nds/ui/spr_callMod", btn_guard->nextOamInd(), 2, 1, SpriteSize_32x16, 4, 192-36, 64, 15, 32, 16, 6);
+	btn_callMod = new UIButton(&oamSub, "/data/ao-nds/ui/spr_callMod", btn_guard->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 192-36, 64, 15, 32, 16, 6);
 	lbl_currChar = new UILabel(&oamSub, btn_callMod->nextOamInd(), 6, 1, RGB15(5,5,5), 7, 0);
 	lbl_guard = new UILabel(&oamSub, lbl_currChar->nextOamInd(), 5, 1, RGB15(5,5,5), 7, 0);
 
