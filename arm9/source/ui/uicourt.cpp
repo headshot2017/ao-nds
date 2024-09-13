@@ -546,7 +546,7 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 			std::string emoteModStr = argumentAt(ini["emotions"][I], 3);
 			int emoteModifier = (!emoteModStr.empty()) ? std::stoi(emoteModStr) : 0;
 			std::string deskModStr = argumentAt(ini["emotions"][I], 4);
-			int deskMod = (deskModStr.empty()) ? 1 : 0;
+			int deskMod = (!deskModStr.empty()) ? std::stoi(deskModStr) : 0;
 
 			std::string sound = (ini["soundn"].has(I)) ? ini["soundn"][I] : "1";
 

@@ -192,7 +192,7 @@ void Courtroom::handleChat()
 		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
 	else
 	{
-		background->setBgSide(currIC.side);
+		background->setBgSide(currIC.side, currIC.deskMod);
 
 		if (currIC.otherCharID >= 0)
 		{

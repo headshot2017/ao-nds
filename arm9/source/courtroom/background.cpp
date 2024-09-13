@@ -95,12 +95,12 @@ bool Background::setBg(const std::string& name)
 
 	std::string newSide = currentSide;
 	if (newSide.empty()) newSide = "def";
-	setBgSide(newSide, true);
+	setBgSide(newSide, true, true);
 
 	return true;
 }
 
-void Background::setBgSide(const std::string& side, bool force)
+void Background::setBgSide(const std::string& side, bool showDesk, bool force)
 {
 	if (currentBg.empty() || !sideToBg.count(side) || (!force && !zooming && side == currentSide))
 		return;
@@ -141,24 +141,7 @@ void Background::setBgSide(const std::string& side, bool force)
 	if (bgPal) delete[] bgPal;
 	mp3_fill_buffer();
 
-	u8* deskGfxImg = 0;
-	u8* deskPal = 0;
-	if (sideToDesk.count(side))
-	{
-		deskGfxImg = readFile(currentBg + "/" + sideToDesk[side] + ".img.bin");
-		deskPal = readFile(currentBg + "/" + sideToDesk[side] + ".pal.bin", &deskPalLen);
-	}
-
 	// handle desk sprite
-
-	if (deskPal)
-	{
-		vramSetBankF(VRAM_F_LCD);
-		dmaCopy(deskPal, &VRAM_F_EXT_SPR_PALETTE[1], deskPalLen); // copy palette
-		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
-		delete[] deskPal;
-	}
-
 	int horTiles, verTiles;
 	readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
 
@@ -169,30 +152,49 @@ void Background::setBgSide(const std::string& side, bool force)
 		deskGfx[i] = 0;
 	}
 
-	for (int y=0; y<verTiles; y++)
+	if (showDesk)
 	{
-		for (int x=0; x<horTiles; x++)
+		u8* deskGfxImg = 0;
+		u8* deskPal = 0;
+		if (sideToDesk.count(side))
 		{
-			mp3_fill_buffer();
-
-			int i = y*4+x;
-
-			deskGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x32, SpriteColorFormat_256Color);
-			if (!deskGfx[i])
-			{
-				oamSetHidden(&oamMain, i, true);
-				continue;
-			}
-
-			// copy specific 64x32 tile from image data
-			u8* offset = deskGfxImg + i * 64*32;
-			dmaCopy(offset, deskGfx[i], 64*32);
-
-			oamSet(&oamMain, i, x*64+xOffset, y*32+yOffset + 192 - (verTiles*32), 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfx[i] || !visible, false, false, false);
+			deskGfxImg = readFile(currentBg + "/" + sideToDesk[side] + ".img.bin");
+			deskPal = readFile(currentBg + "/" + sideToDesk[side] + ".pal.bin", &deskPalLen);
 		}
+
+		if (deskPal)
+		{
+			vramSetBankF(VRAM_F_LCD);
+			dmaCopy(deskPal, &VRAM_F_EXT_SPR_PALETTE[1], deskPalLen); // copy palette
+			vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+			delete[] deskPal;
+		}
+
+		for (int y=0; y<verTiles; y++)
+		{
+			for (int x=0; x<horTiles; x++)
+			{
+				mp3_fill_buffer();
+
+				int i = y*4+x;
+
+				deskGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_64x32, SpriteColorFormat_256Color);
+				if (!deskGfx[i])
+				{
+					oamSetHidden(&oamMain, i, true);
+					continue;
+				}
+
+				// copy specific 64x32 tile from image data
+				u8* offset = deskGfxImg + i * 64*32;
+				dmaCopy(offset, deskGfx[i], 64*32);
+
+				oamSet(&oamMain, i, x*64+xOffset, y*32+yOffset + 192 - (verTiles*32), 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfx[i] || !visible, false, false, false);
+			}
+		}
+		delete[] deskGfxImg;
 	}
 	oamUpdate(&oamMain);
-	delete[] deskGfxImg;
 
 	currentSide = side;
 	currVertTiles = verTiles;
