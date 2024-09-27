@@ -15,6 +15,43 @@ def convertBackground(source, target):
     if os.path.exists(target+"/desk_tiles.cfg"):
         os.remove(target+"/desk_tiles.cfg")
 
+    # convert court.png (full courtroom view) if available
+    if os.path.exists(source+"/court.png") and os.path.exists(source+"/design.ini"):
+        img = Image.open(source+"/court.png").convert("RGB").convert("P", colors=256, palette=Image.ADAPTIVE, dither=False)
+        originalHeight = img.size[1]
+
+        # resize if not 192p
+        if img.size[1] != 192:
+            ratio = img.size[0] / float(img.size[1])
+            img = img.resize((int(192*ratio), 192), Image.BICUBIC)
+
+        partWidth = 264.
+        parts = int(math.ceil(img.size[0] / partWidth))
+        for i in range(parts):
+            x0 = partWidth*i
+            x1 = partWidth*(i+1)
+            if x1 > img.size[0]: x1 = img.size[0]
+            part = img.crop((x0, 0, x1, 192))
+            if (part.size[0] < 264):
+                part = part.crop((0, 0, 264, 192))
+            part.save("court%d.png" % i)
+
+        for i in range(parts):
+            subprocess.Popen("./grit court%d.png -g -gB8 -gt -m! -p -ftb -fh!" % (i)).wait()
+            if os.path.exists(target+"/court%d.img.bin" % i):
+                os.remove(target+"/court%d.img.bin" % i)
+            if os.path.exists(target+"/court%d.pal.bin" % i):
+                os.remove(target+"/court%d.pal.bin" % i)
+            os.rename("court%d.img.bin" % i, target+"/court%d.img.bin" % i)
+            os.rename("court%d.pal.bin" % i, target+"/court%d.pal.bin" % i)
+            os.remove("court%d.png" % i)
+
+        inifile = open(source+"/design.ini").read()
+        inifile += "\n[nds]\n"
+        inifile += "original_scale=%d\n" % (originalHeight / img.size[1])
+        inifile += "total_parts=%d\n" % parts
+        open(target+"/design.ini", "w").write(inifile)
+
     # convert background first
     for imgfile in ["defenseempty", "prosecutorempty", "witnessempty", "helperstand", "prohelperstand", "judgestand", "jurystand", "seancestand"]:
         for ext in [".png", ".webp", ".gif", ".apng"]:

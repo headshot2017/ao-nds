@@ -8,7 +8,7 @@ Shout::Shout(Courtroom* pCourt)
 {
 	m_pCourt = pCourt;
 
-	bgIndex = bgInit(2, BgType_Text4bpp, BgSize_T_512x256, 5, 6);
+	bgIndex = bgInit(2, BgType_Text4bpp, BgSize_T_512x256, 4, 6);
 	bgHide(bgIndex);
 	bgMapLen = 0;
 	visible = false;
