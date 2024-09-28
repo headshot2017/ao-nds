@@ -5,12 +5,17 @@
 
 #include <nds/arm9/background.h>
 #include <nds/arm9/sprite.h>
+#include <nds/arm9/math.h>
+#include <nds/timers.h>
 
 #include "mini/ini.h"
 #include "mp3_shared.h"
 #include "global.h"
 
-std::unordered_map<std::string, std::string> sideToBg = {
+//the speed of the timer when using ClockDivider_1024
+#define TIMER_SPEED div32(BUS_CLOCK,1024)
+
+static std::unordered_map<std::string, std::string> sideToBg = {
     {"def", "defenseempty"},
     {"pro", "prosecutorempty"},
     {"wit", "witnessempty"},
@@ -21,7 +26,7 @@ std::unordered_map<std::string, std::string> sideToBg = {
     {"sea", "seancestand"},
 };
 
-std::unordered_map<std::string, std::string> sideToDesk = {
+static std::unordered_map<std::string, std::string> sideToDesk = {
     {"def", "defensedesk"},
     {"pro", "prosecutiondesk"},
     {"wit", "stand"},
@@ -29,7 +34,7 @@ std::unordered_map<std::string, std::string> sideToDesk = {
     {"jur", "jurydesk"},
 };
 
-void readDeskTiles(const std::string& value, int* horizontal, int* vertical)
+static void readDeskTiles(const std::string& value, int* horizontal, int* vertical)
 {
     std::size_t delimiterPos = value.find(",");
     if (delimiterPos == std::string::npos)
@@ -43,6 +48,91 @@ void readDeskTiles(const std::string& value, int* horizontal, int* vertical)
     *vertical = std::stoi(value.substr(delimiterPos + 1));
 }
 
+// https://github.com/warrenm/AHEasing/blob/82d85f7183e207bf4405d427a723a8a85406ddf4/AHEasing/easing.c#L81
+static int easeInOutCubic(int t)
+{
+	if (t < 2048)
+		return mulf32(mulf32(mulf32(inttof32(4), t), t), t);
+	else
+	{
+		int f = (mulf32(inttof32(2), t) - inttof32(2));
+		return mulf32(mulf32(mulf32(2048, f), f), f) + inttof32(1);
+	}
+}
+
+
+void FullCourtInfo::loadPosition(int index, int offset)
+{
+	if (index < 0) return;
+
+	camOffset = offset;
+	lastState = true;
+
+	u16* gfxPtr = bgGetGfxPtr(index);
+	u16* mapPtr = bgGetMapPtr(index);
+	for (int y=0; y<24; y++)
+	{
+		for (int x=0; x<33; x++)
+		{
+			int xx = (x+camOffset/8);
+			int mapOffset = (32*32 * ((xx%64)/32)) + (y * 32 + (xx%32));
+			int courtGfxInd = xx/33;
+			int gfxOffset = (y*264*4) + ((xx%33)*8*4);
+
+			mapPtr[mapOffset] = (y * 33 + (xx%33));
+			dmaCopy(courtGfx[courtGfxInd]+gfxOffset, gfxPtr+gfxOffset, 64);
+		}
+	}
+}
+
+void FullCourtInfo::startScroll(int index, const std::string& sideBefore, const std::string& sideAfter)
+{
+	bgIndex = index;
+	camStart = camOffset;
+	camEnd = sideInfo[sideAfter].origin - 128;
+	camTimer = 0;
+	camTimerMax = sideInfo[sideBefore].slideMS[sideAfter];
+	lastState = true;
+
+	timerStop(3);
+	timerStart(3, ClockDivider_1024, 0, NULL);
+}
+
+void FullCourtInfo::clean()
+{
+	if (courtPalette) delete[] courtPalette;
+	courtPalette = 0;
+
+	for (int i=0; i<parts; i++)
+	{
+		if (!courtGfx[i]) continue;
+		delete[] courtGfx[i];
+	}
+
+	if (courtGfx) delete[] courtGfx;
+	courtGfx = 0;
+
+	camOffset = 0;
+	parts = 0;
+	lastState = false;
+}
+
+void FullCourtInfo::update()
+{
+	if (!parts || bgIndex < 0 || !(TIMER_CR(3) & TIMER_ENABLE))
+		return;
+
+	u32 elapsed = timerElapsed(3);
+	u32 ms = f32toint(mulf32(divf32(inttof32(elapsed), inttof32(TIMER_SPEED)), inttof32(1000)));
+	camTimer = (camTimer+ms < camTimerMax) ? camTimer+ms : camTimerMax;
+	if (camTimer == camTimerMax)
+		timerStop(3);
+
+	int d = easeInOutCubic( divf32(inttof32(camTimer), inttof32(camTimerMax)) );
+	camOffset = camStart + f32toint(mulf32(inttof32(camEnd - camStart), d));
+	loadPosition(bgIndex, camOffset);
+}
+
 
 Background::Background()
 {
@@ -52,11 +142,6 @@ Background::Background()
 	bgHide(bgIndex);
 	visible = false;
 	currBgGfxLen = 0;
-	fullCourt.parts = 0;
-	fullCourt.courtPalette = 0;
-	fullCourt.courtGfx = 0;
-	fullCourt.camOffset = 0;
-	fullCourt.lastState = false;
 
 	zooming = false;
 	zoomScroll = 0;
@@ -79,7 +164,7 @@ Background::~Background()
 	if (currBgGfxLen) dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), currBgGfxLen);
 	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
 
-	cleanFullCourt();
+	fullCourt.clean();
 
 	for (int i=0; i<4*6; i++)
 	{
@@ -87,49 +172,6 @@ Background::~Background()
 		if (deskGfx[i]) oamFreeGfx(&oamMain, deskGfx[i]);
 	}
 	bgHide(bgIndex);
-}
-
-void Background::loadBgPosition(int camOffset)
-{
-	fullCourt.camOffset = camOffset;
-
-	u16* gfxPtr = bgGetGfxPtr(bgIndex);
-	u16* mapPtr = bgGetMapPtr(bgIndex);
-	for (int y=0; y<24; y++)
-	{
-		for (int x=0; x<33; x++)
-		{
-			int xx = (x+camOffset/8);
-			int mapOffset = (32*32 * ((xx%64)/32)) + (y * 32 + (xx%32));
-			int courtGfxInd = xx/33;
-			int gfxOffset = (y*264*4) + ((xx%33)*8*4);
-
-			mapPtr[mapOffset] = (y * 33 + (xx%33));
-			dmaCopy(fullCourt.courtGfx[courtGfxInd]+gfxOffset, gfxPtr+gfxOffset, 64);
-		}
-	}
-}
-
-void Background::cleanFullCourt()
-{
-	if (fullCourt.courtPalette)
-	{
-		delete[] fullCourt.courtPalette;
-		fullCourt.courtPalette = 0;
-	}
-	for (int i=0; i<fullCourt.parts; i++)
-	{
-		if (!fullCourt.courtGfx[i]) continue;
-		delete[] fullCourt.courtGfx[i];
-	}
-	if (fullCourt.courtGfx)
-	{
-		delete[] fullCourt.courtGfx;
-		fullCourt.courtGfx = 0;
-	}
-	fullCourt.camOffset = 0;
-	fullCourt.parts = 0;
-	fullCourt.lastState = false;
 }
 
 bool Background::setBg(const std::string& name)
@@ -144,7 +186,7 @@ bool Background::setBg(const std::string& name)
 	if (!deskTiles.load(bgPath + "/desk_tiles.cfg"))
 		return false;
 
-	cleanFullCourt();
+	fullCourt.clean();
 
 	mINI::INIFile file(bgPath + "/design.ini");
 	mINI::INIStructure ini;
@@ -166,11 +208,6 @@ bool Background::setBg(const std::string& name)
 				std::string filename = "/court" + std::to_string(i) + ".img.bin";
 				fullCourt.courtGfx[i] = (u16*)readFile(bgPath + filename);
 			}
-
-			vramSetBankE(VRAM_E_LCD);
-			dmaCopy(fullCourt.courtPalette, &VRAM_E_EXT_PALETTE[bgIndex][0], fullCourt.paletteLen);
-			vramSetBankE(VRAM_E_BG_EXT_PALETTE);
-			BG_PALETTE[0] = fullCourt.courtPalette[0];
 
 			fullCourt.sideInfo.clear();
 			fullCourt.sideInfo["def"] = {};
@@ -206,7 +243,7 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool force)
 	if (zooming)
 	{
 		currentSide = "";
-		bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_512x256, 1, 1);
+		bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_512x256, 0, 1);
 		bgSetPriority(bgIndex, 3);
 	}
 
@@ -220,8 +257,10 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool force)
 			BG_PALETTE[0] = fullCourt.courtPalette[0];
 		}
 
-		loadBgPosition(fullCourt.sideInfo[side].origin - 128);
-		fullCourt.lastState = true;
+		if (!fullCourt.lastState)
+			fullCourt.loadPosition(bgIndex, fullCourt.sideInfo[side].origin - 128);
+		else if (fullCourt.sideInfo.count(currentSide))
+			fullCourt.startScroll(bgIndex, currentSide, side);
 	}
 	else
 	{
@@ -327,10 +366,11 @@ void Background::setZoom(bool scrollLeft, bool force)
 
 	if (!zooming)
 	{
-		bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 1, 1);
+		bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 		bgSetPriority(bgIndex, 3);
 	}
 
+	fullCourt.lastState = false;
 	zooming = true;
 	zoomScroll = 0;
 	zoomScrollAdd = newScrollAdd;
@@ -383,7 +423,11 @@ void Background::update()
 		bgSetScroll(bgIndex, -xOffset+zoomScroll, -yOffset);
 	}
 	else
+	{
+		fullCourt.update();
 		bgSetScroll(bgIndex, -xOffset+fullCourt.camOffset, -yOffset);
+		if (fullCourt.parts) bgUpdate();
+	}
 
 	for (int i=0; i<4*6; i++)
 	{

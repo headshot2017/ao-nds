@@ -22,12 +22,35 @@ struct FullCourtInfo
 	int parts;
 	std::unordered_map<std::string, CourtSideInfo> sideInfo;
 
+	int bgIndex;
 	u16* courtPalette;
 	u32 paletteLen;
 	u16** courtGfx;
 
 	bool lastState;
 	int camOffset;
+	u32 camTimer;
+	u32 camTimerMax;
+	int camStart;
+	int camEnd;
+
+	////////////////////////////////////////////////////////////////
+	FullCourtInfo() :
+		parts(0),
+		bgIndex(-1),
+		courtPalette(0),
+		courtGfx(0),
+		lastState(false),
+		camOffset(0),
+		camTimer(0),
+		camTimerMax(0),
+		camStart(0),
+		camEnd(0) {}
+
+	void loadPosition(int index, int offset);
+	void startScroll(int index, const std::string& sideBefore, const std::string& sideAfter);
+	void clean();
+	void update();
 };
 
 class Background
@@ -51,9 +74,6 @@ class Background
 
 	int xOffset;
 	int yOffset;
-
-	void loadBgPosition(int camOffset);
-	void cleanFullCourt();
 
 public:
 	Background();
