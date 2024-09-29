@@ -11,6 +11,7 @@
 #include <dswifi9.h>
 
 #include "engine.h"
+#include "wifikb/wifikb.h"
 #include "ui/uimainmenu.h"
 
 const char* assocStatusDetails[] = {
@@ -140,6 +141,7 @@ void UIScreenWifi::update()
 
 	if (Wifi_AssocStatus() == ASSOCSTATUS_ASSOCIATED && !gEngine->isFading())
 	{
+		wifikb::init();
 		gEngine->resetWifiSwitch();
 		gEngine->changeScreen(new UIScreenMainMenu);
 	}

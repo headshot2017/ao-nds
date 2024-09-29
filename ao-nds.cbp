@@ -129,6 +129,7 @@
 		<Unit filename="arm9/include/utf8/cpp17.h" />
 		<Unit filename="arm9/include/utf8/cpp20.h" />
 		<Unit filename="arm9/include/utf8/unchecked.h" />
+		<Unit filename="arm9/include/wifikb/wifikb.h" />
 		<Unit filename="arm9/source/animStream.cpp" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
 		<Unit filename="arm9/source/colors.cpp" />
@@ -183,6 +184,7 @@
 		<Unit filename="arm9/source/websocket/mongoose.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="arm9/source/wifikb/wifikb.cpp" />
 		<Unit filename="common/dr_wav.h" />
 		<Unit filename="common/mp3_shared.h" />
 		<Unit filename="helix/mp3common.h" />

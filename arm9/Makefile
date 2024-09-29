@@ -28,8 +28,8 @@ include $(DEVKITARM)/base_rules
 # EXPORT_DIR is the folder where to copy the output file when asked 'make export'
 #---------------------------------------------------------------------------------
 BUILD		:= build
-SOURCES		:= source source/mp3 source/courtroom source/ui source/ui/court source/websocket source/sockets ../helix ../helix/real
-INCLUDES	:= include ../common ../helix ../helix/real
+SOURCES		:= source source/mp3 source/courtroom source/ui source/ui/court source/websocket source/sockets source/wifikb ../helix ../helix/real
+INCLUDES	:= include include/wifikb ../common ../helix ../helix/real
 DATA		:=
 IMAGES		:= gfx
 EXPORT_DIR	:=

@@ -15,6 +15,7 @@
 #include "mp3_shared.h"
 #include "fonts.h"
 #include "engine.h"
+#include "wifikb/wifikb.h"
 #include "ui/uiwificonnect.h"
 
 u32 showDisclaimer()
@@ -141,6 +142,7 @@ int main()
 	{
 		scanKeys();
 
+		wifikb::update();
 		gEngine->updateInput();
 		gEngine->update();
 

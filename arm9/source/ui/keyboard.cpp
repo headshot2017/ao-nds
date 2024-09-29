@@ -5,6 +5,7 @@
 
 #include "utf8.h"
 #include "mp3_shared.h"
+#include "wifikb/wifikb.h"
 
 static void keyboardShowAlt(Keyboard* kb)
 {
@@ -90,6 +91,9 @@ void AOkeyboard::show16(const char* plsWrite, std::u16string startValue)
 	lbl_written->setText(startValue);
 	oamUpdate(&oamSub);
 
+	wifikb::send(plsWrite);
+	wifikb::start();
+
 	dmaCopy(m_kb.palette, BG_PALETTE_SUB, m_kb.paletteLen);
 	keyboardShowAlt(&m_kb);
 }
@@ -102,10 +106,14 @@ void AOkeyboard::show(const char* plsWrite, std::string startValue)
 int AOkeyboard::updateInput()
 {
 	int c = keyboardUpdate();
+	wifikb::KeyStruct wifikey;
+	if (wifikb::getKey(&wifikey))
+		c = (wifikey.asciiCode) ? wifikey.asciiCode : wifikey.ndsKeyCode;
 
 	if (c == DVK_ENTER || c == DVK_FOLD)
 	{
 		int ret = -1;
+		wifikb::stop();
 		keyboardHideAlt(&m_kb);
 
 		lbl_plswrite->setVisible(false);
