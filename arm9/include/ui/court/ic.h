@@ -33,6 +33,7 @@ class UICourtIC : public UISubScreen
 	UIButton* btn_flip;
 	UIButton* btn_shake;
 	UIButton* btn_flash;
+	UIButton* btn_slide;
 	UIButton* btn_prevPage;
 	UIButton* btn_nextPage;
 	UIButton* btn_emote[4];
@@ -44,6 +45,7 @@ class UICourtIC : public UISubScreen
 	UILabel* lbl_showname;
 	UILabel* lbl_color;
 	UILabel* lbl_shout;
+	UILabel* lbl_slide;
 
 	AOkeyboard* kb_input;
 	bool isWritingChat;
@@ -86,6 +88,7 @@ public:
 	static void onFlipClicked(void* pUserData);
 	static void onShakeClicked(void* pUserData);
 	static void onFlashClicked(void* pUserData);
+	static void onSlideClicked(void* pUserData);
 	static void onPrevPage(void* pUserData);
 	static void onNextPage(void* pUserData);
 	static void onEmoteClicked(void* pUserData);

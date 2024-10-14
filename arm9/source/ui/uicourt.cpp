@@ -351,6 +351,8 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	if (pSelf->charList.empty() || pSelf->charList[charID].muted)
 		return;
 
+	u32 argc = totalArguments(msg);
+
 	std::string charname = argumentAt(msg, 3);
 	std::string showname = argumentAt(msg, 16);
 	AOdecode(charname);
@@ -427,7 +429,8 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.frameFlash = argumentAt(msg, 27);
 	data.frameSFX = argumentAt(msg, 28);
 	data.additive = argumentAt(msg, 29) == "1";
-	data.blip = gEngine->getCharBlip(lowerCharname);
+	data.blip = (argc >= 32) ? argumentAt(msg, 31) : gEngine->getCharBlip(lowerCharname);
+	data.panCourt = (argc >= 33 && argumentAt(msg, 32) == "1");
 	if (data.blip.empty()) data.blip = pSelf->charList[charID].blip;
 
 	pSelf->icReceiveQueue.push_back(data);

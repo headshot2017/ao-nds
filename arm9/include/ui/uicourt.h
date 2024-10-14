@@ -182,13 +182,14 @@ public:
 
 	struct ICControls
 	{
-		ICControls() : additive(0), preanim(0), immediate(0), flip(0), shake(0), flash(0), evidence(-1), side(0), color(0), pairID(-1), xOffset(0), yOffset(0) {}
+		ICControls() : additive(0), preanim(0), immediate(0), flip(0), shake(0), flash(0), slide(0), evidence(-1), side(0), color(0), pairID(-1), xOffset(0), yOffset(0) {}
 		int additive;
 		int preanim;
 		int immediate;
 		int flip;
 		int shake;
 		int flash;
+		int slide;
 
 		int evidence;
 		int side;

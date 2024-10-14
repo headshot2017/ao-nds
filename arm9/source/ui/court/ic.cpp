@@ -48,6 +48,7 @@ UICourtIC::~UICourtIC()
 	delete btn_flip;
 	delete btn_shake;
 	delete btn_flash;
+	delete btn_slide;
 	delete btn_prevPage;
 	delete btn_nextPage;
 	for (int i=0; i<4; i++) delete btn_emote[i];
@@ -57,6 +58,7 @@ UICourtIC::~UICourtIC()
 	delete lbl_showname;
 	delete lbl_color;
 	delete lbl_shout;
+	delete lbl_slide;
 	delete kb_input;
 
 	gEngine->getSocket()->removeMessageCallback("PV", cbPV);
@@ -78,21 +80,22 @@ void UICourtIC::init()
 	dmaCopy(bg_icTiles, bgGetGfxPtr(bgIndex), bg_icTilesLen);
 	dmaCopy(bg_icMap, bgGetMapPtr(bgIndex), 1536);
 
-	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icCornerBtns", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
-	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icCornerBtns", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 0);
-	btn_shouts = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icCornerBtns", btn_courtRecord->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 0, 80, 32, 32, 32, 0);
-	btn_pair = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pairMute", btn_shouts->nextOamInd(), 3, 1, SpriteSize_32x32, 36, 114, 68, 17, 32, 32, 1);
-	btn_mute = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pairMute", btn_pair->nextOamInd(), 3, 1, SpriteSize_32x32, 153, 114, 68, 17, 32, 32, 1);
-	btn_optionsToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icOptions", btn_mute->nextOamInd(), 1, 1, SpriteSize_64x32, 99, 113, 59, 17, 64, 32, 2);
-	btn_sideSelect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_sides", btn_optionsToggle->nextOamInd(), 3, 1, SpriteSize_32x16, 183, 162, 73, 15, 32, 16, 3);
-	btn_tools = new UIButton(&oamSub, "/data/ao-nds/ui/spr_tools", btn_sideSelect->nextOamInd(), 2, 1, SpriteSize_32x16, 105, 23, 46, 14, 32, 16, 4);
-	btn_additive = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_tools->nextOamInd(), 2, 1, SpriteSize_32x16, 38, 116, 64, 15, 32, 16, 5);
-	btn_preanim = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_additive->nextOamInd(), 2, 1, SpriteSize_32x16, 105, 116, 47, 15, 32, 16, 5);
-	btn_immediate = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_preanim->nextOamInd(), 2, 1, SpriteSize_32x16, 155, 116, 64, 15, 32, 16, 5);
-	btn_flip = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_immediate->nextOamInd(), 2, 1, SpriteSize_32x16, 46, 133, 47, 15, 32, 16, 5);
-	btn_shake = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_flip->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 133, 64, 15, 32, 16, 5);
-	btn_flash = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_shake->nextOamInd(), 2, 1, SpriteSize_32x16, 163, 133, 47, 15, 32, 16, 5);
-	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_emoteLeft", btn_flash->nextOamInd(), 1, 2, SpriteSize_16x32, 9, 71, 16, 40, 16, 32, 6);
+	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icBtns", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
+	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icBtns", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 0);
+	btn_shouts = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icBtns", btn_courtRecord->nextOamInd(), 3, 1, SpriteSize_32x32, 0, 0, 80, 32, 32, 32, 0);
+	btn_pair = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icBtns", btn_shouts->nextOamInd(), 3, 1, SpriteSize_32x32, 36, 114, 68, 17, 32, 32, 0);
+	btn_mute = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icBtns", btn_pair->nextOamInd(), 3, 1, SpriteSize_32x32, 153, 114, 68, 17, 32, 32, 0);
+	btn_optionsToggle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icOptions", btn_mute->nextOamInd(), 1, 1, SpriteSize_64x32, 99, 113, 59, 17, 64, 32, 1);
+	btn_sideSelect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_sides", btn_optionsToggle->nextOamInd(), 3, 1, SpriteSize_32x16, 183, 162, 73, 15, 32, 16, 2);
+	btn_tools = new UIButton(&oamSub, "/data/ao-nds/ui/spr_tools", btn_sideSelect->nextOamInd(), 2, 1, SpriteSize_32x16, 105, 23, 46, 14, 32, 16, 3);
+	btn_additive = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_tools->nextOamInd(), 2, 1, SpriteSize_32x16, 38, 116, 64, 15, 32, 16, 4);
+	btn_preanim = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_additive->nextOamInd(), 2, 1, SpriteSize_32x16, 105, 116, 47, 15, 32, 16, 4);
+	btn_immediate = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_preanim->nextOamInd(), 2, 1, SpriteSize_32x16, 155, 116, 64, 15, 32, 16, 4);
+	btn_flip = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_immediate->nextOamInd(), 2, 1, SpriteSize_32x16, 46, 133, 47, 15, 32, 16, 4);
+	btn_shake = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_flip->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 133, 64, 15, 32, 16, 4);
+	btn_flash = new UIButton(&oamSub, "/data/ao-nds/ui/spr_icControls", btn_shake->nextOamInd(), 2, 1, SpriteSize_32x16, 163, 133, 47, 15, 32, 16, 4);
+	btn_slide = new UIButton(&oamSub, "/data/ao-nds/ui/spr_checkBox", btn_flash->nextOamInd(), 1, 1, SpriteSize_16x16, 199, 133, 16, 16, 16, 16, 5);
+	btn_prevPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_emoteLeft", btn_slide->nextOamInd(), 1, 2, SpriteSize_16x32, 9, 71, 16, 40, 16, 32, 6);
 	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_emoteLeft", btn_prevPage->nextOamInd(), 1, 2, SpriteSize_16x32, 231, 71, 16, 40, 16, 32, 6);
 
 	static emoteBtnData btnData[4];
@@ -121,14 +124,17 @@ void UICourtIC::init()
 	lbl_showname = new UILabel(&oamSub, spr_arrowRight->nextOamInd(), 2, 1, RGB15(31,31,31), 14, 0);
 	lbl_color = new UILabel(&oamSub, lbl_showname->nextOamInd(), 2, 1, RGB15(31,31,31), 15, 0);
 	lbl_shout = new UILabel(&oamSub, lbl_color->nextOamInd(), 6, 1, RGB15(31,31,31), 14, 0);
+	lbl_slide = new UILabel(&oamSub, lbl_shout->nextOamInd(), 1, 1, RGB15(31,31,31), 14, 0);
 	lbl_showname->setPos(80, 163);
 	lbl_showname->setText((pCourtUI->showname.empty()) ? utf8::utf8to16(pCourtUI->getCurrChar().name) : pCourtUI->showname);
 	lbl_color->setPos(86, 178);
 	lbl_color->setText("Message");
 	lbl_shout->setPos(btn_shouts->getX()+4, btn_shouts->getY()+btn_shouts->getH()-1, false);
 	lbl_shout->setVisible(false);
+	lbl_slide->setPos(btn_slide->getX()+btn_slide->getW()+3, btn_slide->getY()+2, false);
+	lbl_slide->setText("Slide");
 
-	kb_input = new AOkeyboard(4, lbl_shout->nextOamInd(), 14);
+	kb_input = new AOkeyboard(4, lbl_slide->nextOamInd(), 14);
 	dmaCopy(bg_icPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 	isWritingChat = false;
@@ -138,7 +144,8 @@ void UICourtIC::init()
 
 	btn_courtRecord->setFrame(1);
 	btn_shouts->setFrame(2);
-	btn_mute->setFrame(1);
+	btn_pair->setFrame(7);
+	btn_mute->setFrame(8);
 
 	btn_additive->setFrame(pCourtUI->icControls.additive);
 	btn_preanim->setFrame(2 + pCourtUI->icControls.preanim);
@@ -146,6 +153,7 @@ void UICourtIC::init()
 	btn_flip->setFrame(6 + pCourtUI->icControls.flip);
 	btn_shake->setFrame(8 + pCourtUI->icControls.shake);
 	btn_flash->setFrame(10 + pCourtUI->icControls.flash);
+	btn_slide->setFrame(pCourtUI->icControls.slide);
 	btn_sideSelect->setFrame(pCourtUI->icControls.side);
 
 	btn_back->unloadRAM();
@@ -189,6 +197,7 @@ void UICourtIC::init()
 	btn_flip->connect(onFlipClicked, this);
 	btn_shake->connect(onShakeClicked, this);
 	btn_flash->connect(onFlashClicked, this);
+	btn_slide->connect(onSlideClicked, this);
 	btn_prevPage->connect(onPrevPage, this);
 	btn_nextPage->connect(onNextPage, this);
 
@@ -269,7 +278,10 @@ void UICourtIC::updateInput()
 						emote.frameShake + "#" +
 						emote.frameFlash + "#" +
 						emote.frameSFX + "#" +
-						std::to_string(pCourtUI->icControls.additive) + "#||#%"; // "||" is effects (won't bother with these)
+						std::to_string(pCourtUI->icControls.additive) + "#||#" + // "||" is effects (won't bother with these)
+						character.blip + "#" +
+						std::to_string(pCourtUI->icControls.slide) + "#" +
+						"%";
 
 					if (pCourtUI->icControls.evidence > -1)
 						pCourtUI->icControls.evidence = -1;
@@ -294,7 +306,9 @@ void UICourtIC::updateInput()
 			{
 				btn_pair->setVisible(true);
 				btn_mute->setVisible(true);
+				btn_slide->setVisible(true);
 				lbl_showname->setVisible(true);
+				lbl_slide->setVisible(true);
 			}
 			mp3_fill_buffer();
 
@@ -374,6 +388,7 @@ void UICourtIC::updateInput()
 	btn_flip->updateInput();
 	btn_shake->updateInput();
 	btn_flash->updateInput();
+	btn_slide->updateInput();
 	btn_optionsToggle->updateInput();
 	btn_prevPage->updateInput();
 	btn_nextPage->updateInput();
@@ -463,6 +478,7 @@ void UICourtIC::hideEverything()
 	btn_flip->setVisible(false);
 	btn_shake->setVisible(false);
 	btn_flash->setVisible(false);
+	btn_slide->setVisible(false);
 	btn_prevPage->setVisible(false);
 	btn_nextPage->setVisible(false);
 	for (int i=0; i<4; i++) btn_emote[i]->setVisible(false);
@@ -472,6 +488,7 @@ void UICourtIC::hideEverything()
 	lbl_showname->setVisible(false);
 	lbl_color->setVisible(false);
 	lbl_shout->setVisible(false);
+	lbl_slide->setVisible(false);
 }
 
 void UICourtIC::onBackClicked(void* pUserData)
@@ -543,6 +560,8 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 		pSelf->btn_flash->setVisible(true);
 		pSelf->btn_pair->setVisible(false);
 		pSelf->btn_mute->setVisible(false);
+		pSelf->btn_slide->setVisible(false);
+		pSelf->lbl_slide->setVisible(false);
 
 		pSelf->btn_optionsToggle->setPos(pSelf->btn_optionsToggle->getX(), 153);
 	}
@@ -561,6 +580,8 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 		pSelf->btn_flash->setVisible(false);
 		pSelf->btn_pair->setVisible(true);
 		pSelf->btn_mute->setVisible(true);
+		pSelf->btn_slide->setVisible(true);
+		pSelf->lbl_slide->setVisible(true);
 
 		pSelf->btn_optionsToggle->setPos(pSelf->btn_optionsToggle->getX(), 113);
 	}
@@ -638,6 +659,14 @@ void UICourtIC::onFlashClicked(void* pUserData)
 
 	pSelf->pCourtUI->icControls.flash ^= 1;
 	pSelf->btn_flash->setFrame(10+pSelf->pCourtUI->icControls.flash);
+}
+
+void UICourtIC::onSlideClicked(void* pUserData)
+{
+	UICourtIC* pSelf = (UICourtIC*)pUserData;
+
+	pSelf->pCourtUI->icControls.slide ^= 1;
+	pSelf->btn_slide->setFrame(pSelf->pCourtUI->icControls.slide);
 }
 
 void UICourtIC::onPrevPage(void* pUserData)
