@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "cfgFile.h"
+#include "global.h"
 
 struct FullCourtInfo
 {
@@ -34,6 +35,9 @@ struct FullCourtInfo
 	int camStart;
 	int camEnd;
 
+	void* pUserData;
+	voidCallback onScrollFinished;
+
 	////////////////////////////////////////////////////////////////
 	FullCourtInfo() :
 		parts(0),
@@ -45,7 +49,9 @@ struct FullCourtInfo
 		camTimer(0),
 		camTimerMax(0),
 		camStart(0),
-		camEnd(0) {}
+		camEnd(0),
+		pUserData(0),
+		onScrollFinished(0) {}
 
 	void loadPosition(int index, int offset);
 	void startScroll(int index, const std::string& sideBefore, const std::string& sideAfter);
@@ -83,9 +89,10 @@ public:
 
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
 	bool setBg(const std::string& name);
-	void setBgSide(const std::string& side, bool showDesk, bool force=false);
+	void setBgSide(const std::string& side, bool showDesk, bool pan, bool force=false);
 	void setZoom(bool scrollLeft, bool force=false);
 	void setVisible(bool on);
+	void setOnScrollFinishedCallback(voidCallback newCB, void* userdata);
 
 	void update();
 };

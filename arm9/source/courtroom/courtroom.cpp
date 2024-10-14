@@ -30,6 +30,7 @@ Courtroom::Courtroom()
 	evidence = new Evidence;
 	wtce = new WTCE(this, 74);
 
+	background->setOnScrollFinishedCallback(onCourtPanningFinished, this);
 	chatbox->setOnChatboxFinishedCallback(onChatboxFinished, this);
 	shout->setOnShoutFinishedCallback(onShoutFinished, this);
 }
@@ -97,6 +98,14 @@ void Courtroom::handleChat()
 	}
 	else
 		shout->cancelShout();
+
+	if (currIC.panCourt)
+	{
+		chatbox->setVisible(false);
+		character[0]->setOnAnimFinishedCallback(0, 0);
+		background->setBgSide(currIC.side, currIC.deskMod, true);
+		return;
+	}
 
 	if (!currIC.evidence.empty())
 		evidence->showEvidence(currIC.evidence, currIC.side == "def" || currIC.side == "hlp");
@@ -192,7 +201,7 @@ void Courtroom::handleChat()
 		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
 	else
 	{
-		background->setBgSide(currIC.side, currIC.deskMod);
+		background->setBgSide(currIC.side, currIC.deskMod, false);
 
 		if (currIC.otherCharID >= 0)
 		{
@@ -371,5 +380,14 @@ void Courtroom::onShoutFinished(void* pUserData)
 	pSelf->currIC.shoutMod = 0;
 	if (pSelf->currIC.emoteMod == 2 || pSelf->currIC.emoteMod == 6)
 		pSelf->currIC.emoteMod--;
+	pSelf->handleChat();
+}
+
+void Courtroom::onCourtPanningFinished(void* pUserData)
+{
+	Courtroom *pSelf = (Courtroom*)pUserData;
+
+	pSelf->chatbox->setVisible(true);
+	pSelf->currIC.panCourt = false;
 	pSelf->handleChat();
 }

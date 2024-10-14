@@ -29,7 +29,8 @@ struct MSchatStruct
 		noInterrupt(false),
 		sfxLoop(0),
 		shake(0),
-		additive(false) {}
+		additive(false),
+		panCourt(false) {}
 
 	bool deskMod;
 	std::string preanim;
@@ -62,6 +63,7 @@ struct MSchatStruct
 	std::string frameSFX;
 	bool additive;
 	std::string blip;
+	bool panCourt;
 };
 
 class Courtroom
@@ -115,6 +117,7 @@ public:
 	static void onChatboxFinished(void* pUserData);
 	static void onAnimFinished(void* pUserData);
 	static void onShoutFinished(void* pUserData);
+	static void onCourtPanningFinished(void* pUserData);
 };
 
 #endif // COURTROOM_H_INCLUDED

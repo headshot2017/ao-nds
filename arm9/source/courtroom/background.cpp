@@ -125,12 +125,17 @@ void FullCourtInfo::update()
 	u32 elapsed = timerElapsed(3);
 	u32 ms = f32toint(mulf32(divf32(inttof32(elapsed), inttof32(TIMER_SPEED)), inttof32(1000)));
 	camTimer = (camTimer+ms < camTimerMax) ? camTimer+ms : camTimerMax;
-	if (camTimer == camTimerMax)
-		timerStop(3);
 
 	int d = easeInOutCubic( divf32(inttof32(camTimer), inttof32(camTimerMax)) );
 	camOffset = camStart + f32toint(mulf32(inttof32(camEnd - camStart), d));
 	loadPosition(bgIndex, camOffset);
+
+	if (camTimer == camTimerMax)
+	{
+		timerStop(3);
+		if (onScrollFinished)
+			onScrollFinished(pUserData);
+	}
 }
 
 
@@ -230,12 +235,12 @@ bool Background::setBg(const std::string& name)
 
 	std::string newSide = currentSide;
 	if (newSide.empty()) newSide = "def";
-	setBgSide(newSide, true, true);
+	setBgSide(newSide, true, false, true);
 
 	return true;
 }
 
-void Background::setBgSide(const std::string& side, bool showDesk, bool force)
+void Background::setBgSide(const std::string& side, bool showDesk, bool pan, bool force)
 {
 	if (currentBg.empty() || !sideToBg.count(side) || (!force && !zooming && side == currentSide))
 		return;
@@ -257,10 +262,15 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool force)
 			BG_PALETTE[0] = fullCourt.courtPalette[0];
 		}
 
-		if (!fullCourt.lastState)
+		if (pan)
+		{
+			if (!fullCourt.lastState)
+				fullCourt.loadPosition(bgIndex, fullCourt.sideInfo[side].origin - 128);
+			else if (fullCourt.sideInfo.count(currentSide))
+				fullCourt.startScroll(bgIndex, currentSide, side);
+		}
+		else
 			fullCourt.loadPosition(bgIndex, fullCourt.sideInfo[side].origin - 128);
-		else if (fullCourt.sideInfo.count(currentSide))
-			fullCourt.startScroll(bgIndex, currentSide, side);
 	}
 	else
 	{
@@ -413,6 +423,12 @@ void Background::setVisible(bool on)
 {
 	visible = on;
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
+}
+
+void Background::setOnScrollFinishedCallback(voidCallback newCB, void* userdata)
+{
+	fullCourt.onScrollFinished = newCB;
+	fullCourt.pUserData = userdata;
 }
 
 void Background::update()
