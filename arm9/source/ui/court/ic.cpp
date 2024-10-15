@@ -176,6 +176,8 @@ void UICourtIC::init()
 	btn_shake->setVisible(false);
 	btn_flash->setVisible(false);
 	btn_tools->setVisible(pCourtUI->icControls.side == 5);
+	btn_slide->setVisible(pCourtUI->getFeature("custom_blips"));
+	lbl_slide->setVisible(pCourtUI->getFeature("custom_blips"));
 
 	btn_back->assignKey(KEY_B);
 	btn_courtRecord->assignKey(KEY_R);
@@ -277,11 +279,19 @@ void UICourtIC::updateInput()
 						std::to_string(pCourtUI->icControls.shake) + "#" +
 						emote.frameShake + "#" +
 						emote.frameFlash + "#" +
-						emote.frameSFX + "#" +
-						std::to_string(pCourtUI->icControls.additive) + "#||#" + // "||" is effects (won't bother with these)
-						character.blip + "#" +
-						std::to_string(pCourtUI->icControls.slide) + "#" +
-						"%";
+						emote.frameSFX + "#";
+
+						if (pCourtUI->getFeature("additive"))
+							msg += std::to_string(pCourtUI->icControls.additive) + "#";
+						if (pCourtUI->getFeature("effects"))
+							msg += "||#"; // empty
+						if (pCourtUI->getFeature("custom_blips"))
+						{
+							msg += character.blip + "#" +
+								std::to_string(pCourtUI->icControls.slide) + "#";
+						}
+
+						msg += "%";
 
 					if (pCourtUI->icControls.evidence > -1)
 						pCourtUI->icControls.evidence = -1;
@@ -306,9 +316,9 @@ void UICourtIC::updateInput()
 			{
 				btn_pair->setVisible(true);
 				btn_mute->setVisible(true);
-				btn_slide->setVisible(true);
+				btn_slide->setVisible(pCourtUI->getFeature("custom_blips"));
 				lbl_showname->setVisible(true);
-				lbl_slide->setVisible(true);
+				lbl_slide->setVisible(pCourtUI->getFeature("custom_blips"));
 			}
 			mp3_fill_buffer();
 
@@ -580,8 +590,8 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 		pSelf->btn_flash->setVisible(false);
 		pSelf->btn_pair->setVisible(true);
 		pSelf->btn_mute->setVisible(true);
-		pSelf->btn_slide->setVisible(true);
-		pSelf->lbl_slide->setVisible(true);
+		pSelf->btn_slide->setVisible(pSelf->pCourtUI->getFeature("custom_blips"));
+		pSelf->lbl_slide->setVisible(pSelf->pCourtUI->getFeature("custom_blips"));
 
 		pSelf->btn_optionsToggle->setPos(pSelf->btn_optionsToggle->getX(), 113);
 	}

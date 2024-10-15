@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "uiscreen.h"
 #include "courtroom/courtroom.h"
@@ -97,6 +99,7 @@ class UIScreenCourt : public UIScreen
 	std::vector<musicInfo> musicList;
 	std::vector<areaInfo> areaList;
 	std::vector<evidenceInfo> evidenceList;
+	std::unordered_set<std::string> featureList;
 	std::unordered_map<int, playerInfo> playerList;
 	std::vector<int> playerListIDs;
 
@@ -131,6 +134,7 @@ public:
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	std::vector<evidenceInfo>& getEvidenceList(bool priv) {return (priv) ? gEngine->getPrivateEvidence() : evidenceList;}
+	bool getFeature(const char* feature) {return featureList.count(feature);}
 	std::unordered_map<int, playerInfo>& getPlayerList() {return playerList;}
 	const std::vector<int>& getPlayerListIDs() {return playerListIDs;}
 
@@ -144,6 +148,7 @@ public:
 
 	static void onMessageID(void* pUserData, std::string msg);
 	static void onMessagePN(void* pUserData, std::string msg);
+	static void onMessageFL(void* pUserData, std::string msg);
 	static void onMessageSI(void* pUserData, std::string msg);
 	static void onMessageSC(void* pUserData, std::string msg);
 	static void onMessageSM(void* pUserData, std::string msg);

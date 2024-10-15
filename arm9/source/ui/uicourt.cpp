@@ -91,6 +91,7 @@ void UIScreenCourt::init()
 	AOsocket* sock = gEngine->getSocket();
 	sock->addMessageCallback("ID", onMessageID, this);
 	sock->addMessageCallback("PN", onMessagePN, this);
+	sock->addMessageCallback("FL", onMessageFL, this);
 	sock->addMessageCallback("SI", onMessageSI, this);
 	sock->addMessageCallback("SC", onMessageSC, this);
 	sock->addMessageCallback("SM", onMessageSM, this);
@@ -188,6 +189,15 @@ void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
 void UIScreenCourt::onMessagePN(void* pUserData, std::string msg)
 {
 	gEngine->getSocket()->sendData("askchaa#%");
+}
+
+void UIScreenCourt::onMessageFL(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	u32 features = totalArguments(msg)-1;
+	for (u32 i=0; i<features; i++)
+		pSelf->featureList.insert(argumentAt(msg, 1+i));
 }
 
 void UIScreenCourt::onMessageSI(void* pUserData, std::string msg)
