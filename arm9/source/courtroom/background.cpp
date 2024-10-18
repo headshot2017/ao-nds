@@ -240,10 +240,10 @@ bool Background::setBg(const std::string& name)
 	return true;
 }
 
-void Background::setBgSide(const std::string& side, bool showDesk, bool pan, bool force)
+bool Background::setBgSide(const std::string& side, bool showDesk, bool pan, bool force)
 {
 	if (currentBg.empty() || !sideToBg.count(side) || (!force && !zooming && side == currentSide))
-		return;
+		return false;
 
 	if (zooming)
 	{
@@ -366,6 +366,8 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 	currentSide = side;
 	currVertTiles = verTiles;
 	mp3_fill_buffer();
+
+	return true;
 }
 
 void Background::setZoom(bool scrollLeft, bool force)

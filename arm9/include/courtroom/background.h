@@ -86,10 +86,11 @@ public:
 	~Background();
 
 	bool isZoom() {return zooming;}
+	bool isFullCourt() {return fullCourt.parts;}
 
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
 	bool setBg(const std::string& name);
-	void setBgSide(const std::string& side, bool showDesk, bool pan, bool force=false);
+	bool setBgSide(const std::string& side, bool showDesk, bool pan, bool force=false);
 	void setZoom(bool scrollLeft, bool force=false);
 	void setVisible(bool on);
 	void setOnScrollFinishedCallback(voidCallback newCB, void* userdata);

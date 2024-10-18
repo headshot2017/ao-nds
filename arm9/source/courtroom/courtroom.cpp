@@ -99,12 +99,12 @@ void Courtroom::handleChat()
 	else
 		shout->cancelShout();
 
-	if (currIC.panCourt)
+	if (currIC.panCourt && background->isFullCourt())
 	{
 		chatbox->setVisible(false);
 		character[0]->setOnAnimFinishedCallback(0, 0);
-		background->setBgSide(currIC.side, currIC.deskMod, true);
-		return;
+		if (background->setBgSide(currIC.side, currIC.deskMod, true))
+			return;
 	}
 
 	if (!currIC.evidence.empty())
