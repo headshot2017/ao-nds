@@ -122,6 +122,14 @@ void FullCourtInfo::update()
 	if (!parts || bgIndex < 0 || !(TIMER_CR(3) & TIMER_ENABLE))
 		return;
 
+	if (camTimer == camTimerMax)
+	{
+		timerStop(3);
+		if (onScrollFinished)
+			onScrollFinished(pUserData);
+		return;
+	}
+
 	u32 elapsed = timerElapsed(3);
 	u32 ms = f32toint(mulf32(divf32(inttof32(elapsed), inttof32(TIMER_SPEED)), inttof32(1000)));
 	camTimer = (camTimer+ms < camTimerMax) ? camTimer+ms : camTimerMax;
@@ -129,13 +137,6 @@ void FullCourtInfo::update()
 	int d = easeInOutCubic( divf32(inttof32(camTimer), inttof32(camTimerMax)) );
 	camOffset = camStart + f32toint(mulf32(inttof32(camEnd - camStart), d));
 	loadPosition(bgIndex, camOffset);
-
-	if (camTimer == camTimerMax)
-	{
-		timerStop(3);
-		if (onScrollFinished)
-			onScrollFinished(pUserData);
-	}
 }
 
 
