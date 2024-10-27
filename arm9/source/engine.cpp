@@ -64,9 +64,6 @@ void Engine::cacheMusic(const std::string& folder, std::string extra)
 	DIR *dir = opendir(dirStr.c_str());
 	if (!dir) return;
 
-	UILabel* lbl_progress = new UILabel(&oamSub, 8, 1, 1, RGB15(31,31,31), 0, 1);
-	int total = 0;
-
 	struct dirent* dent;
 	while( (dent = readdir(dir)) )
 	{
@@ -77,19 +74,10 @@ void Engine::cacheMusic(const std::string& folder, std::string extra)
 		if (dent->d_type == DT_DIR)
 			cacheMusic(folder, value);
 		else
-		{
 			cachedMusic.insert(value);
-			if ((++total) % 10 == 0)
-			{
-				lbl_progress->setText(std::to_string(total));
-				lbl_progress->setPos(128, 96+48, true);
-				oamUpdate(&oamSub);
-			}
-		}
 	}
 
 	closedir(dir);
-	delete lbl_progress;
 }
 
 void Engine::cacheEvidence(const std::string& folder, std::string extra)
@@ -97,9 +85,6 @@ void Engine::cacheEvidence(const std::string& folder, std::string extra)
 	std::string dirStr = folder + "/" + extra;
 	DIR *dir = opendir(dirStr.c_str());
 	if (!dir) return;
-
-	UILabel* lbl_progress = new UILabel(&oamSub, 8, 1, 1, RGB15(31,31,31), 0, 1);
-	int total = 0;
 
 	struct dirent* dent;
 	while( (dent = readdir(dir)) )
@@ -112,28 +97,16 @@ void Engine::cacheEvidence(const std::string& folder, std::string extra)
 		if (dent->d_type == DT_DIR)
 			cacheEvidence(folder, value);
 		else
-		{
 			cachedEvidence.push_back({valueNoExt, extra});
-			if ((++total) % 10 == 0)
-			{
-				lbl_progress->setText(std::to_string(total));
-				lbl_progress->setPos(128, 96+48, true);
-				oamUpdate(&oamSub);
-			}
-		}
 	}
 
 	closedir(dir);
-	delete lbl_progress;
 }
 
 void Engine::cacheCharBlips(const std::string& folder)
 {
 	DIR *dir = opendir(folder.c_str());
 	if (!dir) return;
-
-	UILabel* lbl_progress = new UILabel(&oamSub, 8, 1, 1, RGB15(31,31,31), 0, 1);
-	int total = 0;
 
 	struct dirent* dent;
 	while( (dent = readdir(dir)) )
@@ -152,17 +125,9 @@ void Engine::cacheCharBlips(const std::string& folder)
 
 		std::transform(charname.begin(), charname.end(), charname.begin(), [](char c){return std::tolower(c);});
 		cachedCharBlips[charname] = blip;
-
-		if ((++total) % 10 == 0)
-		{
-			lbl_progress->setText(std::to_string(total));
-			lbl_progress->setPos(128, 96+48, true);
-			oamUpdate(&oamSub);
-		}
 	}
 
 	closedir(dir);
-	delete lbl_progress;
 }
 
 void Engine::loadPrivateEvidence()
