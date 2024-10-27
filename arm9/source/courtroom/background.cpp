@@ -177,7 +177,6 @@ void FullCourtInfo::update()
 	m_pCourt->getCharacter(1)->setVisible(x1+256 > 0 && x1 < 256);
 	m_pCourt->getCharacter(0)->setCamOffset(x0);
 	m_pCourt->getCharacter(1)->setCamOffset(x1);
-	oamUpdate(&oamMain);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
