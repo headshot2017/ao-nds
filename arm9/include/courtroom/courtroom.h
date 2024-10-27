@@ -100,6 +100,7 @@ public:
 	Shout* getShout() {return shout;}
 	Evidence* getEvidence() {return evidence;}
 	WTCE* getWTCE() {return wtce;}
+	MSchatStruct* getIC() {return &currIC;}
 
 	void setVisible(bool on);
 	void setTalkingAnim(bool on);

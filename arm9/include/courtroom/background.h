@@ -12,6 +12,8 @@
 #include "cfgFile.h"
 #include "global.h"
 
+class Courtroom;
+
 struct FullCourtInfo
 {
 	struct CourtSideInfo
@@ -28,6 +30,7 @@ struct FullCourtInfo
 	u32 paletteLen;
 	u16** courtGfx;
 
+	bool active;
 	bool lastState;
 	int camOffset;
 	u32 camTimer;
@@ -35,8 +38,14 @@ struct FullCourtInfo
 	int camStart;
 	int camEnd;
 
+	Courtroom* m_pCourt;
+
 	void* pUserData;
 	voidCallback onScrollFinished;
+
+	int newDeskHorTiles;
+	int newDeskVertTiles;
+	cfgFile newDeskTiles;
 
 	////////////////////////////////////////////////////////////////
 	FullCourtInfo() :
@@ -44,12 +53,14 @@ struct FullCourtInfo
 		bgIndex(-1),
 		courtPalette(0),
 		courtGfx(0),
+		active(false),
 		lastState(false),
 		camOffset(0),
 		camTimer(0),
 		camTimerMax(0),
 		camStart(0),
 		camEnd(0),
+		m_pCourt(0),
 		pUserData(0),
 		onScrollFinished(0) {}
 
@@ -61,6 +72,8 @@ struct FullCourtInfo
 
 class Background
 {
+	Courtroom* m_pCourt;
+
 	std::string currentBg;
 	std::string currentSide;
 	u32 currBgGfxLen;
@@ -82,7 +95,7 @@ class Background
 	int yOffset;
 
 public:
-	Background();
+	Background(Courtroom* court);
 	~Background();
 
 	bool isZoom() {return zooming;}

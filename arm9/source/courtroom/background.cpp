@@ -8,6 +8,7 @@
 #include <nds/arm9/math.h>
 #include <nds/timers.h>
 
+#include "courtroom/courtroom.h"
 #include "mini/ini.h"
 #include "mp3_shared.h"
 #include "global.h"
@@ -92,7 +93,35 @@ void FullCourtInfo::startScroll(int index, const std::string& sideBefore, const 
 	camEnd = sideInfo[sideAfter].origin - 128;
 	camTimer = 0;
 	camTimerMax = sideInfo[sideBefore].slideMS[sideAfter];
+
+	readDeskTiles(newDeskTiles.get(sideToDesk[sideAfter]), &newDeskHorTiles, &newDeskVertTiles);
+
+	MSchatStruct* currIC = m_pCourt->getIC();
+	std::string offsetStr = currIC->selfOffset;
+	int offsetX = 0;
+	int offsetY = 0;
+
+	if (offsetStr.find("&"))
+	{
+		offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
+		offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
+	}
+	else
+		offsetX = std::stoi(offsetStr);
+
+	m_pCourt->getCharacter(1)->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
+	m_pCourt->getCharacter(1)->setFlip(currIC->flip);
+
+	bool isAnim = fileExists("/data/ao-nds/characters/" + currIC->charname + "/(a)" + currIC->emote + ".img.bin");
+	std::string prefix;
+	if (isAnim) prefix = "(a)";
+
+	m_pCourt->getCharacter(1)->setCharImage(currIC->charname, prefix + currIC->emote);
+	m_pCourt->getCharacter(1)->setVisible(false);
+	oamUpdate(&oamMain);
+
 	lastState = true;
+	active = true;
 
 	timerStop(3);
 	timerStart(3, ClockDivider_1024, 0, NULL);
@@ -115,16 +144,20 @@ void FullCourtInfo::clean()
 	camOffset = 0;
 	parts = 0;
 	lastState = false;
+	active = false;
 }
 
 void FullCourtInfo::update()
 {
-	if (!parts || bgIndex < 0 || !(TIMER_CR(3) & TIMER_ENABLE))
+	if (!parts || bgIndex < 0 || !active || !(TIMER_CR(3) & TIMER_ENABLE))
 		return;
 
 	if (camTimer == camTimerMax)
 	{
+		active = false;
 		timerStop(3);
+		m_pCourt->getCharacter(0)->setCamOffset(0);
+		m_pCourt->getCharacter(1)->setCamOffset(0);
 		if (onScrollFinished)
 			onScrollFinished(pUserData);
 		return;
@@ -137,10 +170,19 @@ void FullCourtInfo::update()
 	int d = easeInOutCubic( divf32(inttof32(camTimer), inttof32(camTimerMax)) );
 	camOffset = camStart + f32toint(mulf32(inttof32(camEnd - camStart), d));
 	loadPosition(bgIndex, camOffset);
+
+	int x0 = camStart - camOffset;
+	int x1 = camEnd - camOffset;
+	m_pCourt->getCharacter(0)->setVisible(x0+256 > 0 && x0 < 256);
+	m_pCourt->getCharacter(1)->setVisible(x1+256 > 0 && x1 < 256);
+	m_pCourt->getCharacter(0)->setCamOffset(x0);
+	m_pCourt->getCharacter(1)->setCamOffset(x1);
+	oamUpdate(&oamMain);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-Background::Background()
+Background::Background(Courtroom* court)
 {
 	//bgIndex = bgInit(3, BgType_ExRotation, BgSize_ER_256x256, 1, 2);
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_512x256, 0, 1);
@@ -163,6 +205,9 @@ Background::Background()
 		deskGfx[i] = 0;
 		oamSet(&oamMain, i, x, y, 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
 	}
+
+	m_pCourt = court;
+	fullCourt.m_pCourt = court;
 }
 
 Background::~Background()

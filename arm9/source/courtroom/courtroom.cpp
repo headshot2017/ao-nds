@@ -22,10 +22,10 @@ Courtroom::Courtroom()
 
 	sndRealization = wav_load_handle("/data/ao-nds/sounds/general/sfx-realization.wav");
 
-	background = new Background;
 	chatbox = new Chatbox(this);
 	character[0] = new Character(this, 50, 0);
 	character[1] = new Character(this, 62, 1);
+	background = new Background(this);
 	shout = new Shout(this);
 	evidence = new Evidence;
 	wtce = new WTCE(this, 74);

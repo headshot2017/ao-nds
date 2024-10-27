@@ -63,6 +63,7 @@ class Character
 	int shakeY;
 	int offsetX;
 	int offsetY;
+	int camOffset;
 	bool flip;
 
 	bool sfxPlayed;
@@ -91,6 +92,7 @@ public:
 
 	void setShakes(int x, int y) {shakeX = x; shakeY = y;}
 	void setOffsets(int x, int y) {offsetX = x; offsetY = y;}
+	void setCamOffset(int x) {camOffset = x;}
 	void setFlip(bool on) {flip = on;}
 	void setCharImage(std::string charname, std::string relativeFile, bool doLoop=true);
 	void setSound(const std::string& filename, int delay);

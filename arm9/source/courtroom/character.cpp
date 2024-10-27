@@ -78,6 +78,7 @@ Character::Character(Courtroom* pCourt, int start, int isPair)
 	oamStart = start;
 	pair = isPair;
 
+	camOffset = 0;
 	charTicks = 0;
 	sfxTicks = 0;
 	currFrame = 0;
@@ -342,6 +343,8 @@ void Character::setFrameShake(const std::string& data)
 void Character::setVisible(bool on)
 {
 	visible = on;
+	for (int i=0; i<gfxInUse; i++)
+		oamSetHidden(&oamMain, oamStart+i, !on);
 }
 
 void Character::unload()
@@ -398,7 +401,7 @@ void Character::update()
 		int x = ((flip) ?
 			((gfxInUse-i-1) % frameInfo.realW)*64 + 256-(frameInfo.realW*64)-frameInfo.offsetX :
 			(i%frameInfo.realW)*64 + frameInfo.offsetX)
-			+ shakeX + offsetX;
+			+ shakeX + offsetX + camOffset;
 
 		int y = (i/frameInfo.realW)*64 + frameInfo.offsetY + shakeY + offsetY;
 
