@@ -31,6 +31,7 @@ struct FullCourtInfo
 	u16** courtGfx;
 
 	bool active;
+	bool halfway;
 	bool lastState;
 	int camOffset;
 	u32 camTimer;
@@ -45,7 +46,8 @@ struct FullCourtInfo
 
 	int newDeskHorTiles;
 	int newDeskVertTiles;
-	cfgFile newDeskTiles;
+	u8* newDeskGfx;
+	u8* newDeskPal;
 
 	////////////////////////////////////////////////////////////////
 	FullCourtInfo() :
@@ -54,6 +56,7 @@ struct FullCourtInfo
 		courtPalette(0),
 		courtGfx(0),
 		active(false),
+		halfway(false),
 		lastState(false),
 		camOffset(0),
 		camTimer(0),
@@ -62,7 +65,11 @@ struct FullCourtInfo
 		camEnd(0),
 		m_pCourt(0),
 		pUserData(0),
-		onScrollFinished(0) {}
+		onScrollFinished(0),
+		newDeskHorTiles(0),
+		newDeskVertTiles(0),
+		newDeskGfx(0),
+		newDeskPal(0) {}
 
 	void loadPosition(int index, int offset);
 	void startScroll(int index, const std::string& sideBefore, const std::string& sideAfter);
@@ -72,6 +79,8 @@ struct FullCourtInfo
 
 class Background
 {
+	friend class FullCourtInfo;
+
 	Courtroom* m_pCourt;
 
 	std::string currentBg;
@@ -88,11 +97,16 @@ class Background
 	int zoomScrollAdd;
 
 	u16* deskGfx[4*6];
-	bool deskGfxVisible[4*6];
 	int currVertTiles;
+	int deskCamOffset;
+	bool deskVisible;
 
 	int xOffset;
 	int yOffset;
+
+private:
+	void cleanDesk();
+	void setDesk(u8* gfx, u8* pal, int horTiles, int verTiles);
 
 public:
 	Background(Courtroom* court);
@@ -106,6 +120,8 @@ public:
 	bool setBgSide(const std::string& side, bool showDesk, bool pan, bool force=false);
 	void setZoom(bool scrollLeft, bool force=false);
 	void setVisible(bool on);
+	void setDeskVisible(bool on);
+	void setDeskOffset(int camOffset);
 	void setOnScrollFinishedCallback(voidCallback newCB, void* userdata);
 
 	void update();

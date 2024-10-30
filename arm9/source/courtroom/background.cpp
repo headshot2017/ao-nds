@@ -94,8 +94,22 @@ void FullCourtInfo::startScroll(int index, const std::string& sideBefore, const 
 	camTimer = 0;
 	camTimerMax = sideInfo[sideBefore].slideMS[sideAfter];
 
-	readDeskTiles(newDeskTiles.get(sideToDesk[sideAfter]), &newDeskHorTiles, &newDeskVertTiles);
+	// load new desk tiles
+	readDeskTiles(m_pCourt->getBackground()->deskTiles.get(sideToDesk[sideAfter]), &newDeskHorTiles, &newDeskVertTiles);
 
+	if (sideToDesk.count(sideAfter))
+	{
+		if (newDeskGfx) delete[] newDeskGfx;
+		newDeskGfx = 0;
+		if (newDeskPal) delete[] newDeskPal;
+		newDeskPal = 0;
+
+		std::string& currentBg = m_pCourt->getBackground()->currentBg;
+		newDeskGfx = readFile(currentBg + "/" + sideToDesk[sideAfter] + ".img.bin");
+		newDeskPal = readFile(currentBg + "/" + sideToDesk[sideAfter] + ".pal.bin");
+	}
+
+	// load target character
 	MSchatStruct* currIC = m_pCourt->getIC();
 	std::string offsetStr = currIC->selfOffset;
 	int offsetX = 0;
@@ -122,6 +136,7 @@ void FullCourtInfo::startScroll(int index, const std::string& sideBefore, const 
 
 	lastState = true;
 	active = true;
+	halfway = false;
 
 	timerStop(3);
 	timerStart(3, ClockDivider_1024, 0, NULL);
@@ -141,9 +156,15 @@ void FullCourtInfo::clean()
 	if (courtGfx) delete[] courtGfx;
 	courtGfx = 0;
 
+	if (newDeskGfx) delete[] newDeskGfx;
+	newDeskGfx = 0;
+	if (newDeskPal) delete[] newDeskPal;
+	newDeskPal = 0;
+
 	camOffset = 0;
 	parts = 0;
 	lastState = false;
+	halfway = false;
 	active = false;
 }
 
@@ -158,6 +179,13 @@ void FullCourtInfo::update()
 		timerStop(3);
 		m_pCourt->getCharacter(0)->setCamOffset(0);
 		m_pCourt->getCharacter(1)->setCamOffset(0);
+		m_pCourt->getBackground()->setDeskOffset(0);
+
+		if (newDeskGfx) delete[] newDeskGfx;
+		newDeskGfx = 0;
+		if (newDeskPal) delete[] newDeskPal;
+		newDeskPal = 0;
+
 		if (onScrollFinished)
 			onScrollFinished(pUserData);
 		return;
@@ -171,12 +199,22 @@ void FullCourtInfo::update()
 	camOffset = camStart + f32toint(mulf32(inttof32(camEnd - camStart), d));
 	loadPosition(bgIndex, camOffset);
 
+	if (camTimer >= camTimerMax>>1 && !halfway)
+	{
+		halfway = true;
+		m_pCourt->getBackground()->setDesk(newDeskGfx, newDeskPal, newDeskHorTiles, newDeskVertTiles);
+	}
+
 	int x0 = camStart - camOffset;
 	int x1 = camEnd - camOffset;
 	m_pCourt->getCharacter(0)->setVisible(x0+256 > 0 && x0 < 256);
 	m_pCourt->getCharacter(1)->setVisible(x1+256 > 0 && x1 < 256);
 	m_pCourt->getCharacter(0)->setCamOffset(x0);
 	m_pCourt->getCharacter(1)->setCamOffset(x1);
+
+	int deskX = (!halfway) ? x0 : x1;
+	m_pCourt->getBackground()->setDeskVisible(deskX+256 > 0 && deskX < 256);
+	m_pCourt->getBackground()->setDeskOffset(deskX);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -188,6 +226,7 @@ Background::Background(Courtroom* court)
 	bgSetPriority(bgIndex, 3);
 	bgHide(bgIndex);
 	visible = false;
+	deskVisible = true;
 	currBgGfxLen = 0;
 
 	zooming = false;
@@ -195,6 +234,7 @@ Background::Background(Courtroom* court)
 	zoomScrollAdd = 0;
 
 	currVertTiles = 0;
+	deskCamOffset = 0;
 
 	for (int i=0; i<4*6; i++)
 	{
@@ -353,35 +393,56 @@ bool Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 	zooming = false;
 
 	// handle desk sprite
-	int horTiles, verTiles;
-	readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
+	if (!fullCourt.active)
+	{
+		if (showDesk)
+		{
+			int horTiles, verTiles;
+			readDeskTiles(deskTiles.get(sideToDesk[side]), &horTiles, &verTiles);
 
+			u8* deskGfxImg = 0;
+			u8* deskPal = 0;
+			if (sideToDesk.count(side))
+			{
+				deskGfxImg = readFile(currentBg + "/" + sideToDesk[side] + ".img.bin");
+				deskPal = readFile(currentBg + "/" + sideToDesk[side] + ".pal.bin");
+			}
+
+			setDesk(deskGfxImg, deskPal, horTiles, verTiles);
+		}
+		else
+			cleanDesk();
+	}
+
+	currentSide = side;
+	mp3_fill_buffer();
+
+	return true;
+}
+
+void Background::cleanDesk()
+{
 	for (int i=0; i<4*6; i++)
 	{
 		if (deskGfx[i]) oamFreeGfx(&oamMain, deskGfx[i]);
 		oamSetHidden(&oamMain, i, true);
 		deskGfx[i] = 0;
 	}
+}
 
-	if (showDesk)
+void Background::setDesk(u8* gfx, u8* pal, int horTiles, int verTiles)
+{
+	cleanDesk();
+
+	if (pal)
 	{
-		u8* deskGfxImg = 0;
-		u8* deskPal = 0;
-		u32 deskPalLen;
-		if (sideToDesk.count(side))
-		{
-			deskGfxImg = readFile(currentBg + "/" + sideToDesk[side] + ".img.bin");
-			deskPal = readFile(currentBg + "/" + sideToDesk[side] + ".pal.bin", &deskPalLen);
-		}
+		vramSetBankF(VRAM_F_LCD);
+		dmaCopy(pal, &VRAM_F_EXT_SPR_PALETTE[1], 512); // copy palette
+		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+	}
 
-		if (deskPal)
-		{
-			vramSetBankF(VRAM_F_LCD);
-			dmaCopy(deskPal, &VRAM_F_EXT_SPR_PALETTE[1], deskPalLen); // copy palette
-			vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
-			delete[] deskPal;
-		}
-
+	if (gfx)
+	{
 		for (int y=0; y<verTiles; y++)
 		{
 			for (int x=0; x<horTiles; x++)
@@ -398,21 +459,16 @@ bool Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 				}
 
 				// copy specific 64x32 tile from image data
-				u8* offset = deskGfxImg + i * 64*32;
+				u8* offset = gfx + i * 64*32;
 				dmaCopy(offset, deskGfx[i], 64*32);
 
 				oamSet(&oamMain, i, x*64+xOffset, y*32+yOffset + 192 - (verTiles*32), 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfx[i] || !visible, false, false, false);
 			}
 		}
-		delete[] deskGfxImg;
 	}
+
 	oamUpdate(&oamMain);
-
-	currentSide = side;
 	currVertTiles = verTiles;
-	mp3_fill_buffer();
-
-	return true;
 }
 
 void Background::setZoom(bool scrollLeft, bool force)
@@ -472,6 +528,18 @@ void Background::setVisible(bool on)
 	(on) ? bgShow(bgIndex) : bgHide(bgIndex);
 }
 
+void Background::setDeskVisible(bool on)
+{
+	deskVisible = on;
+	for (int i=0; i<4*6; i++)
+		oamSetHidden(&oamMain, i, !on);
+}
+
+void Background::setDeskOffset(int camOffset)
+{
+	deskCamOffset = camOffset;
+}
+
 void Background::setOnScrollFinishedCallback(voidCallback newCB, void* userdata)
 {
 	fullCourt.onScrollFinished = newCB;
@@ -497,6 +565,6 @@ void Background::update()
 		int x = (i%4) * 64;
 		int y = (i/4) * 32;
 
-		oamSet(&oamMain, i, x+xOffset, y+yOffset + 192 - (currVertTiles*32), 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfx[i] || !visible, false, false, false);
+		oamSet(&oamMain, i, x+xOffset+deskCamOffset, y+yOffset + 192 - (currVertTiles*32), 2, 1, SpriteSize_64x32, SpriteColorFormat_256Color, deskGfx[i], -1, false, !deskGfx[i] || !deskVisible, false, false, false);
 	}
 }

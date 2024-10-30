@@ -88,6 +88,7 @@ class Courtroom
 	Evidence* evidence;
 	WTCE* wtce;
 
+private:
 	void handleChat();
 
 public:
