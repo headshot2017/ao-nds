@@ -114,10 +114,11 @@ public:
 
 	bool isZoom() {return zooming;}
 	bool isFullCourt() {return fullCourt.parts;}
+	bool isFullCourtActive() {return fullCourt.active;}
 
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
 	bool setBg(const std::string& name);
-	bool setBgSide(const std::string& side, bool showDesk, bool pan, bool force=false);
+	void setBgSide(const std::string& side, bool showDesk, bool pan, bool force=false);
 	void setZoom(bool scrollLeft, bool force=false);
 	void setVisible(bool on);
 	void setDeskVisible(bool on);
