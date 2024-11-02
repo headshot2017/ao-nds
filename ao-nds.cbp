@@ -5,11 +5,11 @@
 		<Option title="ao-nds" />
 		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
-		<Option compiler="devkitarm_gcc_compiler" />
+		<Option compiler="devkitarm" />
 		<Build>
 			<Target title="all">
 				<Option type="4" />
-				<Option compiler="devkitarm_gcc_compiler" />
+				<Option compiler="devkitarm" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
