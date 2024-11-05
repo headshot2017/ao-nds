@@ -626,7 +626,7 @@ void UIScreenCourt::onMessageFA(void* pUserData, std::string msg)
 	{
 		std::string area = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
 
-		pSelf->areaList.push_back({area, 0, "", "", ""});
+		if (!area.empty()) pSelf->areaList.push_back({area, 0, "", "", ""});
 
 		lastPos = delimiterPos;
 		delimiterPos = msg.find("#", delimiterPos+1);
@@ -641,7 +641,7 @@ void UIScreenCourt::onMessageARUP(void* pUserData, std::string msg)
 	for (u32 i=0; i<pSelf->areaList.size(); i++)
 	{
 		std::string value = argumentAt(msg, 2+i);
-		if (!value.empty() && value.at(0) == '%') break;
+		if (value.empty() || value.at(0) == '%') break;
 
 		switch (type)
 		{
