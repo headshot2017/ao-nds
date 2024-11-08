@@ -43,7 +43,7 @@ jobs:
         python-version: '3.10'
 
     - name: Install pip dependencies
-      run: pip install apng Pillow requests joblib pyinstaller
+      run: pip install apng Pillow requests pyinstaller
 
     - name: Build exe with pyinstaller
       run: |
