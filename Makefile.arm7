@@ -1,0 +1,19 @@
+
+ifeq ($(OS),Windows_NT)
+BLOCKSDS            ?= C:/msys64/opt/wonderful/thirdparty/blocksds/core
+BLOCKSDSEXT         ?= C:/msys64/opt/wonderful/thirdparty/blocksds/external
+WONDERFUL_TOOLCHAIN ?= C:/msys64/opt/wonderful
+else
+BLOCKSDS            ?= /opt/blocksds/core
+endif
+
+SOURCEDIRS	= arm7/source helix
+INCLUDEDIRS	= arm7/include common helix
+
+LIBS		:= -ldswifi7 -lnds7
+LIBDIRS		:= $(BLOCKSDS)/libs/dswifi
+
+include $(BLOCKSDS)/sys/default_makefiles/rom_arm9arm7/Makefile.arm7
+
+# MP3 does not compile with "-mthumb" argument. Use -mthumb-interwork instead
+ARCH		:= -mthumb-interwork -mcpu=arm7tdmi

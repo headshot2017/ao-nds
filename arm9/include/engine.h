@@ -56,8 +56,8 @@ public:
 	const std::string& getMacAddr() {return macAddr;}
 	const std::u16string& getShowname() {return defaultShowname;}
 	const std::u16string& getOOCname() {return defaultOOCname;}
-	const bool showChatlogIniswaps() {return chatlogIniswaps;}
-	const bool showChatlogShownames() {return chatlogShownames;}
+	bool showChatlogIniswaps() {return chatlogIniswaps;}
+	bool showChatlogShownames() {return chatlogShownames;}
 	const std::vector<evidenceCacheInfo>& getEvidence() {return cachedEvidence;}
 	const std::string getCharBlip(const std::string& charname) {return (cachedCharBlips.count(charname)) ? cachedCharBlips[charname] : "";}
 	std::vector<evidenceInfo>& getPrivateEvidence() {return privateEvidence;}

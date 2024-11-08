@@ -3775,8 +3775,8 @@ void mg_mgr_free(struct mg_mgr *mgr) {
   struct mg_timer *tmp, *t = mgr->timers;
   while (t != NULL) tmp = t->next, free(t), t = tmp;
   mgr->timers = NULL;  // Important. Next call to poll won't touch timers
-  //for (c = mgr->conns; c != NULL; c = c->next) c->is_closing = 1;
-  //mg_mgr_poll(mgr, 0);
+  for (c = mgr->conns; c != NULL; c = c->next) c->is_closing = 1;
+  mg_mgr_poll(mgr, 0);
 #if MG_ENABLE_FREERTOS_TCP
   FreeRTOS_DeleteSocketSet(mgr->ss);
 #endif
@@ -4780,7 +4780,7 @@ static void close_conn(struct mg_connection *c) {
 #if MG_ENABLE_EPOLL
     epoll_ctl(c->mgr->epoll_fd, EPOLL_CTL_DEL, FD(c), NULL);
 #endif
-    closesocket(FD(c));
+    //closesocket(FD(c));
 #if MG_ENABLE_FREERTOS_TCP
     FreeRTOS_FD_CLR(c->fd, c->mgr->ss, eSELECT_ALL);
 #endif

@@ -57,7 +57,7 @@ static void keyboardHideAlt(Keyboard* kb)
 
 AOkeyboard::AOkeyboard(int lines, int oamStart, int palSlot)
 {
-	keyboardInit(&m_kb, 1, BgType_Text4bpp, BgSize_T_256x512, 1, 4, false, true);
+	keyboardInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x512, 1, 4, false, true);
 	mp3_fill_buffer();
 
 	lbl_plswrite = new UILabel(&oamSub, oamStart, 6, 1, RGB15(31,31,31), palSlot, 1);
@@ -69,13 +69,11 @@ AOkeyboard::AOkeyboard(int lines, int oamStart, int palSlot)
 
 	enterPressed.cb = 0;
 	escPressed.cb = 0;
+	visible = false;
 }
 
 AOkeyboard::~AOkeyboard()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(m_kb.background), m_kb.tileLen);
-	dmaFillHalfWords(0, bgGetMapPtr(m_kb.background), 1536);
-
 	delete lbl_plswrite;
 	delete lbl_written;
 }
@@ -94,13 +92,26 @@ void AOkeyboard::show16(const char* plsWrite, std::u16string startValue)
 	wifikb::send(plsWrite);
 	wifikb::start();
 
-	dmaCopy(m_kb.palette, BG_PALETTE_SUB, m_kb.paletteLen);
-	keyboardShowAlt(&m_kb);
+	dmaCopy(keyboardGetDefault()->palette, BG_PALETTE_SUB, keyboardGetDefault()->paletteLen);
+	keyboardShow();
+
+	visible = true;
 }
 
 void AOkeyboard::show(const char* plsWrite, std::string startValue)
 {
 	show16(plsWrite, utf8::utf8to16(startValue));
+}
+
+void AOkeyboard::hide()
+{
+	wifikb::stop();
+	keyboardHide();
+
+	lbl_plswrite->setVisible(false);
+	lbl_written->setVisible(false);
+
+	visible = false;
 }
 
 int AOkeyboard::updateInput()
@@ -113,11 +124,7 @@ int AOkeyboard::updateInput()
 	if (c == DVK_ENTER || c == DVK_FOLD)
 	{
 		int ret = -1;
-		wifikb::stop();
-		keyboardHideAlt(&m_kb);
-
-		lbl_plswrite->setVisible(false);
-		lbl_written->setVisible(false);
+		hide();
 
 		if (c == DVK_FOLD)
 			value = valueOld;
@@ -147,6 +154,11 @@ void AOkeyboard::setValue(std::u16string newValue)
 {
 	value = newValue;
 	lbl_written->setText(newValue);
+}
+
+bool AOkeyboard::isVisible()
+{
+	return visible;
 }
 
 std::u16string& AOkeyboard::getValue()

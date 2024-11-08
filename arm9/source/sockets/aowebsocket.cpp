@@ -9,8 +9,7 @@ AOwebSocket::AOwebSocket() : AOsocket()
 
 AOwebSocket::~AOwebSocket()
 {
-	if (c) c->is_closing = 1;
-	mg_mgr_poll(&mgr, 0);
+	closesocket((int)c->fd);
 	mg_mgr_free(&mgr);
 }
 
@@ -31,7 +30,7 @@ void AOwebSocket::wsHandler(struct mg_connection *c, int ev, void *ev_data, void
 
 		case MG_EV_WS_MSG:
 			struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
-			iprintf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
+			printf("S: [%.*s]\n", (int) wm->data.len, wm->data.ptr);
 
 			// loop through every percent %
 			std::string tempData(wm->data.ptr);

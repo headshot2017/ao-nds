@@ -428,6 +428,5 @@ void mp3_init() {
         mp3_bytesleft = 0;
         mp3_volume = 127;
 
-        enableSound();
         fifoSetDatamsgHandler(FIFO_USER_01, mp3_DataHandler, 0);
 }

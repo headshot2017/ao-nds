@@ -1,92 +1,86 @@
-/*---------------------------------------------------------------------------------
+// SPDX-License-Identifier: Zlib
+//
+// Copyright (C) 2005 Michael Noland (joat)
+// Copyright (C) 2005 Jason Rogers (Dovoto)
+// Copyright (C) 2005-2015 Dave Murphy (WinterMute)
+// Copyright (C) 2023 Antonio Niño Díaz
 
-	default ARM7 core
+// Default ARM7 core
 
-		Copyright (C) 2005 - 2010
-		Michael Noland (joat)
-		Jason Rogers (dovoto)
-		Dave Murphy (WinterMute)
-
-	This software is provided 'as-is', without any express or implied
-	warranty.  In no event will the authors be held liable for any
-	damages arising from the use of this software.
-
-	Permission is granted to anyone to use this software for any
-	purpose, including commercial applications, and to alter it and
-	redistribute it freely, subject to the following restrictions:
-
-	1.	The origin of this software must not be misrepresented; you
-		must not claim that you wrote the original software. If you use
-		this software in a product, an acknowledgment in the product
-		documentation would be appreciated but is not required.
-
-	2.	Altered source versions must be plainly marked as such, and
-		must not be misrepresented as being the original software.
-
-	3.	This notice may not be removed or altered from any source
-		distribution.
-
----------------------------------------------------------------------------------*/
-#include <nds.h>
 #include <dswifi7.h>
+#include <nds.h>
 #include <mp3_shared.h>
+//#include <maxmod7.h>
 
-//---------------------------------------------------------------------------------
-void VblankHandler(void) {
-	Wifi_Update();
+volatile bool exit_loop = false;
+
+void power_button_callback(void)
+{
+    exit_loop = true;
 }
 
-
-//---------------------------------------------------------------------------------
-void VcountHandler() {
-//---------------------------------------------------------------------------------
-	inputGetAndSend();
+void vblank_handler(void)
+{
+    inputGetAndSend();
+    Wifi_Update();
 }
 
-volatile bool exitflag = false;
+int main(int argc, char *argv[])
+{
+    // Initialize sound hardware
+    enableSound();
 
-//---------------------------------------------------------------------------------
-void powerButtonCB() {
-//---------------------------------------------------------------------------------
-	exitflag = true;
-}
+    // Read user information from the firmware (name, birthday, etc)
+    readUserSettings();
 
-//---------------------------------------------------------------------------------
-int main() {
-//---------------------------------------------------------------------------------
-	readUserSettings();
+    // Stop LED blinking
+    ledBlink(0);
 
-	irqInit();
-	fifoInit();
-	touchInit();
+    // Using the calibration values read from the firmware with
+    // readUserSettings(), calculate some internal values to convert raw
+    // coordinates into screen coordinates.
+    touchInit();
 
-	//mmInstall(FIFO_MAXMOD);
-	// Start the RTC tracking IRQ
-	initClockIRQ();
+    irqInit();
+    fifoInit();
 
-	SetYtrigger(80);
+    installSoundFIFO();
+    installSystemFIFO(); // Sleep mode, storage, firmware...
+    installWifiFIFO();
+    if (isDSiMode())
+        installCameraFIFO();
 
-	mp3_init();
+    // Initialize Maxmod. It uses timer 0 internally.
+    //mmInstall(FIFO_MAXMOD);
 
-	installWifiFIFO();
-	installSoundFIFO();
-	installSystemFIFO();
+    // This sets a callback that is called when the power button in a DSi
+    // console is pressed. It has no effect in a DS.
+    setPowerButtonCB(power_button_callback);
 
-	irqSet(IRQ_VCOUNT, VcountHandler);
-	irqSet(IRQ_VBLANK, VblankHandler);
+    // Read current date from the RTC and setup an interrupt to update the time
+    // regularly. The interrupt simply adds one second every time, it doesn't
+    // read the date. Reading the RTC is very slow, so it's a bad idea to do it
+    // frequently.
+    initClockIRQTimer(3);
 
-	irqEnable( IRQ_VBLANK | IRQ_VCOUNT | IRQ_NETWORK);
+    // Now that the FIFO is setup we can start sending input data to the ARM9.
+    irqSet(IRQ_VBLANK, vblank_handler);
+    irqEnable(IRQ_VBLANK);
 
-	setPowerButtonCB(powerButtonCB);
+    mp3_init();
 
-	// Keep the ARM7 mostly idle
-	while (!exitflag) {
-		mp3_process();
+    while (!exit_loop)
+    {
+    	mp3_process();
 
-		if ( 0 == (REG_KEYINPUT & (KEY_SELECT | KEY_START | KEY_L | KEY_R))) {
-			exitflag = true;
-		}
-		swiWaitForVBlank();
-	}
-	return 0;
+        const uint16_t key_mask = KEY_SELECT | KEY_START | KEY_L | KEY_R;
+        uint16_t keys_pressed = ~REG_KEYINPUT;
+
+        if ((keys_pressed & key_mask) == key_mask)
+            exit_loop = true;
+
+        swiWaitForVBlank();
+    }
+
+    return 0;
 }

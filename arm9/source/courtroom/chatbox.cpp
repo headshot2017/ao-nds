@@ -3,9 +3,9 @@
 #include <string.h>
 
 #include <nds/arm9/background.h>
-#include <nds/arm9/decompress.h>
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/video.h>
+#include <nds/decompress.h>
 #include <nds/interrupts.h>
 #include <nds/timers.h>
 
@@ -230,7 +230,7 @@ void Chatbox::setName(std::u16string name)
 void Chatbox::setText(std::u16string text, int color, std::string blip)
 {
 	colorStack = {};
-	colorStack.push({color, ' ', ' ', (color != COLOR_BLUE)});
+	colorStack.push({color, ' ', ' ', (color != COLOR_BLUE), false, false});
 
 	currTextInd = 0;
 	currTextGfxInd = 0;
@@ -274,7 +274,7 @@ void Chatbox::additiveText(std::u16string text, int color)
 	currTextGfxInd = (line+1) * 8;
 
 	colorStack = {};
-	colorStack.push({color, ' ', ' ', (color != COLOR_BLUE)});
+	colorStack.push({color, ' ', ' ', (color != COLOR_BLUE), false, false});
 
 	currTextInd = 0;
 	currTextLine = -1;

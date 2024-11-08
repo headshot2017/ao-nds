@@ -91,7 +91,7 @@ void mp3_fill_buffer() {
 						break;
 				}
         }
-        //iprintf("out\n");
+        //printf("out\n");
 }
 
 int ds_filelength (FILE *f)
@@ -137,7 +137,9 @@ int mp3_play_file(FILE *file, int loop, float loopsec){
 
         fifoSendDatamsg(FIFO_USER_01, sizeof(msg), (u8*)&msg);
 
-        while(!fifoCheckValue32(FIFO_USER_01));
+        int wait = 60*3;
+        while (!fifoCheckValue32(FIFO_USER_01) && --wait)
+			swiWaitForVBlank();
 
         ret = (int)fifoGetValue32(FIFO_USER_01);
 
@@ -237,15 +239,15 @@ int mp3_init() {
 	mp3_audioLeft = (u16 *)malloc(MP3_AUDIO_BUFFER_SIZE);
 	mp3_audioRight = (u16 *)malloc(MP3_AUDIO_BUFFER_SIZE);
 	if(mp3 == 0 || mp3_buffer == 0 || mp3_audioLeft == 0 || mp3_audioRight == 0) {
-			if (mp3 == 0) iprintf("mp3 ");
-			if (mp3_buffer == 0) iprintf("mp3_buffer ");
-			if (mp3_audioLeft == 0) iprintf("mp3_audioLeft ");
-			if (mp3_audioRight == 0) iprintf("mp3_audioRight ");
+			if (mp3 == 0) printf("mp3 ");
+			if (mp3_buffer == 0) printf("mp3_buffer ");
+			if (mp3_audioLeft == 0) printf("mp3_audioLeft ");
+			if (mp3_audioRight == 0) printf("mp3_audioRight ");
 			mp3 = 0;
 			mp3_buffer = 0;
 			mp3_audioLeft = 0;
 			mp3_audioRight = 0;
-			iprintf("failed to allocate buffers\n");
+			printf("failed to allocate buffers\n");
 			return 0;
 	}
 

@@ -11,7 +11,8 @@
 
 class AOkeyboard
 {
-	Keyboard m_kb;
+	bool visible;
+
 	std::u16string value;
 	std::u16string valueOld;
 	UILabel* lbl_plswrite;
@@ -26,12 +27,13 @@ public:
 
 	void show16(const char* plsWrite, std::u16string startValue=u"\0");
 	void show(const char* plsWrite, std::string startValue="\0");
+	void hide();
 	void setInputYOffset(int offset) {lbl_written->setPos(8, 32+offset);}
 	int updateInput();
 	void setValue(std::u16string newValue);
 
 	int nextOamInd() {return lbl_written->nextOamInd();}
-	bool isVisible() {return m_kb.visible;}
+	bool isVisible();
 	std::u16string& getValue();
 	std::string getValueUTF8();
 };

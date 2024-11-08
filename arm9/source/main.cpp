@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <dirent.h>
 #include <vector>
 
@@ -93,7 +94,7 @@ int main()
 	if (!fatInitDefault())
 	{
 		consoleDemoInit();
-		iprintf("Failed to initialize libfat\nPlease check your SD card\n");
+		printf("Failed to initialize libfat\nPlease check your SD card\n");
 		while (1) swiWaitForVBlank();
 	}
 
@@ -102,13 +103,13 @@ int main()
 	if (!dir1)
 	{
 		consoleDemoInit();
-		iprintf("'/data/ao-nds' folder does not exist in the SD card\n\nPlease check your AO NDS installation");
+		printf("'/data/ao-nds' folder does not exist in the SD card\n\nPlease check your AO NDS installation");
 		while (1) swiWaitForVBlank();
 	}
 	else if (!dir2)
 	{
 		consoleDemoInit();
-		iprintf("'/data/ao-nds/ui' folder does not exist in the SD card\n\nPlease check your AO NDS installation");
+		printf("'/data/ao-nds/ui' folder does not exist in the SD card\n\nPlease check your AO NDS installation");
 		while (1) swiWaitForVBlank();
 	}
 

@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <algorithm>
 
+#include <nds/decompress.h>
 #include <nds/dma.h>
 #include <nds/timers.h>
 #include <nds/interrupts.h>
 #include <nds/arm9/input.h>
-#include <nds/arm9/decompress.h>
 
 #include "arm9_math_alt.h"
 #include "courtroom/courtroom.h"

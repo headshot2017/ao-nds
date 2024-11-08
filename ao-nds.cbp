@@ -5,11 +5,19 @@
 		<Option title="ao-nds" />
 		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
-		<Option compiler="devkitarm" />
+		<Option compiler="blocksds" />
+		<MakeCommands>
+			<Build command="$make -f $makefile $target" />
+			<CompileFile command="$make -f $makefile $file" />
+			<Clean command="$make -f $makefile clean" />
+			<DistClean command="$make -f $makefile distclean$target" />
+			<AskRebuildNeeded command="$make -q -f $makefile $target" />
+			<SilentBuild command="$make -f $makefile $target &gt; $(CMD_NULL)" />
+		</MakeCommands>
 		<Build>
-			<Target title="all">
+			<Target title=" ">
 				<Option type="4" />
-				<Option compiler="devkitarm" />
+				<Option compiler="blocksds" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>

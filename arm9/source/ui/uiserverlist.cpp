@@ -231,6 +231,8 @@ void UIScreenServerList::update()
 		}
 	}
 
+	if (arrowYadd < -1 || arrowYadd > 1)
+		arrowYadd = 1;
 	arrowY += arrowYadd;
 	if (arrowY <= 0 || arrowY >= 8)
 		arrowYadd = -arrowYadd;

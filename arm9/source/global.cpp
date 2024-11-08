@@ -5,8 +5,8 @@
 #include <dirent.h>
 
 #include <nds/arm9/cache.h>
-#include <nds/arm9/decompress.h>
 #include <nds/arm9/input.h>
+#include <nds/decompress.h>
 #include <nds/interrupts.h>
 
 #include "utf8.h"
@@ -16,7 +16,7 @@
 
 void debugPressA(const char* msg)
 {
-	iprintf("%s\n", msg);
+	printf("%s\n", msg);
 	while (1)
 	{
 		mp3_fill_buffer();

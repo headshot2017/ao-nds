@@ -200,7 +200,7 @@ void Courtroom::handleChat()
 		character[0]->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
 
 	// set background side
-	if (currIC.emoteMod == 5)
+	if (currIC.emoteMod == 5 || currIC.emoteMod == 6)
 		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
 	else
 	{
@@ -247,7 +247,7 @@ void Courtroom::playMusic(std::string filename)
 	else
 		filename += ".mp3";
 
-	iprintf("%s\n", filename.c_str());
+	printf("%s\n", filename.c_str());
 	mp3_play(filename.c_str(), 1, 0);
 }
 

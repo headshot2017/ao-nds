@@ -15,7 +15,7 @@ AOtcpSocket::AOtcpSocket() : AOsocket()
 
 AOtcpSocket::~AOtcpSocket()
 {
-	close(sockfd);
+	closesocket(sockfd);
 }
 
 void AOtcpSocket::connectIP(std::string ip, u16 port)
@@ -32,7 +32,7 @@ void AOtcpSocket::connectIP(std::string ip, u16 port)
 
 	if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
 	{
-		iprintf("TCP socket connection fail %d\n", errno);
+		printf("TCP socket connection fail %d\n", errno);
 		return;
 	}
 
@@ -71,7 +71,7 @@ void AOtcpSocket::update()
 	{
 		/*if (errno >= 102 && errno <= 104) // disconnected
 		{
-			iprintf("got disconnected\n");
+			printf("got disconnected\n");
 			disconnect();
 		}*/
 		return;
@@ -80,7 +80,7 @@ void AOtcpSocket::update()
 	buf[total] = 0;
 	tempData += buf;
 
-	iprintf("%d %s\n", tempData.size(), tempData.c_str());
+	printf("%d %s\n", tempData.size(), tempData.c_str());
 	if (buf[total-1] == '%')
 	{
 		// loop through every percent %

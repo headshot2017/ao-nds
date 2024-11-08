@@ -36,3 +36,5 @@ typedef int socklen_t;
 #define MG_ENABLE_FATFS 0
 #define MG_IO_SIZE 256
 #define MG_ENABLE_SSI 0
+
+#define MG_CUSTOM_NONBLOCK(fd)

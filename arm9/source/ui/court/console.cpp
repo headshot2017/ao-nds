@@ -23,7 +23,7 @@ void UICourtConsole::updateInput()
 {
 	if (keysDown() & KEY_START)
 	{
-		iprintf("disconnecting\n");
+		printf("disconnecting\n");
 		gEngine->changeScreen(new UIScreenServerList);
 	}
 }

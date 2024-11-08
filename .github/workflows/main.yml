@@ -4,10 +4,10 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: DevkitARM build
+    name: BlocksDS build
     runs-on: ubuntu-latest
-    container: 
-      image: devkitpro/devkitarm:latest
+    container:
+      image: skylyrac/blocksds:dev-latest
 
     steps:
     - name: Checkout
@@ -23,7 +23,7 @@ jobs:
         mkdir dist
         mv ./ao-nds.nds ./dist/
         mv ./fat ./dist/
-        
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -64,4 +64,4 @@ jobs:
       with:
         name: Converter tool
         path: ./converter/dist
-        
+

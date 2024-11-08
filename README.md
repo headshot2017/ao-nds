@@ -5,15 +5,15 @@
 
 [Attorney Online](https://aceattorneyonline.com) client for the Nintendo DS.
 
-Made with devkitARM & libnds by Headshotnoby<br/>
+Made with BlocksDS by Headshotnoby<br/>
 Additional code by stonedDiscord<br/>
 UI design by Samevi
 
 ## Assets and libraries used
 * "Igiari" font by [Caveras](https://caveras.net)
 * "AceName" font by unknown (found on [webAO](https://github.com/AttorneyOnline/webAO))
-* [libnds](http://github.com/devkitPro/libnds)
-* [dswifi](http://github.com/devkitPro/dswifi)
+* [BlocksDS](http://github.com/blocksds/sdk)
+* [dswifi](http://github.com/blocksds/dswifi)
 * [stb_truetype](https://github.com/nothings/stb/blob/master/stb_truetype.h)
   * Using a modified version of stb_truetype that replaces (some, not all) floating point math with fixed-point math, thus providing a speed boost, since the DS doesn't have a FPU
 * MP3 player from this [blogspot](http://adshomebrewersdiary.blogspot.com/2012/06/mp3-streaming-on-arm7.html) site, but with several bug fixes
