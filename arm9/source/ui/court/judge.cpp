@@ -10,10 +10,6 @@
 
 UICourtJudge::~UICourtJudge()
 {
-	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
-	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
-
 	delete btn_back;
 	delete btn_courtRecord;
 	delete btn_barDefenseMinus;
