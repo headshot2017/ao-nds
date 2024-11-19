@@ -37,7 +37,7 @@ def convertBackground(source, target):
             part.save("court%d.png" % i)
 
         for i in range(parts):
-            subprocess.Popen("./grit court%d.png -g -gB8 -gt -m! -p -ftb -fh!" % (i)).wait()
+            subprocess.Popen( ("grit court%d.png -g -gB8 -gt -m! -p -ftb -fh!" % i).split(" ") ).wait()
             if os.path.exists(target+"/court%d.img.bin" % i):
                 os.remove(target+"/court%d.img.bin" % i)
             if os.path.exists(target+"/court%d.pal.bin" % i):
@@ -74,7 +74,7 @@ def convertBackground(source, target):
             img.close()
 
             # 8-bit tiles, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
-            subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!").wait()
+            subprocess.Popen("grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!".split(" ")).wait()
 
             if os.path.exists(target+"/"+imgfile+".img.bin"):
                 os.remove(target+"/"+imgfile+".img.bin")
@@ -144,7 +144,7 @@ def convertBackground(source, target):
                 f.write("%s: %d,%d\n" % (imgfile, horizontalTiles, verticalTiles))
 
             # 8-bit tiles, transparency, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-            subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh4 -Mw8").wait()
+            subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh4 -Mw8".split(" ")).wait()
             
             if os.path.exists(target+"/"+imgfile+".img.bin"):
                 os.remove(target+"/"+imgfile+".img.bin")
@@ -286,7 +286,7 @@ def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
     streamFile = (frames[0][0].size[0] * frames[0][0].size[1] * len(noDuplicates) >= 512*1024)
 
     # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-    subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF %s -ftb -fh! -m! -Mh8 -Mw8" % (core, "" if streamFile else "-gzl")).wait()
+    subprocess.Popen( ("grit temp%d.png -gB8 -gt -gTFF00FF %s -ftb -fh! -m! -Mh8 -Mw8" % (core, "" if streamFile else "-gzl")).split(" ") ).wait()
     if not os.path.exists("temp%d.img.bin" % core):
         print("Failed to convert: %s" % (targetFile))
         open("log.txt", "a").write("Failed to convert: %s\n" % (targetFile))
@@ -346,7 +346,7 @@ def convertCharIcon(sourceFile, targetFile, core):
         imgObj.close()
 
         # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-        subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8" % core).wait()
+        subprocess.Popen( ("grit temp%d.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8" % core).split(" ") ).wait()
 
         if os.path.exists(no_ext_file+suffix+".img.bin"):
             os.remove(no_ext_file+suffix+".img.bin")
@@ -379,7 +379,7 @@ def convertEmoteButtons(source, target, core):
         no_ext_file = target + "/" + os.path.splitext(f)[0]
 
         # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-        subprocess.Popen("grit temp%d.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8" % core).wait()
+        subprocess.Popen( ("grit temp%d.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8" % core).split(" ") ).wait()
 
         if os.path.exists(no_ext_file+".img.bin"):
             os.remove(no_ext_file+".img.bin")
@@ -504,7 +504,7 @@ def convertEvidenceSubdir(source, target, subdir):
             img.close()
 
             # 8-bit tiles, #FF00FF transparency color, export to .img.bin, don't generate .h file, exclude map data, metatile height and width
-            subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8").wait()
+            subprocess.Popen("grit temp.png -gB8 -gt -gTFF00FF -ftb -fh! -m! -Mh8 -Mw8".split(" ")).wait()
 
             targetFile = target + "/" + sizeStr + "/" + subdir + "/" + no_ext_file
             if os.path.exists(targetFile + ".img.bin"): os.remove(targetFile + ".img.bin")
@@ -524,7 +524,7 @@ def convertEvidenceImages(source, target):
 
 def convertSound(source, target):
     targetFile = os.path.splitext(target)[0] + ".wav"
-    subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 22050 -ac 1 -y \"%s\"" % (source, targetFile)).wait()
+    subprocess.Popen( ("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 22050 -ac 1 -y \"%s\"" % (source, targetFile)).split(" ") ).wait()
 
 def convertSounds(source, target):
     if not os.path.exists(target):
@@ -552,7 +552,7 @@ def convertMusic(source, target):
 
             # need to apply this metadata title so that the mp3 player used in the NDS app doesn't act funky when loading it
             # also delete any cover art, that freezes the ROM
-            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -map 0:a -ar 22050 -ac 2 -b:a 80k -metadata title=\"000000000000000000000000000000000000000\" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
+            subprocess.Popen( ("ffmpeg -hide_banner -loglevel error -i \"%s\" -map 0:a -ar 22050 -ac 2 -b:a 80k -metadata title=\"000000000000000000000000000000000000000\" -y \"%s\"" % (source+"/"+f, targetFile)).split(" ") ).wait()
 
 def convertChatbox(folder):
     print(folder+"/misc/default/chatbox.png")
@@ -569,7 +569,7 @@ def convertChatbox(folder):
     img.close()
 
     # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, export to .bin, don't generate .h file
-    subprocess.Popen("./grit temp.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!").wait()
+    subprocess.Popen("grit temp.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!".split(" ")).wait()
 
     if os.path.exists("converted/data/ao-nds/misc/chatbox.img.bin"):
         os.remove("converted/data/ao-nds/misc/chatbox.img.bin")
@@ -631,7 +631,7 @@ def convertShout(source, target, core=0):
     newFile = os.path.splitext(target)[0]
 
     # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, export to .bin, don't generate .h file
-    subprocess.Popen("./grit temp%d.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!" % core).wait()
+    subprocess.Popen( ("grit temp%d.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!" % core).split(" ") ).wait()
 
     if os.path.exists(newFile+".img.bin"):
         os.remove(newFile+".img.bin")
@@ -650,7 +650,7 @@ def convertSpeedlines(source, target):
     img.close()
 
     # 8-bit tiles, generate map file, enable palette, extended palette slot 0, export to .bin, don't generate .h file
-    subprocess.Popen("./grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!").wait()
+    subprocess.Popen("grit temp.png -g -gB8 -gt -m -mp 0 -p -ftb -fh!".split(" ")).wait()
 
     if os.path.exists(target+".img.bin"):
         os.remove(target+".img.bin")
