@@ -9,7 +9,7 @@
 
 #include "uiscreen.h"
 #include "courtroom/courtroom.h"
-#include "engine.h"
+#include "settings.h"
 #include "mp3_shared.h"
 
 extern const char* indToSide[6];
@@ -133,7 +133,7 @@ public:
 	std::vector<charInfo>& getCharList() {return charList;}
 	const std::vector<musicInfo>& getMusicList() {return musicList;}
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
-	std::vector<evidenceInfo>& getEvidenceList(bool priv) {return (priv) ? gEngine->getPrivateEvidence() : evidenceList;}
+	std::vector<evidenceInfo>& getEvidenceList(bool priv) {return (priv) ? Settings::privateEvidence : evidenceList;}
 	bool getFeature(const char* feature) {return featureList.count(feature);}
 	std::unordered_map<int, playerInfo>& getPlayerList() {return playerList;}
 	const std::vector<int>& getPlayerListIDs() {return playerListIDs;}

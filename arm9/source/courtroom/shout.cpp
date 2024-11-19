@@ -3,6 +3,7 @@
 #include <nds/arm9/background.h>
 
 #include "courtroom/courtroom.h"
+#include "content.h"
 
 Shout::Shout(Courtroom* pCourt)
 {
@@ -41,7 +42,8 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 	u8* bgMap = 0;
 	u8* bgPal = 0;
 
-	std::string sndFile = "/data/ao-nds/characters/" + charname;
+	std::string contentPath = Content::getFile("characters/" + charname);
+	std::string& sndFile = contentPath;
 	switch(shoutMod)
 	{
 		case 1:
@@ -66,9 +68,9 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 			break;
 
 		case 4:
-			bgGfx = readFile("/data/ao-nds/characters/" + charname + "/" + custom + ".img.bin", &bgGfxLen);
-			bgMap = readFile("/data/ao-nds/characters/" + charname + "/" + custom + ".map.bin", &bgMapLen);
-			bgPal = readFile("/data/ao-nds/characters/" + charname + "/" + custom + ".pal.bin", &bgPalLen);
+			bgGfx = readFile(contentPath + "/" + custom + ".img.bin", &bgGfxLen);
+			bgMap = readFile(contentPath + "/" + custom + ".map.bin", &bgMapLen);
+			bgPal = readFile(contentPath + "/" + custom + ".pal.bin", &bgPalLen);
 			sndFile += "/" + custom + ".wav";
 			break;
 	}

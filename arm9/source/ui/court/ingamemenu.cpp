@@ -4,6 +4,7 @@
 #include <nds/arm9/sprite.h>
 #include <nds/arm9/sound.h>
 
+#include "engine.h"
 #include "ui/court/charselect.h"
 #include "ui/court/musiclist.h"
 #include "ui/court/icchatlog.h"
@@ -45,7 +46,6 @@ void UICourtIngameMenu::init()
 	lbl_guard = new UILabel(&oamSub, lbl_currChar->nextOamInd(), 5, 1, RGB15(5,5,5), 7, 0);
 
 	kb_input = new AOkeyboard(2, lbl_guard->nextOamInd(), 8);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	btn_courtRecord->assignKey(KEY_R);
 	btn_guard->setFrame(pCourtUI->guard);

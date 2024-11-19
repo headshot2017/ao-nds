@@ -58,7 +58,6 @@ void UICourtOOCPresets::init()
 	lbl_pages = new UILabel(&oamSub, lbl_preset[3]->nextOamInd(), 1, 1, RGB15(13, 2, 0), 6, 0);
 
 	kb_input = new AOkeyboard(1, lbl_pages->nextOamInd(), 11);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	btn_back->assignKey(KEY_B);
 	btn_addOrConfirm->assignKey(KEY_A);

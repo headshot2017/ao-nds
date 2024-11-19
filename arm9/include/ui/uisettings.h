@@ -7,8 +7,25 @@
 
 #include "button.h"
 #include "label.h"
-#include "keyboard.h"
 #include "mp3_shared.h"
+
+class UIScreenSettings;
+class UISubSetting
+{
+public:
+	UISubSetting(UIScreenSettings* settingsUI) : pSettingsUI(settingsUI) {}
+	virtual ~UISubSetting() {}
+	virtual const char* tabName() {return "unknown";}
+
+	virtual void init() {}
+	virtual void updateInput() {}
+	virtual void update() {}
+
+	virtual void setVisible(bool on) {}
+
+protected:
+	UIScreenSettings* pSettingsUI;
+};
 
 class UIScreenSettings : public UIScreen
 {
@@ -16,35 +33,23 @@ class UIScreenSettings : public UIScreen
 	int subBgIndex;
 	u32 bgTilesLen;
 	u32 bgSubTilesLen;
-	u8* bgSubPal;
 
-	UIButton* btn_generalTab;
-	UIButton* btn_chatlogTab;
 	UIButton* btn_back;
+	UIButton* btn_prevTab;
+	UIButton* btn_nextTab;
+	UILabel* lbl_currentTab;
 
-	// general tab
-	UILabel* lbl_showname;
-	UILabel* lbl_shownameValue;
-	UILabel* lbl_oocname;
-	UILabel* lbl_oocnameValue;
-	UIButton* btn_showname;
-	UIButton* btn_oocname;
+	UISubSetting* m_subSetting;
+	UISubSetting* m_nextSetting;
+	u32 m_tabIndex;
 
-	// chatlog tab
-	UILabel* lbl_iniswaps;
-	UILabel* lbl_shownames;
-	UIButton* btn_iniswaps;
-	UIButton* btn_shownames;
-	UILabel* lbl_logPreview;
-	UILabel* lbl_logInfo;
+	void loadNewTab();
 
-	AOkeyboard* kb_input;
-	UIButton* currEditing;
-
+public:
 	wav_handle* sndCancel;
 	wav_handle* sndCrtRcrd;
-
-	int tab;
+	wav_handle* sndEvPage;
+	u8* bgSubPal;
 
 public:
 	UIScreenSettings() : UIScreen() {}
@@ -52,20 +57,16 @@ public:
 
 	void init();
 	void updateInput();
-	void update() {}
+	void update();
 
-	void hideEverything(bool keepTabs=false);
-	void setTab(int i);
-	void refreshChatlogPreview();
-	void saveSettings();
+	int getFirstOAM();
+	void hideEverything(bool keepBG=false);
+	void showEverything();
+	void changeTab(UISubSetting* newTab);
 
-	static void onGeneralTab(void* pUserData);
-	static void onChatlogTab(void* pUserData);
-	static void onShownameClicked(void* pUserData);
-	static void onOOCnameClicked(void* pUserData);
-	static void onIniswapsToggled(void* pUserData);
-	static void onShownamesToggled(void* pUserData);
 	static void onBackClicked(void* pUserData);
+	static void onPrevTab(void* pUserData);
+	static void onNextTab(void* pUserData);
 };
 
 #endif // UISETTINGS_H_INCLUDED

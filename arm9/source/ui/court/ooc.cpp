@@ -42,7 +42,6 @@ void UICourtOOC::init()
 	lbl_oocName = new UILabel(&oamSub, lbl_log->nextOamInd(), 4, 1, RGB15(31,31,31), 5, 0);
 
 	kb_input = new AOkeyboard(3, lbl_oocName->nextOamInd(), 5);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	isWritingChat = false;
 
 	lbl_log->setPos(9, 17);

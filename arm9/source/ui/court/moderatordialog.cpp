@@ -7,6 +7,7 @@
 #include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
+#include "content.h"
 #include "ui/court/courtrecord.h"
 #include "ui/court/profiledetail.h"
 #include "ui/court/message.h"
@@ -95,7 +96,6 @@ void UICourtModeratorDialog::init()
 	lbl_reason->setText("Reason:");
 
 	kb_input = new AOkeyboard(1, btn_reasonInput->nextOamInd(), 5);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	inputting = 0;
 
 	lbl_desc->setPos(99, 42);
@@ -257,7 +257,11 @@ void UICourtModeratorDialog::fillInfo()
 	std::u16string finalDesc = utf8::utf8to16(desc);
 	lbl_desc->setText(finalDesc);
 
-	spr_profile->setImage("/data/ao-nds/characters/" + (info ? info->character : "") + "/char_icon_big", 64, 64, 4);
+	std::string file = "characters/" + (info ? info->character : "") + "/char_icon_big";
+	bool exists = Content::exists(file+".img.bin", file);
+	if (exists) file = file.substr(0, file.length()-8); // remove extension
+
+	spr_profile->setImage(file, 64, 64, 4);
 }
 
 void UICourtModeratorDialog::onBackClicked(void* pUserData)

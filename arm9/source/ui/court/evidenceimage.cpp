@@ -11,6 +11,7 @@
 #include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
+#include "content.h"
 #include "ui/court/evidencedetail.h"
 
 struct evidenceImgBtnData
@@ -101,19 +102,20 @@ void UICourtEvidenceImage::reloadPage()
 		mp3_fill_buffer();
 
 		u32 ind = currPage*8 + i;
-		if (ind >= gEngine->getEvidence().size())
+		if (ind >= Content::getEvidence().size())
 		{
 			btn_evidence[i]->setVisible(false);
 			continue;
 		}
 		mp3_fill_buffer();
 
-		const evidenceCacheInfo& info = gEngine->getEvidence()[ind];
-		btn_evidence[i]->setImage("/data/ao-nds/evidence/small/" + info.subdir + "/" + info.name, 64, 64, 7+i);
+		const evidenceCacheInfo& info = Content::getEvidence()[ind];
+
+		btn_evidence[i]->setImage("/data/ao-nds/" + info.content + "/evidence/small/" + info.subdir + "/" + info.name, 64, 64, 7+i);
 		btn_evidence[i]->setVisible(true);
 	}
 
-	u32 maxPages = (u32)ceil(gEngine->getEvidence().size()/8.f);
+	u32 maxPages = (u32)ceil(Content::getEvidence().size()/8.f);
 	btn_pageLeft->setVisible(currPage > 0);
 	btn_pageRight->setVisible(currPage+1 < maxPages);
 	btn_confirm->setVisible(false);
@@ -153,7 +155,7 @@ void UICourtEvidenceImage::onConfirmClicked(void* pUserData)
 	wav_play(pSelf->pCourtUI->sndSelect);
 
 	u32 ind = pSelf->currPage*8 + pSelf->currEviSelected;
-	const evidenceCacheInfo& info = gEngine->getEvidence()[ind];
+	const evidenceCacheInfo& info = Content::getEvidence()[ind];
 
 	if (!pSelf->adding)
 	{
@@ -161,10 +163,10 @@ void UICourtEvidenceImage::onConfirmClicked(void* pUserData)
 			gEngine->getSocket()->sendData("EE#" + std::to_string(pSelf->editingEvidence) + "#" + utf8::utf16to8(pSelf->currName) + "#" + utf8::utf16to8(pSelf->currDesc) + "#" + info.subdir + "/" + info.name + ".png#%");
 		else
 		{
-			gEngine->getPrivateEvidence()[pSelf->editingEvidence].name = pSelf->currName;
-			gEngine->getPrivateEvidence()[pSelf->editingEvidence].description = pSelf->currDesc;
-			gEngine->getPrivateEvidence()[pSelf->editingEvidence].image = info.subdir + "/" + info.name;
-			gEngine->savePrivateEvidence();
+			Settings::privateEvidence[pSelf->editingEvidence].name = pSelf->currName;
+			Settings::privateEvidence[pSelf->editingEvidence].description = pSelf->currDesc;
+			Settings::privateEvidence[pSelf->editingEvidence].image = info.subdir + "/" + info.name;
+			Settings::savePrivateEvidence();
 		}
 	}
 	pSelf->pCourtUI->changeScreen(new UICourtEvidenceDetail(pSelf->pCourtUI, pSelf->editingEvidence, pSelf->isPrivate, pSelf->currName, pSelf->currDesc, info.subdir + "/" + info.name));
@@ -182,7 +184,7 @@ void UICourtEvidenceImage::onEvidenceClicked(void* pUserData)
 	wav_play(pSelf->pCourtUI->sndEvTap);
 
 	pSelf->lbl_evidence->setVisible(true);
-	pSelf->lbl_evidence->setText(gEngine->getEvidence()[ind].name);
+	pSelf->lbl_evidence->setText(Content::getEvidence()[ind].name);
 	pSelf->lbl_evidence->setPos(128, 36+2, true);
 
 	pSelf->sel_btn->selectButton(pSelf->btn_evidence[pData->btnInd], 2);

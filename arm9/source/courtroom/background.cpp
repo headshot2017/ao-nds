@@ -12,6 +12,7 @@
 #include "mini/ini.h"
 #include "mp3_shared.h"
 #include "global.h"
+#include "content.h"
 
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED div32(BUS_CLOCK,1024)
@@ -126,7 +127,7 @@ void FullCourtInfo::startScroll(int index, const std::string& sideBefore, const 
 	m_pCourt->getCharacter(1)->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
 	m_pCourt->getCharacter(1)->setFlip(currIC->flip);
 
-	bool isAnim = fileExists("/data/ao-nds/characters/" + currIC->charname + "/(a)" + currIC->emote + ".img.bin");
+	bool isAnim = Content::exists("characters/" + currIC->charname + "/(a)" + currIC->emote + ".img.bin");
 	std::string prefix;
 	if (isAnim) prefix = "(a)";
 
@@ -266,15 +267,14 @@ Background::~Background()
 
 bool Background::setBg(const std::string& name)
 {
-	std::string bgPath = "/data/ao-nds/background/" + name;
-	DIR* dir = opendir(bgPath.c_str());
-	if (!dir) bgPath = "/data/ao-nds/background/gs4";
-	else closedir(dir);
-
-	currentBg = bgPath;
+	std::string bgPath;
+	if (!Content::exists("background/"+name, bgPath))
+		bgPath = "/data/ao-nds/background/gs4";
 
 	if (!deskTiles.load(bgPath + "/desk_tiles.cfg"))
 		return false;
+
+	currentBg = bgPath;
 
 	fullCourt.clean();
 

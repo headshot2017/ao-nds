@@ -9,6 +9,7 @@
 #include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
+#include "content.h"
 #include "colors.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/icchatlog.h"
@@ -447,7 +448,9 @@ void UICourtIC::reloadPage()
 		mp3_fill_buffer();
 
 		u32 ind = currPage*4 + i;
-		std::string buttonFile = "/data/ao-nds/characters/" + pCourtUI->getCurrChar().name + "/emotions/button" + std::to_string(ind+1) + "_off";
+		std::string buttonFile = "characters/" + pCourtUI->getCurrChar().name + "/emotions/button" + std::to_string(ind+1) + "_off";
+		bool exists = Content::exists(buttonFile+".img.bin", buttonFile);
+		if (exists) buttonFile = buttonFile.substr(0, buttonFile.length()-8); // remove extension
 
 		btn_emote[i]->setImage(buttonFile, 64, 64, 7+i);
 		btn_emote[i]->setVisible(true);

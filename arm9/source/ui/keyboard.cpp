@@ -57,7 +57,14 @@ static void keyboardHideAlt(Keyboard* kb)
 
 AOkeyboard::AOkeyboard(int lines, int oamStart, int palSlot)
 {
-	keyboardInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x512, 1, 4, false, true);
+	keyboardInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x512, 1, 4, false, false);
+
+	decompress(keyboardGetDefault()->tiles, bgGetGfxPtr(5), LZ77Vram);
+	const KeyMap *map = keyboardGetDefault()->mappings[keyboardGetDefault()->state];
+	size_t map_size = (map->width * map->height *
+					   keyboardGetDefault()->grid_height * keyboardGetDefault()->grid_width * 2) / 64;
+	dmaCopy(map->mapDataReleased, bgGetMapPtr(5), map_size);
+
 	mp3_fill_buffer();
 
 	lbl_plswrite = new UILabel(&oamSub, oamStart, 6, 1, RGB15(31,31,31), palSlot, 1);

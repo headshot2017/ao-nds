@@ -40,6 +40,7 @@
 		<Unit filename="arm9/include/arm9_math_alt.h" />
 		<Unit filename="arm9/include/cfgFile.h" />
 		<Unit filename="arm9/include/colors.h" />
+		<Unit filename="arm9/include/content.h" />
 		<Unit filename="arm9/include/courtroom/background.h" />
 		<Unit filename="arm9/include/courtroom/character.h" />
 		<Unit filename="arm9/include/courtroom/chatbox.h" />
@@ -93,6 +94,7 @@
 		<Unit filename="arm9/include/rapidjson/stringbuffer.h" />
 		<Unit filename="arm9/include/rapidjson/uri.h" />
 		<Unit filename="arm9/include/rapidjson/writer.h" />
+		<Unit filename="arm9/include/settings.h" />
 		<Unit filename="arm9/include/sockets/aosocket.h" />
 		<Unit filename="arm9/include/sockets/aotcpsocket.h" />
 		<Unit filename="arm9/include/sockets/aowebsocket.h" />
@@ -122,6 +124,9 @@
 		<Unit filename="arm9/include/ui/keyboard.h" />
 		<Unit filename="arm9/include/ui/label.h" />
 		<Unit filename="arm9/include/ui/selectcross.h" />
+		<Unit filename="arm9/include/ui/settings/chatlog.h" />
+		<Unit filename="arm9/include/ui/settings/content.h" />
+		<Unit filename="arm9/include/ui/settings/general.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
 		<Unit filename="arm9/include/ui/uidirectconn.h" />
 		<Unit filename="arm9/include/ui/uidisconnected.h" />
@@ -141,6 +146,7 @@
 		<Unit filename="arm9/source/animStream.cpp" />
 		<Unit filename="arm9/source/cfgFile.cpp" />
 		<Unit filename="arm9/source/colors.cpp" />
+		<Unit filename="arm9/source/content.cpp" />
 		<Unit filename="arm9/source/courtroom/background.cpp" />
 		<Unit filename="arm9/source/courtroom/character.cpp" />
 		<Unit filename="arm9/source/courtroom/chatbox.cpp" />
@@ -154,6 +160,7 @@
 		<Unit filename="arm9/source/global.cpp" />
 		<Unit filename="arm9/source/main.cpp" />
 		<Unit filename="arm9/source/mp3/mp3_9.cpp" />
+		<Unit filename="arm9/source/settings.cpp" />
 		<Unit filename="arm9/source/sockets/aosocket.cpp" />
 		<Unit filename="arm9/source/sockets/aotcpsocket.cpp" />
 		<Unit filename="arm9/source/sockets/aowebsocket.cpp" />
@@ -181,6 +188,9 @@
 		<Unit filename="arm9/source/ui/keyboard.cpp" />
 		<Unit filename="arm9/source/ui/label.cpp" />
 		<Unit filename="arm9/source/ui/selectcross.cpp" />
+		<Unit filename="arm9/source/ui/settings/chatlog.cpp" />
+		<Unit filename="arm9/source/ui/settings/content.cpp" />
+		<Unit filename="arm9/source/ui/settings/general.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
 		<Unit filename="arm9/source/ui/uidirectconn.cpp" />
 		<Unit filename="arm9/source/ui/uidisconnected.cpp" />

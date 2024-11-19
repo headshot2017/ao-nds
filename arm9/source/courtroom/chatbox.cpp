@@ -13,6 +13,7 @@
 #include "courtroom/courtroom.h"
 #include "global.h"
 #include "fonts.h"
+#include "content.h"
 
 #define MAX_COLOR_SWITCHES 5
 
@@ -255,7 +256,7 @@ void Chatbox::setText(std::u16string text, int color, std::string blip)
 
 	if (blipSnd)
 		wav_free_handle(blipSnd);
-	std::string blipFile = "/data/ao-nds/sounds/blips/" + blip + ".wav";
+	std::string blipFile = Content::getFile("sounds/blips/" + blip + ".wav");
 	blipSnd = wav_load_handle(blipFile.c_str());
 
 	oamSetHidden(&oamMain, 127, true);

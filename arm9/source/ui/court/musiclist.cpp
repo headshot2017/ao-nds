@@ -11,6 +11,7 @@
 #include "mp3_shared.h"
 #include "global.h"
 #include "engine.h"
+#include "content.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/arealist.h"
 
@@ -60,7 +61,6 @@ void UICourtMusicList::init()
 	btn_sliderHandle = new UIButton(&oamSub, "/data/ao-nds/ui/spr_sliderHandle", btn_musicBtn[6]->nextOamInd(), 1, 1, SpriteSize_16x32, btn_scrollUp->getX(), btn_scrollUp->getY()+btn_scrollUp->getH(), 14, 19, 16, 32, 12);
 
 	kb_search = new AOkeyboard(1, btn_sliderHandle->nextOamInd(), 13);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	btn_back->assignKey(KEY_B);
 	btn_listToggle->assignKey(KEY_R);
@@ -263,8 +263,9 @@ void UICourtMusicList::reloadScroll(bool all)
 
 		const musicInfo& mp3Music = pCourtUI->getMusicList()[filteredMusic[ind]];
 
+		std::string temp;
 		btn_musicBtn[i]->setVisible(true);
-		btn_musicBtn[i]->setFrame( (gEngine->musicExists(mp3Music.nameLower)) ? 0 : 1 );
+		btn_musicBtn[i]->setFrame( (Content::musicExists(mp3Music.nameLower, temp)) ? 0 : 1 );
 		lbl_musicBtn[i]->setVisible(true);
 		lbl_musicBtn[i]->setText(mp3Music.nameDecoded);
 		mp3_fill_buffer();

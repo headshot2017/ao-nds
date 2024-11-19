@@ -13,6 +13,7 @@
 #include "arm9_math_alt.h"
 #include "courtroom/courtroom.h"
 #include "global.h"
+#include "content.h"
 
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED div32(BUS_CLOCK,1024)
@@ -137,9 +138,10 @@ void Character::clearFrameData()
 
 void Character::setCharImage(std::string charname, std::string relativeFile, bool doLoop)
 {
-	std::string NDScfg = "/data/ao-nds/characters/" + charname + "/nds.cfg";
-	std::string IMGbin = "/data/ao-nds/characters/" + charname + "/" + relativeFile + ".img.bin";
-	std::string PALbin = "/data/ao-nds/characters/" + charname + "/" + relativeFile + ".pal.bin";
+	std::string contentPath = Content::getFile("characters/" + charname);
+	std::string NDScfg = contentPath + "/nds.cfg";
+	std::string IMGbin = contentPath + "/" + relativeFile + ".img.bin";
+	std::string PALbin = contentPath + "/" + relativeFile + ".pal.bin";
 	if (!fileExists(NDScfg) || !fileExists(IMGbin) || !fileExists(PALbin))
 	{
 		// show missingno/placeholder
@@ -287,7 +289,8 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 void Character::setSound(const std::string& filename, int delay)
 {
 	unloadSound();
-	sfx = wav_load_handle(filename.c_str());
+
+	sfx = wav_load_handle(Content::getFile(filename).c_str());
 	sfxPlayed = false;
 	sfxTicks = 0;
 	sfxDelay = delay * TIME_MOD;
@@ -308,7 +311,7 @@ void Character::setFrameSFX(const std::string& data)
 		frameSFX[frame] = sfx;
 
 		if (cachedFrameSFX.count(sfx)) continue;
-		std::string filename = "/data/ao-nds/sounds/general/" + sfx + ".wav";
+		std::string filename = Content::getFile("sounds/general/" + sfx + ".wav");
 		wav_handle* handle = wav_load_handle(filename.c_str());
 		cachedFrameSFX[sfx] = handle;
 	}

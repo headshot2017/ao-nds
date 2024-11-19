@@ -5,6 +5,7 @@
 #include <nds/arm9/video.h>
 
 #include "global.h"
+#include "content.h"
 
 #define EVIDENCE_HIDDEN_SCALE 3328
 #define EVIDENCE_SHOWN_SCALE 256
@@ -58,8 +59,12 @@ void Evidence::showEvidence(const std::string& image, bool rightSide)
 
 	right = rightSide;
 
-	u8* gfx = readFile("/data/ao-nds/evidence/large/" + image + ".img.bin");
-	u8* pal = readFile("/data/ao-nds/evidence/large/" + image + ".pal.bin");
+	std::string file = "evidence/large/" + image;
+	bool exists = Content::exists(file+".img.bin", file);
+	if (exists) file = file.substr(0, file.length()-8); // remove extension
+
+	u8* gfx = readFile(file + ".img.bin");
+	u8* pal = readFile(file + ".pal.bin");
 	if (!gfx || !pal)
 	{
 		if (gfx) delete[] gfx;

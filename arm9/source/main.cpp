@@ -16,6 +16,8 @@
 #include "mp3_shared.h"
 #include "fonts.h"
 #include "engine.h"
+#include "settings.h"
+#include "content.h"
 #include "wifikb/wifikb.h"
 #include "ui/uiwificonnect.h"
 
@@ -135,6 +137,8 @@ int main()
 	u32 tilesLen = showDisclaimer();
 
 	fadeDisclaimer(tilesLen);
+
+	Settings::load();
 
 	gEngine = new Engine;
 	gEngine->changeScreen(new UIScreenWifi);

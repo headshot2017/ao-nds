@@ -8,6 +8,7 @@
 #include "mp3_shared.h"
 #include "engine.h"
 #include "fonts.h"
+#include "content.h"
 #include "ui/court/courtrecord.h"
 #include "ui/court/evidenceimage.h"
 #include "ui/court/icchatlog.h"
@@ -61,7 +62,6 @@ void UICourtEvidenceDetail::init()
 	spr_evidence = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 21, 40, 68, 68, 64, 64, 13);
 
 	kb_input = new AOkeyboard(4, spr_evidence->nextOamInd(), 14);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 
 	inputting = 0;
@@ -133,10 +133,10 @@ void UICourtEvidenceDetail::updateInput()
 						gEngine->getSocket()->sendData("EE#" + std::to_string(currEvidence) + "#" + utf8::utf16to8(currName) + "#" + utf8::utf16to8(currDesc) + "#" + currImage + ".png#%");
 					else
 					{
-						gEngine->getPrivateEvidence()[currEvidence].name = currName;
-						gEngine->getPrivateEvidence()[currEvidence].description = currDesc;
-						gEngine->getPrivateEvidence()[currEvidence].image = currImage;
-						gEngine->savePrivateEvidence();
+						Settings::privateEvidence[currEvidence].name = currName;
+						Settings::privateEvidence[currEvidence].description = currDesc;
+						Settings::privateEvidence[currEvidence].image = currImage;
+						Settings::savePrivateEvidence();
 					}
 				}
 				else
@@ -276,7 +276,11 @@ void UICourtEvidenceDetail::reloadPage()
 		btn_descDown->setVisible(renderDesc.size() > 4);
 	}
 
-	spr_evidence->setImage("/data/ao-nds/evidence/large/" + currImage, 64, 64, 13);
+	std::string file = "evidence/large/" + currImage;
+	bool exists = Content::exists(file+".img.bin", file);
+	if (exists) file = file.substr(0, file.length()-8); // remove extension
+
+	spr_evidence->setImage(file, 64, 64, 13);
 }
 
 void UICourtEvidenceDetail::setScroll(u32 i)
@@ -395,8 +399,8 @@ void UICourtEvidenceDetail::onTopButtonClicked(void* pUserData)
 			gEngine->getSocket()->sendData("PE#" + utf8::utf16to8(pSelf->currName) + "#" + utf8::utf16to8(pSelf->currDesc) + "#" + pSelf->currImage + ".png#%");
 		else
 		{
-			gEngine->getPrivateEvidence().push_back({pSelf->currName, pSelf->currDesc, pSelf->currImage});
-			gEngine->savePrivateEvidence();
+			Settings::privateEvidence.push_back({pSelf->currName, pSelf->currDesc, pSelf->currImage});
+			Settings::savePrivateEvidence();
 		}
 		pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
 	}
@@ -412,8 +416,8 @@ void UICourtEvidenceDetail::onDeleteClicked(void* pUserData)
 		gEngine->getSocket()->sendData("DE#" + std::to_string(pSelf->currEvidence) + "#%");
 	else
 	{
-		gEngine->getPrivateEvidence().erase(gEngine->getPrivateEvidence().begin() + pSelf->currEvidence);
-		gEngine->savePrivateEvidence();
+		Settings::privateEvidence.erase(Settings::privateEvidence.begin() + pSelf->currEvidence);
+		Settings::savePrivateEvidence();
 	}
 
 	pSelf->pCourtUI->changeScreen(new UICourtEvidence(pSelf->pCourtUI));
@@ -435,8 +439,8 @@ void UICourtEvidenceDetail::onTransferClicked(void* pUserData)
 	else
 	{
 		// copy to private
-		gEngine->getPrivateEvidence().push_back(info);
-		gEngine->savePrivateEvidence();
+		Settings::privateEvidence.push_back(info);
+		Settings::savePrivateEvidence();
 	}
 }
 

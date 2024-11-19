@@ -7,6 +7,7 @@
 #include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
+#include "content.h"
 #include "ui/court/courtrecord.h"
 #include "ui/court/icchatlog.h"
 #include "ui/court/evidencedetail.h"
@@ -50,7 +51,6 @@ void UICourtProfileDetail::init()
 	spr_profile = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 23, 66, 60, 60, 64, 64, 8);
 
 	kb_input = new AOkeyboard(2, spr_profile->nextOamInd(), 9);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
 	btn_profilesEvidence->setFrame(1);
 	btn_ban->setFrame(1);
@@ -190,7 +190,11 @@ void UICourtProfileDetail::reloadPage()
 	std::u16string finalDesc = utf8::utf8to16(desc);
 	lbl_desc->setText(finalDesc);
 
-	spr_profile->setImage("/data/ao-nds/characters/" + (info ? info->character : "") + "/char_icon_big", 64, 64, 8);
+	std::string file = "characters/" + (info ? info->character : "") + "/char_icon_big";
+	bool exists = Content::exists(file+".img.bin", file);
+	if (exists) file = file.substr(0, file.length()-8); // remove extension
+
+	spr_profile->setImage(file, 64, 64, 8);
 }
 
 void UICourtProfileDetail::onBackClicked(void* pUserData)

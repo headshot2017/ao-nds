@@ -12,6 +12,8 @@
 #include "utf8.h"
 #include "fonts.h"
 #include "global.h"
+#include "engine.h"
+#include "content.h"
 #include "mini/ini.h"
 #include "ui/uiserverlist.h"
 #include "ui/uidisconnected.h"
@@ -69,8 +71,8 @@ void UIScreenCourt::init()
 	guard = false;
 	memset(bars, 0, sizeof(bars));
 
-	showname = gEngine->getShowname();
-	oocName = gEngine->getOOCname();
+	showname = Settings::defaultShowname;
+	oocName = Settings::defaultOOCname;
 
 	if (keysHeld() & KEY_SELECT)
 		subScreen = new UICourtConsole(this);
@@ -225,7 +227,7 @@ void UIScreenCourt::onMessageSC(void* pUserData, std::string msg)
 		std::string blip = "male";
 		std::string side = "wit";
 
-		mINI::INIFile file("/data/ao-nds/characters/" + name + "/char.ini");
+		mINI::INIFile file(Content::getFile("characters/" + name + "/char.ini"));
 		mINI::INIStructure ini;
 
 		if (file.read(ini))
@@ -346,7 +348,11 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 	std::u16string logMsg = utf8::utf8to16(logName+" played music "+trackname);
 	separateLines(0, logMsg, 7, false, pSelf->icLog);
 
-	pSelf->court->playMusic("/data/ao-nds/sounds/music/"+trackname);
+	auto pos = trackname.find_last_of('.');
+	if (pos != std::string::npos)
+		trackname = trackname.substr(0, pos) + ".mp3";
+
+	pSelf->court->playMusic(Content::getFile("sounds/music/" + trackname));
 }
 
 void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
@@ -391,9 +397,9 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 
 	// insert to chatlog
 	std::string name = pSelf->charList[charID].name;
-	if (gEngine->showChatlogIniswaps() && name != charname)
+	if (Settings::chatlogIniswaps && name != charname)
 		name += " (" + charname + ")";
-	if (gEngine->showChatlogShownames() && !showname.empty())
+	if (Settings::chatlogShownames && !showname.empty())
 		name += " [" + showname + "]";
 
 	std::u16string logMsg = utf8::utf8to16(name+": ") + chatmsg;
@@ -439,7 +445,7 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.frameFlash = argumentAt(msg, 27);
 	data.frameSFX = argumentAt(msg, 28);
 	data.additive = argumentAt(msg, 29) == "1";
-	data.blip = (argc >= 32) ? argumentAt(msg, 31) : gEngine->getCharBlip(lowerCharname);
+	data.blip = (argc >= 32) ? argumentAt(msg, 31) : Content::getCharBlip(lowerCharname);
 	data.panCourt = (argc >= 33 && argumentAt(msg, 32) == "1");
 	if (data.blip.empty()) data.blip = pSelf->charList[charID].blip;
 
@@ -542,7 +548,7 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 	if (pSelf->getCurrChar().muted)
 		pSelf->getCurrChar().muted = false;
 
-	mINI::INIFile file("/data/ao-nds/characters/" + pSelf->getCurrChar().name + "/char.ini");
+	mINI::INIFile file(Content::getFile("characters/" + pSelf->getCurrChar().name + "/char.ini"));
 	mINI::INIStructure ini;
 
 	if (file.read(ini))

@@ -10,6 +10,7 @@
 
 #include "mp3_shared.h"
 #include "engine.h"
+#include "content.h"
 #include "ui/uiserverlist.h"
 #include "ui/court/ingamemenu.h"
 
@@ -71,7 +72,6 @@ void UICourtCharSelect::init()
 	}
 
 	kb_search = new AOkeyboard(1, btn_chars[7]->nextOamInd(), 15);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 
 	btn_disconnect->assignKey(KEY_B);
@@ -188,10 +188,13 @@ void UICourtCharSelect::reloadPage()
 		}
 		ind = filteredChars[ind];
 
-		bool exists = fileExists("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon.img.bin");
+		std::string file = "characters/" + pCourtUI->getCharList()[ind].name + "/char_icon";
+		bool exists = Content::exists(file+".img.bin", file);
+		if (exists) file = file.substr(0, file.length()-8); // remove extension
+
 		mp3_fill_buffer();
 
-		btn_chars[i]->setImage((exists ? ("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon") : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 7+i);
+		btn_chars[i]->setImage((exists ? file : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 7+i);
 		btn_chars[i]->setVisible(true);
 
 		if (pCourtUI->getCharList()[ind].taken)

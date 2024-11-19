@@ -10,6 +10,7 @@
 
 #include "mp3_shared.h"
 #include "engine.h"
+#include "content.h"
 #include "ui/court/ic.h"
 
 struct charMuteBtnData
@@ -68,7 +69,6 @@ void UICourtMute::init()
 	}
 
 	kb_search = new AOkeyboard(1, btn_chars[7]->nextOamInd(), 15);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 	mp3_fill_buffer();
 
 	btn_back->assignKey(KEY_B);

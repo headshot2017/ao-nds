@@ -10,6 +10,7 @@
 
 #include "utf8.h"
 #include "colors.h"
+#include "content.h"
 
 Courtroom::Courtroom()
 {
@@ -139,12 +140,12 @@ void Courtroom::handleChat()
 	character[1]->unload();
 	character[0]->unloadSound();
 
-	if (currIC.emoteMod == 0 || !fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
+	if (currIC.emoteMod == 0 || !Content::exists("characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
 	{
 		onPreAnim = false;
 
 		//bool isPng = (currIC.preanim != currIC.emote && fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.emote + ".img.bin"));
-		bool isPng = !fileExists("/data/ao-nds/characters/" + currIC.charname + "/(a)" + currIC.emote + ".img.bin");
+		bool isPng = !Content::exists("characters/" + currIC.charname + "/(a)" + currIC.emote + ".img.bin");
 		bool playIdle = (currIC.chatmsg.empty() || color == COLOR_BLUE);
 		std::string prefix;
 		if (!isPng) prefix = (playIdle ? "(a)" : "(b)");
@@ -197,7 +198,7 @@ void Courtroom::handleChat()
 	}
 
 	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
-		character[0]->setSound("/data/ao-nds/sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
+		character[0]->setSound("sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
 
 	// set background side
 	if (currIC.emoteMod == 5 || currIC.emoteMod == 6)
@@ -224,7 +225,7 @@ void Courtroom::handleChat()
 			character[1]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
 			character[1]->setFlip(currIC.otherFlip);
 
-			bool isAnim = fileExists("/data/ao-nds/characters/" + currIC.otherName + "/(a)" + currIC.otherEmote + ".img.bin");
+			bool isAnim = Content::exists("characters/" + currIC.otherName + "/(a)" + currIC.otherEmote + ".img.bin");
 			std::string prefix;
 			if (isAnim) prefix = "(a)";
 
@@ -312,7 +313,7 @@ void Courtroom::onChatboxFinished(void* pUserData)
 	if (color != COLOR_BLUE && (!pSelf->currIC.noInterrupt || !pSelf->onPreAnim))
 	{
 		//bool isPng = (pSelf->currIC.preanim != pSelf->currIC.emote && fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin"));
-		bool isPng = !fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/(a)" + pSelf->currIC.emote + ".img.bin");
+		bool isPng = !Content::exists("characters/" + pSelf->currIC.charname + "/(a)" + pSelf->currIC.emote + ".img.bin");
 		std::string prefix;
 		if (!isPng) prefix = "(a)";
 
@@ -340,7 +341,7 @@ void Courtroom::onAnimFinished(void* pUserData)
 	pSelf->onPreAnim = false;
 
 	//bool isPng = (pSelf->currIC.preanim != pSelf->currIC.emote && fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin"));
-	bool isPng = !fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/(a)" + pSelf->currIC.emote + ".img.bin");
+	bool isPng = !Content::exists("characters/" + pSelf->currIC.charname + "/(a)" + pSelf->currIC.emote + ".img.bin");
 	std::string prefix;
 	if (!isPng) prefix = ((useIdleAnim) ? "(a)" : "(b)");
 

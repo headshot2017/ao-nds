@@ -11,6 +11,7 @@
 #include "utf8.h"
 #include "mp3_shared.h"
 #include "engine.h"
+#include "content.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/icchatlog.h"
 #include "ui/court/evidencedetail.h"
@@ -172,8 +173,9 @@ void UICourtEvidence::reloadPage()
 			else
 			{
 				const evidenceInfo& info = pCourtUI->getEvidenceList(isPrivate)[ind];
-				file = "/data/ao-nds/evidence/small/" + info.image;
-				exists = fileExists(file+".img.bin");
+				file = "evidence/small/" + info.image;
+				exists = Content::exists(file+".img.bin", file);
+				if (exists) file = file.substr(0, file.length()-8); // remove extension
 			}
 			mp3_fill_buffer();
 
@@ -200,8 +202,10 @@ void UICourtEvidence::reloadPage()
 			}
 
 			playerInfo& info = pCourtUI->getPlayerList()[pCourtUI->getPlayerListIDs()[ind]];
-			std::string file = "/data/ao-nds/characters/" + info.character + "/char_icon";
-			bool exists = fileExists(file+".img.bin");
+			std::string file = "characters/" + info.character + "/char_icon";
+			bool exists = Content::exists(file+".img.bin", file);
+			if (exists) file = file.substr(0, file.length()-8); // remove extension
+
 			mp3_fill_buffer();
 
 			btn_evidence[i]->setImage((exists ? file : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 8+i);
