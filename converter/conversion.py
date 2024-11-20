@@ -524,7 +524,7 @@ def convertEvidenceImages(source, target):
 
 def convertSound(source, target):
     targetFile = os.path.splitext(target)[0] + ".wav"
-    subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 22050 -ac 1 -y \"%s\"" % (source, targetFile)).wait()
+    subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 22050 -ac 1 -y \"%s\"" % (source, targetFile), shell=True).wait()
 
 def convertSounds(source, target):
     if not os.path.exists(target):
@@ -552,7 +552,7 @@ def convertMusic(source, target):
 
             # need to apply this metadata title so that the mp3 player used in the NDS app doesn't act funky when loading it
             # also delete any cover art, that freezes the ROM
-            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -map 0:a -ar 22050 -ac 2 -b:a 80k -metadata title=\"000000000000000000000000000000000000000\" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
+            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -map 0:a -ar 22050 -ac 2 -b:a 80k -metadata title=\"000000000000000000000000000000000000000\" -y \"%s\"" % (source+"/"+f, targetFile), shell=True).wait()
 
 def convertChatbox(folder):
     print(folder+"/misc/default/chatbox.png")
