@@ -11,18 +11,40 @@ def askBasePath():
     folder = ""
     while not folder:
         print("Drag the AO base folder to this console window then press ENTER:")
-        folder = input("> ")
+        folder = input("> ").rstrip("/")
         if not os.path.exists(folder+"/characters"):
             print("AO data does not exist there.")
             folder = ""
 
     print("The selected base folder '%s' will be saved in aopath.txt" % folder)
-    print("To bring up this dialog again, delete that text file.")
     print("Press enter to continue")
     input("")
 
     open("aopath.txt", "w").write(folder)
     return folder
+
+def askContentName():
+    opt = ""
+    name = ""
+    while not opt:
+        print("Do you want to place the converted data in a custom content folder?")
+        print("This is useful to avoid mixing custom data alongside the vanilla data.")
+        print("Y = Place in 'SD card/data/ao-nds/custom/<content name>' (Recommended)")
+        print("N = Place in 'SD card/data/ao-nds'")
+        opt = input("[Y/N] > ").lower()
+        if opt != "y" and opt != "n": continue
+
+    if opt == "y":
+        print("Enter a name for the custom content")
+        while not name:
+            name = input("> ").replace("/", "").replace("\\", "")
+        print("Data will be placed in:")
+        print("SD card/data/ao-nds/custom/%s" % name)
+        print("After copying to SD card, enable '%s' in the Settings > 'Custom content' page through the game." % name)
+        print("Press enter to continue")
+        input("")
+
+    return name
 
 if __name__ == "__main__":
     freeze_support()
@@ -75,41 +97,53 @@ if __name__ == "__main__":
         print("  5. Convert sounds and blips")
         print("  6. Convert music")
         print("  7. Convert misc folder")
-        print("  8. Exit")
+        print("  8. Change AO 'base' folder")
+        print("  9. Exit")
 
         option = input("> ")
         if not option.isdigit(): continue
         option = int(option)
-        if option < 1 or option > 8: continue
+        if option < 1 or option > 9: continue
 
         for path in ["background", "characters", "evidence", "sounds/general", "sounds/music", "sounds/blips", "misc"]:
             if not os.path.exists("converted/data/ao-nds/" + path):
                 os.makedirs("converted/data/ao-nds/" + path)
 
+        content = ""
+        if option <= 6:
+            content = askContentName()
+
+        if content:
+            for path in ["background", "characters", "evidence", "sounds/general", "sounds/music", "sounds/blips"]:
+                if not os.path.exists("converted/data/ao-nds/custom/%s/%s" % (content, path)):
+                    os.makedirs("converted/data/ao-nds/custom/%s/%s" % (content, path))
+
+        relativePath = "/" if not content else "/custom/%s/"%content
+
         if option == 1:
             print("Converting backgrounds...")
-            conversion.convertBackgrounds(folder)
+            conversion.convertBackgrounds(folder+"/", "converted/data/ao-nds%s" % relativePath)
 
             print("\nConverting characters...")
-            for f in os.listdir("converted/data/ao-nds/characters"):
-                shutil.rmtree("converted/data/ao-nds/characters/" + f)
+            for f in os.listdir("converted/data/ao-nds%scharacters" % relativePath):
+                shutil.rmtree("converted/data/ao-nds%scharacters/%s" % (relativePath, f))
 
             pool = Pool(processes=(cpu_count()))
             for i in range(cpu_count()):
-                pool.apply_async(conversion.convertCharacters, args=(folder+"/characters", "converted/data/ao-nds/characters", i))
+                pool.apply_async(conversion.convertCharacters, args=(folder+"/characters", "converted/data/ao-nds%scharacters" % relativePath, i))
 
             pool.close()
             pool.join()
 
             print("\nConverting evidence images...")
-            conversion.convertEvidenceImages(folder+"/evidence", "converted/data/ao-nds/evidence")
+            conversion.convertEvidenceImages(folder+"/evidence", "converted/data/ao-nds%sevidence" % relativePath)
 
             print("\nConverting sounds...")
-            conversion.convertSounds(folder+"/sounds/blips", "converted/data/ao-nds/sounds/blips")
-            conversion.convertSounds(folder+"/sounds/general", "converted/data/ao-nds/sounds/general")
+            conversion.convertSounds(folder+"/sounds/blips", "converted/data/ao-nds%ssounds/blips" % relativePath)
+            conversion.convertSounds(folder+"/sounds/general", "converted/data/ao-nds%ssounds/general" % relativePath)
 
             print("\nConverting music...")
-            conversion.convertMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
+            conversion.convertMusic(folder+"/sounds/music", "converted/data/ao-nds%ssounds/music" % relativePath)
 
             print("\nConverting objection images and chatbox...")
             conversion.convertChatbox(folder)
@@ -127,24 +161,18 @@ if __name__ == "__main__":
             for i in range(cpu_count()):
                 if os.path.exists("temp%d.png" % i): os.remove("temp%d.png" % i)
 
-            print("Done!")
-            print("Inside the folder named 'converted', you will see a folder named 'data'.")
-            print("Copy this 'data' folder to the root of your SD card.")
-            print("Press enter to return to the main menu...")
-            input()
-
         elif option == 2:
             print("Enter the name of the background you wish to convert, or leave empty to convert all backgrounds")
             option = input("> ")
 
             if len(option):
                 if os.path.exists(folder+"/background/"+option):
-                    conversion.convertBackground(folder+"/background/"+option, "converted/data/ao-nds/background/"+option)
+                    conversion.convertBackground(folder+"/background/"+option, "converted/data/ao-nds%sbackground/%s" % (relativePath, option))
                 else:
                     print("'%s' does not exist" % (option))
                     input("Press enter to continue...\n")
             else:
-                conversion.convertBackgrounds(folder)
+                conversion.convertBackgrounds(folder+"/", "converted/data/ao-nds%s" % relativePath)
 
             if os.path.exists("temp.png"): os.remove("temp.png")
 
@@ -154,17 +182,17 @@ if __name__ == "__main__":
 
             if len(option):
                 if os.path.exists(folder+"/characters/"+option):
-                    conversion.recursiveCharacter(folder+"/characters/"+option, "converted/data/ao-nds/characters/"+option, "converted/data/ao-nds/characters/"+option, 0)
+                    conversion.recursiveCharacter(folder+"/characters/"+option, "converted/data/ao-nds%scharacters/%s" % (relativePath, option), "converted/data/ao-nds%scharacters/%s" % (relativePath, option), 0)
                 else:
                     print("'%s' does not exist" % (option))
                     input("Press enter to continue...\n")
             else:
-                for f in os.listdir("converted/data/ao-nds/characters"):
-                    shutil.rmtree("converted/data/ao-nds/characters/" + f)
+                for f in os.listdir("converted/data/ao-nds%scharacters" % relativePath):
+                    shutil.rmtree("converted/data/ao-nds%scharacters/%s" % (relativePath, f))
 
                 pool = Pool(processes=(cpu_count()))
                 for i in range(cpu_count()):
-                    pool.apply_async(conversion.convertCharacters, args=(folder+"/characters", "converted/data/ao-nds/characters", i))
+                    pool.apply_async(conversion.convertCharacters, args=(folder+"/characters", "converted/data/ao-nds%scharacters" % relativePath, i))
 
                 pool.close()
                 pool.join()
@@ -173,16 +201,16 @@ if __name__ == "__main__":
                 if os.path.exists("temp%d.png" % i): os.remove("temp%d.png" % i)
 
         elif option == 4:
-            conversion.convertEvidenceImages(folder+"/evidence", "converted/data/ao-nds/evidence")
+            conversion.convertEvidenceImages(folder+"/evidence", "converted/data/ao-nds%sevidence" % relativePath)
             if os.path.exists("temp.png"): os.remove("temp.png")
 
         elif option == 5:
-            conversion.convertSounds(folder+"/sounds/blips", "converted/data/ao-nds/sounds/blips")
-            conversion.convertSounds(folder+"/sounds/general", "converted/data/ao-nds/sounds/general")
+            conversion.convertSounds(folder+"/sounds/blips", "converted/data/ao-nds%ssounds/blips" % relativePath)
+            conversion.convertSounds(folder+"/sounds/general", "converted/data/ao-nds%ssounds/general" % relativePath)
             if os.path.exists("temp.png"): os.remove("temp.png")
 
         elif option == 6:
-            conversion.convertMusic(folder+"/sounds/music", "converted/data/ao-nds/sounds/music")
+            conversion.convertMusic(folder+"/sounds/music", "converted/data/ao-nds%ssounds/music" % relativePath)
             if os.path.exists("temp.png"): os.remove("temp.png")
 
         elif option == 7:
@@ -197,4 +225,14 @@ if __name__ == "__main__":
             if os.path.exists("temp0.png"): os.remove("temp0.png")
 
         elif option == 8:
+            folder = askBasePath()
+            continue
+
+        elif option == 9:
             break
+
+        print("Done!")
+        print("Inside the folder named 'converted', you will see a folder named 'data'.")
+        print("Copy this 'data' folder to the root of your SD card.")
+        print("Press enter to return to the main menu...")
+        input()

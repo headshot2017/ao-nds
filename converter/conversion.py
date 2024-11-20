@@ -153,13 +153,13 @@ def convertBackground(source, target):
             os.rename("temp.img.bin", target+"/"+imgfile+".img.bin")
             os.rename("temp.pal.bin", target+"/"+imgfile+".pal.bin")
 
-def convertBackgrounds(folder):
-    for bg in os.listdir(folder+"/background"):
-        if not os.path.isdir(folder+"/background/"+bg):
+def convertBackgrounds(folder, target):
+    for bg in os.listdir(folder+"background"):
+        if not os.path.isdir(folder+"background/"+bg):
             continue
 
         print(bg)
-        convertBackground(folder+"/background/"+bg, "converted/data/ao-nds/background/"+bg)
+        convertBackground(folder+"background/"+bg, target+"background/"+bg)
 
 # frames: [[PIL.Image, ms_duration], [PIL.Image, ms_duration], [PIL.Image, ms_duration]...]
 def convertEmoteFrames(frames, targetFile, ogTarget, core, extra):
@@ -524,7 +524,7 @@ def convertEvidenceImages(source, target):
 
 def convertSound(source, target):
     targetFile = os.path.splitext(target)[0] + ".wav"
-    subprocess.Popen( ("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 22050 -ac 1 -y \"%s\"" % (source, targetFile)).split(" ") ).wait()
+    subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -acodec pcm_s16le -ar 22050 -ac 1 -y \"%s\"" % (source, targetFile)).wait()
 
 def convertSounds(source, target):
     if not os.path.exists(target):
@@ -552,7 +552,7 @@ def convertMusic(source, target):
 
             # need to apply this metadata title so that the mp3 player used in the NDS app doesn't act funky when loading it
             # also delete any cover art, that freezes the ROM
-            subprocess.Popen( ("ffmpeg -hide_banner -loglevel error -i \"%s\" -map 0:a -ar 22050 -ac 2 -b:a 80k -metadata title=\"000000000000000000000000000000000000000\" -y \"%s\"" % (source+"/"+f, targetFile)).split(" ") ).wait()
+            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -map 0:a -ar 22050 -ac 2 -b:a 80k -metadata title=\"000000000000000000000000000000000000000\" -y \"%s\"" % (source+"/"+f, targetFile)).wait()
 
 def convertChatbox(folder):
     print(folder+"/misc/default/chatbox.png")
