@@ -7,11 +7,13 @@
 #include "mp3_shared.h"
 #include "content.h"
 #include "global.h"
+#include "wifikb/wifikb.h"
 
 std::u16string Settings::defaultShowname;
 std::u16string Settings::defaultOOCname;
 bool Settings::chatlogIniswaps;
 bool Settings::chatlogShownames;
+bool Settings::wifikbReverseMode;
 std::vector<evidenceInfo> Settings::privateEvidence;
 
 void Settings::load()
@@ -22,6 +24,9 @@ void Settings::load()
 	defaultOOCname = utf8::utf8to16(settings.get("oocname", ""));
 	chatlogIniswaps = settings.get("chatlog_iniswaps", "") == "1";
 	chatlogShownames = settings.get("chatlog_shownames", "") == "1";
+	wifikbReverseMode = settings.get("wifikb_reverse_mode", "") == "1";
+
+	wifikb::setReverse(wifikbReverseMode);
 
 	std::string contentArgs = settings.get("mounted_contents", "");
 	if (!contentArgs.empty())
@@ -43,6 +48,7 @@ void Settings::save()
 	f.set("oocname", utf8::utf16to8(defaultOOCname));
 	f.set("chatlog_iniswaps", chatlogIniswaps ? "1" : "0");
 	f.set("chatlog_shownames", chatlogShownames ? "1" : "0");
+	f.set("wifikb_reverse_mode", wifikbReverseMode ? "1" : "0");
 
 	std::string contentArgs;
 	u32 totalContents = Content::getContents().size();

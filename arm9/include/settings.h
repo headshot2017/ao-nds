@@ -19,6 +19,7 @@ namespace Settings
 	extern std::u16string defaultOOCname;
 	extern bool chatlogIniswaps;
 	extern bool chatlogShownames;
+	extern bool wifikbReverseMode;
 	extern std::vector<evidenceInfo> privateEvidence;
 
 	void load();
