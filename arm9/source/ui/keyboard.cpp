@@ -124,9 +124,9 @@ void AOkeyboard::hide()
 int AOkeyboard::updateInput()
 {
 	int c = keyboardUpdate();
-	wifikb::KeyStruct wifikey;
+	s32 wifikey;
 	if (wifikb::getKey(&wifikey))
-		c = (wifikey.asciiCode) ? wifikey.asciiCode : wifikey.ndsKeyCode;
+		c = wifikey;
 
 	if (c == DVK_ENTER || c == DVK_FOLD)
 	{
