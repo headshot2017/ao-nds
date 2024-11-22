@@ -9,6 +9,7 @@
 #include "ui/settings/general.h"
 #include "ui/settings/chatlog.h"
 #include "ui/settings/content.h"
+#include "ui/settings/wifikb.h"
 
 
 template<typename T>
@@ -22,6 +23,7 @@ static std::vector<UISubSetting *(*)(UIScreenSettings*)> settingChooser =
 	&newSetting<UISettingsGeneral>,
 	&newSetting<UISettingsChatlog>,
 	&newSetting<UISettingsContent>,
+	&newSetting<UISettingsKeyboard>,
 };
 
 

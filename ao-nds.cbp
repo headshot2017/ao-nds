@@ -127,6 +127,7 @@
 		<Unit filename="arm9/include/ui/settings/chatlog.h" />
 		<Unit filename="arm9/include/ui/settings/content.h" />
 		<Unit filename="arm9/include/ui/settings/general.h" />
+		<Unit filename="arm9/include/ui/settings/wifikb.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
 		<Unit filename="arm9/include/ui/uidirectconn.h" />
 		<Unit filename="arm9/include/ui/uidisconnected.h" />
@@ -191,6 +192,7 @@
 		<Unit filename="arm9/source/ui/settings/chatlog.cpp" />
 		<Unit filename="arm9/source/ui/settings/content.cpp" />
 		<Unit filename="arm9/source/ui/settings/general.cpp" />
+		<Unit filename="arm9/source/ui/settings/wifikb.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
 		<Unit filename="arm9/source/ui/uidirectconn.cpp" />
 		<Unit filename="arm9/source/ui/uidisconnected.cpp" />
