@@ -46,6 +46,9 @@ void UISettingsContent::init()
 	btn_nextPage = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight", btn_prevPage->nextOamInd(), 1, 1, SpriteSize_32x16, 159, 148, 19, 14, 32, 16, 12);
 	btn_apply = new UIButton(&oamSub, "/data/ao-nds/ui/spr_applySmall", btn_nextPage->nextOamInd(), 2, 1, SpriteSize_32x16, 106, 148, 46, 14, 32, 16, 13);
 
+	btn_prevPage->assignKey(KEY_LEFT);
+	btn_nextPage->assignKey(KEY_RIGHT);
+
 	btn_prevPage->connect(onPrevPage, this);
 	btn_nextPage->connect(onNextPage, this);
 	btn_apply->connect(onApplyClicked, this);
