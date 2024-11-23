@@ -18,7 +18,7 @@ namespace Content
 	void remove(std::string name);
 	void clear();
 
-	const std::vector<std::string>& getContents();
+	std::vector<std::string>& getContents();
 	const std::vector<evidenceCacheInfo>& getEvidence();
 
 	bool exists(const std::string& filename);

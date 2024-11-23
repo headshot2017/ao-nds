@@ -154,7 +154,7 @@ void Content::clear()
 	contents.clear();
 }
 
-const std::vector<std::string>& Content::getContents()
+std::vector<std::string>& Content::getContents()
 {
 	return contents;
 }
