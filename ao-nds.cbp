@@ -126,6 +126,7 @@
 		<Unit filename="arm9/include/ui/selectcross.h" />
 		<Unit filename="arm9/include/ui/settings/chatlog.h" />
 		<Unit filename="arm9/include/ui/settings/content.h" />
+		<Unit filename="arm9/include/ui/settings/contentOrder.h" />
 		<Unit filename="arm9/include/ui/settings/general.h" />
 		<Unit filename="arm9/include/ui/settings/wifikb.h" />
 		<Unit filename="arm9/include/ui/uicourt.h" />
@@ -191,6 +192,7 @@
 		<Unit filename="arm9/source/ui/selectcross.cpp" />
 		<Unit filename="arm9/source/ui/settings/chatlog.cpp" />
 		<Unit filename="arm9/source/ui/settings/content.cpp" />
+		<Unit filename="arm9/source/ui/settings/contentOrder.cpp" />
 		<Unit filename="arm9/source/ui/settings/general.cpp" />
 		<Unit filename="arm9/source/ui/settings/wifikb.cpp" />
 		<Unit filename="arm9/source/ui/uicourt.cpp" />
