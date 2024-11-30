@@ -103,7 +103,7 @@ void UISettingsContentOrder::reloadPage()
 		btn_contentBtn[i]->setVisible(true);
 		lbl_contentBtn[i]->setVisible(true);
 		lbl_contentBtn[i]->setText(contents[ind]);
-		lbl_contentBtn[i]->setPos(btn_contentBtn[i]->getX() + (btn_contentBtn[i]->getW()/2), 60+(18*i), true);
+		lbl_contentBtn[i]->setPos(btn_contentBtn[i]->getX() + (btn_contentBtn[i]->getW()/2), btn_contentBtn[i]->getY()+1, true);
 		mp3_fill_buffer();
 	}
 
