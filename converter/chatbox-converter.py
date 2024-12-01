@@ -27,6 +27,7 @@ def convert(filename):
     with open("converted/data/ao-nds/misc/chatboxes/"+basename+"/chatbox.ini", "w") as f:
         f.write("[general]\n")
         f.write("height = %d\n" % (height))
+        f.write("hiddenFromSettings = 0\n")
         f.write("\n")
         f.write("# Name info.\n")
         f.write("# Set X and Y positions to the 'top center' of the name box.\n")
