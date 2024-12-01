@@ -14,22 +14,23 @@
 #include "global.h"
 #include "fonts.h"
 #include "content.h"
+#include "mini/ini.h"
 
 #define MAX_COLOR_SWITCHES 5
 
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED div32(BUS_CLOCK,1024)
 
-colorSwitchChar colorSwitches[MAX_COLOR_SWITCHES] = {
+static colorSwitchChar colorSwitches[MAX_COLOR_SWITCHES] = {
 	{COLOR_GREEN, '`', '`', true, false, false},
 	{COLOR_RED, '~', '~', true, false, false},
 	{COLOR_ORANGE, '|', '|', true, false, false},
 	{COLOR_BLUE, '(', ')', false, true, false},
 	{COLOR_GRAY, '[', ']', true, true, false}
 };
-int textSpeedsMS[7] = {10, 20, 30, 40, 60, 75, 100};
+static int textSpeedsMS[7] = {10, 20, 30, 40, 60, 75, 100};
 
-std::u16string filterChatMsg(std::u16string& msg)
+static std::u16string filterChatMsg(std::u16string& msg)
 {
 	std::u16string result;
 
@@ -82,6 +83,7 @@ std::u16string filterChatMsg(std::u16string& msg)
 	return result;
 }
 
+
 Chatbox::Chatbox(Courtroom* pCourt)
 {
 	m_pCourt = pCourt;
@@ -111,7 +113,6 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	//bgIndex = bgInit(2, BgType_ExRotation, BgSize_ER_256x256, 2, 1);
 	bgIndex = bgInit(1, BgType_Text4bpp, BgSize_T_512x256, 2, 5);
 	bgSetPriority(bgIndex, 1);
-	bgSetScroll(bgIndex, 0, -192+80);
 	bgHide(bgIndex);
 	bgUpdate();
 
@@ -139,17 +140,7 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	PAL_BLACK;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GRAY] = 	PAL_GRAY;
 
-	u32 dataLen;
-	u8* bgData = readFile("/data/ao-nds/misc/chatbox.img.bin", &dataLen);
-	bgMap = readFile("/data/ao-nds/misc/chatbox.map.bin", &mapLen);
-	bgPal = readFile("/data/ao-nds/misc/chatbox.pal.bin");
-
-	dmaCopy(bgData, bgGetGfxPtr(bgIndex), dataLen);
-	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
-	dmaCopy(bgPal, BG_PALETTE, 512);
-	BG_PALETTE[0] = 0;
-
-	delete[] bgData;
+	setTheme("default");
 
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
@@ -162,8 +153,8 @@ Chatbox::~Chatbox()
 {
 	bgHide(bgIndex);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
-	delete[] bgPal;
-	delete[] bgMap;
+	if (bgMap) delete[] bgMap;
+	if (bgPal) delete[] bgPal;
 
 	if (blipSnd)
 		wav_free_handle(blipSnd);
@@ -193,8 +184,8 @@ void Chatbox::setVisible(bool on)
 	if (on)
 	{
 		u16 oldPal = BG_PALETTE[0];
-		dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
-		dmaCopy(bgPal, BG_PALETTE, 512);
+		if (bgMap) dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
+		if (bgPal) dmaCopy(bgPal, BG_PALETTE, 512);
 		BG_PALETTE[0] = oldPal;
 		bgShow(bgIndex);
 	}
@@ -215,6 +206,46 @@ void Chatbox::setVisible(bool on)
 	oamSetHidden(&oamMain, 127, !on);
 }
 
+void Chatbox::setTheme(const std::string& name)
+{
+	mINI::INIFile file("/data/ao-nds/misc/chatboxes/" + name + "/chatbox.ini");
+	mINI::INIStructure ini;
+
+	if (!file.read(ini))
+	{
+		// set default chatbox coordinates...
+		info.height = 80;
+		info.nameX = 37;
+		info.nameY = 3;
+		info.bodyY = 20;
+		info.lineSep = 16;
+		info.arrowY = 62;
+		return;
+	}
+
+	u32 dataLen;
+	u8* bgData = readFile("/data/ao-nds/misc/chatboxes/" + name + "/chatbox.img.bin", &dataLen);
+	bgMap = readFile("/data/ao-nds/misc/chatboxes/" + name + "/chatbox.map.bin", &mapLen);
+	bgPal = readFile("/data/ao-nds/misc/chatboxes/" + name + "/chatbox.pal.bin");
+
+	dmaCopy(bgData, bgGetGfxPtr(bgIndex), dataLen);
+	dmaCopy(bgMap, bgGetMapPtr(bgIndex), mapLen);
+	dmaCopy(bgPal, BG_PALETTE, 512);
+	BG_PALETTE[0] = 0;
+
+	delete[] bgData;
+
+	info.height = (ini["general"].has("height")) ? std::stoi(ini["general"]["height"]) : 80;
+	info.nameX = (ini["name"].has("x")) ? std::stoi(ini["name"]["x"]) : 0;
+	info.nameY = (ini["name"].has("y")) ? std::stoi(ini["name"]["y"]) : 0;
+	info.bodyY = (ini["body"].has("y")) ? std::stoi(ini["body"]["y"]) : 0;
+	info.lineSep = (ini["body"].has("lineSeparation")) ? std::stoi(ini["body"]["lineSeparation"]) : 16;
+	info.arrowY = (ini["body"].has("arrowY")) ? std::stoi(ini["body"]["arrowY"]) : 62;
+
+	bgSetScroll(bgIndex, 0, -192+info.height);
+	bgUpdate();
+}
+
 void Chatbox::setName(std::u16string name)
 {
 	// clear old text
@@ -225,7 +256,7 @@ void Chatbox::setName(std::u16string name)
 	renderText(0, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
-		oamSet(&oamMain, 24+i, 1+(i*32) + 36-(div32(nameWidth,2)), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
+		oamSet(&oamMain, 24+i, info.nameX+(i*32)-(div32(nameWidth,2)), 192-info.height+info.nameY, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
 }
 
 void Chatbox::setText(std::u16string text, int color, std::string blip)
@@ -324,10 +355,10 @@ void Chatbox::update()
 		REG_BLDALPHA = 0x70f;
 	}
 
-	bgSetScroll(bgIndex, -xOffset, -192+80-yOffset);
+	bgSetScroll(bgIndex, -xOffset, -192+info.height-yOffset);
 
 	for (int i=0; i<2; i++)
-		oamSetXY(&oamMain, 24+i, 1+(i*32) + 36-(div32(nameWidth, 2)) + xOffset, 115+yOffset);
+		oamSetXY(&oamMain, 24+i, info.nameX+(i*32)-(div32(nameWidth,2)) + xOffset, 192-info.height+info.nameY+yOffset);
 
 	arrowTicks++;
 	if (arrowTicks >= 3)
@@ -336,7 +367,7 @@ void Chatbox::update()
 		arrowX += arrowXadd;
 		if (arrowX >= 246 || arrowX <= 243)
 			arrowXadd = -arrowXadd;
-		oamSetXY(&oamMain, 127, arrowX, 174);
+		oamSetXY(&oamMain, 127, arrowX, 192-info.height+info.arrowY);
 	}
 
 	// handle chatbox text typewriter
@@ -571,7 +602,7 @@ void Chatbox::handleNewLine()
 	for (int i=start; i<start+8; i++)
 	{
 		int x = (center) ? (128 + (mod32(i,8))*32 - linesHalfWidth[currTextLine]) : (8 + (mod32(i,8))*32);
-		int y = 132 + (div32(i,8))*16;
+		int y = 192-info.height+info.bodyY + (div32(i,8))*info.lineSep;
 		oamSetXY(&oamMain, 26+i, x, y);
 	}
 }

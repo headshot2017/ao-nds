@@ -26,6 +26,16 @@ struct colorSwitchChar
 	bool removing;
 };
 
+struct ChatboxInfo
+{
+	int height;
+	int nameX;
+	int nameY;
+	int bodyY;
+	int lineSep;
+	int arrowY;
+};
+
 class Courtroom;
 
 class Chatbox
@@ -37,6 +47,7 @@ class Chatbox
 
 	Courtroom* m_pCourt;
 
+	ChatboxInfo info;
 	u8* textCanvas;
 	u16* nameGfx[2];
 	u16* textGfx[8*3]; // 8 rows of sprite text, 3 lines
@@ -83,6 +94,7 @@ public:
 	void setOffsets(int x, int y) {xOffset = x; yOffset = y;}
 	void setIgnoreBlend(bool on) {ignoreBlend = on;}
 	void setVisible(bool on);
+	void setTheme(const std::string& name);
 	void setName(std::u16string name);
 	void setText(std::u16string text, int color, std::string blip="male");
 	void additiveText(std::u16string text, int color);
