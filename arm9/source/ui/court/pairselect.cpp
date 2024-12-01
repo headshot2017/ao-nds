@@ -144,7 +144,7 @@ void UICourtPairSelect::updateInput()
 		if (pos.px >= 213 && pos.py >= 36 && pos.px < 213+17 && pos.py < 36+16)
 		{
 			// search button
-			wav_play(pCourtUI->sndSelect);
+			wav_play(pCourtUI->sndCrtRcrd);
 
 			bgHide(bgIndex);
 
