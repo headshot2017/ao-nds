@@ -14,6 +14,7 @@
 #include "global.h"
 #include "fonts.h"
 #include "content.h"
+#include "settings.h"
 #include "mini/ini.h"
 
 #define MAX_COLOR_SWITCHES 5
@@ -91,6 +92,9 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	textCanvas = new u8[32*16];
 	blipSnd = 0;
 
+	xOffset = 0;
+	yOffset = 0;
+
 	for (int i=0; i<2; i++)
 	{
 		nameGfx[i] = oamAllocateGfx(&oamMain, SpriteSize_32x16, SpriteColorFormat_256Color);
@@ -140,7 +144,7 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	PAL_BLACK;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GRAY] = 	PAL_GRAY;
 
-	setTheme("default");
+	setTheme(Settings::defaultChatbox);
 
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
@@ -162,18 +166,17 @@ Chatbox::~Chatbox()
 	delete[] textCanvas;
 	for (int i=0; i<2; i++)
 	{
-		oamSet(&oamMain, 24+i, 4+(i*32), 115, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamClearSprite(&oamMain, 24+i);
 		oamFreeGfx(&oamMain, nameGfx[i]);
 	}
 	for (int i=0; i<8*3; i++)
 	{
-		int x = i%8;
-		int y = i/8;
-		oamSet(&oamMain, 26+i, 8+(x*32), 132+(y*16), 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, 0, -1, false, true, false, false, false);
+		oamClearSprite(&oamMain, 26+i);
 		oamFreeGfx(&oamMain, textGfx[i]);
 	}
 
 	oamFreeGfx(&oamMain, spr_arrowGfx);
+	oamClearSprite(&oamMain, 127);
 	timerStop(2);
 }
 
@@ -211,8 +214,25 @@ void Chatbox::setTheme(const std::string& name)
 	mINI::INIFile file("/data/ao-nds/misc/chatboxes/" + name + "/chatbox.ini");
 	mINI::INIStructure ini;
 
+	if (bgMap)
+	{
+		delete[] bgMap;
+		bgMap = 0;
+	}
+	if (bgPal)
+	{
+		delete[] bgPal;
+		bgPal = 0;
+	}
+
 	if (!file.read(ini))
 	{
+		if (name != "default")
+		{
+			setTheme("default");
+			return;
+		}
+
 		// set default chatbox coordinates...
 		info.height = 80;
 		info.nameX = 37;
@@ -220,6 +240,7 @@ void Chatbox::setTheme(const std::string& name)
 		info.bodyY = 20;
 		info.lineSep = 16;
 		info.arrowY = 62;
+		updateBodyPosition();
 		return;
 	}
 
@@ -244,6 +265,8 @@ void Chatbox::setTheme(const std::string& name)
 
 	bgSetScroll(bgIndex, 0, -192+info.height);
 	bgUpdate();
+
+	updateBodyPosition();
 }
 
 void Chatbox::setName(std::u16string name)
@@ -479,7 +502,7 @@ void Chatbox::update()
 			colorSwitchChar oldColor = colorStack.top();
 			colorStack.pop();
 			colorSwitchChar newColor = colorStack.top();
-			if (oldColor.talk != newColor.talk)
+			if (m_pCourt && oldColor.talk != newColor.talk)
 				m_pCourt->setTalkingAnim(newColor.talk);
 		}
 
@@ -491,6 +514,23 @@ void Chatbox::update()
 			timerStop(2);
 		}
 	}
+}
+
+void Chatbox::updateBodyPosition()
+{
+	int oldGfx = currTextGfxInd;
+	int oldLine = currTextLine;
+	currTextGfxInd = 0;
+	currTextLine = -1;
+
+	for (int i=0; i<3; i++)
+	{
+		handleNewLine();
+		currTextGfxInd += 8;
+	}
+
+	currTextGfxInd = oldGfx;
+	currTextLine = oldLine;
 }
 
 bool Chatbox::handleEscape()
@@ -507,11 +547,11 @@ bool Chatbox::handleEscape()
 			break;
 
 		case 's':
-			m_pCourt->shake(5, 35);
+			if (m_pCourt) m_pCourt->shake(5, 35);
 			break;
 
 		case 'f':
-			m_pCourt->flash(3);
+			if (m_pCourt) m_pCourt->flash(3);
 			break;
 
 		default:
@@ -570,7 +610,7 @@ bool Chatbox::handleControlChars()
 						}
 					}
 
-					if (switchingColor && !colorStack.top().removing && oldColor.talk != newColor.talk)
+					if (m_pCourt && switchingColor && !colorStack.top().removing && oldColor.talk != newColor.talk)
 						m_pCourt->setTalkingAnim(newColor.talk);
 
 					if (!switchingColor || newColor.show)

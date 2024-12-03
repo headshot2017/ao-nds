@@ -47,6 +47,7 @@ class UIScreenSettings : public UIScreen
 
 public:
 	wav_handle* sndCancel;
+	wav_handle* sndSelect;
 	wav_handle* sndCrtRcrd;
 	wav_handle* sndEvPage;
 	u8* bgSubPal;

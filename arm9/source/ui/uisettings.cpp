@@ -8,6 +8,7 @@
 #include "ui/uimainmenu.h"
 #include "ui/settings/general.h"
 #include "ui/settings/chatlog.h"
+#include "ui/settings/chatbox.h"
 #include "ui/settings/content.h"
 #include "ui/settings/contentOrder.h"
 #include "ui/settings/wifikb.h"
@@ -23,6 +24,7 @@ static std::vector<UISubSetting *(*)(UIScreenSettings*)> settingChooser =
 {
 	&newSetting<UISettingsGeneral>,
 	&newSetting<UISettingsChatlog>,
+	&newSetting<UISettingsChatbox>,
 	&newSetting<UISettingsContent>,
 	&newSetting<UISettingsContentOrder>,
 	&newSetting<UISettingsKeyboard>,
@@ -39,6 +41,8 @@ UIScreenSettings::~UIScreenSettings()
 	dmaFillHalfWords(0, bgGetMapPtr(subBgIndex), 1536);
 	dmaFillHalfWords(0, BG_PALETTE_SUB, 512);
 
+	bgExtPaletteDisable();
+
 	delete[] bgSubPal;
 
 	delete btn_back;
@@ -50,14 +54,18 @@ UIScreenSettings::~UIScreenSettings()
 		delete m_subSetting;
 
 	wav_free_handle(sndCancel);
+	wav_free_handle(sndSelect);
 	wav_free_handle(sndCrtRcrd);
 	wav_free_handle(sndEvPage);
 }
 
 void UIScreenSettings::init()
 {
+	bgExtPaletteEnable();
+
 	bgIndex = bgInit(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
 	subBgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
+	bgSetPriority(bgIndex, 2);
 	bgSetPriority(subBgIndex, 1);
 
 	u8* bgTiles = readFile("/data/ao-nds/ui/bg_top.img.bin", &bgTilesLen);
@@ -67,13 +75,17 @@ void UIScreenSettings::init()
 	u8* bgSubMap = readFile("/data/ao-nds/ui/bg_bottomAlt.map.bin");
 	bgSubPal = readFile("/data/ao-nds/ui/bg_bottomAlt.pal.bin");
 
+	vramSetBankE(VRAM_E_LCD);
+
 	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	dmaCopy(bgPal, BG_PALETTE, 512);
+	dmaCopy(bgPal, &VRAM_E_EXT_PALETTE[bgIndex][0], 512);
 
 	dmaCopy(bgSubTiles, bgGetGfxPtr(subBgIndex), bgSubTilesLen);
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
 	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
+
+	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 
 	delete[] bgTiles;
 	delete[] bgMap;
@@ -87,6 +99,7 @@ void UIScreenSettings::init()
 	lbl_currentTab = new UILabel(&oamSub, btn_nextTab->nextOamInd(), 4, 1, RGB15(31,31,31), 3, 0);
 
 	sndCancel = wav_load_handle("/data/ao-nds/sounds/general/sfx-cancel.wav");
+	sndSelect = wav_load_handle("/data/ao-nds/sounds/general/sfx-selectblip2.wav");
 	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav");
 	sndEvPage = wav_load_handle("/data/ao-nds/sounds/general/sfx-blink.wav");
 

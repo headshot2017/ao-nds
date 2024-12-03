@@ -104,6 +104,8 @@ public:
 	void setOnChatboxFinishedCallback(voidCallback newCB, void* userdata) {onChatboxFinished = newCB; pUserData = userdata;}
 
 	void update();
+
+	void updateBodyPosition();
 };
 
 #endif // CHATBOX_H_INCLUDED

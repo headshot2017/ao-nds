@@ -15,18 +15,22 @@ bool Settings::chatlogIniswaps;
 bool Settings::chatlogShownames;
 bool Settings::wifikbReverseMode;
 bool Settings::wifikbEnabled;
+std::string Settings::defaultChatbox;
+bool Settings::allowChatboxChange;
 std::vector<evidenceInfo> Settings::privateEvidence;
 
 void Settings::load()
 {
 	cfgFile settings("/data/ao-nds/settings_nds.cfg");
 
-	defaultShowname = utf8::utf8to16(settings.get("showname", ""));
-	defaultOOCname = utf8::utf8to16(settings.get("oocname", ""));
-	chatlogIniswaps = settings.get("chatlog_iniswaps", "") == "1";
-	chatlogShownames = settings.get("chatlog_shownames", "") == "1";
-	wifikbEnabled = settings.get("wifikb_enable", "") == "1";
-	wifikbReverseMode = settings.get("wifikb_reverse_mode", "") == "1";
+	defaultShowname = utf8::utf8to16(settings.get("showname"));
+	defaultOOCname = utf8::utf8to16(settings.get("oocname"));
+	chatlogIniswaps = settings.get("chatlog_iniswaps") == "1";
+	chatlogShownames = settings.get("chatlog_shownames") == "1";
+	wifikbEnabled = settings.get("wifikb_enable") == "1";
+	wifikbReverseMode = settings.get("wifikb_reverse_mode") == "1";
+	defaultChatbox = settings.get("default_chatbox", "default");
+	allowChatboxChange = settings.get("allow_chatbox_change_on_chat") == "1";
 
 	wifikb::setReverse(wifikbReverseMode);
 
@@ -52,6 +56,8 @@ void Settings::save()
 	f.set("chatlog_shownames", chatlogShownames ? "1" : "0");
 	f.set("wifikb_enable", wifikbEnabled ? "1" : "0");
 	f.set("wifikb_reverse_mode", wifikbReverseMode ? "1" : "0");
+	f.set("default_chatbox", defaultChatbox);
+	f.set("allow_chatbox_change_on_chat", allowChatboxChange ? "1" : "0");
 
 	std::string contentArgs;
 	u32 totalContents = Content::getContents().size();

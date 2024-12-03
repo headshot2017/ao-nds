@@ -21,6 +21,8 @@ namespace Settings
 	extern bool chatlogShownames;
 	extern bool wifikbEnabled;
 	extern bool wifikbReverseMode;
+	extern std::string defaultChatbox;
+	extern bool allowChatboxChange;
 	extern std::vector<evidenceInfo> privateEvidence;
 
 	void load();
