@@ -1,8 +1,14 @@
+from __future__ import print_function
 import os
 import subprocess
 import sys
 
 from PIL import Image
+
+try:
+    input = raw_input
+except NameError:
+    pass
 
 def convert(filename):
     basename = os.path.splitext(os.path.basename(filename))[0]
@@ -31,17 +37,21 @@ def convert(filename):
         f.write("\n")
         f.write("# Name info.\n")
         f.write("# Set X and Y positions to the 'top center' of the name box.\n")
+        f.write("# 'textColor' indicates the default text color in R,G,B (white by default)\n")
         f.write("[name]\n")
         f.write("x = 37\n")
         f.write("y = 3\n")
+        f.write("textColor = 255,255,255\n")
         f.write("\n")
         f.write("# Text body info.\n");
         f.write("# Set Y position to the top area of the chatbox.\n")
         f.write("# 'arrowY' indicates the Y position of the 'next' arrow when text fully appears on the chatbox.\n")
+        f.write("# 'textColor' indicates the default text color in R,G,B (white by default)\n")
         f.write("[body]\n")
         f.write("y = 20\n")
         f.write("lineSeparation = 16\n")
         f.write("arrowY = 62\n")
+        f.write("textColor = 255,255,255\n")
 
 def main():
     args = sys.argv[1:]

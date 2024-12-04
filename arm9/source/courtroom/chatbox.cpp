@@ -154,6 +154,7 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_YELLOW] = 	PAL_YELLOW;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_BLACK] = 	PAL_BLACK;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GRAY] = 	PAL_GRAY;
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_NAME] = 	PAL_WHITE;
 
 	setTheme(Settings::defaultChatbox);
 
@@ -261,6 +262,16 @@ void Chatbox::setTheme(const std::string& name)
 		info.bodyY = 20;
 		info.lineSep = 16;
 		info.arrowY = 62;
+
+		vramSetBankF(VRAM_F_LCD);
+		VRAM_F_EXT_SPR_PALETTE[5][1] = PAL_WHITE;
+		VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = PAL_WHITE;
+		VRAM_F_EXT_SPR_PALETTE[0][COLOR_NAME] = PAL_WHITE;
+		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+
+		bgSetScroll(bgIndex, 0, -192+info.height);
+		bgUpdate();
+
 		updateBodyPosition();
 		return;
 	}
@@ -286,6 +297,22 @@ void Chatbox::setTheme(const std::string& name)
 	info.lineSep = (ini["body"].has("lineSeparation")) ? std::stoi(ini["body"]["lineSeparation"]) : 16;
 	info.arrowY = (ini["body"].has("arrowY")) ? std::stoi(ini["body"]["arrowY"]) : 62;
 
+	std::string color = (ini["body"].has("textColor")) ? ini["body"]["textColor"] : "255,255,255";
+	std::string nameColor = (ini["name"].has("textColor")) ? ini["name"]["textColor"] : "255,255,255";
+	u8 r = std::stoi(argumentAt(color, 0, ',')) >> 3;
+	u8 g = std::stoi(argumentAt(color, 1, ',')) >> 3;
+	u8 b = std::stoi(argumentAt(color, 2, ',')) >> 3;
+
+	vramSetBankF(VRAM_F_LCD);
+	VRAM_F_EXT_SPR_PALETTE[5][1] = RGB15(r, g, b);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = RGB15(r, g, b);
+	VRAM_F_EXT_SPR_PALETTE[0][COLOR_NAME] = RGB15(
+		std::stoi(argumentAt(nameColor, 0, ',')) >> 3,
+		std::stoi(argumentAt(nameColor, 1, ',')) >> 3,
+		std::stoi(argumentAt(nameColor, 2, ',')) >> 3
+	);
+	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
+
 	bgSetScroll(bgIndex, 0, -192+info.height);
 	bgUpdate();
 
@@ -299,7 +326,7 @@ void Chatbox::setName(std::u16string name)
 	for (int i=0; i<2; i++)
 		dmaFillHalfWords((0<<8)|0, nameGfx[i], 32*16);
 	nameWidth = getTextWidth(0, name, 64);
-	renderText(0, name, COLOR_WHITE, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
+	renderText(0, name, COLOR_NAME, 32, 16, textCanvas, SpriteSize_32x16, nameGfx, 2);
 
 	for (int i=0; i<2; i++)
 		oamSet(&oamMain, 24+i, info.nameX+(i*32)-(div32(nameWidth,2)), 192-info.height+info.nameY, 0, 0, SpriteSize_32x16, SpriteColorFormat_256Color, nameGfx[i], -1, false, !visible, false, false, false);
