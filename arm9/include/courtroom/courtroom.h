@@ -64,6 +64,7 @@ struct MSchatStruct
 	bool additive;
 	std::string blip;
 	bool panCourt;
+	std::string chatbox;
 };
 
 class Courtroom

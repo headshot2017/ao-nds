@@ -12,10 +12,16 @@
 
 static std::vector<std::string> contents;
 
+struct charCacheInfo
+{
+	std::string blip;
+	std::string chatbox;
+};
+
 struct ContentCache
 {
 	std::unordered_set<std::string> music;
-	std::unordered_map<std::string, std::string> charBlips;
+	std::unordered_map<std::string, charCacheInfo> charInfo;
 };
 static std::unordered_map<std::string, ContentCache> cache;
 
@@ -66,7 +72,7 @@ static void cacheEvidence(const std::string& content, std::string extra="")
 	closedir(dir);
 }
 
-static void cacheCharBlips(const std::string& content)
+static void cacheCharInfo(const std::string& content)
 {
 	std::string fullPath = "/data/ao-nds" + (content.empty() ? "/" : "/custom/"+content+"/") + "characters";
 	DIR *dir = opendir(fullPath.c_str());
@@ -86,9 +92,10 @@ static void cacheCharBlips(const std::string& content)
 
 		std::string& blip = ini["options"]["blips"];
 		if (blip.empty()) blip = ini["options"]["gender"];
+		std::string& chatbox = ini["options"]["chat"];
 
 		std::transform(charname.begin(), charname.end(), charname.begin(), [](char c){return std::tolower(c);});
-		cache[content].charBlips[charname] = blip;
+		cache[content].charInfo[charname] = {blip, chatbox};
 	}
 
 	closedir(dir);
@@ -112,10 +119,10 @@ static void createCache(int oam, const std::string& content, const std::string& 
 	oamUpdate(&oamSub);
 	cacheEvidence(content);
 
-	lbl_loading->setText("Creating character blip cache...");
+	lbl_loading->setText("Creating character info cache...");
 	lbl_loading->setPos(128, 96-12, true);
 	oamUpdate(&oamSub);
-	cacheCharBlips(content);
+	cacheCharInfo(content);
 
 	delete lbl_loading;
 	delete lbl_content;
@@ -229,12 +236,26 @@ const std::string Content::getCharBlip(const std::string& charname)
 {
 	for (auto& k : contents)
 	{
-		if (cache[k].charBlips.count(charname))
-			return cache[k].charBlips[charname];
+		if (cache[k].charInfo.count(charname))
+			return cache[k].charInfo[charname].blip;
 	}
 
-	if (cache[""].charBlips.count(charname))
-		return cache[""].charBlips[charname];
+	if (cache[""].charInfo.count(charname))
+		return cache[""].charInfo[charname].blip;
+
+	return "";
+}
+
+const std::string Content::getCharChatbox(const std::string& charname)
+{
+	for (auto& k : contents)
+	{
+		if (cache[k].charInfo.count(charname))
+			return cache[k].charInfo[charname].chatbox;
+	}
+
+	if (cache[""].charInfo.count(charname))
+		return cache[""].charInfo[charname].chatbox;
 
 	return "";
 }

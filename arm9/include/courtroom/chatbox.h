@@ -44,6 +44,7 @@ class Chatbox
 	u32 mapLen;
 	u8* bgMap;
 	u8* bgPal;
+	std::string currTheme;
 
 	Courtroom* m_pCourt;
 

@@ -11,6 +11,7 @@
 #include "utf8.h"
 #include "colors.h"
 #include "content.h"
+#include "settings.h"
 
 Courtroom::Courtroom()
 {
@@ -159,6 +160,7 @@ void Courtroom::handleChat()
 			if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, index, '^'));
 		}
 		chatbox->setVisible(true);
+		if (Settings::allowChatboxChange) chatbox->setTheme(currIC.chatbox);
 		chatbox->setName(chatname);
 
 		if (currIC.additive && currIC.charID == lastIC.charID)
@@ -183,6 +185,7 @@ void Courtroom::handleChat()
 		else
 		{
 			chatbox->setVisible(true);
+			if (Settings::allowChatboxChange) chatbox->setTheme(currIC.chatbox);
 			chatbox->setName(chatname);
 
 			if (currIC.additive && currIC.charID == lastIC.charID)
@@ -360,7 +363,9 @@ void Courtroom::onAnimFinished(void* pUserData)
 	if (!pSelf->currIC.noInterrupt)
 	{
 		std::u16string chatname = (pSelf->currIC.showname.empty()) ? utf8::utf8to16(pSelf->currIC.charname) : pSelf->currIC.showname;
+
 		pSelf->chatbox->setVisible(true);
+		if (Settings::allowChatboxChange) pSelf->chatbox->setTheme(pSelf->currIC.chatbox);
 		pSelf->chatbox->setName(chatname);
 
 		if (pSelf->currIC.additive && pSelf->currIC.charID == pSelf->lastIC.charID)

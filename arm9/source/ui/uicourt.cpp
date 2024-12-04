@@ -14,6 +14,7 @@
 #include "global.h"
 #include "engine.h"
 #include "content.h"
+#include "settings.h"
 #include "mini/ini.h"
 #include "ui/uiserverlist.h"
 #include "ui/uidisconnected.h"
@@ -447,7 +448,9 @@ void UIScreenCourt::onMessageMS(void* pUserData, std::string msg)
 	data.additive = argumentAt(msg, 29) == "1";
 	data.blip = (argc >= 32) ? argumentAt(msg, 31) : Content::getCharBlip(lowerCharname);
 	data.panCourt = (argc >= 33 && argumentAt(msg, 32) == "1");
+	data.chatbox = Content::getCharChatbox(lowerCharname);
 	if (data.blip.empty()) data.blip = pSelf->charList[charID].blip;
+	if (data.chatbox.empty()) data.chatbox = Settings::defaultChatbox;
 
 	pSelf->icReceiveQueue.push_back(data);
 }

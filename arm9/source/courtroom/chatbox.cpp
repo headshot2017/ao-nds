@@ -94,6 +94,17 @@ Chatbox::Chatbox(Courtroom* pCourt)
 
 	xOffset = 0;
 	yOffset = 0;
+	bgMap = 0;
+	bgPal = 0;
+	nameWidth = 0;
+	currTextInd = 0;
+	currTextGfxInd = 0;
+	currTextLine = -1;
+	textX = 0;
+	textTimer = 0;
+	textSpeed = 0;
+	blipTicks = 0;
+	center = false;
 
 	for (int i=0; i<2; i++)
 	{
@@ -211,6 +222,9 @@ void Chatbox::setVisible(bool on)
 
 void Chatbox::setTheme(const std::string& name)
 {
+	if (currTheme == name)
+		return;
+
 	mINI::INIFile file("/data/ao-nds/misc/chatboxes/" + name + "/chatbox.ini");
 	mINI::INIStructure ini;
 
@@ -227,11 +241,18 @@ void Chatbox::setTheme(const std::string& name)
 
 	if (!file.read(ini))
 	{
-		if (name != "default")
+		if (name != Settings::defaultChatbox)
+		{
+			setTheme(Settings::defaultChatbox);
+			return;
+		}
+		else if (name != "default")
 		{
 			setTheme("default");
 			return;
 		}
+
+		currTheme = name;
 
 		// set default chatbox coordinates...
 		info.height = 80;
@@ -243,6 +264,8 @@ void Chatbox::setTheme(const std::string& name)
 		updateBodyPosition();
 		return;
 	}
+
+	currTheme = name;
 
 	u32 dataLen;
 	u8* bgData = readFile("/data/ao-nds/misc/chatboxes/" + name + "/chatbox.img.bin", &dataLen);

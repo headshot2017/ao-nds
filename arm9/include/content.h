@@ -25,6 +25,7 @@ namespace Content
 	bool exists(const std::string& filename, std::string& out);
 	const std::string getFile(const std::string& filename);
 	const std::string getCharBlip(const std::string& charname);
+	const std::string getCharChatbox(const std::string& charname);
 	bool musicExists(const std::string& file, std::string& out);
 }
 
