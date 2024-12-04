@@ -25,12 +25,12 @@ void Settings::load()
 
 	defaultShowname = utf8::utf8to16(settings.get("showname"));
 	defaultOOCname = utf8::utf8to16(settings.get("oocname"));
-	chatlogIniswaps = settings.get("chatlog_iniswaps") == "1";
-	chatlogShownames = settings.get("chatlog_shownames") == "1";
-	wifikbEnabled = settings.get("wifikb_enable") == "1";
+	chatlogIniswaps = settings.get("chatlog_iniswaps", "1") == "1";
+	chatlogShownames = settings.get("chatlog_shownames", "1") == "1";
+	wifikbEnabled = settings.get("wifikb_enable", "1") == "1";
 	wifikbReverseMode = settings.get("wifikb_reverse_mode") == "1";
 	defaultChatbox = settings.get("default_chatbox", "default");
-	allowChatboxChange = settings.get("allow_chatbox_change_on_chat") == "1";
+	allowChatboxChange = settings.get("allow_chatbox_change_on_chat", "1") == "1";
 
 	wifikb::setReverse(wifikbReverseMode);
 
