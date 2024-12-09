@@ -8,7 +8,7 @@
 #include "uiscreen.h"
 #include "button.h"
 #include "label.h"
-#include "mp3_shared.h"
+#include "wav_nds.h"
 
 struct serverInfo
 {

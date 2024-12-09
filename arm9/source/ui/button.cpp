@@ -2,7 +2,7 @@
 
 #include <nds/dma.h>
 
-#include "mp3_shared.h"
+#include "libadx.h"
 
 UIButton::UIButton(OamState* chosenOam, std::string file, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot)
 {
@@ -84,7 +84,7 @@ UIButton::~UIButton()
 {
 	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 	{
-		mp3_fill_buffer();
+		adx_update();
 		oamClearSprite(oam, oamStart+i);
 		oamFreeGfx(oam, spriteGfx[i]);
 	}
@@ -103,7 +103,7 @@ void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSl
 	{
 		currData = readFile(file+".img.bin");
 		currPal = readFile(file+".pal.bin");
-		mp3_fill_buffer();
+		adx_update();
 	}
 	else
 	{
@@ -228,7 +228,7 @@ void UIButton::darken()
 			u8 r=0, g=0, b=0;
 			fromRGB15(VRAM_F_EXT_SPR_PALETTE[paletteSlot][j], r, g, b);
 			VRAM_F_EXT_SPR_PALETTE[paletteSlot][j] = RGB15(r>>1, g>>1, b>>1);
-			mp3_fill_buffer();
+			adx_update();
 		}
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	}
@@ -240,7 +240,7 @@ void UIButton::darken()
 			u8 r=0, g=0, b=0;
 			fromRGB15(VRAM_I_EXT_SPR_PALETTE[paletteSlot][j], r, g, b);
 			VRAM_I_EXT_SPR_PALETTE[paletteSlot][j] = RGB15(r>>1, g>>1, b>>1);
-			mp3_fill_buffer();
+			adx_update();
 		}
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}

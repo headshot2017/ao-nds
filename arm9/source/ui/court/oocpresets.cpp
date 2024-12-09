@@ -7,7 +7,7 @@
 #include <nds/arm9/sound.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "engine.h"
 #include "global.h"
 #include "ui/court/ooc.h"
@@ -312,7 +312,7 @@ void UICourtOOCPresets::savePresets()
 	for (u32 i=0; i<m_presets.size(); i++)
 	{
 		fprintf(f, "%s\n", m_presets[i].c_str());
-		mp3_fill_buffer();
+		adx_update();
 	}
 
 	fclose(f);

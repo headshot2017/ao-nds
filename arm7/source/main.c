@@ -9,8 +9,9 @@
 
 #include <dswifi7.h>
 #include <nds.h>
-#include <mp3_shared.h>
 //#include <maxmod7.h>
+
+#include "libadx.h"
 
 volatile bool exit_loop = false;
 
@@ -67,11 +68,11 @@ int main(int argc, char *argv[])
     irqSet(IRQ_VBLANK, vblank_handler);
     irqEnable(IRQ_VBLANK);
 
-    mp3_init();
+    adx_init();
 
     while (!exit_loop)
     {
-    	mp3_process();
+    	adx_update();
 
         const uint16_t key_mask = KEY_SELECT | KEY_START | KEY_L | KEY_R;
         uint16_t keys_pressed = ~REG_KEYINPUT;

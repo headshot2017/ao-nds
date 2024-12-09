@@ -11,7 +11,7 @@
 
 #include "utf8.h"
 #include "arm9_math_alt.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "ui/label.h"
 
 void debugPressA(const char* msg)
@@ -19,7 +19,7 @@ void debugPressA(const char* msg)
 	printf("%s\n", msg);
 	while (1)
 	{
-		mp3_fill_buffer();
+		adx_update();
 		scanKeys();
 		if (keysDown() & KEY_A) break;
 		swiWaitForVBlank();
@@ -35,7 +35,7 @@ void debugLabelPressA(const char* msg)
 
 	while (1)
 	{
-		mp3_fill_buffer();
+		adx_update();
 		scanKeys();
 		if (keysDown() & KEY_A) break;
 		swiWaitForVBlank();
@@ -54,11 +54,11 @@ void AOdecode(std::string& s)
 		size_t pos = 0;
 		while((pos = s.find(escapes[i], pos)) != std::string::npos)
 		{
-			mp3_fill_buffer();
+			adx_update();
 			s.replace(pos, escapes[i].length(), unescapes[i]);
 			pos += unescapes[i].length();
 		}
-		mp3_fill_buffer();
+		adx_update();
 	}
 }
 
@@ -70,11 +70,11 @@ void AOdecode(std::u16string& s)
 		size_t pos = 0;
 		while((pos = s.find(escape16, pos)) != std::u16string::npos)
 		{
-			mp3_fill_buffer();
+			adx_update();
 			s.replace(pos, escape16.length(), utf8::utf8to16(unescapes[i]));
 			pos += unescapes[i].length();
 		}
-		mp3_fill_buffer();
+		adx_update();
 	}
 }
 
@@ -85,11 +85,11 @@ void AOencode(std::string& s)
 		size_t pos = 0;
 		while((pos = s.find(unescapes[i], pos)) != std::string::npos)
 		{
-			mp3_fill_buffer();
+			adx_update();
 			s.replace(pos, unescapes[i].length(), escapes[i]);
 			pos += escapes[i].length();
 		}
-		mp3_fill_buffer();
+		adx_update();
 	}
 }
 
@@ -101,7 +101,7 @@ std::string argumentAt(const std::string& s, int id, char delimiter)
 
 	while (lastPos != std::string::npos && i < id)
 	{
-		mp3_fill_buffer();
+		adx_update();
 
 		i++;
 		lastPos = delimiterPos;
@@ -153,7 +153,7 @@ bool fileExists(const std::string& filename)
 {
 	struct stat buffer;
 	bool exist = stat(filename.c_str(), &buffer) == 0;
-	mp3_fill_buffer();
+	adx_update();
 	return exist;
 }
 
@@ -184,7 +184,7 @@ u8* readFile(const std::string& filename, u32* outLen, const char* mode)
 
 	DC_FlushRange(data, len);
 
-	mp3_fill_buffer();
+	adx_update();
 
 	return data;
 }
@@ -240,7 +240,7 @@ static uint8 readByteFile(uint8 *source) {
 		streamPos += streamSize;
 		fread(streamData, streamSize, 1, streamFile);
 	}
-	mp3_fill_buffer();
+	adx_update();
 	return thisByte;
 }
 
@@ -258,7 +258,7 @@ void readAndDecompressLZ77Stream(const char* filename, u8* dest)
 }
 #else
 static uint8 readByteFile(uint8 *source) {
-	mp3_fill_buffer();
+	adx_update();
 	return *source;
 }
 

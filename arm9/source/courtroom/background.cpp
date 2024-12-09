@@ -10,7 +10,7 @@
 
 #include "courtroom/courtroom.h"
 #include "mini/ini.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "global.h"
 #include "content.h"
 
@@ -381,13 +381,13 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 
 			BG_PALETTE[0] = ((u16*)bgPal)[0];
 
-			mp3_fill_buffer();
+			adx_update();
 		}
 
 		if (bgGfx) delete[] bgGfx;
 		if (bgMap) delete[] bgMap;
 		if (bgPal) delete[] bgPal;
-		mp3_fill_buffer();
+		adx_update();
 	}
 
 	zooming = false;
@@ -415,7 +415,7 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 	}
 
 	currentSide = side;
-	mp3_fill_buffer();
+	adx_update();
 }
 
 void Background::cleanDesk()
@@ -445,7 +445,7 @@ void Background::setDesk(u8* gfx, u8* pal, int horTiles, int verTiles)
 		{
 			for (int x=0; x<horTiles; x++)
 			{
-				mp3_fill_buffer();
+				adx_update();
 
 				int i = y*4+x;
 
@@ -509,7 +509,7 @@ void Background::setZoom(bool scrollLeft, bool force)
 	for (int i=0; i<horTiles*verTiles; i++)
 	{
 		if (!deskGfx[i]) continue;
-		mp3_fill_buffer();
+		adx_update();
 
 		oamFreeGfx(&oamMain, deskGfx[i]);
 		oamSetHidden(&oamMain, i, true);

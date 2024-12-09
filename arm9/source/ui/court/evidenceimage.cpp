@@ -9,7 +9,7 @@
 #include <nds/arm9/sound.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "engine.h"
 #include "content.h"
 #include "ui/court/evidencedetail.h"
@@ -99,7 +99,7 @@ void UICourtEvidenceImage::reloadPage()
 
 	for (u32 i=0; i<8; i++)
 	{
-		mp3_fill_buffer();
+		adx_update();
 
 		u32 ind = currPage*8 + i;
 		if (ind >= Content::getEvidence().size())
@@ -107,7 +107,7 @@ void UICourtEvidenceImage::reloadPage()
 			btn_evidence[i]->setVisible(false);
 			continue;
 		}
-		mp3_fill_buffer();
+		adx_update();
 
 		const evidenceCacheInfo& info = Content::getEvidence()[ind];
 

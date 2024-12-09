@@ -4,7 +4,6 @@
 #include <nds/arm9/background.h>
 #include <nds/arm9/sound.h>
 
-#include "mp3_shared.h"
 #include "engine.h"
 #include "ui/court/ic.h"
 

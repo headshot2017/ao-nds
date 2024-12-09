@@ -5,7 +5,7 @@
 #include <nds/arm9/sound.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
 #include "ui/court/oocpresets.h"
@@ -190,7 +190,7 @@ void UICourtOOC::reloadScroll(bool all)
 			for (u32 i=0; i<pCourtUI->getOOCLog().size(); i++)
 			{
 				lbl_log->setTextOnLine(pCourtUI->getOOCLog()[i]+u"\n", i);
-				mp3_fill_buffer();
+				adx_update();
 			}
 		}
 		return;
@@ -219,11 +219,11 @@ void UICourtOOC::reloadScroll(bool all)
 
 		for (u32 i=start; i!=end; i+=add)
 		{
-			mp3_fill_buffer();
+			adx_update();
 
 			dmaCopy(lbl_log->getGfx()[7*(i+diff)], lbl_log->getGfx()[7*i], 32*16*7);
 
-			mp3_fill_buffer();
+			adx_update();
 		}
 
 		// then generate new text
@@ -237,7 +237,7 @@ void UICourtOOC::reloadScroll(bool all)
 			break;
 		lbl_log->setTextOnLine(pCourtUI->getOOCLog()[scrollPos+i]+u"\n", i);
 
-		mp3_fill_buffer();
+		adx_update();
 	}
 
 	scrollPosOld = scrollPos;

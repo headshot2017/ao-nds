@@ -7,7 +7,7 @@
 #include "utf8.h"
 #include "arm9_math_alt.h"
 #include "fonts.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 
 UILabel::UILabel(OamState* chosenOam, int oamStartInd, int perLine, int lines, u32 textColor, int palSlot, int font)
 {

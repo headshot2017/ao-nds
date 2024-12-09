@@ -4,7 +4,7 @@
 
 #include "cfgFile.h"
 #include "mini/ini.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "content.h"
 #include "global.h"
 #include "wifikb/wifikb.h"
@@ -108,7 +108,7 @@ void Settings::savePrivateEvidence()
 {
 	mINI::INIFile file("/data/ao-nds/private_evidence.ini");
 	mINI::INIStructure ini;
-	mp3_fill_buffer();
+	adx_update();
 
 	for (u32 i=0; i<privateEvidence.size(); i++)
 	{
@@ -117,9 +117,9 @@ void Settings::savePrivateEvidence()
 		ini[I]["name"] = utf8::utf16to8(privateEvidence[i].name);
 		ini[I]["description"] = utf8::utf16to8(privateEvidence[i].description);
 		ini[I]["image"] = privateEvidence[i].image + ".png";
-		mp3_fill_buffer();
+		adx_update();
 	}
 
 	file.generate(ini);
-	mp3_fill_buffer();
+	adx_update();
 }

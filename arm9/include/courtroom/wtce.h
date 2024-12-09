@@ -4,7 +4,7 @@
 #include <nds/ndstypes.h>
 
 #include "wtceAnims.h"
-#include "mp3_shared.h"
+#include "wav_nds.h"
 
 class Courtroom;
 

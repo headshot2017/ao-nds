@@ -1,6 +1,6 @@
 #include "animStream.h"
 
-#include "mp3_shared.h"
+#include "libadx.h"
 
 animStream::~animStream()
 {
@@ -15,7 +15,7 @@ void animStream::unload()
 		f = 0;
 		delete[] data;
 		data = 0;
-		mp3_fill_buffer();
+		adx_update();
 	}
 }
 
@@ -30,17 +30,17 @@ void animStream::loadFile(const char* filename, int tW, int tH, int sW, int sH)
 	sprH = sH;
 
 	f = fopen(filename, "rb");
-	mp3_fill_buffer();
+	adx_update();
 	data = new u8[frameSize];
-	mp3_fill_buffer();
+	adx_update();
 }
 
 u8* animStream::getFrame(int i)
 {
 	int frameOffset = i*frameSize;
 	fseek(f, frameOffset, SEEK_SET);
-	mp3_fill_buffer();
+	adx_update();
 	fread(data, frameSize, 1, f);
-	mp3_fill_buffer();
+	adx_update();
 	return data;
 }

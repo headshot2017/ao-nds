@@ -4,6 +4,7 @@
 
 #include "courtroom/courtroom.h"
 #include "content.h"
+#include "libadx.h"
 
 Shout::Shout(Courtroom* pCourt)
 {
@@ -96,7 +97,7 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 	if (bgMap) delete[] bgMap;
 	if (bgPal) delete[] bgPal;
 
-	mp3_fill_buffer();
+	adx_update();
 }
 
 void Shout::setVisible(bool on)

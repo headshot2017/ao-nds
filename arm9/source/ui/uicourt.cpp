@@ -9,6 +9,7 @@
 #include <nds/arm9/input.h>
 #include <nds/interrupts.h>
 
+#include "libadx.h"
 #include "utf8.h"
 #include "fonts.h"
 #include "global.h"
@@ -265,8 +266,8 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 		std::string value = msg.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1);
 		if (value.empty() || value.at(0) == '%') break;
 
-		std::string mp3Music = value;
-		AOdecode(mp3Music);
+		std::string adxMusic = value;
+		AOdecode(adxMusic);
 
 		// remove file extension
 		size_t newPos = 0;
@@ -274,17 +275,17 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 		while (newPos != std::string::npos)
 		{
 			pos = newPos;
-			newPos = mp3Music.find(".", pos+1);
-			mp3_fill_buffer();
+			newPos = adxMusic.find(".", pos+1);
+			adx_update();
 		}
 		if (pos)
 		{
-			mp3Music = mp3Music.substr(0, pos);
-			mp3_fill_buffer();
+			adxMusic = adxMusic.substr(0, pos);
+			adx_update();
 		}
 
-		std::string mp3Lower = mp3Music+".mp3";
-		std::transform(mp3Lower.begin(), mp3Lower.end(), mp3Lower.begin(), [](char c){return std::tolower(c);});
+		std::string adxLower = adxMusic+".adx";
+		std::transform(adxLower.begin(), adxLower.end(), adxLower.begin(), [](char c){return std::tolower(c);});
 
 		// remove category
 		newPos = 0;
@@ -292,23 +293,23 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 		while (newPos != std::string::npos)
 		{
 			pos = newPos;
-			newPos = mp3Music.find("/", pos+1);
-			mp3_fill_buffer();
+			newPos = adxMusic.find("/", pos+1);
+			adx_update();
 		}
 		if (pos)
 		{
-			mp3Music = mp3Music.substr(pos+1);
-			mp3_fill_buffer();
+			adxMusic = adxMusic.substr(pos+1);
+			adx_update();
 		}
 
 		if (musics_time)
-			pSelf->musicList.push_back({value, utf8::utf8to16(mp3Music), mp3Lower});
+			pSelf->musicList.push_back({value, utf8::utf8to16(adxMusic), adxLower});
 		else if (value.find(".mp3") != std::string::npos || value.find(".ogg") != std::string::npos || value.find(".opus") != std::string::npos || value.find(".wav") != std::string::npos)
 		{
 			musics_time = true;
 			pSelf->musicList.push_back({pSelf->areaList.back().name, utf8::utf8to16(pSelf->areaList.back().name), pSelf->areaList.back().name});
 			pSelf->areaList.pop_back();
-			pSelf->musicList.push_back({value, utf8::utf8to16(mp3Music), mp3Lower});
+			pSelf->musicList.push_back({value, utf8::utf8to16(adxMusic), adxLower});
 		}
 		else
 			pSelf->areaList.push_back({value, 0, "", "", ""});
@@ -351,7 +352,7 @@ void UIScreenCourt::onMessageMC(void* pUserData, std::string msg)
 
 	auto pos = trackname.find_last_of('.');
 	if (pos != std::string::npos)
-		trackname = trackname.substr(0, pos) + ".mp3";
+		trackname = trackname.substr(0, pos) + ".adx";
 
 	pSelf->court->playMusic(Content::getFile("sounds/music/" + trackname));
 }
@@ -702,12 +703,12 @@ void UIScreenCourt::onMessageLE(void* pUserData, std::string msg)
 		{
 			extPos = newExtPos;
 			newExtPos = image.find(".", extPos+1);
-			mp3_fill_buffer();
+			adx_update();
 		}
 		if (extPos)
 		{
 			image = image.substr(0, extPos);
-			mp3_fill_buffer();
+			adx_update();
 		}
 
 		pSelf->evidenceList.push_back({name, desc, image});

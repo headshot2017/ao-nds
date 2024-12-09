@@ -5,7 +5,7 @@
 
 #include <nds/ndstypes.h>
 
-#include "mp3_shared.h"
+#include "wav_nds.h"
 
 class Evidence
 {

@@ -4,7 +4,7 @@
 #include <nds/arm9/sprite.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "engine.h"
 #include "ui/court/ingamemenu.h"
 

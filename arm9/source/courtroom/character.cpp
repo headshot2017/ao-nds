@@ -14,6 +14,7 @@
 #include "courtroom/courtroom.h"
 #include "global.h"
 #include "content.h"
+#include "libadx.h"
 
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED div32(BUS_CLOCK,1024)
@@ -30,7 +31,7 @@ void readTwoValues(const std::string& value, int* w, int* h)
 
     *w = std::stoi(value.substr(0, delimiterPos));
     *h = std::stoi(value.substr(delimiterPos + 1));
-    mp3_fill_buffer();
+    adx_update();
 }
 
 void readFrameDurations(const std::string& value, std::vector<u32>& output)
@@ -41,7 +42,7 @@ void readFrameDurations(const std::string& value, std::vector<u32>& output)
 	output.clear();
 	while (lastPos != std::string::npos)
 	{
-		mp3_fill_buffer();
+		adx_update();
 
 		u32 dur = std::stoi(value.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos-1));
 		output.push_back(dur);
@@ -60,7 +61,7 @@ void readFrameIndexes(const std::string& value, std::vector<u16>& output)
 	u32 frameCount = 0;
 	while (lastPos != std::string::npos)
 	{
-		mp3_fill_buffer();
+		adx_update();
 
 		frameCount++;
 		std::string val = value.substr((lastPos == 0) ? lastPos : lastPos+1, delimiterPos-lastPos - (frameCount==1 ? 0 : 1));
@@ -203,7 +204,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	if (frameInfo.frameCount == 1 && !frameInfo.frameDurations[0])
 		frameInfo.frameDurations[0] = 100;
 
-	mp3_fill_buffer();
+	adx_update();
 
 	frameInfo.realW = ceil(frameInfo.frameW/64.f);
 	frameInfo.realH = ceil(frameInfo.frameH/64.f);
@@ -215,7 +216,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		stream.unload();
 
 		charData = new u8[frameInfo.realW*64 * frameInfo.realH*64 * gfxCount];
-		mp3_fill_buffer();
+		adx_update();
 
 		if (!charData)
 		{
@@ -229,7 +230,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	{
 		stream.loadFile(IMGbin.c_str(), frameInfo.realW, frameInfo.realH, 64, 64);
 	}
-	mp3_fill_buffer();
+	adx_update();
 
 	clearFrameData();
 
@@ -270,7 +271,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 		u8* offset = ptr + i*64*64;
 		dmaCopy(offset, charGfx[i], 64*64);
-		mp3_fill_buffer();
+		adx_update();
 
 		oamSet(&oamMain, oamStart+i, x, y, 2, 2+pair, SpriteSize_64x64, SpriteColorFormat_256Color, charGfx[i], -1, false, false, flip, false, false);
 	}
@@ -472,7 +473,7 @@ void Character::update()
 		{
 			u8* offset = ptr + i*64*64;
 			dmaCopy(offset, charGfx[i], 64*64);
-			mp3_fill_buffer();
+			adx_update();
 		}
 	}
 }

@@ -5,7 +5,7 @@
 
 #include "content.h"
 #include "settings.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 
 struct contentOrderBtnData
 {
@@ -89,7 +89,7 @@ void UISettingsContentOrder::reloadPage()
 
 	for (u32 i=0; i<5; i++)
 	{
-		mp3_fill_buffer();
+		adx_update();
 
 		u32 ind = currPage*5 + i;
 		if (ind >= contents.size())
@@ -104,7 +104,7 @@ void UISettingsContentOrder::reloadPage()
 		lbl_contentBtn[i]->setVisible(true);
 		lbl_contentBtn[i]->setText(contents[ind]);
 		lbl_contentBtn[i]->setPos(btn_contentBtn[i]->getX() + (btn_contentBtn[i]->getW()/2), btn_contentBtn[i]->getY()+1, true);
-		mp3_fill_buffer();
+		adx_update();
 	}
 
 	u32 maxPages = (u32)ceil(contents.size()/5.f);

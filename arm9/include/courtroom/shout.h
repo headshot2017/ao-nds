@@ -8,7 +8,7 @@
 #include <string>
 
 #include "global.h"
-#include "mp3_shared.h"
+#include "wav_nds.h"
 
 class Courtroom;
 

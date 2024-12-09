@@ -13,7 +13,7 @@
 #include <nds/ndstypes.h>
 #include <fat.h>
 
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "fonts.h"
 #include "engine.h"
 #include "settings.h"
@@ -90,7 +90,7 @@ void fadeDisclaimer(u32 tilesLen) {
 int main()
 {
 	defaultExceptionHandler();
-	mp3_init();
+	adx_init();
 	srand(time(0));
 
 	if (!fatInitDefault())
@@ -145,6 +145,7 @@ int main()
 
 	while (gEngine->isRunning())
 	{
+		swiWaitForVBlank();
 		scanKeys();
 
 		wifikb::update();
@@ -155,8 +156,7 @@ int main()
 		oamUpdate(&oamMain);
 		oamUpdate(&oamSub);
 
-		mp3_fill_buffer();
-		swiWaitForVBlank();
+		adx_update();
 	}
 
 	delete gEngine;

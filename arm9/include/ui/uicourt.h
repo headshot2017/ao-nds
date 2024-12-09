@@ -10,7 +10,7 @@
 #include "uiscreen.h"
 #include "courtroom/courtroom.h"
 #include "settings.h"
-#include "mp3_shared.h"
+#include "wav_nds.h"
 
 extern const char* indToSide[6];
 

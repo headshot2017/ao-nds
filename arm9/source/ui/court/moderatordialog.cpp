@@ -5,7 +5,7 @@
 #include <nds/arm9/sound.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "engine.h"
 #include "content.h"
 #include "ui/court/courtrecord.h"

@@ -16,7 +16,7 @@
 #include "cfgFile.h"
 #include "global.h"
 #include "animStream.h"
-#include "mp3_shared.h"
+#include "wav_nds.h"
 
 struct FrameInfo
 {

@@ -10,7 +10,7 @@
 #include "courtroom/shout.h"
 #include "courtroom/evidence.h"
 #include "courtroom/wtce.h"
-#include "mp3_shared.h"
+#include "wav_nds.h"
 
 struct MSchatStruct
 {

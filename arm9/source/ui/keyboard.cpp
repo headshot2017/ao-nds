@@ -4,7 +4,7 @@
 #include <nds/interrupts.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "wifikb/wifikb.h"
 
 static void keyboardShowAlt(Keyboard* kb)
@@ -23,7 +23,7 @@ static void keyboardShowAlt(Keyboard* kb)
 	{
 		for(i = -192; i < kb->offset_y; i += kb->scrollSpeed)
 		{
-			mp3_fill_buffer();
+			adx_update();
 			swiWaitForVBlank();
 			bgSetScroll(kb->background, 0, i);
 			bgUpdate();
@@ -44,7 +44,7 @@ static void keyboardHideAlt(Keyboard* kb)
 	{
 		for(i = kb->offset_y; i > -192; i-= kb->scrollSpeed)
 		{
-			mp3_fill_buffer();
+			adx_update();
 			swiWaitForVBlank();
 			bgSetScroll(kb->background, 0, i);
 			bgUpdate();
@@ -65,7 +65,7 @@ AOkeyboard::AOkeyboard(int lines, int oamStart, int palSlot)
 					   keyboardGetDefault()->grid_height * keyboardGetDefault()->grid_width * 2) / 64;
 	dmaCopy(map->mapDataReleased, bgGetMapPtr(5), map_size);
 
-	mp3_fill_buffer();
+	adx_update();
 
 	lbl_plswrite = new UILabel(&oamSub, oamStart, 6, 1, RGB15(31,31,31), palSlot, 1);
 	lbl_plswrite->setVisible(false);

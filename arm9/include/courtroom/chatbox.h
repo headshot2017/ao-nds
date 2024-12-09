@@ -14,7 +14,7 @@
 
 #include "global.h"
 #include "colors.h"
-#include "mp3_shared.h"
+#include "wav_nds.h"
 
 struct colorSwitchChar
 {

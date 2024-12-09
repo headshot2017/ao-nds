@@ -5,7 +5,7 @@
 #include <nds/arm9/sound.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "engine.h"
 #include "fonts.h"
 #include "content.h"
@@ -62,7 +62,7 @@ void UICourtEvidenceDetail::init()
 	spr_evidence = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 21, 40, 68, 68, 64, 64, 13);
 
 	kb_input = new AOkeyboard(4, spr_evidence->nextOamInd(), 14);
-	mp3_fill_buffer();
+	adx_update();
 
 	inputting = 0;
 
@@ -318,11 +318,11 @@ void UICourtEvidenceDetail::reloadDesc(bool all)
 
 		for (u32 i=start; i!=end; i+=add)
 		{
-			mp3_fill_buffer();
+			adx_update();
 
 			dmaCopy(lbl_desc->getGfx()[7*(i+diff)], lbl_desc->getGfx()[7*i], 32*16*7);
 
-			mp3_fill_buffer();
+			adx_update();
 		}
 
 		// then generate new text
@@ -336,7 +336,7 @@ void UICourtEvidenceDetail::reloadDesc(bool all)
 			break;
 		lbl_desc->setTextOnLine(renderDesc[scrollPos+i]+u"\n", i);
 
-		mp3_fill_buffer();
+		adx_update();
 	}
 
 	scrollPosOld = scrollPos;

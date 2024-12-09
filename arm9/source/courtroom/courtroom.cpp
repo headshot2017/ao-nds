@@ -12,6 +12,7 @@
 #include "colors.h"
 #include "content.h"
 #include "settings.h"
+#include "libadx.h"
 
 Courtroom::Courtroom()
 {
@@ -49,7 +50,7 @@ Courtroom::~Courtroom()
 
 	wav_free_handle(sndRealization);
 
-	mp3_stop();
+	adx_stop();
 }
 
 void Courtroom::setVisible(bool on)
@@ -239,20 +240,20 @@ void Courtroom::handleChat()
 
 void Courtroom::playMusic(std::string filename)
 {
-	mp3_stop();
+	adx_stop();
 
 	if (filename.find("~stop") != std::string::npos)
-		return; // don't play ~stop.mp3
+		return; // don't play "~stop"
 
 	// replace file extension
 	auto pos = filename.find_last_of('.');
 	if (pos != std::string::npos)
-		filename = filename.substr(0, pos) + ".mp3";
+		filename = filename.substr(0, pos) + ".adx";
 	else
-		filename += ".mp3";
+		filename += ".adx";
 
 	printf("%s\n", filename.c_str());
-	mp3_play(filename.c_str(), 1, 0);
+	adx_play(filename.c_str(), 1);
 }
 
 void Courtroom::shake(int force, int ticks)

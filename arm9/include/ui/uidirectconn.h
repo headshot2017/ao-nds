@@ -7,7 +7,6 @@
 #include "button.h"
 #include "label.h"
 #include "keyboard.h"
-#include "mp3_shared.h"
 
 class UIScreenDirectConn : public UIScreen
 {

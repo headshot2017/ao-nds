@@ -8,7 +8,7 @@
 #include "stb_truetype_fixed.h"
 
 #include "arm9_math_alt.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "global.h"
 
 fix32 roundf32(fix32 num)
@@ -63,7 +63,7 @@ int renderText(int fontID, std::u16string& text, int palIndex, int w, int h, u8*
 		int oobFlag;
 		int outWidth;
 		int new_x = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, x, w, w, h, bmpTarget, spritesize, spriteGfxTargets[currGfx], false, &oobFlag, &outWidth);
-		mp3_fill_buffer();
+		adx_update();
 
 		if (!oobFlag)
 		{
@@ -125,7 +125,7 @@ int renderChar(int fontID, int codepoint, int nextChar, int palIndex, int x, int
 	// render character (stride and offset is important here)
 	int byteOffset = 0 + f32toint(roundf32(mulf32(inttof32(lsb), font.scale))) + (y * spriteW);
 	stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, font.scale, font.scale, codepoint);
-	mp3_fill_buffer();
+	adx_update();
 
 	// focus around the bounding box of the rendered character...
 	for (int yy = y; yy<y+font.line_height; yy++)
@@ -143,8 +143,8 @@ int renderChar(int fontID, int codepoint, int nextChar, int palIndex, int x, int
 				if (!oobFlag2)
 				{
 					spriteGfxTarget[targetInd] = (leftOrRight) ?
-						(spriteGfxTarget[targetInd] & 0xf) | (palIndex<<8) :
-						palIndex | ((spriteGfxTarget[targetInd] >> 8) << 8);
+						(palIndex<<8) | (spriteGfxTarget[targetInd] & 0xf) : // right
+						palIndex; // left
 				}
 				bmpTarget[ind] = 0;
 			}
@@ -165,7 +165,7 @@ int renderChar(int fontID, int codepoint, int nextChar, int palIndex, int x, int
 	kern = stbtt_GetCodepointKernAdvance(&font.info, codepoint, nextChar);
 	x += f32toint(roundf32(mulf32(inttof32(kern), font.scale)));
 
-	mp3_fill_buffer();
+	adx_update();
 
 	if (oobFlag) *oobFlag = 0;
 	return x;
@@ -183,7 +183,7 @@ void renderMultiLine(int fontID, std::u16string& text, int palIndex, int w, int 
 		{
 			int line = div32(currTextGfxInd, gfxPerLine);
 			currTextGfxInd = (line+1) * gfxPerLine;
-			mp3_fill_buffer();
+			adx_update();
 
 			i++;
 			if (i >= text.size())
@@ -199,7 +199,7 @@ void renderMultiLine(int fontID, std::u16string& text, int palIndex, int w, int 
 		int oobFlag = 0;
 		int outWidth;
 		int new_x = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
-		mp3_fill_buffer();
+		adx_update();
 
 		if (oobFlag)
 		{
@@ -216,7 +216,7 @@ void renderMultiLine(int fontID, std::u16string& text, int palIndex, int w, int 
 			{
 				textX -= 32;
 				textX = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
-				mp3_fill_buffer();
+				adx_update();
 			}
 		}
 		else
@@ -279,7 +279,7 @@ int advanceXPos(int fontID, int codepoint, int nextChar, int x, int w, bool skip
 	kern = stbtt_GetCodepointKernAdvance(&font.info, codepoint, nextChar);
 	x += f32toint(roundf32(mulf32(inttof32(kern), font.scale)));
 
-	mp3_fill_buffer();
+	adx_update();
 
 	if (oobFlag) *oobFlag = 0;
 	return x;
@@ -299,7 +299,7 @@ void separateLines(int fontID, std::u16string& text, int gfxPerLine, bool chatbo
 			currTextGfxInd = (line+1) * gfxPerLine;
 			out.push_back(thisLine);
 			thisLine.clear();
-			mp3_fill_buffer();
+			adx_update();
 
 			i++;
 			if (i >= text.size())
@@ -313,7 +313,7 @@ void separateLines(int fontID, std::u16string& text, int gfxPerLine, bool chatbo
 		int outWidth;
 
 		int new_x = advanceXPos(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
-		mp3_fill_buffer();
+		adx_update();
 
 		if (oobFlag)
 		{
@@ -333,7 +333,7 @@ void separateLines(int fontID, std::u16string& text, int gfxPerLine, bool chatbo
 				thisLine += text.at(i);
 				textX -= 32;
 				textX = advanceXPos(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
-				mp3_fill_buffer();
+				adx_update();
 			}
 		}
 		else

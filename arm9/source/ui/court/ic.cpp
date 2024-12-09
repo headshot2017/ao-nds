@@ -7,7 +7,7 @@
 #include <nds/arm9/sound.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "engine.h"
 #include "content.h"
 #include "colors.h"
@@ -102,7 +102,7 @@ void UICourtIC::init()
 	static emoteBtnData btnData[4];
 	for (u32 i=0; i<4; i++)
 	{
-		mp3_fill_buffer();
+		adx_update();
 		int nextOam = (!i) ? btn_nextPage->nextOamInd() : btn_emote[i-1]->nextOamInd();
 		btnData[i] = {this, i};
 
@@ -112,7 +112,7 @@ void UICourtIC::init()
 
 	for (int i=0; i<2; i++)
 	{
-		mp3_fill_buffer();
+		adx_update();
 		int nextOam = (!i) ? btn_emote[3]->nextOamInd() : spr_bars[i-1]->nextOamInd();
 
 		std::string file = (!i) ? "/data/ao-nds/ui/spr_barDefense" : "/data/ao-nds/ui/spr_barProsecutor";
@@ -137,7 +137,7 @@ void UICourtIC::init()
 
 	kb_input = new AOkeyboard(4, lbl_slide->nextOamInd(), 14);
 	dmaCopy(bg_icPal, BG_PALETTE_SUB, 512);
-	mp3_fill_buffer();
+	adx_update();
 	isWritingChat = false;
 
 	btn_prevPage->setPriority(1);
@@ -321,7 +321,7 @@ void UICourtIC::updateInput()
 				lbl_showname->setVisible(true);
 				lbl_slide->setVisible(pCourtUI->getFeature("custom_blips"));
 			}
-			mp3_fill_buffer();
+			adx_update();
 
 			bgShow(bgIndex);
 
@@ -429,7 +429,7 @@ void UICourtIC::reloadPage()
 
 	for (u32 i=0; i<4; i++)
 	{
-		mp3_fill_buffer();
+		adx_update();
 
 		u32 ind = currPage*4 + i;
 		if (ind >= pCourtUI->getCharEmotes().size())
@@ -445,7 +445,7 @@ void UICourtIC::reloadPage()
 
 	for (u32 i=0; i<visible; i++)
 	{
-		mp3_fill_buffer();
+		adx_update();
 
 		u32 ind = currPage*4 + i;
 		std::string buttonFile = "characters/" + pCourtUI->getCurrChar().name + "/emotions/button" + std::to_string(ind+1) + "_off";

@@ -8,7 +8,7 @@
 #include <nds/arm9/sound.h>
 
 #include "utf8.h"
-#include "mp3_shared.h"
+#include "libadx.h"
 #include "global.h"
 #include "engine.h"
 #include "content.h"
@@ -181,7 +181,7 @@ void UICourtMusicList::updateFilter()
 	filteredMusic.clear();
 	for (u32 i=0; i<pCourtUI->getMusicList().size(); i++)
 	{
-		mp3_fill_buffer();
+		adx_update();
 		if (filter.empty())
 		{
 			filteredMusic.push_back(i);
@@ -192,12 +192,12 @@ void UICourtMusicList::updateFilter()
 		std::string filterLower(filter);
 		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), [](char c){return std::tolower(c);});
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), [](char c){return std::tolower(c);});
-		mp3_fill_buffer();
+		adx_update();
 
 		if (nameLower.find(filterLower) != std::string::npos)
 		{
 			filteredMusic.push_back(i);
-			mp3_fill_buffer();
+			adx_update();
 		}
 	}
 }
@@ -236,12 +236,12 @@ void UICourtMusicList::reloadScroll(bool all)
 
 		for (u32 i=start; i!=end; i+=add)
 		{
-			mp3_fill_buffer();
+			adx_update();
 
 			btn_musicBtn[i]->setFrame(btn_musicBtn[i+diff]->getFrame());
 			dmaCopy(*lbl_musicBtn[i+diff]->getGfx(), *lbl_musicBtn[i]->getGfx(), 32*16*7);
 
-			mp3_fill_buffer();
+			adx_update();
 		}
 
 		// then generate new text
@@ -251,7 +251,7 @@ void UICourtMusicList::reloadScroll(bool all)
 
 	for (u32 i=start; i!=end; i+=add)
 	{
-		mp3_fill_buffer();
+		adx_update();
 
 		u32 ind = i+scrollPos;
 		if (ind >= filteredMusic.size())
@@ -261,14 +261,14 @@ void UICourtMusicList::reloadScroll(bool all)
 			continue;
 		}
 
-		const musicInfo& mp3Music = pCourtUI->getMusicList()[filteredMusic[ind]];
+		const musicInfo& adxMusic = pCourtUI->getMusicList()[filteredMusic[ind]];
 
 		std::string temp;
 		btn_musicBtn[i]->setVisible(true);
-		btn_musicBtn[i]->setFrame( (Content::musicExists(mp3Music.nameLower, temp)) ? 0 : 1 );
+		btn_musicBtn[i]->setFrame( (Content::musicExists(adxMusic.nameLower, temp)) ? 0 : 1 );
 		lbl_musicBtn[i]->setVisible(true);
-		lbl_musicBtn[i]->setText(mp3Music.nameDecoded);
-		mp3_fill_buffer();
+		lbl_musicBtn[i]->setText(adxMusic.nameDecoded);
+		adx_update();
 	}
 
 	scrollPosOld = scrollPos;
