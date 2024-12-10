@@ -549,7 +549,7 @@ def convertMusic(source, target):
             targetFile = os.path.splitext(target+"/"+f)[0] + ".adx"
             if os.path.splitext(f)[0].lower() == "~stop": # don't convert ~stop.mp3
                 continue
-            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -y \"%s\"" % (source+"/"+f, targetFile), shell=True).wait()
+            subprocess.Popen("ffmpeg -hide_banner -loglevel error -i \"%s\" -ar 32000 -y \"%s\"" % (source+"/"+f, targetFile), shell=True).wait()
 
 def convertChatbox(folder):
     print(folder+"/misc/default/chatbox.png")
