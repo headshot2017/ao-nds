@@ -16,7 +16,7 @@ UI design by Samevi
 * [dswifi](http://github.com/blocksds/dswifi)
 * [stb_truetype](https://github.com/nothings/stb/blob/master/stb_truetype.h)
   * Using a modified version of stb_truetype that replaces (some, not all) floating point math with fixed-point math, thus providing a speed boost, since the DS doesn't have a FPU
-* MP3 player from this [blogspot](http://adshomebrewersdiary.blogspot.com/2012/06/mp3-streaming-on-arm7.html) site, but with several bug fixes
+* [libadx-nds](https://github.com/headshot2017/libadx-nds) for music
 * [dr_wav](https://github.com/mackron/dr_libs/blob/master/dr_wav.h) for reading WAV audio files
 * [rapidjson](https://github.com/Tencent/rapidjson), used when parsing the public server list
 * [mINI](https://github.com/metayeti/mINI) for parsing .ini files
