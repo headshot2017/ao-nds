@@ -469,11 +469,14 @@ void Character::update()
 		else
 			ptr = stream.getFrame(frameInfo.frameIndexes[currFrame]);
 
-		for (int i=0; i<gfxInUse; i++)
+		if (ptr)
 		{
-			u8* offset = ptr + i*64*64;
-			dmaCopy(offset, charGfx[i], 64*64);
-			adx_update();
+			for (int i=0; i<gfxInUse; i++)
+			{
+				u8* offset = ptr + i*64*64;
+				dmaCopy(offset, charGfx[i], 64*64);
+				adx_update();
+			}
 		}
 	}
 }
