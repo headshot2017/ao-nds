@@ -464,7 +464,7 @@ void Character::update()
 		if (!frameInfo.streaming)
 		{
 			int frameOffset = frameInfo.frameIndexes[currFrame]*gfxInUse;
-			ptr = charData + frameOffset*64*64;
+			ptr = (charData) ? (charData + frameOffset*64*64) : 0;
 		}
 		else
 			ptr = stream.getFrame(frameInfo.frameIndexes[currFrame]);
