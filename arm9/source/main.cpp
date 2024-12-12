@@ -118,6 +118,11 @@ int main()
 	closedir(dir1);
 	closedir(dir2);
 
+	REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP;
+	REG_BLDCNT_SUB = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP;
+	REG_BLDY = 16;
+	REG_BLDY_SUB = 16;
+
 	videoSetMode(MODE_0_2D);
 	videoSetModeSub(MODE_0_2D);
 
