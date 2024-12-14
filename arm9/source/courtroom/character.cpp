@@ -440,7 +440,8 @@ void Character::update()
 	if (!frameInfo.frameCount) return;
 	charTicks += ms;
 
-	while (charTicks >= frameInfo.frameDurations[currFrame])
+	bool exists = currFrame < frameInfo.frameDurations.size();
+	while (exists && charTicks >= frameInfo.frameDurations[currFrame])
 	{
 		charTicks -= frameInfo.frameDurations[currFrame];
 
@@ -457,13 +458,16 @@ void Character::update()
 			}
 		}
 
+		exists = currFrame < frameInfo.frameDurations.size();
+
 		triggerFrameData();
 
 		// copy new frame to sprite gfx
 		u8* ptr;
 		if (!frameInfo.streaming)
 		{
-			int frameOffset = frameInfo.frameIndexes[currFrame]*gfxInUse;
+			int index = (currFrame < frameInfo.frameIndexes.size()) ? frameInfo.frameIndexes[currFrame] : 0;
+			int frameOffset = index*gfxInUse;
 			ptr = (charData) ? (charData + frameOffset*64*64) : 0;
 		}
 		else
