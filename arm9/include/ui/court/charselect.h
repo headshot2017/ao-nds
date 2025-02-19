@@ -36,6 +36,7 @@ class UICourtCharSelect : public UISubScreen
 	int holdWait;
 	int pageAdd;
 	int cbPV;
+	int cbCharsCheck;
 
 public:
 	UICourtCharSelect(UIScreenCourt* courtUI) : UISubScreen(courtUI) {}
@@ -57,6 +58,7 @@ public:
 	static void onCharClicked(void* pUserData);
 
 	static void onMessagePV(void* pUserData, std::string msg);
+	static void onMessageCharsCheck(void* pUserData, std::string msg);
 };
 
 #endif // CHARSELECT_H_INCLUDED

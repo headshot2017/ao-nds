@@ -18,7 +18,6 @@ UICourtLoading::~UICourtLoading()
 	sock->removeMessageCallback("SI", cbSI);
 	sock->removeMessageCallback("SC", cbSC);
 	sock->removeMessageCallback("SM", cbSM);
-	sock->removeMessageCallback("DONE", cbDONE);
 
 	delete btn_disconnect;
 	delete lbl_loading;
@@ -56,7 +55,6 @@ void UICourtLoading::init()
 	cbSI = sock->addMessageCallback("SI", onMessageSI, this);
 	cbSC = sock->addMessageCallback("SC", onMessageSC, this);
 	cbSM = sock->addMessageCallback("SM", onMessageSM, this);
-	cbDONE = sock->addMessageCallback("DONE", onMessageDone, this);
 }
 
 void UICourtLoading::updateInput()
@@ -105,10 +103,4 @@ void UICourtLoading::onMessageSM(void* pUserData, std::string msg)
 {
 	UICourtLoading* pSelf = (UICourtLoading*)pUserData;
 	pSelf->setText("Getting taken character slots...");
-}
-
-void UICourtLoading::onMessageDone(void* pUserData, std::string msg)
-{
-	UICourtLoading* pSelf = (UICourtLoading*)pUserData;
-	pSelf->pCourtUI->changeScreen(new UICourtCharSelect(pSelf->pCourtUI));
 }

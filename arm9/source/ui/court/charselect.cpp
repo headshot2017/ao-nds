@@ -35,6 +35,7 @@ UICourtCharSelect::~UICourtCharSelect()
 	delete kb_search;
 
 	gEngine->getSocket()->removeMessageCallback("PV", cbPV);
+	gEngine->getSocket()->removeMessageCallback("CharsCheck", cbCharsCheck);
 }
 
 void UICourtCharSelect::init()
@@ -88,6 +89,7 @@ void UICourtCharSelect::init()
 	btn_confirm->connect(onConfirmClicked, this);
 
 	cbPV = gEngine->getSocket()->addMessageCallback("PV", onMessagePV, this);
+	cbCharsCheck = gEngine->getSocket()->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 	updateFilter();
 	reloadPage();
 }
@@ -337,4 +339,11 @@ void UICourtCharSelect::onMessagePV(void* pUserData, std::string msg)
 	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
 
 	pSelf->pCourtUI->changeScreen(new UICourtIngameMenu(pSelf->pCourtUI));
+}
+
+void UICourtCharSelect::onMessageCharsCheck(void* pUserData, std::string msg)
+{
+	UICourtCharSelect* pSelf = (UICourtCharSelect*)pUserData;
+
+	pSelf->reloadPage();
 }

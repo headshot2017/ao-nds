@@ -118,6 +118,7 @@ class UIScreenCourt : public UIScreen
 	std::deque<std::string> rtReceiveQueue;
 
 	bool loggedIn;
+	bool isConsole;
 
 public:
 	UIScreenCourt();
@@ -159,6 +160,7 @@ public:
 	static void onMessageRT(void* pUserData, std::string msg);
 	static void onMessageCharsCheck(void* pUserData, std::string msg);
 	static void onMessagePV(void* pUserData, std::string msg);
+	static void onMessageDONE(void* pUserData, std::string msg);
 	static void onMessageFA(void* pUserData, std::string msg);
 	static void onMessageARUP(void* pUserData, std::string msg);
 	static void onMessageLE(void* pUserData, std::string msg);

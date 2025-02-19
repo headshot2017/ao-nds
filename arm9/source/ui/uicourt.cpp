@@ -20,6 +20,7 @@
 #include "ui/uiserverlist.h"
 #include "ui/uidisconnected.h"
 #include "ui/court/loading.h"
+#include "ui/court/charselect.h"
 #include "ui/court/console.h"
 #include "ui/court/message.h"
 
@@ -76,7 +77,8 @@ void UIScreenCourt::init()
 	showname = Settings::defaultShowname;
 	oocName = Settings::defaultOOCname;
 
-	if (keysHeld() & KEY_SELECT)
+	isConsole = !!(keysHeld() & KEY_SELECT);
+	if (isConsole)
 		subScreen = new UICourtConsole(this);
 	else
 		subScreen = new UICourtLoading(this);
@@ -106,6 +108,7 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("RT", onMessageRT, this);
 	sock->addMessageCallback("CharsCheck", onMessageCharsCheck, this);
 	sock->addMessageCallback("PV", onMessagePV, this);
+	sock->addMessageCallback("DONE", onMessageDONE, this);
 	sock->addMessageCallback("FA", onMessageFA, this);
 	sock->addMessageCallback("ARUP", onMessageARUP, this);
 	sock->addMessageCallback("LE", onMessageLE, this);
@@ -620,6 +623,13 @@ void UIScreenCourt::onMessagePV(void* pUserData, std::string msg)
 			}
 		}
 	}
+}
+
+void UIScreenCourt::onMessageDONE(void* pUserData, std::string msg)
+{
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+	if (!pSelf->isConsole)
+		pSelf->changeScreen(new UICourtCharSelect(pSelf));
 }
 
 void UIScreenCourt::onMessageFA(void* pUserData, std::string msg)
