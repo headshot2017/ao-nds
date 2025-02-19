@@ -157,10 +157,10 @@ int main()
 
 	Settings::load();
 
-	cothread_t adxThread = cothread_create(adx_cothread, (void*)gEngine, 1024*4, 0);
-
 	gEngine = new Engine;
 	gEngine->changeScreen(new UIScreenWifi);
+
+	cothread_t adxThread = cothread_create(adx_cothread, (void*)gEngine, 1024*4, 0);
 
 	while (gEngine->isRunning())
 	{
