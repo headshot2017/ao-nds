@@ -8,6 +8,7 @@
 #include <nds/arm9/input.h>
 #include <nds/decompress.h>
 #include <nds/interrupts.h>
+#include <nds/cothread.h>
 
 #include "utf8.h"
 #include "arm9_math_alt.h"
@@ -19,10 +20,9 @@ void debugPressA(const char* msg)
 	printf("%s\n", msg);
 	while (1)
 	{
-		adx_update();
 		scanKeys();
 		if (keysDown() & KEY_A) break;
-		swiWaitForVBlank();
+		cothread_yield_irq(IRQ_VBLANK);
 	}
 }
 
@@ -35,10 +35,9 @@ void debugLabelPressA(const char* msg)
 
 	while (1)
 	{
-		adx_update();
 		scanKeys();
 		if (keysDown() & KEY_A) break;
-		swiWaitForVBlank();
+		cothread_yield_irq(IRQ_VBLANK);
 	}
 
 	delete dbg;

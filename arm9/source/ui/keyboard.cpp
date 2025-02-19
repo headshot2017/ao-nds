@@ -7,54 +7,6 @@
 #include "libadx.h"
 #include "wifikb/wifikb.h"
 
-static void keyboardShowAlt(Keyboard* kb)
-{
-	int i;
-
-	swiWaitForVBlank();
-
-	kb->visible = 1;
-
-	bgSetScroll(kb->background, 0, -192);
-
-	bgShow(kb->background);
-
-	if(kb->scrollSpeed)
-	{
-		for(i = -192; i < kb->offset_y; i += kb->scrollSpeed)
-		{
-			adx_update();
-			swiWaitForVBlank();
-			bgSetScroll(kb->background, 0, i);
-			bgUpdate();
-		}
-	}
-
-	bgSetScroll(kb->background, 0, kb->offset_y);
-	bgUpdate();
-}
-
-static void keyboardHideAlt(Keyboard* kb)
-{
-	int i;
-
-	kb->visible = 0;
-
-	if(kb->scrollSpeed)
-	{
-		for(i = kb->offset_y; i > -192; i-= kb->scrollSpeed)
-		{
-			adx_update();
-			swiWaitForVBlank();
-			bgSetScroll(kb->background, 0, i);
-			bgUpdate();
-		}
-	}
-	bgHide(kb->background);
-	bgUpdate();
-}
-
-
 AOkeyboard::AOkeyboard(int lines, int oamStart, int palSlot)
 {
 	keyboardInit(NULL, 1, BgType_Text4bpp, BgSize_T_256x512, 1, 4, false, false);

@@ -21,7 +21,7 @@
 #include "wifikb/wifikb.h"
 #include "ui/uiwificonnect.h"
 
-u32 showDisclaimer()
+static u32 showDisclaimer()
 {
 	REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP;
 	REG_BLDCNT_SUB = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP;
@@ -61,7 +61,8 @@ u32 showDisclaimer()
 	return bgTilesLen;
 }
 
-void fadeDisclaimer(u32 tilesLen) {
+static void fadeDisclaimer(u32 tilesLen)
+{
 	int ticks = 0;
 	int alpha = 32;
 	int alphaAdd = -1;
@@ -85,6 +86,16 @@ void fadeDisclaimer(u32 tilesLen) {
 	dmaFillHalfWords(0, bgGetMapPtr(0), 1536);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
 	REG_BLDCNT = BLEND_NONE;
+}
+
+static int adx_cothread(void* arg)
+{
+	while (1)
+	{
+		adx_update();
+		cothread_yield_irq(IRQ_VBLANK);
+	}
+	return 0;
 }
 
 int main()
@@ -118,8 +129,8 @@ int main()
 	closedir(dir1);
 	closedir(dir2);
 
-	REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP;
-	REG_BLDCNT_SUB = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP;
+	REG_BLDCNT = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP | BLEND_SRC_BG0 | BLEND_SRC_BG1;
+	REG_BLDCNT_SUB = BLEND_FADE_WHITE | BLEND_SRC_BACKDROP | BLEND_SRC_BG0 | BLEND_SRC_BG1;
 	REG_BLDY = 16;
 	REG_BLDY_SUB = 16;
 
@@ -145,12 +156,14 @@ int main()
 
 	Settings::load();
 
+	cothread_create(adx_cothread, 0, 1024*4, 0);
+
 	gEngine = new Engine;
 	gEngine->changeScreen(new UIScreenWifi);
 
 	while (gEngine->isRunning())
 	{
-		swiWaitForVBlank();
+		cothread_yield_irq(IRQ_VBLANK);
 		scanKeys();
 
 		wifikb::update();
@@ -160,8 +173,6 @@ int main()
 		bgUpdate();
 		oamUpdate(&oamMain);
 		oamUpdate(&oamSub);
-
-		adx_update();
 	}
 
 	delete gEngine;

@@ -5,6 +5,7 @@
 
 #include <nds/ndstypes.h>
 #include <nds/interrupts.h>
+#include <nds/cothread.h>
 #include <dswifi9.h>
 
 #include "utf8.h"
@@ -136,7 +137,7 @@ void Engine::quit()
 		REG_BLDY = alpha;
 		REG_BLDY_SUB = alpha;
 #endif
-		swiWaitForVBlank();
+		cothread_yield_irq(IRQ_VBLANK);
 	}
 
 	running = false;
