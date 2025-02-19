@@ -90,7 +90,8 @@ static void fadeDisclaimer(u32 tilesLen)
 
 static int adx_cothread(void* arg)
 {
-	while (1)
+	Engine* engine = (Engine*)arg;
+	while (engine->isRunning())
 	{
 		adx_update();
 		cothread_yield_irq(IRQ_VBLANK);
@@ -156,7 +157,7 @@ int main()
 
 	Settings::load();
 
-	cothread_create(adx_cothread, 0, 1024*4, 0);
+	cothread_t adxThread = cothread_create(adx_cothread, (void*)gEngine, 1024*4, 0);
 
 	gEngine = new Engine;
 	gEngine->changeScreen(new UIScreenWifi);
@@ -174,6 +175,10 @@ int main()
 		oamUpdate(&oamMain);
 		oamUpdate(&oamSub);
 	}
+
+	while (!cothread_has_joined(adxThread))
+		cothread_yield_irq(IRQ_VBLANK);
+	cothread_delete(adxThread);
 
 	delete gEngine;
 	delete[] acename;
