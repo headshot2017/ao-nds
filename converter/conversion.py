@@ -403,7 +403,18 @@ def convertEmotePNG(sourceFile, targetFile, ogTarget, core, extra):
 def convertEmoteGIF(sourceFile, targetFile, ogTarget, core, extra):
     frames = []
     img = Image.open(sourceFile)
-    for f in range(img.n_frames):
+
+    n_frames = 0
+    for i in range(5):
+        try:
+            n_frames = img.n_frames
+            break
+        except:
+            continue
+
+    if not n_frames: return
+
+    for f in range(n_frames):
         img.seek(f)
         img.load()
         duration = img.info["duration"] if "duration" in img.info else 0
