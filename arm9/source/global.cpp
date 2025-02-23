@@ -246,9 +246,12 @@ static uint8 readByteFile(uint8 *source) {
 
 void readAndDecompressLZ77Stream(const char* filename, u8* dest)
 {
+	streamData = (u8*)mem_alloc(streamSize);
+	if (!streamData)
+		return;
+
 	streamPos = 0;
 	streamFile = fopen(filename, "rb");
-	streamData = (u8*)mem_alloc(streamSize);
 	fread(streamData, streamSize, 1, streamFile);
 
 	swiDecompressLZSSVram(streamData, dest, 0, &decompressStreamCBs);
