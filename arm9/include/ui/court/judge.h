@@ -7,9 +7,6 @@
 
 class UICourtJudge : public UISubScreen
 {
-	int bgIndex;
-	u32 bgTilesLen;
-
 	UIButton* btn_back;
 	UIButton* btn_courtRecord;
 	UIButton* btn_barDefenseMinus;

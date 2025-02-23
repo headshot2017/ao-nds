@@ -27,18 +27,7 @@ UICourtJudge::~UICourtJudge()
 void UICourtJudge::init()
 {
 	bgIndex = bgInitSub(0, BgType_Text8bpp, BgSize_T_256x256, 0, 1);
-
-	u8* bgTiles = readFile("/data/ao-nds/ui/bg_judge.img.bin", &bgTilesLen);
-	u8* bgMap = readFile("/data/ao-nds/ui/bg_judge.map.bin");
-	u8* bgPal = readFile("/data/ao-nds/ui/bg_judge.pal.bin");
-
-	dmaCopy(bgTiles, bgGetGfxPtr(bgIndex), bgTilesLen);
-	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
-	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
-
-	mem_free(bgTiles);
-	mem_free(bgMap);
-	mem_free(bgPal);
+	loadBg("/data/ao-nds/ui/bg_judge");
 
 	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
 	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_courtRecord", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);
