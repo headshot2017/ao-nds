@@ -25,7 +25,7 @@ extern "C" {
 
 #define	BASEVOL	0x4000
 
-#define ADX_FILE_BUFFER_SIZE (8 * 1024)
+#define ADX_FILE_BUFFER_SIZE (16 * 1024)
 #define ADX_AUDIO_BUFFER_SAMPS (8 * 1024)
 #define ADX_AUDIO_BUFFER_SIZE (ADX_AUDIO_BUFFER_SAMPS * 2)
 
@@ -33,7 +33,7 @@ typedef vu32 DSTIME;
 
 typedef struct
 {
-    vs32 sample_offset;              
+    vs32 sample_offset;
     vs32 chunk_size;
     vs32 channels;
     vs32 rate;
