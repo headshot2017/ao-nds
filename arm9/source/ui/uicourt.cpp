@@ -23,6 +23,7 @@
 #include "ui/court/charselect.h"
 #include "ui/court/console.h"
 #include "ui/court/message.h"
+#include "mem.h"
 
 const char* indToSide[6] = {
 	"def",

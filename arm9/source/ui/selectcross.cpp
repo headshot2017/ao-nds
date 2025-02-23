@@ -4,6 +4,7 @@
 
 #include "libadx.h"
 #include "global.h"
+#include "mem.h"
 
 UISelectCross::UISelectCross(OamState* chosenOam, int oamStartInd, int palSlot)
 {
@@ -37,8 +38,8 @@ UISelectCross::UISelectCross(OamState* chosenOam, int oamStartInd, int palSlot)
 	}
 	adx_update();
 
-	delete[] tiles;
-	delete[] pal;
+	mem_free(tiles);
+	mem_free(pal);
 	adx_update();
 
 	selectedBtn = 0;

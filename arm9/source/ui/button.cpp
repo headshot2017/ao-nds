@@ -3,6 +3,7 @@
 #include <nds/dma.h>
 
 #include "libadx.h"
+#include "mem.h"
 
 UIButton::UIButton(OamState* chosenOam, std::string file, int oamStartInd, int horTiles, int vertTiles, SpriteSize sprSize, int xPos, int yPos, int width, int height, int sprWidth, int sprHeight, int palSlot)
 {
@@ -89,16 +90,16 @@ UIButton::~UIButton()
 		oamFreeGfx(oam, spriteGfx[i]);
 	}
 	delete[] spriteGfx;
-	if (currData) delete[] currData;
-	if (currPal) delete[] currPal;
+	if (currData) mem_free(currData);
+	if (currPal) mem_free(currPal);
 }
 
 void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSlot)
 {
 	paletteSlot = palSlot;
 
-	if (currData) delete[] currData;
-	if (currPal) delete[] currPal;
+	if (currData) mem_free(currData);
+	if (currPal) mem_free(currPal);
 	if (!file.empty())
 	{
 		currData = readFile(file+".img.bin");
@@ -268,12 +269,12 @@ void UIButton::unloadRAM(bool deletePal)
 {
 	if (currData)
 	{
-		delete[] currData;
+		mem_free(currData);
 		currData = 0;
 	}
 	if (deletePal && currPal)
 	{
-		delete[] currPal;
+		mem_free(currPal);
 		currPal = 0;
 	}
 }

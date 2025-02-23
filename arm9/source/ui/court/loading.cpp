@@ -10,7 +10,7 @@
 
 UICourtLoading::~UICourtLoading()
 {
-	delete[] sprLoadingImg;
+	mem_free(sprLoadingImg);
 	oamFreeGfx(&oamSub, sprLoading);
 	oamClearSprite(&oamSub, 0);
 
@@ -42,7 +42,7 @@ void UICourtLoading::init()
 	dmaCopy(sprLoadingPal, &VRAM_I_EXT_SPR_PALETTE[0], 512);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	delete[] sprLoadingPal;
+	mem_free(sprLoadingPal);
 
 	btn_disconnect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_disconnect", 1, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 1);
 	lbl_loading = new UILabel(&oamSub, btn_disconnect->nextOamInd(), 8, 1, RGB15(31,31,31), 2, 0);

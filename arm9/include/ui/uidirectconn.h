@@ -24,6 +24,7 @@ class UIScreenDirectConn : public UIScreen
 public:
 	UIScreenDirectConn() : UIScreen() {}
 	~UIScreenDirectConn();
+	int ID() {return 4;}
 
 	void init();
 	void updateInput();

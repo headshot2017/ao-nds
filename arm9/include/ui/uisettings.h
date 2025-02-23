@@ -55,6 +55,7 @@ public:
 public:
 	UIScreenSettings() : UIScreen() {}
 	~UIScreenSettings();
+	int ID() {return 6;}
 
 	void init();
 	void updateInput();

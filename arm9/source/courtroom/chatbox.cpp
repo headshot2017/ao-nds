@@ -16,6 +16,7 @@
 #include "content.h"
 #include "settings.h"
 #include "mini/ini.h"
+#include "mem.h"
 
 #define MAX_COLOR_SWITCHES 5
 
@@ -143,8 +144,8 @@ Chatbox::Chatbox(Courtroom* pCourt)
 	dmaCopy(chatboxArrowImg, spr_arrowGfx, 16*16);
 	dmaCopy(chatboxArrowPal, &VRAM_F_EXT_SPR_PALETTE[5], 512);
 	oamSet(&oamMain, 127, arrowX, 174, 0, 5, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowGfx, -1, false, false, false, false, false);
-	delete[] chatboxArrowImg;
-	delete[] chatboxArrowPal;
+	mem_free(chatboxArrowImg);
+	mem_free(chatboxArrowPal);
 
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_WHITE] = 	PAL_WHITE;
 	VRAM_F_EXT_SPR_PALETTE[0][COLOR_GREEN] = 	PAL_GREEN;
@@ -169,8 +170,8 @@ Chatbox::~Chatbox()
 {
 	bgHide(bgIndex);
 	dmaFillHalfWords(0, BG_PALETTE, 512);
-	if (bgMap) delete[] bgMap;
-	if (bgPal) delete[] bgPal;
+	if (bgMap) mem_free(bgMap);
+	if (bgPal) mem_free(bgPal);
 
 	if (blipSnd)
 		wav_free_handle(blipSnd);
@@ -231,12 +232,12 @@ void Chatbox::setTheme(const std::string& name)
 
 	if (bgMap)
 	{
-		delete[] bgMap;
+		mem_free(bgMap);
 		bgMap = 0;
 	}
 	if (bgPal)
 	{
-		delete[] bgPal;
+		mem_free(bgPal);
 		bgPal = 0;
 	}
 
@@ -288,7 +289,7 @@ void Chatbox::setTheme(const std::string& name)
 	dmaCopy(bgPal, BG_PALETTE, 512);
 	BG_PALETTE[0] = 0;
 
-	delete[] bgData;
+	mem_free(bgData);
 
 	info.height = (ini["general"].has("height")) ? std::stoi(ini["general"]["height"]) : 80;
 	info.nameX = (ini["name"].has("x")) ? std::stoi(ini["name"]["x"]) : 0;

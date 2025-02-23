@@ -8,6 +8,7 @@
 #include <nds/dma.h>
 #include <nds/timers.h>
 #include <nds/interrupts.h>
+#include <nds/arm9/cache.h>
 #include <nds/arm9/input.h>
 
 #include "arm9_math_alt.h"
@@ -15,6 +16,7 @@
 #include "global.h"
 #include "content.h"
 #include "libadx.h"
+#include "mem.h"
 
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED div32(BUS_CLOCK,1024)
@@ -119,7 +121,7 @@ Character::~Character()
 		if (charGfx[i]) oamFreeGfx(&oamMain, charGfx[i]);
 	}
 
-	if (charData) delete[] charData;
+	if (charData) mem_free(charData);
 	if (sfx) wav_free_handle(sfx);
 	clearFrameData();
 
@@ -159,7 +161,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 	if (charData)
 	{
-		delete[] charData;
+		mem_free(charData);
 		charData = 0;
 	}
 
@@ -167,10 +169,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	u32 palSize;
 	u8* charPalette = readFile(PALbin.c_str(), &palSize);
 	if (!charPalette)
-	{
-		if (charPalette) delete[] charPalette;
 		return;
-	}
 
 	currAnim = relativeFile;
 	if (currCharacter != charname)
@@ -180,20 +179,14 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	}
 
 	for(auto& c : relativeFile) c = tolower(c);
-	int oldW = frameInfo.frameW;
-	int oldH = frameInfo.frameH;
-	int oldOffsetX = frameInfo.offsetX;
-	int oldOffsetY = frameInfo.offsetY;
+	FrameInfo oldFrameInfo = frameInfo;
 
 	readTwoValues(animInfos.get(relativeFile + "_size"), &frameInfo.frameW, &frameInfo.frameH);
 	readTwoValues(animInfos.get(relativeFile + "_offset"), &frameInfo.offsetX, &frameInfo.offsetY);
 	if (frameInfo.frameW == 0 && frameInfo.frameH == 0)
 	{
-		frameInfo.frameW = oldW;
-		frameInfo.frameH = oldH;
-		frameInfo.offsetX = oldOffsetX;
-		frameInfo.offsetY = oldOffsetY;
-		delete[] charPalette;
+		frameInfo = oldFrameInfo;
+		mem_free(charPalette);
 		return;
 	}
 	readFrameDurations(animInfos.get(relativeFile + "_durations"), frameInfo.frameDurations);
@@ -215,12 +208,22 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		// decompress gfx and copy palette to slot 2
 		stream.unload();
 
-		charData = new u8[frameInfo.realW*64 * frameInfo.realH*64 * gfxCount];
+		try
+		{
+			charData = (u8*)mem_alloc(frameInfo.realW*64 * frameInfo.realH*64 * gfxCount);
+		}
+		catch(std::exception& e)
+		{
+			frameInfo = oldFrameInfo;
+			mem_free(charPalette);
+			return;
+		}
 		adx_update();
 
 		if (!charData)
 		{
-			delete[] charPalette;
+			frameInfo = oldFrameInfo;
+			mem_free(charPalette);
 			return;
 		}
 
@@ -228,11 +231,29 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	}
 	else
 	{
-		stream.loadFile(IMGbin.c_str(), frameInfo.realW, frameInfo.realH, 64, 64);
+		try
+		{
+			stream.loadFile(IMGbin.c_str(), frameInfo.realW, frameInfo.realH, 64, 64);
+		}
+		catch(std::exception& e)
+		{
+			char buf[256];
+			sprintf(buf, "setCharImage() failed (stream.loadFile)\n%s\n%s'\n'%s'\n%s\n%d %d", e.what(), charname.c_str(), relativeFile.c_str(), doLoop?"true":"false", frameInfo.realW, frameInfo.realH);
+			sassert(false, buf);
+		}
 	}
 	adx_update();
 
-	clearFrameData();
+	try
+	{
+		clearFrameData();
+	}
+	catch(std::exception& e)
+	{
+		char buf[256];
+		sprintf(buf, "setCharImage() failed (clearFrameData)\n%s\n%s'\n'%s'\n%s\n%d %d", e.what(), charname.c_str(), relativeFile.c_str(), doLoop?"true":"false", frameInfo.realW, frameInfo.realH);
+		sassert(false, buf);
+	}
 
 	for (int i=0; i<4*3; i++)
 	{
@@ -246,6 +267,9 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 
 	gfxInUse = frameInfo.realW*frameInfo.realH;
 	u8* ptr = (!frameInfo.streaming) ? charData : stream.getFrame(0);
+	char buferr[256];
+	sprintf(buferr, "setCharImage() failed (ptr is NULL)\n%s'\n'%s'\n%s\nstream=%s", charname.c_str(), relativeFile.c_str(), doLoop?"true":"false", frameInfo.streaming?"true":"false");
+	sassert(ptr != 0, buferr);
 
 	for (int i=0; i<gfxInUse; i++)
 	{
@@ -279,7 +303,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	vramSetBankF(VRAM_F_LCD);
 	dmaCopy(charPalette, &VRAM_F_EXT_SPR_PALETTE[2+pair], palSize);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
-	delete[] charPalette;
+	mem_free(charPalette);
 
 	oamUpdate(&oamMain);
 	loop = doLoop;
@@ -355,7 +379,7 @@ void Character::unload()
 {
 	if (charData)
 	{
-		delete[] charData;
+		mem_free(charData);
 		charData = 0;
 	}
 	if (sfx)

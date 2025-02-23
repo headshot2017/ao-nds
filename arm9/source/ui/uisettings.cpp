@@ -12,6 +12,7 @@
 #include "ui/settings/content.h"
 #include "ui/settings/contentOrder.h"
 #include "ui/settings/wifikb.h"
+#include "mem.h"
 
 
 template<typename T>
@@ -43,7 +44,7 @@ UIScreenSettings::~UIScreenSettings()
 
 	bgExtPaletteDisable();
 
-	delete[] bgSubPal;
+	mem_free(bgSubPal);
 
 	delete btn_back;
 	delete btn_prevTab;
@@ -87,11 +88,11 @@ void UIScreenSettings::init()
 
 	vramSetBankE(VRAM_E_BG_EXT_PALETTE);
 
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
-	delete[] bgSubTiles;
-	delete[] bgSubMap;
+	mem_free(bgTiles);
+	mem_free(bgMap);
+	mem_free(bgPal);
+	mem_free(bgSubTiles);
+	mem_free(bgSubMap);
 
 	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 30, 32, 32, 0);
 	btn_prevTab = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft", btn_back->nextOamInd(), 1, 1, SpriteSize_32x16, 128-9-96, 20, 19, 14, 32, 16, 1);

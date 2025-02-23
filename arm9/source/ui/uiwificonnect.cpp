@@ -14,6 +14,7 @@
 #include "settings.h"
 #include "wifikb/wifikb.h"
 #include "ui/uimainmenu.h"
+#include "mem.h"
 
 const char* assocStatusDetails[] = {
 	"Not connecting",
@@ -28,7 +29,7 @@ const char* assocStatusDetails[] = {
 UIScreenWifi::~UIScreenWifi()
 {
 	delete lbl_loading;
-	delete[] sprLoadingImg;
+	mem_free(sprLoadingImg);
 
 	oamFreeGfx(&oamSub, sprLoading);
 	oamClearSprite(&oamSub, 0);
@@ -66,12 +67,12 @@ void UIScreenWifi::init()
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
 	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
-	delete[] bgSubTiles;
-	delete[] bgSubMap;
-	delete[] bgSubPal;
+	mem_free(bgTiles);
+	mem_free(bgMap);
+	mem_free(bgPal);
+	mem_free(bgSubTiles);
+	mem_free(bgSubMap);
+	mem_free(bgSubPal);
 
 	lbl_loading = new UILabel(&oamSub, 1, 8, 1, RGB15(31,31,31), 0, 0);
 
@@ -87,7 +88,7 @@ void UIScreenWifi::init()
 	dmaCopy(sprLoadingPal, &VRAM_I_EXT_SPR_PALETTE[1], 512);
 	vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 
-	delete[] sprLoadingPal;
+	mem_free(sprLoadingPal);
 
 	Wifi_InitDefault(INIT_ONLY);
 

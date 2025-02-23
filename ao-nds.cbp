@@ -56,6 +56,7 @@
 		<Unit filename="arm9/include/fonts.h" />
 		<Unit filename="arm9/include/global.h" />
 		<Unit filename="arm9/include/ini.h" />
+		<Unit filename="arm9/include/mem.h" />
 		<Unit filename="arm9/include/mini/ini.h" />
 		<Unit filename="arm9/include/mongoose.h" />
 		<Unit filename="arm9/include/mongoose_custom.h" />
@@ -169,8 +170,10 @@
 		<Unit filename="arm9/source/fonts.cpp" />
 		<Unit filename="arm9/source/global.cpp" />
 		<Unit filename="arm9/source/main.cpp" />
+		<Unit filename="arm9/source/mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="arm9/source/settings.cpp" />
-		<Unit filename="arm9/source/sockets/aosocket.cpp" />
 		<Unit filename="arm9/source/sockets/aotcpsocket.cpp" />
 		<Unit filename="arm9/source/sockets/aowebsocket.cpp" />
 		<Unit filename="arm9/source/ui/button.cpp" />

@@ -62,6 +62,7 @@ class UIScreenServerList : public UIScreen
 public:
 	UIScreenServerList() : UIScreen() {}
 	~UIScreenServerList();
+	int ID() {return 3;}
 
 	void init();
 	void updateInput();

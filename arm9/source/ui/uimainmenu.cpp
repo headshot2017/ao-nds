@@ -9,6 +9,7 @@
 #include "ui/uiserverlist.h"
 #include "ui/uidirectconn.h"
 #include "ui/uisettings.h"
+#include "mem.h"
 
 UIScreenMainMenu::~UIScreenMainMenu()
 {
@@ -50,12 +51,12 @@ void UIScreenMainMenu::init()
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
 	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
-	delete[] bgSubTiles;
-	delete[] bgSubMap;
-	delete[] bgSubPal;
+	mem_free(bgTiles);
+	mem_free(bgMap);
+	mem_free(bgPal);
+	mem_free(bgSubTiles);
+	mem_free(bgSubMap);
+	mem_free(bgSubPal);
 
 	btn_viewServerList = new UIButton(&oamSub, "/data/ao-nds/ui/spr_viewServerList", 0, 3, 1, SpriteSize_64x64, 128-88, 32, 176, 58, 64, 64, 0);
 	btn_directConnect = new UIButton(&oamSub, "/data/ao-nds/ui/spr_directConnect", btn_viewServerList->nextOamInd(), 7, 1, SpriteSize_32x32, 128-111, 104, 223, 26, 32, 32, 1);

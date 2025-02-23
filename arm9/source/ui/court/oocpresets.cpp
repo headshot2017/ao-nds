@@ -298,7 +298,7 @@ void UICourtOOCPresets::parsePresetsList()
 		std::string dataStr = data;
 		fillArguments(m_presets, dataStr, 0, '\n');
 		m_presets.pop_back();
-		delete[] data;
+		mem_free(data);
 	}
 
 	currPage = 0;

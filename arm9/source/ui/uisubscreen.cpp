@@ -5,7 +5,7 @@
 
 UISubScreen::~UISubScreen()
 {
-	if (bgPal) delete[] bgPal;
+	if (bgPal) mem_free(bgPal);
 
 	if (bgTilesLen) dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), bgTilesLen);
 	dmaFillHalfWords(0, bgGetMapPtr(bgIndex), 1536);
@@ -22,11 +22,11 @@ void UISubScreen::loadBg(std::string filename, bool deletePal)
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
 	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
-	delete[] bgTiles;
-	delete[] bgMap;
+	mem_free(bgTiles);
+	mem_free(bgMap);
 	if (deletePal)
 	{
-		delete[] bgPal;
+		mem_free(bgPal);
 		bgPal = 0;
 	}
 }

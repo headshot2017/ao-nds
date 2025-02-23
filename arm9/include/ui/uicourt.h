@@ -11,6 +11,7 @@
 #include "courtroom/courtroom.h"
 #include "settings.h"
 #include "wav_nds.h"
+#include "mem.h"
 
 extern const char* indToSide[6];
 
@@ -123,6 +124,9 @@ class UIScreenCourt : public UIScreen
 public:
 	UIScreenCourt();
 	~UIScreenCourt();
+	int ID() {return 0;}
+
+	Courtroom* getCourtroom() {return court;}
 
 	void init();
 	void updateInput();

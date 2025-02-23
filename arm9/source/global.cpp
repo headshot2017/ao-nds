@@ -10,6 +10,7 @@
 #include <nds/interrupts.h>
 #include <nds/cothread.h>
 
+#include "mem.h"
 #include "utf8.h"
 #include "arm9_math_alt.h"
 #include "libadx.h"
@@ -170,7 +171,7 @@ u8* readFile(const std::string& filename, u32* outLen, const char* mode)
 	if (outLen) *outLen = len;
 	fseek(f, 0, SEEK_SET);
 
-	u8* data = new u8[len];
+	u8* data = (u8*)mem_alloc(len);
 	if (!data)
 	{
 		fclose(f);
@@ -247,13 +248,13 @@ void readAndDecompressLZ77Stream(const char* filename, u8* dest)
 {
 	streamPos = 0;
 	streamFile = fopen(filename, "rb");
-	streamData = new u8[streamSize];
+	streamData = (u8*)mem_alloc(streamSize);
 	fread(streamData, streamSize, 1, streamFile);
 
 	swiDecompressLZSSVram(streamData, dest, 0, &decompressStreamCBs);
 
 	fclose(streamFile);
-	delete[] streamData;
+	mem_free(streamData);
 }
 #else
 static uint8 readByteFile(uint8 *source) {
@@ -265,6 +266,6 @@ void readAndDecompressLZ77Stream(const char* filename, u8* dest)
 {
 	u8* streamData = readFile(filename);
 	swiDecompressLZSSVram(streamData, dest, 0, &decompressStreamCBs);
-	delete[] streamData;
+	mem_free(streamData);
 }
 #endif

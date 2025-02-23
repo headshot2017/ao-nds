@@ -20,6 +20,7 @@
 #include "ui/uicourt.h"
 #include "sockets/aowebsocket.h"
 #include "sockets/aotcpsocket.h"
+#include "mem.h"
 
 struct serverBtnData
 {
@@ -88,12 +89,12 @@ void UIScreenServerList::init()
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
 	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
-	delete[] bgSubTiles;
-	delete[] bgSubMap;
-	delete[] bgSubPal;
+	mem_free(bgTiles);
+	mem_free(bgMap);
+	mem_free(bgPal);
+	mem_free(bgSubTiles);
+	mem_free(bgSubMap);
+	mem_free(bgSubPal);
 
 	u8* spr_arrowDownTiles = readFile("/data/ao-nds/ui/spr_arrowDown.img.bin");
 	u8* spr_arrowDownPal = readFile("/data/ao-nds/ui/spr_arrowDown.pal.bin");
@@ -104,8 +105,8 @@ void UIScreenServerList::init()
 	dmaCopy(spr_arrowDownPal, &VRAM_F_EXT_SPR_PALETTE[0], 512);
 	vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 
-	delete[] spr_arrowDownTiles;
-	delete[] spr_arrowDownPal;
+	mem_free(spr_arrowDownTiles);
+	mem_free(spr_arrowDownPal);
 
 	oamSet(&oamMain, 0, 32, 192-20, 0, 0, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowDownGfx, -1, false, false, false, false, false);
 	oamSet(&oamMain, 1, 256-16-32, 192-20, 0, 0, SpriteSize_16x16, SpriteColorFormat_256Color, spr_arrowDownGfx, -1, false, false, false, false, false);

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <nds/arm9/background.h>
+#include <nds/arm9/cache.h>
 #include <nds/arm9/console.h>
 #include <nds/arm9/exceptions.h>
 #include <nds/arm9/video.h>
@@ -13,6 +14,7 @@
 #include <nds/ndstypes.h>
 #include <fat.h>
 
+#include "mem.h"
 #include "libadx.h"
 #include "fonts.h"
 #include "engine.h"
@@ -20,6 +22,7 @@
 #include "content.h"
 #include "wifikb/wifikb.h"
 #include "ui/uiwificonnect.h"
+#include "ui/uicourt.h"
 
 static u32 showDisclaimer()
 {
@@ -54,9 +57,9 @@ static u32 showDisclaimer()
 	dmaCopy(bgMap, bgGetMapPtr(0), bgMapLen);
 	dmaCopy(bgPal, BG_PALETTE, bgPalLen);
 
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
+	mem_free(bgTiles);
+	mem_free(bgMap);
+	mem_free(bgPal);
 
 	return bgTilesLen;
 }
@@ -90,8 +93,7 @@ static void fadeDisclaimer(u32 tilesLen)
 
 static int adx_cothread(void* arg)
 {
-	Engine* engine = (Engine*)arg;
-	while (engine->isRunning())
+	while (gEngine->isRunning())
 	{
 		adx_update();
 		cothread_yield_irq(IRQ_VBLANK);
@@ -99,8 +101,24 @@ static int adx_cothread(void* arg)
 	return 0;
 }
 
+static void handler()
+{
+	debugLabelPressA("memory alloc fail");
+	UIScreen* scr = gEngine->getScreen();
+	if (scr->ID() == 0)
+	{
+		UIScreenCourt* uicourt = (UIScreenCourt*)scr;
+		Courtroom* court = uicourt->getCourtroom();
+		court->getShout()->freeSound();
+		court->stopMusic();
+		court->getCharacter(0)->unloadSound();
+	}
+}
+
 int main()
 {
+	std::set_new_handler(handler);
+
 	defaultExceptionHandler();
 	adx_init();
 	srand(time(0));
@@ -160,12 +178,19 @@ int main()
 	gEngine = new Engine;
 	gEngine->changeScreen(new UIScreenWifi);
 
-	cothread_t adxThread = cothread_create(adx_cothread, (void*)gEngine, 1024*4, 0);
+	cothread_t adxThread = cothread_create(adx_cothread, 0, 1024*4, 0);
 
 	while (gEngine->isRunning())
 	{
 		cothread_yield_irq(IRQ_VBLANK);
 		scanKeys();
+
+		if (keysHeld() & KEY_SELECT && keysHeld() & KEY_START)
+		{
+			u32 total = mem_get_allocated();
+			std::string msg = std::to_string(total) + " - " + std::to_string(total/1024) + " KB";
+			debugLabelPressA(msg.c_str());
+		}
 
 		wifikb::update();
 		gEngine->updateInput();
@@ -181,8 +206,8 @@ int main()
 	cothread_delete(adxThread);
 
 	delete gEngine;
-	delete[] acename;
-	delete[] igiari;
+	mem_free(acename);
+	mem_free(igiari);
 
 	return 0;
 }

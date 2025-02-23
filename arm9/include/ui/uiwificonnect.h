@@ -26,6 +26,7 @@ class UIScreenWifi : public UIScreen
 public:
 	UIScreenWifi() : UIScreen() {}
 	~UIScreenWifi();
+	int ID() {return 1;}
 
 	void init();
 	void updateInput();

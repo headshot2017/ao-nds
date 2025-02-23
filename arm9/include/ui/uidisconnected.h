@@ -29,6 +29,7 @@ class UIScreenDisconnected : public UIScreen
 public:
 	UIScreenDisconnected(std::string msg, std::string rsn, bool wifi) : UIScreen(), disconnectMsg(msg), reason(rsn), goToWiFi(wifi) {}
 	~UIScreenDisconnected();
+	int ID() {return 5;}
 
 	void init();
 	void updateInput();

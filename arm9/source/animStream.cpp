@@ -1,4 +1,5 @@
 #include "animStream.h"
+#include "mem.h"
 
 animStream::~animStream()
 {
@@ -11,7 +12,7 @@ void animStream::unload()
 	{
 		fclose(f);
 		f = 0;
-		delete[] data;
+		mem_free(data);
 		data = 0;
 	}
 }
@@ -27,7 +28,7 @@ void animStream::loadFile(const char* filename, int tW, int tH, int sW, int sH)
 	sprH = sH;
 
 	f = fopen(filename, "rb");
-	data = new u8[frameSize];
+	data = (u8*)mem_alloc(frameSize);
 }
 
 u8* animStream::getFrame(int i)

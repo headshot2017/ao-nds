@@ -5,6 +5,7 @@ class UIScreen
 {
 public:
 	virtual ~UIScreen() {}
+	virtual int ID() = 0;
 
 	virtual void init() {}
 	virtual void updateInput() {}

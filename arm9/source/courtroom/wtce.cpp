@@ -10,6 +10,7 @@
 #include "arm9_math_alt.h"
 #include "courtroom/courtroom.h"
 #include "global.h"
+#include "mem.h"
 
 #define lerp(a, b, amount) (a + (mulf32(b-a, amount)))
 
@@ -69,12 +70,12 @@ void WTCE::clear(bool keepIndicator)
 	{
 		if (imgGfx[i])
 		{
-			delete imgGfx[i];
+			mem_free(imgGfx[i]);
 			imgGfx[i] = 0;
 		}
 		if (imgPal[i])
 		{
-			delete imgPal[i];
+			mem_free(imgPal[i]);
 			imgPal[i] = 0;
 		}
 	}
@@ -141,8 +142,8 @@ void WTCE::play(const std::string& msg)
 
 				oamSet(&oamMain, 125, 0, 0, 0, 10, SpriteSize_64x32, SpriteColorFormat_256Color, spr_testimonyIndicator, -1, false, false, false, false, false);
 			}
-			if (tempGfx) delete[] tempGfx;
-			if (tempPal) delete[] tempPal;
+			if (tempGfx) mem_free(tempGfx);
+			if (tempPal) mem_free(tempPal);
 
 			if (imgGfx[0] && imgPal[0] && imgGfx[1] && imgPal[1])
 			{

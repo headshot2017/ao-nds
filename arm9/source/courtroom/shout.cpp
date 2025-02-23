@@ -5,6 +5,7 @@
 #include "courtroom/courtroom.h"
 #include "content.h"
 #include "libadx.h"
+#include "mem.h"
 
 Shout::Shout(Courtroom* pCourt)
 {
@@ -93,9 +94,9 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 		BG_PALETTE[0] = oldPal;
 	}
 
-	if (bgGfx) delete[] bgGfx;
-	if (bgMap) delete[] bgMap;
-	if (bgPal) delete[] bgPal;
+	if (bgGfx) mem_free(bgGfx);
+	if (bgMap) mem_free(bgMap);
+	if (bgPal) mem_free(bgPal);
 
 	adx_update();
 }

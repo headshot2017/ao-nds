@@ -91,100 +91,77 @@ void Courtroom::MSchat(const MSchatStruct& data)
 
 void Courtroom::handleChat()
 {
-	evidence->hideEvidence();
-
-	if (currIC.shoutMod)
+	try
 	{
-		character[0]->setOnAnimFinishedCallback(0, 0);
-		shout->setShout(currIC.charname, currIC.shoutMod, currIC.customShout);
-		return;
-	}
-	else
-		shout->cancelShout();
+		evidence->hideEvidence();
 
-	if (currIC.panCourt && background->isFullCourt())
-	{
-		background->setBgSide(currIC.side, currIC.deskMod, true);
-		if (background->isFullCourtActive())
+		if (currIC.shoutMod)
 		{
-			chatbox->setVisible(false);
 			character[0]->setOnAnimFinishedCallback(0, 0);
+			shout->setShout(currIC.charname, currIC.shoutMod, currIC.customShout);
 			return;
 		}
-	}
-
-	if (!currIC.evidence.empty())
-		evidence->showEvidence(currIC.evidence, currIC.side == "def" || currIC.side == "hlp");
-
-	std::u16string chatname = (currIC.showname.empty()) ? utf8::utf8to16(currIC.charname) : currIC.showname;
-	int color = AOcolorToPalette[currIC.textColor];
-
-	if (currIC.shake)
-		shake(5, 35);
-
-	std::string offsetStr = currIC.selfOffset;
-
-	int offsetX = 0;
-	int offsetY = 0;
-
-	if (offsetStr.find("&"))
-	{
-		offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
-		offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
-	}
-	else
-		offsetX = std::stoi(offsetStr);
-
-	character[0]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
-	character[0]->setFlip(currIC.flip);
-	character[0]->setOnAnimFinishedCallback(onAnimFinished, this);
-
-	character[1]->unload();
-	character[0]->unloadSound();
-
-	if (currIC.emoteMod == 0 || !Content::exists("characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
-	{
-		onPreAnim = false;
-
-		//bool isPng = (currIC.preanim != currIC.emote && fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.emote + ".img.bin"));
-		bool isPng = !Content::exists("characters/" + currIC.charname + "/(a)" + currIC.emote + ".img.bin");
-		bool playIdle = (currIC.chatmsg.empty() || color == COLOR_BLUE);
-		std::string prefix;
-		if (!isPng) prefix = (playIdle ? "(a)" : "(b)");
-
-		character[0]->setCharImage(currIC.charname, prefix + currIC.emote);
-		if (!isPng)
-		{
-			int index = (playIdle) ? 2 : 1;
-			if (!currIC.frameSFX.empty()) character[0]->setFrameSFX(argumentAt(currIC.frameSFX, index, '^'));
-			if (!currIC.frameShake.empty()) character[0]->setFrameShake(argumentAt(currIC.frameShake, index, '^'));
-			if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, index, '^'));
-		}
-		chatbox->setVisible(true);
-		if (Settings::allowChatboxChange) chatbox->setTheme(currIC.chatbox);
-		chatbox->setName(chatname);
-
-		if (currIC.additive && currIC.charID == lastIC.charID)
-			chatbox->additiveText(currIC.chatmsg, color);
 		else
-			chatbox->setText(currIC.chatmsg, color, currIC.blip);
-		lastIC = currIC;
+			shout->cancelShout();
 
-		if (currIC.realization)
+		if (currIC.panCourt && background->isFullCourt())
 		{
-			flash(3);
-			wav_play(sndRealization);
+			background->setBgSide(currIC.side, currIC.deskMod, true);
+			if (background->isFullCourtActive())
+			{
+				chatbox->setVisible(false);
+				character[0]->setOnAnimFinishedCallback(0, 0);
+				return;
+			}
 		}
-	}
-	else
-	{
-		// play pre-animation
-		onPreAnim = true;
 
-		if (!currIC.noInterrupt)
-			chatbox->setVisible(false);
-		else
+		if (!currIC.evidence.empty())
+			evidence->showEvidence(currIC.evidence, currIC.side == "def" || currIC.side == "hlp");
+
+		std::u16string chatname = (currIC.showname.empty()) ? utf8::utf8to16(currIC.charname) : currIC.showname;
+		int color = AOcolorToPalette[currIC.textColor];
+
+		if (currIC.shake)
+			shake(5, 35);
+
+		std::string offsetStr = currIC.selfOffset;
+
+		int offsetX = 0;
+		int offsetY = 0;
+
+		if (offsetStr.find("&"))
 		{
+			offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
+			offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
+		}
+		else
+			offsetX = std::stoi(offsetStr);
+
+		character[0]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
+		character[0]->setFlip(currIC.flip);
+		character[0]->setOnAnimFinishedCallback(onAnimFinished, this);
+
+		character[1]->unload();
+		character[0]->unloadSound();
+
+		if (currIC.emoteMod == 0 || !Content::exists("characters/" + currIC.charname + "/" + currIC.preanim + ".img.bin"))
+		{
+			onPreAnim = false;
+
+			//bool isPng = (currIC.preanim != currIC.emote && fileExists("/data/ao-nds/characters/" + currIC.charname + "/" + currIC.emote + ".img.bin"));
+			bool isPng = !Content::exists("characters/" + currIC.charname + "/(a)" + currIC.emote + ".img.bin");
+			bool playIdle = (currIC.chatmsg.empty() || color == COLOR_BLUE);
+			std::string prefix;
+			if (!isPng) prefix = (playIdle ? "(a)" : "(b)");
+
+			character[0]->setCharImage(currIC.charname, prefix + currIC.emote);
+			if (!isPng)
+			{
+				int index = (playIdle) ? 2 : 1;
+				if (!currIC.frameSFX.empty()) character[0]->setFrameSFX(argumentAt(currIC.frameSFX, index, '^'));
+				if (!currIC.frameShake.empty()) character[0]->setFrameShake(argumentAt(currIC.frameShake, index, '^'));
+				if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, index, '^'));
+			}
 			chatbox->setVisible(true);
 			if (Settings::allowChatboxChange) chatbox->setTheme(currIC.chatbox);
 			chatbox->setName(chatname);
@@ -194,47 +171,79 @@ void Courtroom::handleChat()
 			else
 				chatbox->setText(currIC.chatmsg, color, currIC.blip);
 			lastIC = currIC;
-		}
-		character[0]->setCharImage(currIC.charname, currIC.preanim, false);
-		if (!currIC.frameSFX.empty()) character[0]->setFrameSFX(argumentAt(currIC.frameSFX, 0, '^'));
-		if (!currIC.frameShake.empty()) character[0]->setFrameShake(argumentAt(currIC.frameShake, 0, '^'));
-		if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, 0, '^'));
-	}
 
-	if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
-		character[0]->setSound("sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
-
-	// set background side
-	if (currIC.emoteMod == 5 || currIC.emoteMod == 6)
-		background->setZoom(currIC.side == "def" || currIC.side == "hlp");
-	else
-	{
-		background->setBgSide(currIC.side, currIC.deskMod, false);
-
-		if (currIC.otherCharID >= 0)
-		{
-			// display pair
-			offsetStr = currIC.otherOffset;
-			offsetX = 0;
-			offsetY = 0;
-
-			if (offsetStr.find("&"))
+			if (currIC.realization)
 			{
-				offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
-				offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
+				flash(3);
+				wav_play(sndRealization);
 			}
-			else
-				offsetX = std::stoi(offsetStr);
-
-			character[1]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
-			character[1]->setFlip(currIC.otherFlip);
-
-			bool isAnim = Content::exists("characters/" + currIC.otherName + "/(a)" + currIC.otherEmote + ".img.bin");
-			std::string prefix;
-			if (isAnim) prefix = "(a)";
-
-			character[1]->setCharImage(currIC.otherName, prefix + currIC.otherEmote);
 		}
+		else
+		{
+			// play pre-animation
+			onPreAnim = true;
+
+			if (!currIC.noInterrupt)
+				chatbox->setVisible(false);
+			else
+			{
+				chatbox->setVisible(true);
+				if (Settings::allowChatboxChange) chatbox->setTheme(currIC.chatbox);
+				chatbox->setName(chatname);
+
+				if (currIC.additive && currIC.charID == lastIC.charID)
+					chatbox->additiveText(currIC.chatmsg, color);
+				else
+					chatbox->setText(currIC.chatmsg, color, currIC.blip);
+				lastIC = currIC;
+			}
+			character[0]->setCharImage(currIC.charname, currIC.preanim, false);
+			if (!currIC.frameSFX.empty()) character[0]->setFrameSFX(argumentAt(currIC.frameSFX, 0, '^'));
+			if (!currIC.frameShake.empty()) character[0]->setFrameShake(argumentAt(currIC.frameShake, 0, '^'));
+			if (!currIC.frameFlash.empty()) character[0]->setFrameFlash(argumentAt(currIC.frameFlash, 0, '^'));
+		}
+
+		if (currIC.emoteMod == 1 || currIC.emoteMod >= 5)
+			character[0]->setSound("sounds/general/" + currIC.sfx + ".wav", currIC.sfxDelay);
+
+		// set background side
+		if (currIC.emoteMod == 5 || currIC.emoteMod == 6)
+			background->setZoom(currIC.side == "def" || currIC.side == "hlp");
+		else
+		{
+			background->setBgSide(currIC.side, currIC.deskMod, false);
+
+			if (currIC.otherCharID >= 0)
+			{
+				// display pair
+				offsetStr = currIC.otherOffset;
+				offsetX = 0;
+				offsetY = 0;
+
+				if (offsetStr.find("&"))
+				{
+					offsetX = std::stoi(argumentAt(offsetStr, 0, '&'));
+					offsetY = std::stoi(argumentAt(offsetStr, 1, '&'));
+				}
+				else
+					offsetX = std::stoi(offsetStr);
+
+				character[1]->setOffsets(offsetX/100.f*256, offsetY/100.f*192);
+				character[1]->setFlip(currIC.otherFlip);
+
+				bool isAnim = Content::exists("characters/" + currIC.otherName + "/(a)" + currIC.otherEmote + ".img.bin");
+				std::string prefix;
+				if (isAnim) prefix = "(a)";
+
+				character[1]->setCharImage(currIC.otherName, prefix + currIC.otherEmote);
+			}
+		}
+	}
+	catch(std::exception& e)
+	{
+		char buf[256];
+		sprintf(buf, "handleChat() failed\n%s", e.what());
+		sassert(false, buf);
 	}
 }
 
@@ -313,22 +322,31 @@ void Courtroom::onChatboxFinished(void* pUserData)
 {
 	Courtroom* pSelf = (Courtroom*)pUserData;
 
-	int color = AOcolorToPalette[pSelf->currIC.textColor];
-	if (color != COLOR_BLUE && (!pSelf->currIC.noInterrupt || !pSelf->onPreAnim))
+	try
 	{
-		//bool isPng = (pSelf->currIC.preanim != pSelf->currIC.emote && fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin"));
-		bool isPng = !Content::exists("characters/" + pSelf->currIC.charname + "/(a)" + pSelf->currIC.emote + ".img.bin");
-		std::string prefix;
-		if (!isPng) prefix = "(a)";
-
-		//pSelf->character[0]->unloadSound();
-		pSelf->character[0]->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
-		if (!isPng)
+		int color = AOcolorToPalette[pSelf->currIC.textColor];
+		if (color != COLOR_BLUE && (!pSelf->currIC.noInterrupt || !pSelf->onPreAnim))
 		{
-			if (!pSelf->currIC.frameSFX.empty()) pSelf->character[0]->setFrameSFX(argumentAt(pSelf->currIC.frameSFX, 2, '^'));
-			if (!pSelf->currIC.frameShake.empty()) pSelf->character[0]->setFrameShake(argumentAt(pSelf->currIC.frameShake, 2, '^'));
-			if (!pSelf->currIC.frameFlash.empty()) pSelf->character[0]->setFrameFlash(argumentAt(pSelf->currIC.frameFlash, 2, '^'));
+			//bool isPng = (pSelf->currIC.preanim != pSelf->currIC.emote && fileExists("/data/ao-nds/characters/" + pSelf->currIC.charname + "/" + pSelf->currIC.emote + ".img.bin"));
+			bool isPng = !Content::exists("characters/" + pSelf->currIC.charname + "/(a)" + pSelf->currIC.emote + ".img.bin");
+			std::string prefix;
+			if (!isPng) prefix = "(a)";
+
+			//pSelf->character[0]->unloadSound();
+			pSelf->character[0]->setCharImage(pSelf->currIC.charname, prefix + pSelf->currIC.emote);
+			if (!isPng)
+			{
+				if (!pSelf->currIC.frameSFX.empty()) pSelf->character[0]->setFrameSFX(argumentAt(pSelf->currIC.frameSFX, 2, '^'));
+				if (!pSelf->currIC.frameShake.empty()) pSelf->character[0]->setFrameShake(argumentAt(pSelf->currIC.frameShake, 2, '^'));
+				if (!pSelf->currIC.frameFlash.empty()) pSelf->character[0]->setFrameFlash(argumentAt(pSelf->currIC.frameFlash, 2, '^'));
+			}
 		}
+	}
+	catch(std::exception& e)
+	{
+		char buf[256];
+		sprintf(buf, "onChatboxFinished() failed\n%s", e.what());
+		sassert(false, buf);
 	}
 }
 

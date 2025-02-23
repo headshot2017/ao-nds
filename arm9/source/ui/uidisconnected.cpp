@@ -7,6 +7,7 @@
 #include "global.h"
 #include "ui/uiwificonnect.h"
 #include "ui/uimainmenu.h"
+#include "mem.h"
 
 UIScreenDisconnected::~UIScreenDisconnected()
 {
@@ -46,12 +47,12 @@ void UIScreenDisconnected::init()
 	dmaCopy(bgSubMap, bgGetMapPtr(subBgIndex), 1536);
 	dmaCopy(bgSubPal, BG_PALETTE_SUB, 512);
 
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
-	delete[] bgSubTiles;
-	delete[] bgSubMap;
-	delete[] bgSubPal;
+	mem_free(bgTiles);
+	mem_free(bgMap);
+	mem_free(bgPal);
+	mem_free(bgSubTiles);
+	mem_free(bgSubMap);
+	mem_free(bgSubPal);
 
 	lbl_disconnectMsg = new UILabel(&oamSub, 0, 8, 1, RGB15(31,31,31), 0, 1);
 	lbl_reason = new UILabel(&oamSub, lbl_disconnectMsg->nextOamInd(), 8, 6, RGB15(31,31,31), 0, 0);

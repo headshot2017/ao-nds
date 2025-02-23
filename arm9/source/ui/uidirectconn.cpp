@@ -8,6 +8,7 @@
 #include "ui/uimainmenu.h"
 #include "engine.h"
 #include "global.h"
+#include "mem.h"
 
 UIScreenDirectConn::~UIScreenDirectConn()
 {
@@ -33,9 +34,9 @@ void UIScreenDirectConn::init()
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
 	dmaCopy(bgPal, BG_PALETTE, 512);
 
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
+	mem_free(bgTiles);
+	mem_free(bgMap);
+	mem_free(bgPal);
 
 	kb_ipInput = new AOkeyboard(2, 0, 0);
 	kb_ipInput->setInputYOffset(16);

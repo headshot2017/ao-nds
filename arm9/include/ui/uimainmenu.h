@@ -26,6 +26,7 @@ class UIScreenMainMenu : public UIScreen
 public:
 	UIScreenMainMenu() : UIScreen() {}
 	~UIScreenMainMenu();
+	int ID() {return 2;}
 
 	void init();
 	void updateInput();

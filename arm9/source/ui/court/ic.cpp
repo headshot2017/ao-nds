@@ -28,12 +28,12 @@ UICourtIC::~UICourtIC()
 {
 	dmaFillHalfWords(0, bgGetGfxPtr(bgIndex), (displayingOptions) ? bg_icExtTilesLen : bg_icTilesLen);
 
-	delete[] bg_icTiles;
-	delete[] bg_icMap;
-	delete[] bg_icPal;
-	delete[] bg_icExtTiles;
-	delete[] bg_icExtMap;
-	delete[] bg_icExtPal;
+	mem_free(bg_icTiles);
+	mem_free(bg_icMap);
+	mem_free(bg_icPal);
+	mem_free(bg_icExtTiles);
+	mem_free(bg_icExtMap);
+	mem_free(bg_icExtPal);
 
 	delete btn_back;
 	delete btn_courtRecord;

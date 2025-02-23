@@ -36,9 +36,9 @@ void UICourtJudge::init()
 	dmaCopy(bgMap, bgGetMapPtr(bgIndex), 1536);
 	dmaCopy(bgPal, BG_PALETTE_SUB, 512);
 
-	delete[] bgTiles;
-	delete[] bgMap;
-	delete[] bgPal;
+	mem_free(bgTiles);
+	mem_free(bgMap);
+	mem_free(bgPal);
 
 	btn_back = new UIButton(&oamSub, "/data/ao-nds/ui/spr_back", 0, 3, 1, SpriteSize_32x32, 0, 192-32, 80, 32, 32, 32, 0);
 	btn_courtRecord = new UIButton(&oamSub, "/data/ao-nds/ui/spr_courtRecord", btn_back->nextOamInd(), 3, 1, SpriteSize_32x32, 256-80, 0, 80, 32, 32, 32, 1);

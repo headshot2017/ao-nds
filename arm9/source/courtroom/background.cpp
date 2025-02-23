@@ -13,6 +13,7 @@
 #include "libadx.h"
 #include "global.h"
 #include "content.h"
+#include "mem.h"
 
 //the speed of the timer when using ClockDivider_1024
 #define TIMER_SPEED div32(BUS_CLOCK,1024)
@@ -100,9 +101,9 @@ void FullCourtInfo::startScroll(int index, const std::string& sideBefore, const 
 
 	if (sideToDesk.count(sideAfter))
 	{
-		if (newDeskGfx) delete[] newDeskGfx;
+		if (newDeskGfx) mem_free(newDeskGfx);
 		newDeskGfx = 0;
-		if (newDeskPal) delete[] newDeskPal;
+		if (newDeskPal) mem_free(newDeskPal);
 		newDeskPal = 0;
 
 		std::string& currentBg = m_pCourt->getBackground()->currentBg;
@@ -145,21 +146,21 @@ void FullCourtInfo::startScroll(int index, const std::string& sideBefore, const 
 
 void FullCourtInfo::clean()
 {
-	if (courtPalette) delete[] courtPalette;
+	if (courtPalette) mem_free(courtPalette);
 	courtPalette = 0;
 
 	for (int i=0; i<parts; i++)
 	{
 		if (!courtGfx[i]) continue;
-		delete[] courtGfx[i];
+		mem_free(courtGfx[i]);
 	}
 
-	if (courtGfx) delete[] courtGfx;
+	if (courtGfx) mem_free(courtGfx);
 	courtGfx = 0;
 
-	if (newDeskGfx) delete[] newDeskGfx;
+	if (newDeskGfx) mem_free(newDeskGfx);
 	newDeskGfx = 0;
-	if (newDeskPal) delete[] newDeskPal;
+	if (newDeskPal) mem_free(newDeskPal);
 	newDeskPal = 0;
 
 	camOffset = 0;
@@ -182,9 +183,9 @@ void FullCourtInfo::update()
 		m_pCourt->getCharacter(1)->setCamOffset(0);
 		m_pCourt->getBackground()->setDeskOffset(0);
 
-		if (newDeskGfx) delete[] newDeskGfx;
+		if (newDeskGfx) mem_free(newDeskGfx);
 		newDeskGfx = 0;
-		if (newDeskPal) delete[] newDeskPal;
+		if (newDeskPal) mem_free(newDeskPal);
 		newDeskPal = 0;
 
 		if (onScrollFinished)
@@ -292,7 +293,7 @@ bool Background::setBg(const std::string& name)
 			fullCourt.parts = std::stoi(ini["nds"]["total_parts"]);
 
 			// load ALL the gfx parts
-			fullCourt.courtGfx = new u16*[fullCourt.parts];
+			fullCourt.courtGfx = (u16**)mem_alloc(sizeof(u16*) * fullCourt.parts);
 			for (int i=0; i<fullCourt.parts; i++)
 			{
 				std::string filename = "/court" + std::to_string(i) + ".img.bin";
@@ -384,9 +385,9 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 			adx_update();
 		}
 
-		if (bgGfx) delete[] bgGfx;
-		if (bgMap) delete[] bgMap;
-		if (bgPal) delete[] bgPal;
+		if (bgGfx) mem_free(bgGfx);
+		if (bgMap) mem_free(bgMap);
+		if (bgPal) mem_free(bgPal);
 		adx_update();
 	}
 
