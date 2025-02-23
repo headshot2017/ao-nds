@@ -208,16 +208,7 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 		// decompress gfx and copy palette to slot 2
 		stream.unload();
 
-		try
-		{
-			charData = (u8*)mem_alloc(frameInfo.realW*64 * frameInfo.realH*64 * gfxCount);
-		}
-		catch(std::exception& e)
-		{
-			frameInfo = oldFrameInfo;
-			mem_free(charPalette);
-			return;
-		}
+		charData = (u8*)mem_alloc(frameInfo.realW*64 * frameInfo.realH*64 * gfxCount);
 		adx_update();
 
 		if (!charData)
@@ -231,29 +222,11 @@ void Character::setCharImage(std::string charname, std::string relativeFile, boo
 	}
 	else
 	{
-		try
-		{
-			stream.loadFile(IMGbin.c_str(), frameInfo.realW, frameInfo.realH, 64, 64);
-		}
-		catch(std::exception& e)
-		{
-			char buf[256];
-			sprintf(buf, "setCharImage() failed (stream.loadFile)\n%s\n%s'\n'%s'\n%s\n%d %d", e.what(), charname.c_str(), relativeFile.c_str(), doLoop?"true":"false", frameInfo.realW, frameInfo.realH);
-			sassert(false, buf);
-		}
+		stream.loadFile(IMGbin.c_str(), frameInfo.realW, frameInfo.realH, 64, 64);
 	}
 	adx_update();
 
-	try
-	{
-		clearFrameData();
-	}
-	catch(std::exception& e)
-	{
-		char buf[256];
-		sprintf(buf, "setCharImage() failed (clearFrameData)\n%s\n%s'\n'%s'\n%s\n%d %d", e.what(), charname.c_str(), relativeFile.c_str(), doLoop?"true":"false", frameInfo.realW, frameInfo.realH);
-		sassert(false, buf);
-	}
+	clearFrameData();
 
 	for (int i=0; i<4*3; i++)
 	{
