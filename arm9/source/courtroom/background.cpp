@@ -410,6 +410,8 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 			}
 
 			setDesk(deskGfxImg, deskPal, horTiles, verTiles);
+			mem_free(deskGfxImg);
+			mem_free(deskPal);
 		}
 		else
 			cleanDesk();
