@@ -6,6 +6,9 @@ static uint32_t allocated = 0;
 void* mem_alloc(uint32_t size)
 {
 	void* ptr = malloc(size+4);
+	if (!ptr)
+		return 0;
+
 	*((uint32_t*)ptr) = size+4;
 	allocated += size+4;
 	return ptr+4;
