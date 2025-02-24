@@ -268,6 +268,9 @@ static uint8 readByteFile(uint8 *source) {
 void readAndDecompressLZ77Stream(const char* filename, u8* dest)
 {
 	u8* streamData = readFile(filename);
+	if (!streamData)
+		return;
+
 	swiDecompressLZSSVram(streamData, dest, 0, &decompressStreamCBs);
 	mem_free(streamData);
 }
