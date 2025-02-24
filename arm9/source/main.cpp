@@ -165,7 +165,7 @@ int main()
 	oamInit(&oamSub, SpriteMapping_1D_128, true);
 
 	u8* acename = readFile("/data/ao-nds/ui/AceName/acename.ttf");
-	u8* igiari = readFile("/data/ao-nds/ui/Igiari/Igiari.otf");
+	u8* igiari = readFile("/data/ao-nds/ui/igiari-cyrillic/igiari-cyrillic.ttf");
 	initFont(acename, 13);	// index 0
 	initFont(igiari, 16);	// index 1
 

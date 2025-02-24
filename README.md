@@ -10,7 +10,7 @@ Additional code by stonedDiscord<br/>
 UI design by Samevi
 
 ## Assets and libraries used
-* "Igiari" font by [Caveras](https://caveras.net)
+* "Igiari Cyrillic" by trtrtrtr, based on "Igiari" font by [Caveras](https://caveras.net)
 * "AceName" font by unknown (found on [webAO](https://github.com/AttorneyOnline/webAO))
 * [BlocksDS](http://github.com/blocksds/sdk)
 * [dswifi](http://github.com/blocksds/dswifi)
