@@ -23,6 +23,7 @@ UICourtProfileDetail::~UICourtProfileDetail()
 	delete btn_report;
 	delete btn_kick;
 	delete btn_ban;
+	delete btn_follow;
 	delete lbl_name;
 	delete lbl_desc;
 	delete spr_profile;
@@ -44,13 +45,14 @@ void UICourtProfileDetail::init()
 	btn_report = new UIButton(&oamSub, "/data/ao-nds/ui/spr_report", btn_nextPage->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 36, 64, 15, 32, 16, 4);
 	btn_kick = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_report->nextOamInd(), 2, 1, SpriteSize_32x16, 96-68, 36, 64, 15, 32, 16, 5);
 	btn_ban = new UIButton(&oamSub, "/data/ao-nds/ui/spr_kickBan", btn_kick->nextOamInd(), 2, 1, SpriteSize_32x16, 96+68, 36, 64, 15, 32, 16, 5);
+	btn_follow = new UIButton(&oamSub, "/data/ao-nds/ui/spr_goToArea", btn_ban->nextOamInd(), 2, 1, SpriteSize_32x16, 96, 192-15-36, 64, 15, 32, 16, 6);
 
-	lbl_name = new UILabel(&oamSub, btn_ban->nextOamInd(), 4, 1, RGB15(31, 16, 0), 6, 0);
-	lbl_desc = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 4, RGB15(4, 4, 4), 7, 0);
+	lbl_name = new UILabel(&oamSub, btn_follow->nextOamInd(), 4, 1, RGB15(31, 16, 0), 7, 0);
+	lbl_desc = new UILabel(&oamSub, lbl_name->nextOamInd(), 4, 4, RGB15(4, 4, 4), 8, 0);
 
-	spr_profile = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 23, 66, 60, 60, 64, 64, 8);
+	spr_profile = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 23, 66, 60, 60, 64, 64, 9);
 
-	kb_input = new AOkeyboard(2, spr_profile->nextOamInd(), 9);
+	kb_input = new AOkeyboard(2, spr_profile->nextOamInd(), 10);
 
 	btn_profilesEvidence->setFrame(1);
 	btn_ban->setFrame(1);
@@ -68,6 +70,7 @@ void UICourtProfileDetail::init()
 	btn_report->connect(onReport, this);
 	btn_kick->connect(onKick, this);
 	btn_ban->connect(onBan, this);
+	btn_follow->connect(onFollow, this);
 
 	reloadPage();
 
@@ -105,6 +108,7 @@ void UICourtProfileDetail::updateInput()
 	btn_report->updateInput();
 	btn_kick->updateInput();
 	btn_ban->updateInput();
+	btn_follow->updateInput();
 
 	u32 key = keysDown();
 	if (key & KEY_Y)
@@ -125,6 +129,7 @@ void UICourtProfileDetail::hideEverything()
 	btn_report->setVisible(false);
 	btn_kick->setVisible(false);
 	btn_ban->setVisible(false);
+	btn_follow->setVisible(false);
 	lbl_name->setVisible(false);
 	lbl_desc->setVisible(false);
 	spr_profile->setVisible(false);
@@ -139,6 +144,7 @@ void UICourtProfileDetail::showEverything()
 	btn_prevPage->setVisible(true);
 	btn_nextPage->setVisible(true);
 	btn_report->setVisible(true);
+	btn_follow->setVisible(true);
 	lbl_name->setVisible(true);
 	lbl_desc->setVisible(true);
 	spr_profile->setVisible(true);
@@ -162,6 +168,7 @@ void UICourtProfileDetail::reloadPage()
 	u32 currAreaID = (info) ? (u32)info->area : 0;
 
 	btn_report->setVisible(!!info);
+	btn_follow->setVisible(!!info && info->area >= 0);
 	btn_kick->setVisible(!!info && pCourtUI->isMod());
 	btn_ban->setVisible(!!info && pCourtUI->isMod());
 
@@ -194,7 +201,7 @@ void UICourtProfileDetail::reloadPage()
 	bool exists = Content::exists(file+".img.bin", file);
 	if (exists) file = file.substr(0, file.length()-8); // remove extension
 
-	spr_profile->setImage(file, 64, 64, 8);
+	spr_profile->setImage(file, 64, 64, 9);
 }
 
 void UICourtProfileDetail::onBackClicked(void* pUserData)
@@ -258,6 +265,18 @@ void UICourtProfileDetail::onBan(void* pUserData)
 
 	wav_play(pSelf->pCourtUI->sndCrtRcrd);
 	pSelf->pCourtUI->changeScreen(new UICourtModeratorDialog(pSelf->pCourtUI, pSelf->currProfile, pSelf->wasInPrivateEvidence, true));
+}
+
+void UICourtProfileDetail::onFollow(void* pUserData)
+{
+	UICourtProfileDetail* pSelf = (UICourtProfileDetail*)pUserData;
+
+	if (!pSelf->pCourtUI->getPlayerList().count(pSelf->currProfileID))
+		return;
+	playerInfo* info = &pSelf->pCourtUI->getPlayerList()[pSelf->currProfileID];
+
+	wav_play(pSelf->pCourtUI->sndSelect);
+	gEngine->getSocket()->sendData("MC#" + pSelf->pCourtUI->getAreaList()[info->area].name + "#" + std::to_string(pSelf->pCourtUI->getCurrCharID()) + "#" + utf8::utf16to8(pSelf->pCourtUI->showname) + "#%");
 }
 
 void UICourtProfileDetail::onMessagePR(void* pUserData, std::string msg)

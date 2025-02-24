@@ -19,6 +19,7 @@ class UICourtProfileDetail : public UISubScreen
 	UIButton* btn_report;
 	UIButton* btn_kick;
 	UIButton* btn_ban;
+	UIButton* btn_follow;
 
 	UILabel* lbl_name;
 	UILabel* lbl_desc;
@@ -51,6 +52,7 @@ public:
 	static void onReport(void* pUserData);
 	static void onKick(void* pUserData);
 	static void onBan(void* pUserData);
+	static void onFollow(void* pUserData);
 
 	static void onMessagePR(void* pUserData, std::string msg);
 	static void onMessagePU(void* pUserData, std::string msg);
