@@ -132,6 +132,7 @@ static void createCache(int oam, const std::string& content, const std::string& 
 void Content::reload(int oamStart)
 {
 	cache.clear();
+	cachedEvidence.clear();
 
 	for (auto& content : contents)
 	{
