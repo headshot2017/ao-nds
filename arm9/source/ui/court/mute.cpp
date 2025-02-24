@@ -184,10 +184,13 @@ void UICourtMute::reloadPage()
 		}
 		ind = filteredChars[ind];
 
-		bool exists = fileExists("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon.img.bin");
+		std::string file = "characters/" + pCourtUI->getCharList()[ind].name + "/char_icon";
+		bool exists = Content::exists(file+".img.bin", file);
+		if (exists) file = file.substr(0, file.length()-8); // remove extension
+
 		adx_update();
 
-		btn_chars[i]->setImage((exists ? ("/data/ao-nds/characters/" + pCourtUI->getCharList()[ind].name + "/char_icon") : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 7+i);
+		btn_chars[i]->setImage((exists ? file : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 7+i);
 		btn_chars[i]->setVisible(true);
 
 		if (pCourtUI->getCharList()[ind].muted)
