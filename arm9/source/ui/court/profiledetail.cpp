@@ -161,16 +161,17 @@ void UICourtProfileDetail::update()
 void UICourtProfileDetail::reloadPage()
 {
 	currProfileID = (currProfile >= pCourtUI->getPlayerListIDs().size()) ? 0 : pCourtUI->getPlayerListIDs()[currProfile];
+	bool isSelf = (currProfileID == pCourtUI->getClientID());
 
 	playerInfo* info = 0;
 	if (pCourtUI->getPlayerList().count(currProfileID))
 		info = &pCourtUI->getPlayerList()[currProfileID];
 	u32 currAreaID = (info) ? (u32)info->area : 0;
 
-	btn_report->setVisible(!!info);
-	btn_follow->setVisible(!!info && info->area >= 0);
-	btn_kick->setVisible(!!info && pCourtUI->isMod());
-	btn_ban->setVisible(!!info && pCourtUI->isMod());
+	btn_report->setVisible(!!info && !isSelf);
+	btn_follow->setVisible(!!info && !isSelf && pCourtUI->isMod() && info->area >= 0);
+	btn_kick->setVisible(!!info && !isSelf && pCourtUI->isMod());
+	btn_ban->setVisible(!!info && !isSelf && pCourtUI->isMod());
 
 	std::string character = (info) ? info->character : "";
 	if (info && character.empty())
@@ -179,12 +180,17 @@ void UICourtProfileDetail::reloadPage()
 	lbl_name->setPos(163, 65, true);
 
 	std::string desc;
+	if (isSelf)
+		desc = "You, in ";
+	else
+		desc = "In ";
+
 	if (pCourtUI->getPlayerListIDs().empty())
 		desc = "Player list is empty";
 	else if (currAreaID < pCourtUI->getAreaList().size())
-		desc = "In area \"" + pCourtUI->getAreaList()[currAreaID].name + "\"";
+		desc += "area \"" + pCourtUI->getAreaList()[currAreaID].name + "\"";
 	else
-		desc = "In area " + std::to_string(currAreaID);
+		desc += "area " + std::to_string(currAreaID);
 
 	if (info)
 	{

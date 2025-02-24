@@ -101,8 +101,9 @@ class UIScreenCourt : public UIScreen
 	std::vector<areaInfo> areaList;
 	std::vector<evidenceInfo> evidenceList;
 	std::unordered_set<std::string> featureList;
-	std::unordered_map<int, playerInfo> playerList;
-	std::vector<int> playerListIDs;
+	std::unordered_map<u32, playerInfo> playerList;
+	std::vector<u32> fullPlayerListIDs;
+	std::vector<u32> playerListIDs;
 
 	std::vector<std::u16string> icLog;
 	std::vector<std::u16string> oocLog;
@@ -120,6 +121,10 @@ class UIScreenCourt : public UIScreen
 
 	bool loggedIn;
 	bool isConsole;
+	u32 clientID;
+
+	void onAreaChanged();
+	void updatePlayer(u32 id);
 
 public:
 	UIScreenCourt();
@@ -140,8 +145,10 @@ public:
 	const std::vector<areaInfo>& getAreaList() {return areaList;}
 	std::vector<evidenceInfo>& getEvidenceList(bool priv) {return (priv) ? Settings::privateEvidence : evidenceList;}
 	bool getFeature(const char* feature) {return featureList.count(feature);}
-	std::unordered_map<int, playerInfo>& getPlayerList() {return playerList;}
-	const std::vector<int>& getPlayerListIDs() {return playerListIDs;}
+	std::unordered_map<u32, playerInfo>& getPlayerList() {return playerList;}
+	const std::vector<u32>& getFullPlayerListIDs() {return fullPlayerListIDs;}
+	const std::vector<u32>& getPlayerListIDs() {return loggedIn ? fullPlayerListIDs : playerListIDs;}
+	u32 getClientID() {return clientID;}
 
 	const std::vector<std::u16string>& getICLog() {return icLog;}
 	const std::vector<std::u16string>& getOOCLog() {return oocLog;}

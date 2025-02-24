@@ -191,6 +191,11 @@ void UIScreenCourt::sendIC(const std::string& msg)
 
 void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
 {
+	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
+
+	pSelf->clientID = std::stoi(argumentAt(msg, 1));
+	std::string pr = "client '"+argumentAt(msg, 1)+"'";
+	debugLabelPressA(pr.c_str());
 	gEngine->getSocket()->sendData("ID#AO-NDS#2.11.0#%");
 }
 
@@ -795,7 +800,7 @@ void UIScreenCourt::onMessagePR(void* pUserData, std::string msg)
 {
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
-	int id = std::stoi(argumentAt(msg, 1));
+	u32 id = std::stoi(argumentAt(msg, 1));
 	int action = std::stoi(argumentAt(msg, 2));
 
 	switch (action)
@@ -803,16 +808,21 @@ void UIScreenCourt::onMessagePR(void* pUserData, std::string msg)
 		case 0: // Add
 			pSelf->playerList[id] = {};
 			pSelf->playerList[id].area = -1;
-			pSelf->playerListIDs.push_back(id);
+			pSelf->fullPlayerListIDs.push_back(id);
+			if (id == pSelf->clientID)
+				pSelf->playerListIDs.push_back(id);
 			break;
 
 		case 1: // Remove
 			{
 				const auto& iter = std::find(pSelf->playerListIDs.begin(), pSelf->playerListIDs.end(), id);
+				const auto& iterFull = std::find(pSelf->fullPlayerListIDs.begin(), pSelf->fullPlayerListIDs.end(), id);
 				if (pSelf->playerList.count(id))
 					pSelf->playerList.erase(id);
 				if (iter != pSelf->playerListIDs.end())
 					pSelf->playerListIDs.erase(iter);
+				if (iterFull != pSelf->fullPlayerListIDs.end())
+					pSelf->fullPlayerListIDs.erase(iterFull);
 			}
 			break;
 	}
@@ -822,11 +832,12 @@ void UIScreenCourt::onMessagePU(void* pUserData, std::string msg)
 {
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
-	int id = std::stoi(argumentAt(msg, 1));
+	u32 id = std::stoi(argumentAt(msg, 1));
 	int dataType = std::stoi(argumentAt(msg, 2));
 	std::string data = argumentAt(msg, 3);
 
-	if (!pSelf->playerList.count(id)) return;
+	if (!pSelf->playerList.count(id))
+		return;
 
 	switch (dataType)
 	{
@@ -845,5 +856,37 @@ void UIScreenCourt::onMessagePU(void* pUserData, std::string msg)
 		case 3:
 			pSelf->playerList[id].area = std::stoi(data);
 			break;
+	}
+
+	if (id == pSelf->clientID)
+	{
+		pSelf->onAreaChanged();
+		return;
+	}
+
+	pSelf->updatePlayer(id);
+}
+
+void UIScreenCourt::updatePlayer(u32 id)
+{
+	const auto& iter = std::find(playerListIDs.begin(), playerListIDs.end(), id);
+	if (iter == playerListIDs.end() && (loggedIn || playerList[id].area == playerList[clientID].area))
+	{
+		playerListIDs.push_back(id);
+	}
+	else if (iter != playerListIDs.end() && (!loggedIn || playerList[id].area != playerList[clientID].area))
+	{
+		playerListIDs.erase(iter);
+	}
+}
+
+void UIScreenCourt::onAreaChanged()
+{
+	for (u32 id : fullPlayerListIDs)
+	{
+		if (id == clientID)
+			continue;
+
+		updatePlayer(id);
 	}
 }
