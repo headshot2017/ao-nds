@@ -55,12 +55,18 @@ void AOwebSocket::wsHandler(struct mg_connection *c, int ev, void *ev_data, void
 	}
 }
 
-void AOwebSocket::connectIP(std::string ip)
+void AOwebSocket::setIP(std::string ip)
+{
+	if (connected) return;
+	m_IP = ip;
+}
+
+void AOwebSocket::connect()
 {
 	if (connected) return;
 
 	mg_mgr_init(&mgr);        // Initialise event manager
-	c = mg_ws_connect(&mgr, ip.c_str(), wsHandler, this, NULL);     // Create client
+	c = mg_ws_connect(&mgr, m_IP.c_str(), wsHandler, this, NULL);     // Create client
 	connected = true;
 	ticks = 0;
 }

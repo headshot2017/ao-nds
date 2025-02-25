@@ -376,13 +376,13 @@ void UIScreenServerList::onConnect(void* pUserData)
 		char ip[256];
 		sprintf(ip, "ws://%s:%d", server.ip.c_str(), server.ws_port);
 
-		sock->connectIP(ip);
+		sock->setIP(ip);
 		gEngine->setSocket(sock);
 	}
 	else
 	{
 		AOtcpSocket* sock = new AOtcpSocket;
-		sock->connectIP(server.ip, server.port);
+		sock->setIP(server.ip, server.port);
 		gEngine->setSocket(sock);
 	}
 

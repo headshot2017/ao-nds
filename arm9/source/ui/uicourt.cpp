@@ -72,6 +72,7 @@ void UIScreenCourt::init()
 	sendTicks = 0;
 	receiveTicks = 0;
 	loggedIn = false;
+	firstConnect = false;
 	guard = false;
 	memset(bars, 0, sizeof(bars));
 
@@ -96,6 +97,7 @@ void UIScreenCourt::init()
 	sndCrtRcrd = wav_load_handle("/data/ao-nds/sounds/general/sfx-scroll.wav");
 
 	AOsocket* sock = gEngine->getSocket();
+	sock->addMessageCallback("decryptor", onMessageDecryptor, this);
 	sock->addMessageCallback("ID", onMessageID, this);
 	sock->addMessageCallback("PN", onMessagePN, this);
 	sock->addMessageCallback("FL", onMessageFL, this);
@@ -122,9 +124,6 @@ void UIScreenCourt::init()
 	sock->addMessageCallback("ZZ", onMessageZZ, this);
 	sock->addMessageCallback("PR", onMessagePR, this);
 	sock->addMessageCallback("PU", onMessagePU, this);
-
-	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%";
-	gEngine->getSocket()->sendData(hdid);
 }
 
 void UIScreenCourt::updateInput()
@@ -142,9 +141,15 @@ void UIScreenCourt::update()
 		nextScreen = nullptr;
 	}
 
-	if (!gEngine->getSocket()->isConnected() && !gEngine->isFading())
+	if (!gEngine->isFading())
 	{
-		gEngine->changeScreen(new UIScreenDisconnected("Disconnected", "Connection to server lost.", false));
+		if (!firstConnect)
+		{
+			gEngine->getSocket()->connect();
+			firstConnect = true;
+		}
+		else if (!gEngine->getSocket()->isConnected())
+			gEngine->changeScreen(new UIScreenDisconnected("Disconnected", "Connection to server lost.", false));
 	}
 
 	if (receiveTicks <= 0)
@@ -189,13 +194,17 @@ void UIScreenCourt::sendIC(const std::string& msg)
 	icSendQueue.push_back(msg);
 }
 
+void UIScreenCourt::onMessageDecryptor(void* pUserData, std::string msg)
+{
+	std::string hdid = "HI#NDS " + gEngine->getMacAddr() + "#%";
+	gEngine->getSocket()->sendData(hdid);
+}
+
 void UIScreenCourt::onMessageID(void* pUserData, std::string msg)
 {
 	UIScreenCourt* pSelf = (UIScreenCourt*)pUserData;
 
 	pSelf->clientID = std::stoi(argumentAt(msg, 1));
-	std::string pr = "client '"+argumentAt(msg, 1)+"'";
-	debugLabelPressA(pr.c_str());
 	gEngine->getSocket()->sendData("ID#AO-NDS#2.11.0#%");
 }
 

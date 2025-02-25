@@ -21,7 +21,8 @@ public:
 	virtual ~AOsocket() {}
 
 	virtual void update() {}
-	virtual void connectIP(std::string ip) {}
+	virtual void setIP(std::string ip) {}
+	virtual void connect() {}
 	virtual void disconnect() {}
 	virtual void sendData(std::string data) {}
 

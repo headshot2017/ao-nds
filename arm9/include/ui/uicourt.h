@@ -121,6 +121,7 @@ class UIScreenCourt : public UIScreen
 
 	bool loggedIn;
 	bool isConsole;
+	bool firstConnect;
 	u32 clientID;
 
 	void onAreaChanged();
@@ -158,6 +159,7 @@ public:
 	const std::vector<shoutInfo>& getCharShouts() {return charShouts;}
 	bool isMod() {return loggedIn;}
 
+	static void onMessageDecryptor(void* pUserData, std::string msg);
 	static void onMessageID(void* pUserData, std::string msg);
 	static void onMessagePN(void* pUserData, std::string msg);
 	static void onMessageFL(void* pUserData, std::string msg);

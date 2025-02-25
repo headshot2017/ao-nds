@@ -9,13 +9,16 @@ class AOtcpSocket : public AOsocket
 {
 	int sockfd;
 	std::string tempData;
+	std::string m_IP;
+	u16 m_Port;
 
 public:
 	AOtcpSocket();
 	~AOtcpSocket();
 
 	void update();
-	void connectIP(std::string ip, u16 port);
+	void setIP(std::string ip, u16 port);
+	void connect();
 	void disconnect();
 	void sendData(std::string data);
 };

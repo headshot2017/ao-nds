@@ -11,12 +11,15 @@ class AOwebSocket : public AOsocket
 
 	static void wsHandler(struct mg_connection *c, int ev, void *ev_data, void *fn_data);
 
+	std::string m_IP;
+
 public:
 	AOwebSocket();
 	~AOwebSocket();
 
 	void update();
-	void connectIP(std::string ip);
+	void setIP(std::string ip);
+	void connect();
 	void disconnect();
 	void sendData(std::string data);
 };

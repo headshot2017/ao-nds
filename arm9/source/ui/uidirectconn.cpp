@@ -73,7 +73,7 @@ void UIScreenDirectConn::updateInput()
 			AOwebSocket* sock = new AOwebSocket;
 			ip = "ws://" + ip;
 
-			sock->connectIP(ip);
+			sock->setIP(ip);
 			gEngine->setSocket(sock);
 		}
 		else
@@ -83,7 +83,7 @@ void UIScreenDirectConn::updateInput()
 			u16 port = (pos != std::string::npos) ? std::stoi(ip.substr(pos+1)) : 27017;
 
 			AOtcpSocket* sock = new AOtcpSocket;
-			sock->connectIP(addr, port);
+			sock->setIP(addr, port);
 			gEngine->setSocket(sock);
 		}
 

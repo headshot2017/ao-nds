@@ -18,7 +18,14 @@ AOtcpSocket::~AOtcpSocket()
 	closesocket(sockfd);
 }
 
-void AOtcpSocket::connectIP(std::string ip, u16 port)
+void AOtcpSocket::setIP(std::string ip, u16 port)
+{
+	if (connected) return;
+	m_IP = ip;
+	m_Port = port;
+}
+
+void AOtcpSocket::connect()
 {
 	if (connected) return;
 
@@ -26,11 +33,11 @@ void AOtcpSocket::connectIP(std::string ip, u16 port)
 	memset(&serv_addr, 0, sizeof(serv_addr));
 
 	serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(port);
-    if (inet_aton(ip.c_str(), &serv_addr.sin_addr) <= 0)
+	serv_addr.sin_port = htons(m_Port);
+	if (inet_aton(m_IP.c_str(), &serv_addr.sin_addr) <= 0)
 		return;
 
-	if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
+	if (::connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
 	{
 		printf("TCP socket connection fail %d\n", errno);
 		return;
