@@ -16,6 +16,13 @@ UISettingsChatbox::~UISettingsChatbox()
 	delete lbl_current;
 	delete lbl_allowChange;
 	delete btn_allowChange;
+	delete lbl_blendA;
+	delete btn_blendA_down;
+	delete btn_blendA_up;
+	delete lbl_blendB;
+	delete btn_blendB_down;
+	delete btn_blendB_up;
+	delete btn_resetBlend;
 	delete btn_preview;
 }
 
@@ -31,7 +38,15 @@ void UISettingsChatbox::init()
 	lbl_allowChange = new UILabel(&oamSub, lbl_current->nextOamInd(), 6, 2, RGB15(31,31,31), 3, 0);
 	btn_allowChange = new UIButton(&oamSub, "/data/ao-nds/ui/spr_checkBox", lbl_allowChange->nextOamInd(), 1, 1, SpriteSize_16x16, 52, 64, 16, 16, 16, 16, 6);
 
-	btn_preview = new UIButton(&oamSub, "/data/ao-nds/ui/spr_previewBtn", btn_allowChange->nextOamInd(), 2, 1, SpriteSize_32x16, 128-32, 144, 64, 15, 32, 16, 7);
+	lbl_blendA = new UILabel(&oamSub, btn_allowChange->nextOamInd(), 2, 1, RGB15(31,31,31), 3, 0);
+	btn_blendA_down = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft", lbl_blendA->nextOamInd(), 1, 1, SpriteSize_32x16, 128-19-4, 96-2, 19, 14, 32, 16, 4);
+	btn_blendA_up = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight", btn_blendA_down->nextOamInd(), 1, 1, SpriteSize_32x16, 128+4, 96-2, 19, 14, 32, 16, 5);
+	lbl_blendB = new UILabel(&oamSub, btn_blendA_up->nextOamInd(), 2, 1, RGB15(31,31,31), 3, 0);
+	btn_blendB_down = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageLeft", lbl_blendB->nextOamInd(), 1, 1, SpriteSize_32x16, 128-19-4, 96+16+2, 19, 14, 32, 16, 4);
+	btn_blendB_up = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight", btn_blendB_down->nextOamInd(), 1, 1, SpriteSize_32x16, 128+4, 96+16+2, 19, 14, 32, 16, 5);
+	btn_resetBlend = new UIButton(&oamSub, "/data/ao-nds/ui/spr_reset", btn_blendB_up->nextOamInd(), 2, 1, SpriteSize_32x16, 128+48, 96+6, 48, 16, 32, 16, 7);
+
+	btn_preview = new UIButton(&oamSub, "/data/ao-nds/ui/spr_previewBtn", btn_resetBlend->nextOamInd(), 2, 1, SpriteSize_32x16, 128-32, 144, 64, 15, 32, 16, 8);
 
 	lbl_allowChange->setText("Allow characters to change\nthe chatbox (When possible)");
 	lbl_allowChange->setPos(btn_allowChange->getX()+btn_allowChange->getW()+2, btn_allowChange->getY()-4, false);
@@ -40,6 +55,11 @@ void UISettingsChatbox::init()
 	btn_prev->connect(onPrevClicked, this);
 	btn_next->connect(onNextClicked, this);
 	btn_allowChange->connect(onAllowChangeToggled, this);
+	btn_blendA_down->connect(onBlendA_Down, this);
+	btn_blendA_up->connect(onBlendA_Up, this);
+	btn_blendB_down->connect(onBlendB_Down, this);
+	btn_blendB_up->connect(onBlendB_Up, this);
+	btn_resetBlend->connect(onResetBlendClicked, this);
 	btn_preview->connect(onPreviewClicked, this);
 
 	btn_prev->assignKey(KEY_LEFT);
@@ -70,7 +90,9 @@ void UISettingsChatbox::init()
 
 	auto it = std::find(m_chatboxes.begin(), m_chatboxes.end(), Settings::defaultChatbox);
 	m_currChatbox = (it != m_chatboxes.end()) ? (u32)(it-m_chatboxes.begin()) : 0;
+
 	reloadChatbox();
+	reloadBlend();
 }
 
 void UISettingsChatbox::updateInput()
@@ -78,6 +100,11 @@ void UISettingsChatbox::updateInput()
 	btn_prev->updateInput();
 	btn_next->updateInput();
 	btn_allowChange->updateInput();
+	btn_blendA_down->updateInput();
+	btn_blendA_up->updateInput();
+	btn_blendB_down->updateInput();
+	btn_blendB_up->updateInput();
+	btn_resetBlend->updateInput();
 	btn_preview->updateInput();
 }
 
@@ -91,6 +118,24 @@ void UISettingsChatbox::reloadChatbox()
 	m_pChatbox->setTheme(m_chatboxes[m_currChatbox]);
 	lbl_current->setText(m_chatboxes[m_currChatbox]);
 	lbl_current->setPos(128, 40, true);
+}
+
+void UISettingsChatbox::reloadBlend()
+{
+	char buf[64];
+
+	sprintf(buf, "Alpha: %d", Settings::chatboxBlendA);
+	lbl_blendA->setText(buf);
+	lbl_blendA->setPos(btn_blendA_down->getX()-64, btn_blendA_down->getY(), false);
+
+	sprintf(buf, "Black: %d", Settings::chatboxBlendB);
+	lbl_blendB->setText(buf);
+	lbl_blendB->setPos(btn_blendB_down->getX()-64, btn_blendB_down->getY(), false);
+
+	btn_blendA_down->setVisible(Settings::chatboxBlendA > 0);
+	btn_blendA_up->setVisible(Settings::chatboxBlendA < 15);
+	btn_blendB_down->setVisible(Settings::chatboxBlendB > 0);
+	btn_blendB_up->setVisible(Settings::chatboxBlendB < 15);
 }
 
 void UISettingsChatbox::onPrevClicked(void* pUserData)
@@ -127,6 +172,56 @@ void UISettingsChatbox::onAllowChangeToggled(void* pUserData)
 	Settings::allowChatboxChange ^= 1;
 	Settings::save();
 	pSelf->btn_allowChange->setFrame(Settings::allowChatboxChange);
+}
+
+void UISettingsChatbox::onBlendA_Down(void* pUserData)
+{
+	UISettingsChatbox* pSelf = (UISettingsChatbox*)pUserData;
+	wav_play(pSelf->pSettingsUI->sndEvPage);
+
+	if (Settings::chatboxBlendA > 0)
+		Settings::chatboxBlendA--;
+	pSelf->reloadBlend();
+}
+
+void UISettingsChatbox::onBlendA_Up(void* pUserData)
+{
+	UISettingsChatbox* pSelf = (UISettingsChatbox*)pUserData;
+	wav_play(pSelf->pSettingsUI->sndEvPage);
+
+	if (Settings::chatboxBlendA < 15)
+		Settings::chatboxBlendA++;
+	pSelf->reloadBlend();
+}
+
+void UISettingsChatbox::onBlendB_Down(void* pUserData)
+{
+	UISettingsChatbox* pSelf = (UISettingsChatbox*)pUserData;
+	wav_play(pSelf->pSettingsUI->sndEvPage);
+
+	if (Settings::chatboxBlendB > 0)
+		Settings::chatboxBlendB--;
+	pSelf->reloadBlend();
+}
+
+void UISettingsChatbox::onBlendB_Up(void* pUserData)
+{
+	UISettingsChatbox* pSelf = (UISettingsChatbox*)pUserData;
+	wav_play(pSelf->pSettingsUI->sndEvPage);
+
+	if (Settings::chatboxBlendB < 15)
+		Settings::chatboxBlendB++;
+	pSelf->reloadBlend();
+}
+
+void UISettingsChatbox::onResetBlendClicked(void* pUserData)
+{
+	UISettingsChatbox* pSelf = (UISettingsChatbox*)pUserData;
+	wav_play(pSelf->pSettingsUI->sndSelect);
+
+	Settings::chatboxBlendA = 7;
+	Settings::chatboxBlendB = 15;
+	pSelf->reloadBlend();
 }
 
 void UISettingsChatbox::onPreviewClicked(void* pUserData)

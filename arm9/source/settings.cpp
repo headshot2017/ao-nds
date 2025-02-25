@@ -17,6 +17,8 @@ bool Settings::wifikbReverseMode;
 bool Settings::wifikbEnabled;
 std::string Settings::defaultChatbox;
 bool Settings::allowChatboxChange;
+int Settings::chatboxBlendA;
+int Settings::chatboxBlendB;
 std::vector<evidenceInfo> Settings::privateEvidence;
 
 void Settings::load()
@@ -30,6 +32,8 @@ void Settings::load()
 	wifikbEnabled = settings.get("wifikb_enable", "1") == "1";
 	wifikbReverseMode = settings.get("wifikb_reverse_mode") == "1";
 	defaultChatbox = settings.get("default_chatbox", "default");
+	chatboxBlendA = std::stoi(settings.get("chatbox_blend_a", "7"));
+	chatboxBlendB = std::stoi(settings.get("chatbox_blend_b", "15"));
 	allowChatboxChange = settings.get("allow_chatbox_change_on_chat", "1") == "1";
 
 	wifikb::setReverse(wifikbReverseMode);
@@ -57,6 +61,8 @@ void Settings::save()
 	f.set("wifikb_enable", wifikbEnabled ? "1" : "0");
 	f.set("wifikb_reverse_mode", wifikbReverseMode ? "1" : "0");
 	f.set("default_chatbox", defaultChatbox);
+	f.set("chatbox_blend_a", std::to_string(chatboxBlendA));
+	f.set("chatbox_blend_b", std::to_string(chatboxBlendB));
 	f.set("allow_chatbox_change_on_chat", allowChatboxChange ? "1" : "0");
 
 	std::string contentArgs;

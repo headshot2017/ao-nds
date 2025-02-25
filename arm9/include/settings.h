@@ -23,6 +23,8 @@ namespace Settings
 	extern bool wifikbReverseMode;
 	extern std::string defaultChatbox;
 	extern bool allowChatboxChange;
+	extern int chatboxBlendA;
+	extern int chatboxBlendB;
 	extern std::vector<evidenceInfo> privateEvidence;
 
 	void load();

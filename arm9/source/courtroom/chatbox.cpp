@@ -426,7 +426,7 @@ void Chatbox::update()
 		// makes the chatbox transparent.
 		// chatbox is in bg1 and we want to see bg0 (court) and sprites behind it
 		REG_BLDCNT = BLEND_ALPHA | BLEND_SRC_BG1 | BLEND_DST_BG0 | BLEND_DST_SPRITE | BLEND_DST_BACKDROP;
-		REG_BLDALPHA = 0x70f;
+		REG_BLDALPHA = ((Settings::chatboxBlendA << 8) | (Settings::chatboxBlendB));
 	}
 
 	bgSetScroll(bgIndex, -xOffset, -192+info.height-yOffset);
