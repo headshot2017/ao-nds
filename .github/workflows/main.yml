@@ -49,6 +49,7 @@ jobs:
       run: |
         cd converter
         pyinstaller main.spec
+        pyinstaller chatbox-converter.spec
 
     - name: Copy files to dist
       shell: cmd
