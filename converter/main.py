@@ -105,7 +105,7 @@ if __name__ == "__main__":
         option = int(option)
         if option < 1 or option > 9: continue
 
-        for path in ["background", "characters", "evidence", "sounds/general", "sounds/music", "sounds/blips", "misc"]:
+        for path in ["background", "characters", "evidence", "sounds/general", "sounds/music", "sounds/blips", "misc/chatboxes/default"]:
             if not os.path.exists("converted/data/ao-nds/" + path):
                 os.makedirs("converted/data/ao-nds/" + path)
 

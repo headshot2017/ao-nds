@@ -579,15 +579,38 @@ def convertChatbox(folder):
     # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, export to .bin, don't generate .h file
     subprocess.Popen("grit temp.png -gB4 -gt -gTFF00FF -m -p -ftb -fh!".split(" ")).wait()
 
-    if os.path.exists("converted/data/ao-nds/misc/chatbox.img.bin"):
-        os.remove("converted/data/ao-nds/misc/chatbox.img.bin")
-    if os.path.exists("converted/data/ao-nds/misc/chatbox.map.bin"):
-        os.remove("converted/data/ao-nds/misc/chatbox.map.bin")
-    if os.path.exists("converted/data/ao-nds/misc/chatbox.pal.bin"):
-        os.remove("converted/data/ao-nds/misc/chatbox.pal.bin")
-    os.rename("temp.img.bin", "converted/data/ao-nds/misc/chatbox.img.bin")
-    os.rename("temp.map.bin", "converted/data/ao-nds/misc/chatbox.map.bin")
-    os.rename("temp.pal.bin", "converted/data/ao-nds/misc/chatbox.pal.bin")
+    if os.path.exists("converted/data/ao-nds/misc/chatboxes/default/chatbox.img.bin"):
+        os.remove("converted/data/ao-nds/misc/chatboxes/default/chatbox.img.bin")
+    if os.path.exists("converted/data/ao-nds/misc/chatboxes/default/chatbox.map.bin"):
+        os.remove("converted/data/ao-nds/misc/chatboxes/default/chatbox.map.bin")
+    if os.path.exists("converted/data/ao-nds/misc/chatboxes/default/chatbox.pal.bin"):
+        os.remove("converted/data/ao-nds/misc/chatboxes/default/chatbox.pal.bin")
+    os.rename("temp.img.bin", "converted/data/ao-nds/misc/chatboxes/default/chatbox.img.bin")
+    os.rename("temp.map.bin", "converted/data/ao-nds/misc/chatboxes/default/chatbox.map.bin")
+    os.rename("temp.pal.bin", "converted/data/ao-nds/misc/chatboxes/default/chatbox.pal.bin")
+
+    with open("converted/data/ao-nds/misc/chatboxes/default/chatbox.ini", "w") as f:
+        f.write("[general]\n")
+        f.write("height = %d\n" % (img.size[1]))
+        f.write("hiddenFromSettings = 0\n")
+        f.write("\n")
+        f.write("# Name info.\n")
+        f.write("# Set X and Y positions to the 'top center' of the name box.\n")
+        f.write("# 'textColor' indicates the default text color in R,G,B (white by default)\n")
+        f.write("[name]\n")
+        f.write("x = 37\n")
+        f.write("y = 3\n")
+        f.write("textColor = 255,255,255\n")
+        f.write("\n")
+        f.write("# Text body info.\n");
+        f.write("# Set Y position to the top area of the chatbox.\n")
+        f.write("# 'arrowY' indicates the Y position of the 'next' arrow when text fully appears on the chatbox.\n")
+        f.write("# 'textColor' indicates the default text color in R,G,B (white by default)\n")
+        f.write("[body]\n")
+        f.write("y = 20\n")
+        f.write("lineSeparation = 16\n")
+        f.write("arrowY = 62\n")
+        f.write("textColor = 255,255,255\n")
 
 def convertShout(source, target, core=0):
     frames = []
