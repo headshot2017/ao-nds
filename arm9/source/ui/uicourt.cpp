@@ -891,6 +891,9 @@ void UIScreenCourt::updatePlayer(u32 id)
 
 void UIScreenCourt::onAreaChanged()
 {
+	playerListIDs.clear();
+	playerListIDs.push_back(clientID);
+
 	for (u32 id : fullPlayerListIDs)
 	{
 		if (id == clientID)
