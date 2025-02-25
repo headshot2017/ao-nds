@@ -181,6 +181,7 @@ void UISettingsChatbox::onBlendA_Down(void* pUserData)
 
 	if (Settings::chatboxBlendA > 0)
 		Settings::chatboxBlendA--;
+	Settings::save();
 	pSelf->reloadBlend();
 }
 
@@ -191,6 +192,7 @@ void UISettingsChatbox::onBlendA_Up(void* pUserData)
 
 	if (Settings::chatboxBlendA < 15)
 		Settings::chatboxBlendA++;
+	Settings::save();
 	pSelf->reloadBlend();
 }
 
@@ -201,6 +203,7 @@ void UISettingsChatbox::onBlendB_Down(void* pUserData)
 
 	if (Settings::chatboxBlendB > 0)
 		Settings::chatboxBlendB--;
+	Settings::save();
 	pSelf->reloadBlend();
 }
 
@@ -211,6 +214,7 @@ void UISettingsChatbox::onBlendB_Up(void* pUserData)
 
 	if (Settings::chatboxBlendB < 15)
 		Settings::chatboxBlendB++;
+	Settings::save();
 	pSelf->reloadBlend();
 }
 
@@ -221,6 +225,7 @@ void UISettingsChatbox::onResetBlendClicked(void* pUserData)
 
 	Settings::chatboxBlendA = 7;
 	Settings::chatboxBlendB = 15;
+	Settings::save();
 	pSelf->reloadBlend();
 }
 
