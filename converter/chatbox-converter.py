@@ -15,7 +15,9 @@ def convert(filename):
     height = Image.open(filename).size[1]
 
     # 8-bit tiles, #FF00FF transparency color, generate map file, enable palette, export to .bin, don't generate .h file
-    subprocess.Popen("grit {0} -gB4 -gt -gTFF00FF -m -p -ftb -fh!".format(filename).split(" ")).wait()
+    command = "grit {0} -gB4 -gt -gTFF00FF -m -p -ftb -fh!".split(" ")
+    command[1] = filename;
+    subprocess.Popen(command).wait()
 
     if not os.path.exists("converted/data/ao-nds/misc/chatboxes/" + basename):
         os.makedirs("converted/data/ao-nds/misc/chatboxes/" + basename)
@@ -63,10 +65,12 @@ def main():
         print("No transparency/alpha channel on the chatbox image.")
         print()
         print("Drag a chatbox image file to this program to convert it for use with AO NDS.")
-        args.append(input("> "))
+
+        file = input("> ").strip('"')
+        args.append(file)
 
     for img in args:
-        print(img)
+        print("Converting: " + img)
         convert(img)
 
     print("Your chatbox image has been converted.")
