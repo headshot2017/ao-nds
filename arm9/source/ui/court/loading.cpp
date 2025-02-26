@@ -15,6 +15,7 @@ UICourtLoading::~UICourtLoading()
 	oamClearSprite(&oamSub, 0);
 
 	AOsocket* sock = gEngine->getSocket();
+	sock->removeMessageCallback("decryptor", cbDecryptor);
 	sock->removeMessageCallback("SI", cbSI);
 	sock->removeMessageCallback("SC", cbSC);
 	sock->removeMessageCallback("SM", cbSM);
@@ -52,6 +53,7 @@ void UICourtLoading::init()
 	btn_disconnect->connect(onDisconnectClicked, this);
 
 	AOsocket* sock = gEngine->getSocket();
+	cbDecryptor = sock->addMessageCallback("decryptor", onMessageDecryptor, this);
 	cbSI = sock->addMessageCallback("SI", onMessageSI, this);
 	cbSC = sock->addMessageCallback("SC", onMessageSC, this);
 	cbSM = sock->addMessageCallback("SM", onMessageSM, this);
@@ -85,6 +87,12 @@ void UICourtLoading::onDisconnectClicked(void* pUserData)
 
 	wav_play(pSelf->pCourtUI->sndCancel);
 	gEngine->changeScreen(new UIScreenServerList);
+}
+
+void UICourtLoading::onMessageDecryptor(void* pUserData, std::string msg)
+{
+	UICourtLoading* pSelf = (UICourtLoading*)pUserData;
+	pSelf->setText("Connected, sending info...");
 }
 
 void UICourtLoading::onMessageSI(void* pUserData, std::string msg)
