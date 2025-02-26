@@ -46,6 +46,7 @@ class UICourtIC : public UISubScreen
 	UILabel* lbl_color;
 	UILabel* lbl_shout;
 	UILabel* lbl_slide;
+	UILabel* lbl_pages;
 
 	AOkeyboard* kb_input;
 	bool isWritingChat;

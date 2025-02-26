@@ -27,6 +27,7 @@ UICourtEvidenceImage::~UICourtEvidenceImage()
 	delete btn_back;
 	delete btn_confirm;
 	delete lbl_evidence;
+	delete lbl_pages;
 	delete sel_btn;
 	for (int i=0; i<8; i++) delete btn_evidence[i];
 }
@@ -45,8 +46,9 @@ void UICourtEvidenceImage::init()
 	btn_pageRight = new UIButton(&oamSub, "/data/ao-nds/ui/spr_pageRight_tall", btn_pageLeft->nextOamInd(), 1, 3, SpriteSize_16x32, 236, 55, 16, 95, 16, 32, 3);
 
 	lbl_evidence = new UILabel(&oamSub, btn_pageRight->nextOamInd(), 6, 1, RGB15(31, 16, 0), 5, 0);
+	lbl_pages = new UILabel(&oamSub, lbl_evidence->nextOamInd(), 1, 1, RGB15(13, 2, 0), 5, 0);
 
-	sel_btn = new UISelectCross(&oamSub, lbl_evidence->nextOamInd(), 6);
+	sel_btn = new UISelectCross(&oamSub, lbl_pages->nextOamInd(), 6);
 
 	static evidenceImgBtnData btnData[8];
 	for (int y=0; y<2; y++)
@@ -120,6 +122,23 @@ void UICourtEvidenceImage::reloadPage()
 	btn_pageRight->setVisible(currPage+1 < maxPages);
 	btn_confirm->setVisible(false);
 	sel_btn->setVisible(false);
+
+	updatePageText();
+}
+
+void UICourtEvidenceImage::updatePageText()
+{
+	char buf[32];
+	u32 maxPages = (u32)ceil(Content::getEvidence().size()/8.f);
+
+	if (maxPages)
+		sprintf(buf, "%lu/%lu", currPage+1, maxPages);
+	else
+		sprintf(buf, "Empty");
+	lbl_pages->setVisible(true);
+	lbl_pages->setText(buf);
+	lbl_pages->setPos(128, 192-15, true);
+	adx_update();
 }
 
 void UICourtEvidenceImage::onPrevPage(void* pUserData)

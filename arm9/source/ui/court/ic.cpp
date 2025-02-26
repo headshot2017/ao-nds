@@ -60,6 +60,7 @@ UICourtIC::~UICourtIC()
 	delete lbl_color;
 	delete lbl_shout;
 	delete lbl_slide;
+	delete lbl_pages;
 	delete kb_input;
 
 	gEngine->getSocket()->removeMessageCallback("PV", cbPV);
@@ -126,6 +127,13 @@ void UICourtIC::init()
 	lbl_color = new UILabel(&oamSub, lbl_showname->nextOamInd(), 2, 1, RGB15(31,31,31), 15, 0);
 	lbl_shout = new UILabel(&oamSub, lbl_color->nextOamInd(), 6, 1, RGB15(31,31,31), 14, 0);
 	lbl_slide = new UILabel(&oamSub, lbl_shout->nextOamInd(), 1, 1, RGB15(31,31,31), 14, 0);
+	lbl_pages = new UILabel(&oamSub, lbl_slide->nextOamInd(), 1, 1, RGB15(31,31,31), 14, 0);
+
+	kb_input = new AOkeyboard(4, lbl_pages->nextOamInd(), 14);
+	dmaCopy(bg_icPal, BG_PALETTE_SUB, 512);
+	adx_update();
+	isWritingChat = false;
+
 	lbl_showname->setPos(80, 163);
 	lbl_showname->setText((pCourtUI->showname.empty()) ? utf8::utf8to16(pCourtUI->getCurrChar().name) : pCourtUI->showname);
 	lbl_color->setPos(86, 178);
@@ -134,11 +142,6 @@ void UICourtIC::init()
 	lbl_shout->setVisible(false);
 	lbl_slide->setPos(btn_slide->getX()+btn_slide->getW()+3, btn_slide->getY()+2, false);
 	lbl_slide->setText("Slide");
-
-	kb_input = new AOkeyboard(4, lbl_slide->nextOamInd(), 14);
-	dmaCopy(bg_icPal, BG_PALETTE_SUB, 512);
-	adx_update();
-	isWritingChat = false;
 
 	btn_prevPage->setPriority(1);
 	btn_nextPage->setPriority(1);
@@ -320,6 +323,7 @@ void UICourtIC::updateInput()
 				btn_slide->setVisible(pCourtUI->getFeature("custom_blips"));
 				lbl_showname->setVisible(true);
 				lbl_slide->setVisible(pCourtUI->getFeature("custom_blips"));
+				lbl_pages->setVisible(true);
 			}
 			adx_update();
 
@@ -465,6 +469,11 @@ void UICourtIC::reloadPage()
 	spr_arrowLeft->setVisible(currPage > 0);
 	btn_nextPage->setVisible(currPage+1 < maxPages);
 	spr_arrowRight->setVisible(currPage+1 < maxPages);
+
+	char buf[32];
+	sprintf(buf, "%ld/%ld", currPage+1, maxPages);
+	lbl_pages->setText(buf);
+	lbl_pages->setPos(128, btn_optionsToggle->getY()+btn_optionsToggle->getH()+4, true);
 }
 
 void UICourtIC::reloadBars()
@@ -575,6 +584,7 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 		pSelf->btn_mute->setVisible(false);
 		pSelf->btn_slide->setVisible(false);
 		pSelf->lbl_slide->setVisible(false);
+		pSelf->lbl_pages->setVisible(false);
 
 		pSelf->btn_optionsToggle->setPos(pSelf->btn_optionsToggle->getX(), 153);
 	}
@@ -595,6 +605,7 @@ void UICourtIC::onOptionsToggled(void* pUserData)
 		pSelf->btn_mute->setVisible(true);
 		pSelf->btn_slide->setVisible(pSelf->pCourtUI->getFeature("custom_blips"));
 		pSelf->lbl_slide->setVisible(pSelf->pCourtUI->getFeature("custom_blips"));
+		pSelf->lbl_pages->setVisible(true);
 
 		pSelf->btn_optionsToggle->setPos(pSelf->btn_optionsToggle->getX(), 113);
 	}

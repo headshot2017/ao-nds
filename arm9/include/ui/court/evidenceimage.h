@@ -25,6 +25,7 @@ class UICourtEvidenceImage : public UISubScreen
 	UIButton* btn_pageLeft;
 	UIButton* btn_pageRight;
 	UILabel* lbl_evidence;
+	UILabel* lbl_pages;
 	UISelectCross* sel_btn;
 
 	UIButton* btn_evidence[8];
@@ -39,6 +40,7 @@ public:
 	void update();
 
 	void reloadPage();
+	void updatePageText();
 
 	static void onPrevPage(void* pUserData);
 	static void onNextPage(void* pUserData);
