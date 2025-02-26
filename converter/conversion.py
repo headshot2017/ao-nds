@@ -361,9 +361,13 @@ def convertEmoteButtons(source, target, core):
 
     for f in os.listdir(source):
         try:
-            img = Image.open(source+"/"+f).convert("RGBA").crop((0, 0, 64, 64))
+            img = Image.open(source+"/"+f).convert("RGBA")
         except:
             continue
+
+        if img.size[0] != 40 or img.size[1] != 40:
+            img = img.resize((40, 40))
+        img = img.crop((0, 0, 64, 64))
         
         pix = img.load()
         for x in range(img.size[0]):
