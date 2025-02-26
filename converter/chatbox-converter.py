@@ -62,6 +62,7 @@ def main():
         print("Specifications:")
         print("Size: 256 x (multiple of 8), example: 256x72, 256x80")
         print("Image background MUST be magenta color (#FF00FF or RGB 255, 0, 255)")
+        print("Image must have a max of 16 colors")
         print("No transparency/alpha channel on the chatbox image.")
         print()
         print("Drag a chatbox image file to this program to convert it for use with AO NDS.")
