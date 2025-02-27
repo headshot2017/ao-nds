@@ -511,6 +511,7 @@ void UICourtIC::hideEverything()
 	lbl_color->setVisible(false);
 	lbl_shout->setVisible(false);
 	lbl_slide->setVisible(false);
+	lbl_pages->setVisible(false);
 }
 
 void UICourtIC::onBackClicked(void* pUserData)
