@@ -15,8 +15,9 @@ def convertBackground(source, target):
     if os.path.exists(target+"/desk_tiles.cfg"):
         os.remove(target+"/desk_tiles.cfg")
 
-    # convert court.png (full courtroom view) if available
-    if os.path.exists(source+"/court.png") and os.path.exists(source+"/design.ini"):
+    # convert full courtroom images if available
+    if os.path.exists(source+"/court.png") and os.path.exists(source+"/court_overlay.png") and os.path.exists(source+"/design.ini"):
+        # court.png
         img = Image.open(source+"/court.png").convert("RGB").convert("P", colors=256, palette=Image.ADAPTIVE, dither=False)
         originalHeight = img.size[1]
 
@@ -46,11 +47,28 @@ def convertBackground(source, target):
             os.rename("court%d.pal.bin" % i, target+"/court%d.pal.bin" % i)
             os.remove("court%d.png" % i)
 
+        # design.ini
         inifile = open(source+"/design.ini").read()
         inifile += "\n[nds]\n"
         inifile += "original_scale=%d\n" % (originalHeight / img.size[1])
         inifile += "total_parts=%d\n" % parts
         open(target+"/design.ini", "w").write(inifile)
+
+        # court_overlay.png
+        img = Image.open(source+"/court_overlay.png").convert("RGBA")
+
+        # resize if not 192p
+        if img.size[1] != 192:
+            ratio = img.size[0] / float(img.size[1])
+            img = img.resize((int(192*ratio), 192), Image.BICUBIC)
+
+        # i went to hardcode town and everyone knew you
+        if not os.path.exists(source+"/defensedesk.png"):
+            img.crop((       0, 0,          256, 192)).save(source+"/defensedesk.png")
+        if not os.path.exists(source+"/stand.png"):
+            img.crop(( 648-128, 0,  648-128+256, 192)).save(source+"/stand.png")
+        if not os.path.exists(source+"/prosecutiondesk.png"):
+            img.crop((1168-128, 0, 1168-128+256, 192)).save(source+"/prosecutiondesk.png")
 
     # convert background first
     for imgfile in ["defenseempty", "prosecutorempty", "witnessempty", "helperstand", "prohelperstand", "judgestand", "jurystand", "seancestand"]:
