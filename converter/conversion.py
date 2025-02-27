@@ -476,13 +476,15 @@ def recursiveCharacter(source, target, ogTarget, core, extra=""):
         if os.path.exists(source+"/emotions"):
             convertEmoteButtons(source+"/emotions", target+"/emotions", core)
 
-        for snd in ["holdit.wav", "holdit.opus", "objection.wav", "objection.opus", "takethat.wav", "takethat.opus", "custom.wav", "custom.opus"]:
-            if not os.path.exists(source+"/"+snd): continue
-            convertSound(source+"/"+snd, target+"/"+snd)
+        for snd in ["holdit", "objection", "takethat", "custom"]:
+            for ext in [".wav", ".opus"]:
+                if not os.path.exists(source+"/"+snd+ext): continue
+                convertSound(source+"/"+snd+ext, target+"/"+snd+ext)
 
-        for custom in ["custom.apng", "custom.webp", "custom.gif", "custom.png"]:
-            if not os.path.exists(source+"/"+custom): continue
-            convertShout(source+"/"+custom, target+"/"+custom, core)
+        for shout in ["objection_bubble", "holdit_bubble", "takethat_bubble", "custom"]:
+            for ext in [".apng", ".webp", ".gif", ".png"]:
+                if not os.path.exists(source+"/"+shout+ext): continue
+                convertShout(source+"/"+shout+ext, target+"/"+shout+ext, core)
 
         if os.path.exists(source+"/custom_objections"):
             if not os.path.exists(target+"/custom_objections"):

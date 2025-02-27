@@ -49,23 +49,50 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 	switch(shoutMod)
 	{
 		case 1:
-			bgGfx = readFile("/data/ao-nds/misc/holdit_bubble.img.bin", &bgGfxLen);
-			bgMap = readFile("/data/ao-nds/misc/holdit_bubble.map.bin", &bgMapLen);
-			bgPal = readFile("/data/ao-nds/misc/holdit_bubble.pal.bin", &bgPalLen);
+			if (fileExists(contentPath + "/holdit_bubble.img.bin"))
+			{
+				bgGfx = readFile(contentPath + "/holdit_bubble.img.bin", &bgGfxLen);
+				bgMap = readFile(contentPath + "/holdit_bubble.map.bin", &bgMapLen);
+				bgPal = readFile(contentPath + "/holdit_bubble.pal.bin", &bgPalLen);
+			}
+			else
+			{
+				bgGfx = readFile("/data/ao-nds/misc/holdit_bubble.img.bin", &bgGfxLen);
+				bgMap = readFile("/data/ao-nds/misc/holdit_bubble.map.bin", &bgMapLen);
+				bgPal = readFile("/data/ao-nds/misc/holdit_bubble.pal.bin", &bgPalLen);
+			}
 			sndFile += "/holdit.wav";
 			break;
 
 		case 2:
-			bgGfx = readFile("/data/ao-nds/misc/objection_bubble.img.bin", &bgGfxLen);
-			bgMap = readFile("/data/ao-nds/misc/objection_bubble.map.bin", &bgMapLen);
-			bgPal = readFile("/data/ao-nds/misc/objection_bubble.pal.bin", &bgPalLen);
+			if (fileExists(contentPath + "/objection_bubble.img.bin"))
+			{
+				bgGfx = readFile(contentPath + "/objection_bubble.img.bin", &bgGfxLen);
+				bgMap = readFile(contentPath + "/objection_bubble.map.bin", &bgMapLen);
+				bgPal = readFile(contentPath + "/objection_bubble.pal.bin", &bgPalLen);
+			}
+			else
+			{
+				bgGfx = readFile("/data/ao-nds/misc/objection_bubble.img.bin", &bgGfxLen);
+				bgMap = readFile("/data/ao-nds/misc/objection_bubble.map.bin", &bgMapLen);
+				bgPal = readFile("/data/ao-nds/misc/objection_bubble.pal.bin", &bgPalLen);
+			}
 			sndFile += "/objection.wav";
 			break;
 
 		case 3:
-			bgGfx = readFile("/data/ao-nds/misc/takethat_bubble.img.bin", &bgGfxLen);
-			bgMap = readFile("/data/ao-nds/misc/takethat_bubble.map.bin", &bgMapLen);
-			bgPal = readFile("/data/ao-nds/misc/takethat_bubble.pal.bin", &bgPalLen);
+			if (fileExists(contentPath + "/takethat_bubble.img.bin"))
+			{
+				bgGfx = readFile(contentPath + "/takethat_bubble.img.bin", &bgGfxLen);
+				bgMap = readFile(contentPath + "/takethat_bubble.map.bin", &bgMapLen);
+				bgPal = readFile(contentPath + "/takethat_bubble.pal.bin", &bgPalLen);
+			}
+			else
+			{
+				bgGfx = readFile("/data/ao-nds/misc/takethat_bubble.img.bin", &bgGfxLen);
+				bgMap = readFile("/data/ao-nds/misc/takethat_bubble.map.bin", &bgMapLen);
+				bgPal = readFile("/data/ao-nds/misc/takethat_bubble.pal.bin", &bgPalLen);
+			}
 			sndFile += "/takethat.wav";
 			break;
 
