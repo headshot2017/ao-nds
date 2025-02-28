@@ -49,6 +49,7 @@ def convertBackground(source, target):
 
         # design.ini
         inifile = open(source+"/design.ini").read()
+        inifile = "[general]\n"+inifile
         inifile += "\n[nds]\n"
         inifile += "original_scale=%d\n" % (originalHeight / img.size[1])
         inifile += "total_parts=%d\n" % parts
