@@ -666,10 +666,14 @@ def convertShout(source, target, core=0):
         print("Couldn't convert shout %s" % source)
         return
 
-    if img.size[0]//32 != 8 and img.size[1]//32 != 6:
+    # if aspect ratio is not 4:3, crop
+    ratioW = 256/192.
+    if math.floor(img.size[0] / img.size[1] * 1000) != 1333:
+        w = ratioW * img.size[1]
+        img = img.crop(((img.size[0]-w)/2, 0, (img.size[0]+w)/2, img.size[1]))
+
+    if img.size[0] != 256 or img.size[1] != 192:
         img = img.resize((256, 192), Image.BICUBIC)
-    center = [(img.size[0]-256)/2, (img.size[1]-192)/2]
-    img = img.crop((center[0], center[1], img.size[0]-center[0], img.size[1]-center[1]))
 
     pix = img.load()
     for y in range(img.size[1]):
