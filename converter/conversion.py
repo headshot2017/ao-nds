@@ -580,7 +580,7 @@ def convertMusic(source, target):
     for f in os.listdir(source):
         if os.path.isdir(source+"/"+f):
             convertMusic(source+"/"+f, target+"/"+f)
-        elif os.path.splitext(target+"/"+f)[1] in (".mp3", ".ogg", ".opus"):
+        elif os.path.splitext(target+"/"+f)[1].lower() in (".mp3", ".ogg", ".opus"):
             print(source+"/"+f)
             targetFile = os.path.splitext(target+"/"+f)[0] + ".adx"
             if os.path.splitext(f)[0].lower() == "~stop": # don't convert ~stop.mp3
