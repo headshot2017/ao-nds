@@ -153,7 +153,7 @@ void UICourtEvidence::reloadPage()
 	{
 		for (u32 i=0; i<8; i++)
 		{
-			adx_update();
+			cothread_yield();
 
 			u32 ind = currPage*8 + i;
 			if (ind >= pCourtUI->getEvidenceList(isPrivate).size()+1)
@@ -177,7 +177,7 @@ void UICourtEvidence::reloadPage()
 				exists = Content::exists(file+".img.bin", file);
 				if (exists) file = file.substr(0, file.length()-8); // remove extension
 			}
-			adx_update();
+			cothread_yield();
 
 			btn_evidence[i]->setImage((exists ? file : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 8+i);
 			btn_evidence[i]->setVisible(true);
@@ -192,7 +192,7 @@ void UICourtEvidence::reloadPage()
 	{
 		for (u32 i=0; i<8; i++)
 		{
-			adx_update();
+			cothread_yield();
 
 			u32 ind = currPage*8 + i;
 			if (ind >= pCourtUI->getPlayerListIDs().size())
@@ -206,7 +206,7 @@ void UICourtEvidence::reloadPage()
 			bool exists = Content::exists(file+".img.bin", file);
 			if (exists) file = file.substr(0, file.length()-8); // remove extension
 
-			adx_update();
+			cothread_yield();
 
 			btn_evidence[i]->setImage((exists ? file : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 8+i);
 			btn_evidence[i]->setVisible(true);

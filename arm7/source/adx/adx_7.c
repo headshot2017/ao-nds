@@ -158,7 +158,7 @@ static int adx_frame()
 			}
 			else
 				pcm_size = 0;
-			
+
 			return 1;
 		}
 	}
@@ -182,8 +182,8 @@ static void adx_frames(DSTIME endtime, u8 firstFrames)
 		{
 			adx_readPtr -= ADX_FILE_BUFFER_SIZE;
 			memcpy((void *)adx_readPtr, (void *)(adx_readPtr + ADX_FILE_BUFFER_SIZE), ADX_FILE_BUFFER_SIZE - (adx_readPtr-adx->buffer));
-//			if (adx->flag == 1)
-//				break;
+			if (adx->flag == 1)
+				break;
 			adx->flag = 1;
 		}
 	}

@@ -69,7 +69,7 @@ void UICourtMute::init()
 	}
 
 	kb_search = new AOkeyboard(1, btn_chars[7]->nextOamInd(), 15);
-	adx_update();
+	cothread_yield();
 
 	btn_back->assignKey(KEY_B);
 	btn_muteToggle->assignKey(KEY_A);
@@ -174,7 +174,7 @@ void UICourtMute::reloadPage()
 
 	for (u32 i=0; i<8; i++)
 	{
-		adx_update();
+		cothread_yield();
 
 		u32 ind = currPage*8 + i;
 		if (ind >= filteredChars.size())
@@ -188,7 +188,7 @@ void UICourtMute::reloadPage()
 		bool exists = Content::exists(file+".img.bin", file);
 		if (exists) file = file.substr(0, file.length()-8); // remove extension
 
-		adx_update();
+		cothread_yield();
 
 		btn_chars[i]->setImage((exists ? file : "/data/ao-nds/ui/spr_unknownMugshot"), 64, 64, 7+i);
 		btn_chars[i]->setVisible(true);
@@ -218,7 +218,7 @@ void UICourtMute::updatePageText()
 	lbl_pages->setVisible(true);
 	lbl_pages->setText(buf);
 	lbl_pages->setPos(128, 192-15, true);
-	adx_update();
+	cothread_yield();
 }
 
 void UICourtMute::updateFilter()
@@ -227,12 +227,12 @@ void UICourtMute::updateFilter()
 	currPage = 0;
 	for (u32 i=0; i<pCourtUI->getCharList().size(); i++)
 	{
-		adx_update();
+		cothread_yield();
 
 		if (filter.empty())
 		{
 			filteredChars.push_back(i);
-			adx_update();
+			cothread_yield();
 			continue;
 		}
 
@@ -240,12 +240,12 @@ void UICourtMute::updateFilter()
 		std::string filterLower(filter);
 		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), [](char c){return std::tolower(c);});
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), [](char c){return std::tolower(c);});
-		adx_update();
+		cothread_yield();
 
 		if (nameLower.find(filterLower) != std::string::npos)
 		{
 			filteredChars.push_back(i);
-			adx_update();
+			cothread_yield();
 		}
 	}
 }

@@ -62,7 +62,7 @@ void UICourtEvidenceDetail::init()
 	spr_evidence = new UIButton(&oamSub, "", lbl_desc->nextOamInd(), 1, 1, SpriteSize_64x64, 21, 40, 68, 68, 64, 64, 13);
 
 	kb_input = new AOkeyboard(4, spr_evidence->nextOamInd(), 14);
-	adx_update();
+	cothread_yield();
 
 	inputting = 0;
 
@@ -318,11 +318,11 @@ void UICourtEvidenceDetail::reloadDesc(bool all)
 
 		for (u32 i=start; i!=end; i+=add)
 		{
-			adx_update();
+			cothread_yield();
 
 			dmaCopy(lbl_desc->getGfx()[7*(i+diff)], lbl_desc->getGfx()[7*i], 32*16*7);
 
-			adx_update();
+			cothread_yield();
 		}
 
 		// then generate new text
@@ -336,7 +336,7 @@ void UICourtEvidenceDetail::reloadDesc(bool all)
 			break;
 		lbl_desc->setTextOnLine(renderDesc[scrollPos+i]+u"\n", i);
 
-		adx_update();
+		cothread_yield();
 	}
 
 	scrollPosOld = scrollPos;

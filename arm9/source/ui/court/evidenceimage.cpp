@@ -101,7 +101,7 @@ void UICourtEvidenceImage::reloadPage()
 
 	for (u32 i=0; i<8; i++)
 	{
-		adx_update();
+		cothread_yield();
 
 		u32 ind = currPage*8 + i;
 		if (ind >= Content::getEvidence().size())
@@ -109,7 +109,7 @@ void UICourtEvidenceImage::reloadPage()
 			btn_evidence[i]->setVisible(false);
 			continue;
 		}
-		adx_update();
+		cothread_yield();
 
 		const evidenceCacheInfo& info = Content::getEvidence()[ind];
 
@@ -138,7 +138,7 @@ void UICourtEvidenceImage::updatePageText()
 	lbl_pages->setVisible(true);
 	lbl_pages->setText(buf);
 	lbl_pages->setPos(128, 192-15, true);
-	adx_update();
+	cothread_yield();
 }
 
 void UICourtEvidenceImage::onPrevPage(void* pUserData)

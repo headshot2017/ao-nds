@@ -181,7 +181,7 @@ void UICourtMusicList::updateFilter()
 	filteredMusic.clear();
 	for (u32 i=0; i<pCourtUI->getMusicList().size(); i++)
 	{
-		adx_update();
+		cothread_yield();
 		if (filter.empty())
 		{
 			filteredMusic.push_back(i);
@@ -192,12 +192,12 @@ void UICourtMusicList::updateFilter()
 		std::string filterLower(filter);
 		std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), [](char c){return std::tolower(c);});
 		std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), [](char c){return std::tolower(c);});
-		adx_update();
+		cothread_yield();
 
 		if (nameLower.find(filterLower) != std::string::npos)
 		{
 			filteredMusic.push_back(i);
-			adx_update();
+			cothread_yield();
 		}
 	}
 }
@@ -236,12 +236,12 @@ void UICourtMusicList::reloadScroll(bool all)
 
 		for (u32 i=start; i!=end; i+=add)
 		{
-			adx_update();
+			cothread_yield();
 
 			btn_musicBtn[i]->setFrame(btn_musicBtn[i+diff]->getFrame());
 			dmaCopy(*lbl_musicBtn[i+diff]->getGfx(), *lbl_musicBtn[i]->getGfx(), 32*16*7);
 
-			adx_update();
+			cothread_yield();
 		}
 
 		// then generate new text
@@ -251,7 +251,7 @@ void UICourtMusicList::reloadScroll(bool all)
 
 	for (u32 i=start; i!=end; i+=add)
 	{
-		adx_update();
+		cothread_yield();
 
 		u32 ind = i+scrollPos;
 		if (ind >= filteredMusic.size())
@@ -268,7 +268,7 @@ void UICourtMusicList::reloadScroll(bool all)
 		btn_musicBtn[i]->setFrame( (Content::musicExists(adxMusic.nameLower, temp)) ? 0 : 1 );
 		lbl_musicBtn[i]->setVisible(true);
 		lbl_musicBtn[i]->setText(adxMusic.nameDecoded);
-		adx_update();
+		cothread_yield();
 	}
 
 	scrollPosOld = scrollPos;

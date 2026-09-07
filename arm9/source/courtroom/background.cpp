@@ -382,13 +382,13 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 
 			BG_PALETTE[0] = ((u16*)bgPal)[0];
 
-			adx_update();
+			cothread_yield();
 		}
 
 		if (bgGfx) ao_mem_free(bgGfx);
 		if (bgMap) ao_mem_free(bgMap);
 		if (bgPal) ao_mem_free(bgPal);
-		adx_update();
+		cothread_yield();
 	}
 
 	zooming = false;
@@ -418,7 +418,7 @@ void Background::setBgSide(const std::string& side, bool showDesk, bool pan, boo
 	}
 
 	currentSide = side;
-	adx_update();
+	cothread_yield();
 }
 
 void Background::cleanDesk()
@@ -448,7 +448,7 @@ void Background::setDesk(u8* gfx, u8* pal, int horTiles, int verTiles)
 		{
 			for (int x=0; x<horTiles; x++)
 			{
-				adx_update();
+				cothread_yield();
 
 				int i = y*4+x;
 
@@ -512,7 +512,7 @@ void Background::setZoom(bool scrollLeft, bool force)
 	for (int i=0; i<horTiles*verTiles; i++)
 	{
 		if (!deskGfx[i]) continue;
-		adx_update();
+		cothread_yield();
 
 		oamFreeGfx(&oamMain, deskGfx[i]);
 		oamSetHidden(&oamMain, i, true);

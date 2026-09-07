@@ -190,7 +190,7 @@ void UICourtOOC::reloadScroll(bool all)
 			for (u32 i=0; i<pCourtUI->getOOCLog().size(); i++)
 			{
 				lbl_log->setTextOnLine(pCourtUI->getOOCLog()[i]+u"\n", i);
-				adx_update();
+				cothread_yield();
 			}
 		}
 		return;
@@ -219,11 +219,11 @@ void UICourtOOC::reloadScroll(bool all)
 
 		for (u32 i=start; i!=end; i+=add)
 		{
-			adx_update();
+			cothread_yield();
 
 			dmaCopy(lbl_log->getGfx()[7*(i+diff)], lbl_log->getGfx()[7*i], 32*16*7);
 
-			adx_update();
+			cothread_yield();
 		}
 
 		// then generate new text
@@ -237,7 +237,7 @@ void UICourtOOC::reloadScroll(bool all)
 			break;
 		lbl_log->setTextOnLine(pCourtUI->getOOCLog()[scrollPos+i]+u"\n", i);
 
-		adx_update();
+		cothread_yield();
 	}
 
 	scrollPosOld = scrollPos;

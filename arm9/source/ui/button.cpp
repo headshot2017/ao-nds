@@ -85,7 +85,7 @@ UIButton::~UIButton()
 {
 	for (int i=0; i<spriteHorTiles*spriteVertTiles; i++)
 	{
-		adx_update();
+		cothread_yield();
 		oamClearSprite(oam, oamStart+i);
 		oamFreeGfx(oam, spriteGfx[i]);
 	}
@@ -104,7 +104,7 @@ void UIButton::setImage(std::string file, int sprWidth, int sprHeight, int palSl
 	{
 		currData = readFile(file+".img.bin");
 		currPal = readFile(file+".pal.bin");
-		adx_update();
+		cothread_yield();
 	}
 	else
 	{
@@ -229,7 +229,7 @@ void UIButton::darken()
 			u8 r=0, g=0, b=0;
 			fromRGB15(VRAM_F_EXT_SPR_PALETTE[paletteSlot][j], r, g, b);
 			VRAM_F_EXT_SPR_PALETTE[paletteSlot][j] = RGB15(r>>1, g>>1, b>>1);
-			adx_update();
+			cothread_yield();
 		}
 		vramSetBankF(VRAM_F_SPRITE_EXT_PALETTE);
 	}
@@ -241,7 +241,7 @@ void UIButton::darken()
 			u8 r=0, g=0, b=0;
 			fromRGB15(VRAM_I_EXT_SPR_PALETTE[paletteSlot][j], r, g, b);
 			VRAM_I_EXT_SPR_PALETTE[paletteSlot][j] = RGB15(r>>1, g>>1, b>>1);
-			adx_update();
+			cothread_yield();
 		}
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}

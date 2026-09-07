@@ -15,7 +15,7 @@ UISelectCross::UISelectCross(OamState* chosenOam, int oamStartInd, int palSlot)
 	u8* pal = readFile("/data/ao-nds/ui/spr_buttonCorner.pal.bin");
 	spriteGfx = oamAllocateGfx(oam, SpriteSize_16x16, SpriteColorFormat_256Color);
 	dmaCopy(tiles, spriteGfx, 16*16);
-	adx_update();
+	cothread_yield();
 
 	for (int i=0; i<4; i++)
 	{
@@ -36,11 +36,11 @@ UISelectCross::UISelectCross(OamState* chosenOam, int oamStartInd, int palSlot)
 		dmaCopy(pal, &VRAM_I_EXT_SPR_PALETTE[palSlot], 512);
 		vramSetBankI(VRAM_I_SUB_SPRITE_EXT_PALETTE);
 	}
-	adx_update();
+	cothread_yield();
 
 	ao_mem_free(tiles);
 	ao_mem_free(pal);
-	adx_update();
+	cothread_yield();
 
 	selectedBtn = 0;
 	visible = false;
@@ -58,7 +58,7 @@ void UISelectCross::setVisible(bool on)
 	visible = on;
 	for (int i=0; i<4; i++)
 	{
-		adx_update();
+		cothread_yield();
 		oamSetHidden(oam, oamStart+i, !on);
 	}
 }
@@ -67,7 +67,7 @@ void UISelectCross::setPriority(int pr)
 {
 	for (int i=0; i<4; i++)
 	{
-		adx_update();
+		cothread_yield();
 		oamSetPriority(oam, oamStart+i, pr);
 	}
 }

@@ -38,22 +38,22 @@ static int adx_parse( unsigned char *buf )
     fseek( adx_in, 0, SEEK_SET );          // Read the ADX Header into memory
 	fread( buf, 1, ADX_HDR_SIZE, adx_in );
 	if(buf[0]!=ADX_HDR_SIG ) return -1;           // Check ADX File Signature
-	
+
     // Parse the ADX File header
 	adx->ADX_Info.sample_offset = read_be16(buf+ADX_ADDR_START)-2;
 	adx->ADX_Info.chunk_size    = buf[ADX_ADDR_CHUNK];
     adx->ADX_Info.channels      = buf[ADX_ADDR_CHAN];
 	adx->ADX_Info.rate          = read_be32(buf+ADX_ADDR_RATE);
 	adx->ADX_Info.samples       = read_be32(buf+ADX_ADDR_SAMP);
-	adx->ADX_Info.loop_type     = buf[ADX_ADDR_TYPE]; 
-	
+	adx->ADX_Info.loop_type     = buf[ADX_ADDR_TYPE];
+
 	// Two known variations for possible loop informations: type 3 and type 4
     if( adx->ADX_Info.loop_type == 3 )
 	    adx->ADX_Info.loop = read_be32(buf+ADX_ADDR_LOOP);
     else if( adx->ADX_Info.loop_type == 4 )
 	    adx->ADX_Info.loop = read_be32(buf+ADX_ADDR_LOOP+0x0c);
     if( adx->ADX_Info.loop > 1 || adx->ADX_Info.loop < 0 )    // Invalid header check
-        adx->ADX_Info.loop = 0;      
+        adx->ADX_Info.loop = 0;
     if( adx->ADX_Info.loop && adx->ADX_Info.loop_type == 3 )
     {
         adx->ADX_Info.loop_samp_start = read_be32(buf+ADX_ADDR_SAMP_START);
@@ -70,10 +70,10 @@ static int adx_parse( unsigned char *buf )
     }
     if( adx->ADX_Info.loop )
      adx->ADX_Info.loop_samples = adx->ADX_Info.loop_samp_end-adx->ADX_Info.loop_samp_start;
-    
+
     fseek( adx_in, adx->ADX_Info.sample_offset, SEEK_SET ); // CRI File Signature
 	fread( buf, 1, 6, adx_in );
-       	
+
 	if ( memcmp(buf, "(c)CRI", 6) )
 		return -1;
 
@@ -251,7 +251,7 @@ int adx_set_volume(int volume)
 int adx_restart()
 {
 	if (!adx || !adx_in) return 0;
-    
+
     adx_msg msg;
 	msg.type = ADX_MSG_RESTART;
 

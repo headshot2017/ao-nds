@@ -17,7 +17,7 @@ AOkeyboard::AOkeyboard(int lines, int oamStart, int palSlot)
 					   keyboardGetDefault()->grid_height * keyboardGetDefault()->grid_width * 2) / 64;
 	dmaCopy(map->mapDataReleased, bgGetMapPtr(5), map_size);
 
-	adx_update();
+	cothread_yield();
 
 	lbl_plswrite = new UILabel(&oamSub, oamStart, 6, 1, RGB15(31,31,31), palSlot, 1);
 	lbl_plswrite->setVisible(false);

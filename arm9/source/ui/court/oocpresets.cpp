@@ -312,7 +312,7 @@ void UICourtOOCPresets::savePresets()
 	for (u32 i=0; i<m_presets.size(); i++)
 	{
 		fprintf(f, "%s\n", m_presets[i].c_str());
-		adx_update();
+		cothread_yield();
 	}
 
 	fclose(f);

@@ -125,7 +125,7 @@ void Shout::setShout(const std::string& charname, int shoutMod, const std::strin
 	if (bgMap) ao_mem_free(bgMap);
 	if (bgPal) ao_mem_free(bgPal);
 
-	adx_update();
+	cothread_yield();
 }
 
 void Shout::setVisible(bool on)

@@ -114,7 +114,7 @@ void Settings::savePrivateEvidence()
 {
 	mINI::INIFile file("/data/ao-nds/private_evidence.ini");
 	mINI::INIStructure ini;
-	adx_update();
+	cothread_yield();
 
 	for (u32 i=0; i<privateEvidence.size(); i++)
 	{
@@ -123,9 +123,9 @@ void Settings::savePrivateEvidence()
 		ini[I]["name"] = utf8::utf16to8(privateEvidence[i].name);
 		ini[I]["description"] = utf8::utf16to8(privateEvidence[i].description);
 		ini[I]["image"] = privateEvidence[i].image + ".png";
-		adx_update();
+		cothread_yield();
 	}
 
 	file.generate(ini);
-	adx_update();
+	cothread_yield();
 }

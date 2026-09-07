@@ -54,11 +54,11 @@ void AOdecode(std::string& s)
 		size_t pos = 0;
 		while((pos = s.find(escapes[i], pos)) != std::string::npos)
 		{
-			adx_update();
+			cothread_yield();
 			s.replace(pos, escapes[i].length(), unescapes[i]);
 			pos += unescapes[i].length();
 		}
-		adx_update();
+		cothread_yield();
 	}
 }
 
@@ -70,11 +70,11 @@ void AOdecode(std::u16string& s)
 		size_t pos = 0;
 		while((pos = s.find(escape16, pos)) != std::u16string::npos)
 		{
-			adx_update();
+			cothread_yield();
 			s.replace(pos, escape16.length(), utf8::utf8to16(unescapes[i]));
 			pos += unescapes[i].length();
 		}
-		adx_update();
+		cothread_yield();
 	}
 }
 
@@ -85,11 +85,11 @@ void AOencode(std::string& s)
 		size_t pos = 0;
 		while((pos = s.find(unescapes[i], pos)) != std::string::npos)
 		{
-			adx_update();
+			cothread_yield();
 			s.replace(pos, unescapes[i].length(), escapes[i]);
 			pos += escapes[i].length();
 		}
-		adx_update();
+		cothread_yield();
 	}
 }
 
@@ -101,7 +101,7 @@ std::string argumentAt(const std::string& s, int id, char delimiter)
 
 	while (lastPos != std::string::npos && i < id)
 	{
-		adx_update();
+		cothread_yield();
 
 		i++;
 		lastPos = delimiterPos;
@@ -153,7 +153,7 @@ bool fileExists(const std::string& filename)
 {
 	struct stat buffer;
 	bool exist = stat(filename.c_str(), &buffer) == 0;
-	adx_update();
+	cothread_yield();
 	return exist;
 }
 
@@ -184,7 +184,7 @@ u8* readFile(const std::string& filename, u32* outLen, const char* mode)
 
 	DC_FlushRange(data, len);
 
-	adx_update();
+	cothread_yield();
 
 	return data;
 }
@@ -240,7 +240,7 @@ static uint8 readByteFile(uint8 *source) {
 		streamPos += streamSize;
 		fread(streamData, streamSize, 1, streamFile);
 	}
-	adx_update();
+	cothread_yield();
 	return thisByte;
 }
 
@@ -261,7 +261,7 @@ void readAndDecompressLZ77Stream(const char* filename, u8* dest)
 }
 #else
 static uint8 readByteFile(uint8 *source) {
-	adx_update();
+	cothread_yield();
 	return *source;
 }
 

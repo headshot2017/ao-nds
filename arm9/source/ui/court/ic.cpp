@@ -103,7 +103,7 @@ void UICourtIC::init()
 	static emoteBtnData btnData[4];
 	for (u32 i=0; i<4; i++)
 	{
-		adx_update();
+		cothread_yield();
 		int nextOam = (!i) ? btn_nextPage->nextOamInd() : btn_emote[i-1]->nextOamInd();
 		btnData[i] = {this, i};
 
@@ -113,7 +113,7 @@ void UICourtIC::init()
 
 	for (int i=0; i<2; i++)
 	{
-		adx_update();
+		cothread_yield();
 		int nextOam = (!i) ? btn_emote[3]->nextOamInd() : spr_bars[i-1]->nextOamInd();
 
 		std::string file = (!i) ? "/data/ao-nds/ui/spr_barDefense" : "/data/ao-nds/ui/spr_barProsecutor";
@@ -131,7 +131,7 @@ void UICourtIC::init()
 
 	kb_input = new AOkeyboard(4, lbl_pages->nextOamInd(), 14);
 	dmaCopy(bg_icPal, BG_PALETTE_SUB, 512);
-	adx_update();
+	cothread_yield();
 	isWritingChat = false;
 
 	lbl_showname->setPos(80, 163);
@@ -325,7 +325,7 @@ void UICourtIC::updateInput()
 				lbl_slide->setVisible(pCourtUI->getFeature("custom_blips"));
 				lbl_pages->setVisible(true);
 			}
-			adx_update();
+			cothread_yield();
 
 			bgShow(bgIndex);
 
@@ -433,7 +433,7 @@ void UICourtIC::reloadPage()
 
 	for (u32 i=0; i<4; i++)
 	{
-		adx_update();
+		cothread_yield();
 
 		u32 ind = currPage*4 + i;
 		if (ind >= pCourtUI->getCharEmotes().size())
@@ -449,7 +449,7 @@ void UICourtIC::reloadPage()
 
 	for (u32 i=0; i<visible; i++)
 	{
-		adx_update();
+		cothread_yield();
 
 		u32 ind = currPage*4 + i;
 		std::string buttonFile = "characters/" + pCourtUI->getCurrChar().name + "/emotions/button" + std::to_string(ind+1) + "_off";

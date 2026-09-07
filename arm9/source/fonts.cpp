@@ -63,7 +63,7 @@ int renderText(int fontID, std::u16string& text, int palIndex, int w, int h, u8*
 		int oobFlag;
 		int outWidth;
 		int new_x = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, x, w, w, h, bmpTarget, spritesize, spriteGfxTargets[currGfx], false, &oobFlag, &outWidth);
-		adx_update();
+		cothread_yield();
 
 		if (!oobFlag)
 		{
@@ -125,7 +125,7 @@ int renderChar(int fontID, int codepoint, int nextChar, int palIndex, int x, int
 	// render character (stride and offset is important here)
 	int byteOffset = 0 + f32toint(roundf32(mulf32(inttof32(lsb), font.scale))) + (y * spriteW);
 	stbtt_MakeCodepointBitmap(&font.info, bmpTarget + byteOffset, out_x, c_y2 - c_y1, spriteW, font.scale, font.scale, codepoint);
-	adx_update();
+	cothread_yield();
 
 	// focus around the bounding box of the rendered character...
 	for (int yy = y; yy<y+font.line_height; yy++)
@@ -165,7 +165,7 @@ int renderChar(int fontID, int codepoint, int nextChar, int palIndex, int x, int
 	kern = stbtt_GetCodepointKernAdvance(&font.info, codepoint, nextChar);
 	x += f32toint(roundf32(mulf32(inttof32(kern), font.scale)));
 
-	adx_update();
+	cothread_yield();
 
 	if (oobFlag) *oobFlag = 0;
 	return x;
@@ -183,7 +183,7 @@ void renderMultiLine(int fontID, std::u16string& text, int palIndex, int w, int 
 		{
 			int line = div32(currTextGfxInd, gfxPerLine);
 			currTextGfxInd = (line+1) * gfxPerLine;
-			adx_update();
+			cothread_yield();
 
 			i++;
 			if (i >= text.size())
@@ -199,7 +199,7 @@ void renderMultiLine(int fontID, std::u16string& text, int palIndex, int w, int 
 		int oobFlag = 0;
 		int outWidth;
 		int new_x = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
-		adx_update();
+		cothread_yield();
 
 		if (oobFlag)
 		{
@@ -216,7 +216,7 @@ void renderMultiLine(int fontID, std::u16string& text, int palIndex, int w, int 
 			{
 				textX -= 32;
 				textX = renderChar(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, palIndex, textX, 32, 32, 16, bmpTarget, SpriteSize_32x16, spriteGfxTargets[currTextGfxInd], lastBox, &oobFlag, &outWidth);
-				adx_update();
+				cothread_yield();
 			}
 		}
 		else
@@ -279,7 +279,7 @@ int advanceXPos(int fontID, int codepoint, int nextChar, int x, int w, bool skip
 	kern = stbtt_GetCodepointKernAdvance(&font.info, codepoint, nextChar);
 	x += f32toint(roundf32(mulf32(inttof32(kern), font.scale)));
 
-	adx_update();
+	cothread_yield();
 
 	if (oobFlag) *oobFlag = 0;
 	return x;
@@ -299,7 +299,7 @@ void separateLines(int fontID, std::u16string& text, int gfxPerLine, bool chatbo
 			currTextGfxInd = (line+1) * gfxPerLine;
 			out.push_back(thisLine);
 			thisLine.clear();
-			adx_update();
+			cothread_yield();
 
 			i++;
 			if (i >= text.size())
@@ -313,7 +313,7 @@ void separateLines(int fontID, std::u16string& text, int gfxPerLine, bool chatbo
 		int outWidth;
 
 		int new_x = advanceXPos(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
-		adx_update();
+		cothread_yield();
 
 		if (oobFlag)
 		{
@@ -333,7 +333,7 @@ void separateLines(int fontID, std::u16string& text, int gfxPerLine, bool chatbo
 				thisLine += text.at(i);
 				textX -= 32;
 				textX = advanceXPos(fontID, text.at(i), (i != text.size()-1) ? text.at(i+1) : 0, textX, (chatbox && lastBox) ? 20 : 32, lastBox, &oobFlag, &outWidth);
-				adx_update();
+				cothread_yield();
 			}
 		}
 		else

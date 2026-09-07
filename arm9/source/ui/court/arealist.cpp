@@ -137,7 +137,7 @@ void UICourtAreaList::reloadPage()
 
 	for (u32 i=0; i<4; i++)
 	{
-		adx_update();
+		cothread_yield();
 
 		u32 ind = currPage*4 + i;
 		if (ind >= pCourtUI->getAreaList().size())
@@ -151,7 +151,7 @@ void UICourtAreaList::reloadPage()
 		lbl_area[i]->setVisible(true);
 		lbl_area[i]->setText(pCourtUI->getAreaList()[ind].name);
 		lbl_area[i]->setPos(108+(142/2), 34+(i*31)+6, true);
-		adx_update();
+		cothread_yield();
 	}
 
 	u32 maxPages = (u32)ceil(pCourtUI->getAreaList().size()/4.f);
@@ -176,7 +176,7 @@ void UICourtAreaList::updatePageText()
 	lbl_pages->setVisible(true);
 	lbl_pages->setText(buf);
 	lbl_pages->setPos(128, 192-15, true);
-	adx_update();
+	cothread_yield();
 }
 
 void UICourtAreaList::updateAreaInfo()

@@ -294,12 +294,12 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 		{
 			pos = newPos;
 			newPos = adxMusic.find(".", pos+1);
-			adx_update();
+			cothread_yield();
 		}
 		if (pos)
 		{
 			adxMusic = adxMusic.substr(0, pos);
-			adx_update();
+			cothread_yield();
 		}
 
 		std::string adxLower = adxMusic+".adx";
@@ -312,12 +312,12 @@ void UIScreenCourt::onMessageSM(void* pUserData, std::string msg)
 		{
 			pos = newPos;
 			newPos = adxMusic.find("/", pos+1);
-			adx_update();
+			cothread_yield();
 		}
 		if (pos)
 		{
 			adxMusic = adxMusic.substr(pos+1);
-			adx_update();
+			cothread_yield();
 		}
 
 		if (musics_time)
@@ -733,12 +733,12 @@ void UIScreenCourt::onMessageLE(void* pUserData, std::string msg)
 		{
 			extPos = newExtPos;
 			newExtPos = image.find(".", extPos+1);
-			adx_update();
+			cothread_yield();
 		}
 		if (extPos)
 		{
 			image = image.substr(0, extPos);
-			adx_update();
+			cothread_yield();
 		}
 
 		pSelf->evidenceList.push_back({name, desc, image});
