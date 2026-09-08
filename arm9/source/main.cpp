@@ -6,6 +6,7 @@
 #include <nds/arm9/background.h>
 #include <nds/arm9/cache.h>
 #include <nds/arm9/console.h>
+#include <nds/arm9/dldi.h>
 #include <nds/arm9/exceptions.h>
 #include <nds/arm9/video.h>
 #include <nds/arm9/input.h>
@@ -109,6 +110,7 @@ int main()
 {
 	std::set_new_handler(handler);
 
+	dldiSetMode(DLDI_MODE_ARM9);
 	defaultExceptionHandler();
 	adx_init();
 	srand(time(0));

@@ -94,7 +94,6 @@ static int adx_cothread(void* arg)
 	while (1)
 	{
 		adx_update();
-		DC_FlushAll();
 		cothread_yield();
 	}
 	return 0;
