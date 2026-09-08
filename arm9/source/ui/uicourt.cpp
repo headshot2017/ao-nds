@@ -503,6 +503,7 @@ void UIScreenCourt::onMessageCT(void* pUserData, std::string msg)
 			"a repeat",
 			"is too long",
 			"client(s) with ipid",
+			"slow down",
 		};
 
 		for (u32 i=0; i<sizeof(messageList) / sizeof(const char*); i++)
