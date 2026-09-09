@@ -638,6 +638,7 @@ def convertChatbox(folder):
         f.write("textColor = 255,255,255\n")
 
 def convertShout(source, target, core=0):
+    print(source)
     frames = []
 
     if source.lower().endswith(".apng"):
@@ -703,6 +704,7 @@ def convertShout(source, target, core=0):
     os.rename("temp%d.pal.bin" % core, newFile+".pal.bin")
 
 def convertSpeedlines(source, target):
+    print(source)
     img = Image.open(source).convert("RGBA")
 
     img.save("temp.png")
