@@ -658,8 +658,7 @@ def convertShout(source, target, core=0):
     img = None
     for i in range(len(frames)-1, -1, -1):
         frame = frames[i][0]
-        ex = frame.convert("L").getextrema()
-        if ex[0] != ex[1]: # this frame is not blank
+        if frame.getbbox(): # this frame is not blank
             img = frame
             break
 
